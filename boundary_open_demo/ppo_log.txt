@@ -1,0 +1,25 @@
+  closed time_min  seed 0: completion  89.5%
+  closed time_min  seed 1: completion  92.0%
+  closed time_min  seed 2: completion  92.0%
+  closed time_min  seed 3: completion  92.0%
+  closed time_min  seed 4: completion  93.0%
+== closed time_min  completion  91.7% (sd 1.2)
+  closed aligned   seed 0: completion  93.0%
+  closed aligned   seed 1: completion  90.5%
+  closed aligned   seed 2: completion  87.5%
+  closed aligned   seed 3: completion  89.5%
+  closed aligned   seed 4: completion  87.0%
+== closed aligned   completion  89.5% (sd 2.2)
+  open   time_min  seed 0: completion   0.0%
+  open   time_min  seed 1: completion   0.5%
+  open   time_min  seed 2: completion   0.0%
+  open   time_min  seed 3: completion   0.0%
+  open   time_min  seed 4: completion   0.5%
+== open   time_min  completion   0.2% (sd 0.2)
+  open   aligned   seed 0: completion   0.5%
+  open   aligned   seed 1: completion   0.5%
+  open   aligned   seed 2: completion   1.0%
+  open   aligned   seed 3: completion   0.0%
+  open   aligned   seed 4: completion   0.5%
+== open   aligned   completion   0.5% (sd 0.3)
+wrote ppo_four_cells.json

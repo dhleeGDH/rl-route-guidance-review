@@ -1,0 +1,26 @@
+closed_time_min    seed0  final completion=0.890  return=-21.68
+closed_time_min    seed1  final completion=0.950  return=-13.46
+closed_time_min    seed2  final completion=0.870  return=-24.56
+closed_time_min    seed3  final completion=0.695  return=-45.68
+closed_time_min    seed4  final completion=0.710  return=-44.15
+open_time_min      seed0  final completion=0.000  return=-1.33
+open_time_min      seed1  final completion=0.000  return=-1.33
+open_time_min      seed2  final completion=0.000  return=-1.33
+open_time_min      seed3  final completion=0.000  return=-1.33
+open_time_min      seed4  final completion=0.000  return=-1.33
+open_aligned       seed0  final completion=0.980  return=5.41
+open_aligned       seed1  final completion=1.000  return=9.18
+open_aligned       seed2  final completion=0.860  return=6.21
+open_aligned       seed3  final completion=1.000  return=7.90
+open_aligned       seed4  final completion=0.845  return=6.57
+closed_aligned     seed0  final completion=1.000  return=9.19
+closed_aligned     seed1  final completion=0.975  return=5.06
+closed_aligned     seed2  final completion=1.000  return=9.20
+closed_aligned     seed3  final completion=0.995  return=8.49
+closed_aligned     seed4  final completion=1.000  return=9.21
+
+=== SUMMARY (final trip completion rate) ===
+closed_time_min    completion=0.823 +/- 0.102   return=-29.91 +/- 12.79
+open_time_min      completion=0.000 +/- 0.000   return=-1.33 +/- 0.00
+open_aligned       completion=0.937 +/- 0.070   return=7.05 +/- 1.33
+closed_aligned     completion=0.994 +/- 0.010   return=8.23 +/- 1.61

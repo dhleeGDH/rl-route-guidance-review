@@ -1,0 +1,67 @@
+  d=100%  time_min  seed 0: completion   0.0%  rho=2
+  d=100%  time_min  seed 1: completion   0.0%  rho=2
+  d=100%  time_min  seed 2: completion   0.0%  rho=2
+  d=100%  time_min  seed 3: completion   0.0%  rho=2
+  d=100%  time_min  seed 4: completion   0.0%  rho=2
+  d=100%  time_min  seed 5: completion   0.0%  rho=2
+  d=100%  time_min  seed 6: completion   0.0%  rho=2
+  d=100%  time_min  seed 7: completion   0.0%  rho=2
+  d=100%  time_min  seed 8: completion   0.0%  rho=2
+  d=100%  time_min  seed 9: completion   0.0%  rho=2
+== d=100%  time_min  completion   0.0% (sd  0.0)  rho=2.0  by_k={3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0}
+  d=100%  aligned   seed 0: completion  99.0%  rho=2
+  d=100%  aligned   seed 1: completion  92.5%  rho=2
+  d=100%  aligned   seed 2: completion  95.0%  rho=2
+  d=100%  aligned   seed 3: completion 100.0%  rho=2
+  d=100%  aligned   seed 4: completion 100.0%  rho=2
+  d=100%  aligned   seed 5: completion  97.5%  rho=2
+  d=100%  aligned   seed 6: completion  78.5%  rho=2
+  d=100%  aligned   seed 7: completion  97.0%  rho=2
+  d=100%  aligned   seed 8: completion 100.0%  rho=2
+  d=100%  aligned   seed 9: completion  99.5%  rho=2
+== d=100%  aligned   completion  95.9% (sd  6.3)  rho=2.0  by_k={3: 96.4, 4: 96.6, 5: 95.7, 6: 94.5, 7: 92.0}
+  d=50%   time_min  seed 0: completion   0.0%  rho=2
+  d=50%   time_min  seed 1: completion   0.0%  rho=2
+  d=50%   time_min  seed 2: completion   0.0%  rho=2
+  d=50%   time_min  seed 3: completion   0.0%  rho=2
+  d=50%   time_min  seed 4: completion   0.0%  rho=2
+  d=50%   time_min  seed 5: completion   0.0%  rho=3
+  d=50%   time_min  seed 6: completion   0.0%  rho=2
+  d=50%   time_min  seed 7: completion   0.0%  rho=2
+  d=50%   time_min  seed 8: completion   0.5%  rho=3
+  d=50%   time_min  seed 9: completion   0.0%  rho=2
+== d=50%   time_min  completion   0.1% (sd  0.2)  rho=2.2  by_k={3: 0.2, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0}
+  d=50%   aligned   seed 0: completion 100.0%  rho=2
+  d=50%   aligned   seed 1: completion 100.0%  rho=2
+  d=50%   aligned   seed 2: completion  98.0%  rho=2
+  d=50%   aligned   seed 3: completion  99.0%  rho=2
+  d=50%   aligned   seed 4: completion 100.0%  rho=2
+  d=50%   aligned   seed 5: completion  61.5%  rho=3
+  d=50%   aligned   seed 6: completion  85.0%  rho=2
+  d=50%   aligned   seed 7: completion 100.0%  rho=2
+  d=50%   aligned   seed 8: completion 100.0%  rho=3
+  d=50%   aligned   seed 9: completion 100.0%  rho=2
+== d=50%   aligned   completion  94.3% (sd 11.8)  rho=2.2  by_k={3: 92.6, 4: 94.7, 5: 95.1, 6: 95.9, 7: 96.0}
+  d=25%   time_min  seed 0: completion   3.5%  rho=5
+  d=25%   time_min  seed 1: completion   0.0%  rho=3
+  d=25%   time_min  seed 2: completion   0.0%  rho=3
+  d=25%   time_min  seed 3: completion   1.0%  rho=3
+  d=25%   time_min  seed 4: completion   3.0%  rho=4
+  d=25%   time_min  seed 5: completion   1.0%  rho=4
+  d=25%   time_min  seed 6: completion   1.0%  rho=3
+  d=25%   time_min  seed 7: completion   0.0%  rho=3
+  d=25%   time_min  seed 8: completion   2.0%  rho=4
+  d=25%   time_min  seed 9: completion   0.0%  rho=2
+== d=25%   time_min  completion   1.1% (sd  1.2)  rho=3.4  by_k={3: 3.0, 4: 0.9, 5: 0.0, 6: 0.0, 7: 0.0}
+  d=25%   aligned   seed 0: completion 100.0%  rho=5
+  d=25%   aligned   seed 1: completion  98.5%  rho=3
+  d=25%   aligned   seed 2: completion  99.5%  rho=3
+  d=25%   aligned   seed 3: completion  60.0%  rho=3
+  d=25%   aligned   seed 4: completion 100.0%  rho=4
+  d=25%   aligned   seed 5: completion  92.5%  rho=4
+  d=25%   aligned   seed 6: completion  90.5%  rho=3
+  d=25%   aligned   seed 7: completion  98.0%  rho=3
+  d=25%   aligned   seed 8: completion  86.5%  rho=4
+  d=25%   aligned   seed 9: completion 100.0%  rho=2
+== d=25%   aligned   completion  92.6% (sd 11.7)  rho=3.4  by_k={3: 90.8, 4: 94.3, 5: 92.8, 6: 93.4, 7: 86.0}
+wrote exit_density_results.json

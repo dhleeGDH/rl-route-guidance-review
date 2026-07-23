@@ -1,0 +1,50 @@
+{
+  "C1": {
+    "boundary": "open",
+    "learner": "dqn",
+    "seeds": 5,
+    "completion_mean": 0.0,
+    "completion_sd": 0.0,
+    "lambda_mean": 25.0,
+    "lambda_max_seen": 25.0,
+    "saturated": false,
+    "per_seed_completion": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "per_seed_lambda": [
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0
+    ]
+  },
+  "C2": {
+    "boundary": "open",
+    "learner": "ppo",
+    "seeds": 5,
+    "completion_mean": 1.9,
+    "completion_sd": 0.58309518948453,
+    "lambda_mean": 25.0,
+    "lambda_max_seen": 25.0,
+    "saturated": false,
+    "per_seed_completion": [
+      2.5,
+      2.5,
+      2.0,
+      1.5,
+      1.0
+    ],
+    "per_seed_lambda": [
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0
+    ]
+  }
+}

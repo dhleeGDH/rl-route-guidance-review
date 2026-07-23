@@ -1,0 +1,5 @@
+=== aligned-reward component ablation, boundary-open 5x5, 5 seeds ===
+shaping only         completion = 28.9% +/- 9.0 (seeds [43, 20, 28, 34, 20])
+arrival bonus only   completion = 0.0% +/- 0.0 (seeds [0, 0, 0, 0, 0])
+exit penalty only    completion = 0.0% +/- 0.0 (seeds [0, 0, 0, 0, 0])
+full aligned         completion = 97.3% +/- 3.0 (seeds [99, 92, 95, 100, 100])

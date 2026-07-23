@@ -1,0 +1,5 @@
+condition,final_completion_mean,final_completion_std
+closed_time_min,0.9770,0.0191
+open_time_min,0.0000,0.0000
+open_aligned,0.2070,0.0821
+closed_aligned,1.0000,0.0000

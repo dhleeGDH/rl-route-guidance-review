@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.log
+*.out
+_*
+checkpoint_*/
+*.tune_metadata
+.is_checkpoint
+.ipynb_checkpoints/

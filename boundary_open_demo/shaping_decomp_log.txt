@@ -1,0 +1,4 @@
+=== shaping decomposition, boundary-open 5x5, 5 seeds ===
+shaping-only, non-vanishing Phi(exit): 28.9% +/- 10.0  seeds=[43.0, 19.5, 28.5, 34.0, 19.5]
+shaping-only, vanishing Phi(exit): 0.0% +/- 0.0  seeds=[0.0, 0.0, 0.0, 0.0, 0.0]
+wrote shaping_decomp_summary.csv

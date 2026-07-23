@@ -1,0 +1,59 @@
+{
+  "0.00": {
+    "arrival_share": 0.0,
+    "seeds": 10,
+    "completion_mean": 30.75,
+    "completion_sd": 18.326551776043413,
+    "train_arrival_rate_mean": 11.943333333333333,
+    "per_seed_completion": [
+      14.0,
+      50.0,
+      10.5,
+      4.5,
+      68.0,
+      28.0,
+      31.0,
+      23.5,
+      42.5,
+      35.5
+    ]
+  },
+  "0.25": {
+    "arrival_share": 0.25,
+    "seeds": 10,
+    "completion_mean": 67.65,
+    "completion_sd": 8.393598751429568,
+    "train_arrival_rate_mean": 31.416666666666668,
+    "per_seed_completion": [
+      69.5,
+      82.5,
+      56.5,
+      70.0,
+      72.5,
+      61.5,
+      56.0,
+      77.5,
+      60.5,
+      70.0
+    ]
+  },
+  "0.50": {
+    "arrival_share": 0.5,
+    "seeds": 10,
+    "completion_mean": 90.15,
+    "completion_sd": 5.796766339951956,
+    "train_arrival_rate_mean": 44.25000000000001,
+    "per_seed_completion": [
+      85.0,
+      85.5,
+      84.0,
+      85.0,
+      91.5,
+      86.5,
+      96.5,
+      100.0,
+      98.5,
+      89.0
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+  closed aligned  seed 0: completion 100.0%
+  closed aligned  seed 1: completion 100.0%
+  closed aligned  seed 2: completion  99.5%
+  closed aligned  seed 3: completion 100.0%
+  closed aligned  seed 4: completion  99.5%
+== closed aligned  9000 ep: completion  99.8% (sd 0.2)
+  open   aligned  seed 0: completion   1.5%
+  open   aligned  seed 1: completion   1.0%
+  open   aligned  seed 2: completion   3.0%
+  open   aligned  seed 3: completion   1.5%
+  open   aligned  seed 4: completion   1.0%
+== open   aligned  9000 ep: completion   1.6% (sd 0.7)
+wrote ppo_budget.json

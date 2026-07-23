@@ -1,0 +1,25 @@
+  forecast seed 0: completion  98.0%  realized travel time 7.337
+  forecast seed 1: completion  99.0%  realized travel time 6.313
+  forecast seed 2: completion  99.0%  realized travel time 5.952
+  forecast seed 3: completion  93.0%  realized travel time 6.552
+  forecast seed 4: completion  99.5%  realized travel time 6.140
+  forecast seed 5: completion  89.0%  realized travel time 7.057
+  forecast seed 6: completion  90.5%  realized travel time 6.127
+  forecast seed 7: completion  97.0%  realized travel time 5.170
+  forecast seed 8: completion  92.5%  realized travel time 6.013
+  forecast seed 9: completion  98.5%  realized travel time 5.356
+== forecast completion  95.6% (sd 3.7)  time 6.202 (sd 0.636)
+  instant  seed 0: completion  97.5%  realized travel time 5.815
+  instant  seed 1: completion 100.0%  realized travel time 6.010
+  instant  seed 2: completion  87.0%  realized travel time 6.458
+  instant  seed 3: completion  97.0%  realized travel time 5.753
+  instant  seed 4: completion  79.5%  realized travel time 5.483
+  instant  seed 5: completion  95.5%  realized travel time 5.828
+  instant  seed 6: completion  84.5%  realized travel time 6.544
+  instant  seed 7: completion  95.0%  realized travel time 6.193
+  instant  seed 8: completion  94.5%  realized travel time 5.818
+  instant  seed 9: completion  97.0%  realized travel time 5.718
+== instant  completion  92.8% (sd 6.4)  time 5.962 (sd 0.321)
+
+realized travel time of the instantaneous state, over the forecast-conditioned state: -3.9%
+wrote state_condition_learned.json

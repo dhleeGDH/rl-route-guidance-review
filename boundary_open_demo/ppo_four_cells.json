@@ -1,0 +1,46 @@
+{
+  "closed_time_min": {
+    "completion_mean": 91.7,
+    "completion_sd": 1.16619037896906,
+    "per_seed": [
+      89.5,
+      92.0,
+      92.0,
+      92.0,
+      93.0
+    ]
+  },
+  "closed_aligned": {
+    "completion_mean": 89.5,
+    "completion_sd": 2.16794833886788,
+    "per_seed": [
+      93.0,
+      90.5,
+      87.5,
+      89.5,
+      87.0
+    ]
+  },
+  "open_time_min": {
+    "completion_mean": 0.2,
+    "completion_sd": 0.24494897427831783,
+    "per_seed": [
+      0.0,
+      0.5,
+      0.0,
+      0.0,
+      0.5
+    ]
+  },
+  "open_aligned": {
+    "completion_mean": 0.5,
+    "completion_sd": 0.31622776601683794,
+    "per_seed": [
+      0.5,
+      0.5,
+      1.0,
+      0.0,
+      0.5
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+=== (A) reward dose-response on the boundary-open 5x5 network ===
+lambda=0.00  completion=0.000 +/- 0.000
+lambda=0.10  completion=0.000 +/- 0.000
+lambda=0.25  completion=0.000 +/- 0.000
+lambda=0.50  completion=0.013 +/- 0.008
+lambda=0.75  completion=0.095 +/- 0.004
+lambda=1.00  completion=0.955 +/- 0.027
+
+=== (B) larger 8x8 network ===
+8x8 open time_min  completion=0.000 +/- 0.000
+8x8 open aligned   completion=0.287 +/- 0.060

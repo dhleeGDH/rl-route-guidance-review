@@ -1,0 +1,30 @@
+{
+  "closed_time_min": {
+    "completion_mean": 99.45,
+    "travel_time_mean": 5.342086527832324,
+    "travel_time_sd": 0.01648245152372986,
+    "detour_mean": 1.0297319181673372,
+    "detour_sd": 0.0037121926208637814
+  },
+  "closed_aligned": {
+    "completion_mean": 100.0,
+    "travel_time_mean": 5.268698347026211,
+    "travel_time_sd": 0.026415743949505244,
+    "detour_mean": 1.0159112509299875,
+    "detour_sd": 0.004603367960011394
+  },
+  "open_time_min": {
+    "completion_mean": 0.0,
+    "travel_time_mean": NaN,
+    "travel_time_sd": NaN,
+    "detour_mean": NaN,
+    "detour_sd": NaN
+  },
+  "open_aligned": {
+    "completion_mean": 30.75,
+    "travel_time_mean": 4.823283046360863,
+    "travel_time_sd": 0.5588171543170661,
+    "detour_mean": 1.0172471010071382,
+    "detour_sd": 0.008930608571592195
+  }
+}

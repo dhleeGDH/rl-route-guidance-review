@@ -1,0 +1,4 @@
+planner,mean_travel_time,std_travel_time
+predictive_optimal,5.3215,1.4989
+reactive_local,5.3398,1.5439
+historical_mean,5.4376,1.8060

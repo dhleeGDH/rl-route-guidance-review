@@ -1,0 +1,51 @@
+  closed time_min  seed 0: completion  82.0%  travel time   7.12  detour 1.454
+  closed time_min  seed 1: completion  78.5%  travel time   7.85  detour 1.571
+  closed time_min  seed 2: completion  87.0%  travel time   7.08  detour 1.499
+  closed time_min  seed 3: completion  80.0%  travel time   6.60  detour 1.384
+  closed time_min  seed 4: completion  86.0%  travel time   7.32  detour 1.534
+  closed time_min  seed 5: completion  84.0%  travel time   8.15  detour 1.738
+  closed time_min  seed 6: completion  87.0%  travel time   7.32  detour 1.535
+  closed time_min  seed 7: completion  74.0%  travel time   5.98  detour 1.191
+  closed time_min  seed 8: completion  89.5%  travel time   7.94  detour 1.729
+  closed time_min  seed 9: completion  93.5%  travel time   8.14  detour 1.690
+== closed time_min  completion  84.2%  travel time   7.35 (sd 0.66)  detour 1.533 (sd 0.159)
+  closed aligned   seed 0: completion 100.0%  travel time   5.11  detour 1.028
+  closed aligned   seed 1: completion  99.0%  travel time   5.67  detour 1.125
+  closed aligned   seed 2: completion  97.0%  travel time   6.67  detour 1.352
+  closed aligned   seed 3: completion 100.0%  travel time   5.10  detour 1.027
+  closed aligned   seed 4: completion 100.0%  travel time   5.17  detour 1.041
+  closed aligned   seed 5: completion 100.0%  travel time   5.19  detour 1.040
+  closed aligned   seed 6: completion 100.0%  travel time   5.06  detour 1.020
+  closed aligned   seed 7: completion  97.5%  travel time   5.24  detour 1.051
+  closed aligned   seed 8: completion 100.0%  travel time   5.11  detour 1.029
+  closed aligned   seed 9: completion 100.0%  travel time   5.08  detour 1.023
+== closed aligned   completion  99.3%  travel time   5.34 (sd 0.47)  detour 1.074 (sd 0.097)
+  open   time_min  seed 0: completion   0.0%  travel time    nan  detour nan
+  open   time_min  seed 1: completion   0.0%  travel time    nan  detour nan
+  open   time_min  seed 2: completion   0.0%  travel time    nan  detour nan
+  open   time_min  seed 3: completion   0.0%  travel time    nan  detour nan
+  open   time_min  seed 4: completion   0.0%  travel time    nan  detour nan
+  open   time_min  seed 5: completion   0.0%  travel time    nan  detour nan
+  open   time_min  seed 6: completion   0.0%  travel time    nan  detour nan
+  open   time_min  seed 7: completion   0.0%  travel time    nan  detour nan
+  open   time_min  seed 8: completion   0.0%  travel time    nan  detour nan
+  open   time_min  seed 9: completion   0.0%  travel time    nan  detour nan
+D:\review_paper\drl-rgs-review\experiments\boundary_open_demo\travel_time_cost.py:138: RuntimeWarning: Mean of empty slice
+  "travel_time_mean": float(np.nanmean(tts)),
+C:\Users\DHLEE\AppData\Local\Programs\Python\Python39\lib\site-packages\numpy\lib\nanfunctions.py:1879: RuntimeWarning: Degrees of freedom <= 0 for slice.
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+D:\review_paper\drl-rgs-review\experiments\boundary_open_demo\travel_time_cost.py:140: RuntimeWarning: Mean of empty slice
+  "detour_mean": float(np.nanmean(rats)),
+== open   time_min  completion   0.0%  travel time    nan (sd nan)  detour nan (sd nan)
+  open   aligned   seed 0: completion  99.0%  travel time   5.08  detour 1.026
+  open   aligned   seed 1: completion  92.5%  travel time   6.06  detour 1.232
+  open   aligned   seed 2: completion  95.0%  travel time   5.25  detour 1.072
+  open   aligned   seed 3: completion 100.0%  travel time   5.29  detour 1.075
+  open   aligned   seed 4: completion 100.0%  travel time   5.24  detour 1.060
+  open   aligned   seed 5: completion  97.5%  travel time   5.17  detour 1.060
+  open   aligned   seed 6: completion  78.5%  travel time   6.14  detour 1.191
+  open   aligned   seed 7: completion  97.0%  travel time   5.51  detour 1.123
+  open   aligned   seed 8: completion 100.0%  travel time   5.28  detour 1.068
+  open   aligned   seed 9: completion  99.5%  travel time   5.52  detour 1.115
+== open   aligned   completion  95.9%  travel time   5.45 (sd 0.35)  detour 1.102 (sd 0.061)
+wrote travel_time_cost.json

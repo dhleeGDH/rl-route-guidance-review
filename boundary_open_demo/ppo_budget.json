@@ -1,0 +1,24 @@
+{
+  "closed_aligned_9000": {
+    "completion_mean": 99.8,
+    "completion_sd": 0.2449489742783178,
+    "per_seed": [
+      100.0,
+      100.0,
+      99.5,
+      100.0,
+      99.5
+    ]
+  },
+  "open_aligned_9000": {
+    "completion_mean": 1.6,
+    "completion_sd": 0.7348469228349535,
+    "per_seed": [
+      1.5,
+      1.0,
+      3.0,
+      1.5,
+      1.0
+    ]
+  }
+}

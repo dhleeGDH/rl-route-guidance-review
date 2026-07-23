@@ -1,0 +1,8 @@
+closed        time_min  return_cost=  --  completion=0.802 +/- 0.042
+open          time_min  return_cost=  --  completion=0.000 +/- 0.000
+costly_return time_min  return_cost= 1.0  completion=0.656 +/- 0.126
+costly_return time_min  return_cost= 3.0  completion=0.694 +/- 0.134
+costly_return time_min  return_cost= 5.0  completion=0.785 +/- 0.049
+costly_return aligned   return_cost= 1.0  completion=0.998 +/- 0.004
+
+wrote costly_return_summary.csv

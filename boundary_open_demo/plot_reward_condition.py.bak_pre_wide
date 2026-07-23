@@ -1,0 +1,95 @@
+"""Concept figure for the reward condition (main-text Fig. 4).
+
+What learning does under the corpus's modal reward, on the same network, with only the
+boundary changed. Both curves are the ten-seed run of Section V (results_10seed.npz); nothing
+is redrawn by hand.
+
+(a) Episode return, the quantity a training curve normally reports. Both conditions converge,
+    and the boundary-open agent converges to the higher return of the two: leaving after a
+    step or two accumulates almost no travel-time penalty.
+(b) OD trip completion, which almost no report states. The boundary-closed agent rises to 85%.
+    The boundary-open agent falls to zero and stays there.
+
+The pair is the paper's claim in one figure: a converged return certifies nothing about
+arrival, and only a completion measure separates the two.
+
+Drawn at the final placement width (6.9 in) in 8 pt Times, so Word inserts it at 1.0x.
+"""
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+from pathlib import Path
+
+FS = 8.0
+plt.rcParams.update({
+    "font.size": FS, "axes.titlesize": FS, "axes.labelsize": FS,
+    "xtick.labelsize": FS - 0.5, "ytick.labelsize": FS - 0.5, "legend.fontsize": FS - 1.0,
+    "font.family": "serif", "font.serif": ["Times New Roman", "DejaVu Serif"],
+    "axes.linewidth": 0.6, "xtick.major.width": 0.6, "ytick.major.width": 0.6,
+})
+
+HERE = Path(__file__).parent
+OUT = Path(__file__).resolve().parents[2] / "05_writing" / "figures" / "fig_reward_condition.png"
+INK = "#222222"
+CLOSED = "#08519c"
+OPEN = "#a50f15"
+
+d = np.load(HERE / "results_10seed.npz")
+steps = d["closed_time_min__steps"]
+
+
+def band(ax, key, color, label, scale=1.0, marker="o"):
+    a = d[key] * scale
+    m, s = a.mean(0), a.std(0)
+    ax.plot(steps, m, "-", color=color, lw=1.4, marker=marker, ms=2.6,
+            markevery=3, label=label)
+    ax.fill_between(steps, m - s, m + s, color=color, alpha=0.13, lw=0)
+    return m
+
+
+# One column of the two-column page holds both panels, so they stack vertically.
+fig = plt.figure(figsize=(3.3, 4.9))
+axA = fig.add_axes([0.185, 0.635, 0.785, 0.345])
+axB = fig.add_axes([0.185, 0.145, 0.785, 0.345])
+
+# ---------------- (a) episode return ----------------
+mc = band(axA, "closed_time_min__ret", CLOSED, "boundary-closed")
+mo = band(axA, "open_time_min__ret", OPEN, "boundary-open", marker="s")
+axA.set_xlabel("training episodes", fontsize=FS)
+axA.set_ylabel("episode return", fontsize=FS)
+axA.grid(True, alpha=0.3, lw=0.5)
+axA.legend(loc="lower right", frameon=False, fontsize=FS - 1.0, handlelength=1.6)
+# The note sits in the clear band above both curves rather than across them.
+axA.set_ylim(min(mc.min(), mo.min()) * 1.12, 34)
+axA.text(steps[-1] * 0.5, 30, "converges higher: leaving costs almost nothing",
+         fontsize=FS - 1.5, color=OPEN, style="italic", ha="center", va="top")
+
+# ---------------- (b) OD trip completion ----------------
+cc = band(axB, "closed_time_min__comp", CLOSED, "boundary-closed", scale=100.0)
+co = band(axB, "open_time_min__comp", OPEN, "boundary-open", scale=100.0, marker="s")
+axB.set_xlabel("training episodes", fontsize=FS)
+axB.set_ylabel("OD trip completion (%)", fontsize=FS)
+axB.set_ylim(-6, 108)
+axB.grid(True, alpha=0.3, lw=0.5)
+axB.legend(loc="center right", frameon=False, fontsize=FS - 1.0, handlelength=1.6)
+axB.annotate("never arrives", xy=(steps[-1] * 0.72, 0.0),
+             xytext=(steps[-1] * 0.60, 26), fontsize=FS - 1.0, color=OPEN,
+             style="italic", ha="center",
+             arrowprops=dict(arrowstyle="->", color=OPEN, lw=0.7))
+axB.text(steps[-1], cc[-1] + 4, f"{cc[-1]:.0f}%", ha="right", va="bottom",
+         fontsize=FS - 0.5, color=CLOSED, fontweight="bold")
+axB.text(steps[-1], 3.0, f"{co[-1]:.0f}%", ha="right", va="bottom",
+         fontsize=FS - 0.5, color=OPEN, fontweight="bold")
+
+# A subfigure label belongs below the graphic it names, as in Fig. 8 and Fig. 9, and it is
+# set clear of the x-axis label above it.
+for ax, label, y in ((axA, "(a) Episode return", 0.522),
+                     (axB, "(b) OD trip completion", 0.032)):
+    x = (ax.get_position().x0 + ax.get_position().x1) / 2.0
+    fig.text(x, y, label, ha="center", va="bottom", fontsize=FS)
+OUT.parent.mkdir(parents=True, exist_ok=True)
+fig.savefig(OUT, dpi=600, facecolor="white")
+print(f"closed: return {mc[-1]:.1f}, completion {cc[-1]:.1f}%")
+print(f"open  : return {mo[-1]:.1f}, completion {co[-1]:.1f}%")
+print("wrote", OUT)

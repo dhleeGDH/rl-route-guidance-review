@@ -1,0 +1,5 @@
+boundary,reward,completion_mean,completion_std
+closed,time_min,5.17,1.25
+open,time_min,0.00,0.00
+open,aligned,28.00,11.77
+closed,aligned,100.00,0.00

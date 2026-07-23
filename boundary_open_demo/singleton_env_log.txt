@@ -1,0 +1,15 @@
+  [singleton] seed 0: trained destination 100.0%   unseen destinations  12.0%
+  [singleton] seed 1: trained destination 100.0%   unseen destinations  12.0%
+  [singleton] seed 2: trained destination 100.0%   unseen destinations  11.0%
+  [singleton] seed 3: trained destination 100.0%   unseen destinations  11.0%
+  [singleton] seed 4: trained destination 100.0%   unseen destinations  13.5%
+  [multi] seed 0: trained destination 100.0%   unseen destinations  77.5%
+  [multi] seed 1: trained destination 100.0%   unseen destinations  82.5%
+  [multi] seed 2: trained destination 100.0%   unseen destinations  87.5%
+  [multi] seed 3: trained destination 100.0%   unseen destinations  77.0%
+  [multi] seed 4: trained destination 100.0%   unseen destinations  89.5%
+
+=== boundary-closed, travel-time reward: OD trip completion (%), 5 seeds, 3000 episodes ===
+training context       trained destination   unseen destinations
+singleton                    100.0 ( 0.0)          11.9 ( 0.9)
+multi                        100.0 ( 0.0)          82.8 ( 5.1)

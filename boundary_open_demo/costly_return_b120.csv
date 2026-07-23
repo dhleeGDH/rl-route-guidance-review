@@ -1,0 +1,7 @@
+condition,return_cost,final_completion_mean,final_completion_std
+closed_time_min,,1.0000,0.0000
+open_time_min,,0.0000,0.0000
+costly_return_time_min,1.0,0.5460,0.0738
+costly_return_time_min,3.0,0.0140,0.0280
+costly_return_time_min,5.0,0.0240,0.0480
+costly_return_aligned,1.0,0.8180,0.1191

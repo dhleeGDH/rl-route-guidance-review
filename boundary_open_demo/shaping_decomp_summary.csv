@@ -1,0 +1,3 @@
+condition,completion_mean,completion_sd_sample
+shaping-only, non-vanishing Phi(exit),0.0420,0.0027
+shaping-only, vanishing Phi(exit),0.0000,0.0000

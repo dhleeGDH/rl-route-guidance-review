@@ -1,0 +1,8 @@
+=== reward dose-response on boundary-open 5x5, 5 seeds ===
+lambda=0.00  completion=0.000 +/- 0.000  seeds=['0.000', '0.000', '0.000', '0.000', '0.000']
+lambda=0.10  completion=0.000 +/- 0.000  seeds=['0.000', '0.000', '0.000', '0.000', '0.000']
+lambda=0.25  completion=0.000 +/- 0.000  seeds=['0.000', '0.000', '0.000', '0.000', '0.000']
+lambda=0.50  completion=0.012 +/- 0.008  seeds=['0.005', '0.010', '0.025', '0.010', '0.010']
+lambda=0.75  completion=0.082 +/- 0.024  seeds=['0.095', '0.090', '0.100', '0.040', '0.085']
+lambda=1.00  completion=0.973 +/- 0.034  seeds=['0.990', '0.925', '0.950', '1.000', '1.000']
+wrote dose_response_5seed.npy

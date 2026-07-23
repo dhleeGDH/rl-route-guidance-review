@@ -1,0 +1,4 @@
+seed0: 1.000
+seed1: 1.000
+seed2: 0.995
+8x8 open aligned 6000ep mean=0.998 [1.0, 1.0, 0.995]

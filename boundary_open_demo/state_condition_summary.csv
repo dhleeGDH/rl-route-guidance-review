@@ -1,0 +1,7 @@
+metric,value
+snapshot_mean_realized,5.4345
+forecast_mean_realized,5.1621
+snapshot_excess_pct,5.28
+snapshot_eta_error_mean,0.6775
+snapshot_eta_error_pct,12.47
+snapshot_suboptimal_pct,46.00
