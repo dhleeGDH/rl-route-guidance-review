@@ -16,9 +16,8 @@ and the robustness checks around them.
 
 | Directory | Contents |
 |---|---|
-| `boundary_open_demo/` | The 5x5 lattice environment, the DQN and PPO learners, exact value iteration, and every cell of Section V |
+| `boundary_open_demo/` | The 5x5 lattice environment, the DQN and PPO learners, exact value iteration, the planner comparison of Section V-B with its noisy-forecaster control, and every cell of Section V |
 | `benchmark_network/` | Sioux Falls and Nguyen-Dupuis replications and the figure that reports them |
-| `inference_locality_demo/` | The planner comparison of Section V-B, including the noisy-forecaster control |
 | `sumo_corridor/` | The SUMO port of the four cells |
 | `xrouting_mc4/` | Inspection notes on a released system's reward formulation |
 
