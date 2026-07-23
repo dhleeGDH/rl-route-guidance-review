@@ -56,8 +56,18 @@ cd ../sumo_corridor && python sumo_train.py
 `corpus/` carries the screened corpus and the per-study extraction. Every non-trivial recorded
 value is anchored to a verbatim quotation from the study it describes, so any cell can be
 checked against its source without rerunning anything. The state field is also recorded as a
-decision rule over those quotations, which reproduces the recorded value in 85 of the 88
-studies the rule resolves; the three it does not resolve are marked.
+decision rule over those quotations, and that rule is released as a script rather than stated
+only in prose:
+
+```
+python recode_state_field.py            # the state field recomputed from the released quotations
+python recode_state_field.py --list     # every study the rule and the record differ on
+```
+
+It settles 85 of the 88 studies carrying a value and reproduces the recorded reading in 83.
+The 2 it contests and the 3 it leaves unsettled are printed rather than forced, and a reader
+who would draw the definitional boundary elsewhere can edit the two patterns at the top of the
+file and recompute the count.
 
 ## Requirements
 
