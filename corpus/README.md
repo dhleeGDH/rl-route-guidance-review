@@ -16,8 +16,11 @@ without changing any denominator, and filtering on `in_reviewed_corpus == yes` r
 Fields whose values turn on a definitional boundary carry their criterion in the paper:
 
 - `predictive_representation` — the state form criterion of Section III-A. The paper also
-  states this field as a decision rule over the quotation column, which reproduces the recorded
-  value in 85 of the 88 studies the rule resolves.
+  states this field as a decision rule over the quotation column, released as
+  `recode_state_field.py` at the repository root. Of the 88 studies carrying a value the rule
+  settles 85 and reproduces the recorded reading in 83. It reads this column together with
+  `staterep_quote`, since `pred_quote` is filled only where a study states something predictive
+  and an empty cell is the record that no such statement was found.
 - `boundary_condition` — whether the report addresses an open boundary, not whether the network
   is open by design. A study whose report is silent is recorded as not addressed.
 - `reward_alignment` — individual, mixed, or system-level, recorded as a class. The magnitude of
