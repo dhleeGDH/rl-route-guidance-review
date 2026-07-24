@@ -1,4 +1,4 @@
-"""Dramatic completion-inversion figure across a bespoke grid and two standard benchmarks.
+"""Completion-collapse figure across a bespoke grid and two standard benchmarks.
 
 Three panels (bespoke 5x5 grid, Sioux Falls, Nguyen-Dupuis). In each panel the OD trip
 completion rate is plotted as the boundary goes from closed to open, once for a

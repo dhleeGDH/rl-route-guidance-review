@@ -1,6 +1,6 @@
-"""Boundary-open completion inversion on standard benchmark road networks.
+"""Boundary-open completion collapse on standard benchmark road networks.
 
-The completion inversion demonstrated on the bespoke 5x5 grid in Section V invites the
+The completion collapse demonstrated on the bespoke 5x5 grid in Section V invites the
 objection that a regular, purpose-built grid is what produces it. This script reproduces the same four conditions on two widely used, independently
 published transportation benchmark networks, with the same time-varying congestion
 model, the same non-predictive local state, and the same standard DQN as the grid:

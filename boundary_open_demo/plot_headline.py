@@ -4,7 +4,7 @@
 Panel (a) sweeps the reward-alignment strength. Panel (b) varies the exit geometry instead,
 thinning the share of peripheral nodes that offer an absorbing exit. The second panel answers
 the objection that giving every peripheral node an exit is the geometry most favourable to the
-inversion: the collapse survives cutting the exits to a quarter.
+failure: the collapse survives cutting the exits to a quarter.
 
 The four-cell endpoints panel (a) runs between are reported in Table IV, so only the sweep
 itself is drawn here.

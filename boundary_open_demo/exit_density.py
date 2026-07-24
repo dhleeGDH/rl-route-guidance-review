@@ -8,8 +8,8 @@ is read against exit geometry alone.
 
 The analytical bound of Section V-C predicts the direction. Exit dominance needs
 k > rho * c_max + 1, where rho is the largest distance from any cell to the nearest exit.
-Opening fewer links raises rho, which raises the threshold k, so fewer origin-destination
-pairs invert. A monotone recovery as density falls therefore confirms the bound rather than
+Opening fewer links raises rho, which raises the threshold k, so the exit
+dominates for fewer origin-destination pairs. A monotone recovery as density falls therefore confirms the bound rather than
 contradicting the collapse.
 
 Design fixed before running:

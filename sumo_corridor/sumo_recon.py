@@ -5,7 +5,7 @@ demonstrated instance: a published system whose quoted reward matches the demons
 travel-time reward, evaluated on an open-boundary variant of its own environment. This
 script reconstructs the formulation of [50] (XRouting), a released-code
 corpus system that reroutes vehicles on a SUMO urban network under a travel-time objective with
-no arrival term, charted as a guaranteed-inversion system in Section IV-C. The reconstruction
+no arrival term, recorded among the purely travel-time-reward studies in Section IV-C. The reconstruction
 uses that system's action (next-link rerouting) and its quoted reward (travel-time, no arrival
 bonus) on a larger SUMO grid (7x7) than the Section V-C replication, closer to an urban network,
 with SUMO's own vehicle-removal semantics at the boundary. Only the boundary (closed vs open)

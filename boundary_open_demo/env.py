@@ -48,7 +48,7 @@ State (held fixed across all conditions, non-predictive / local by construction)
   where c_* are the current-time traversal costs of the four candidate moves
   (a large sentinel for an unavailable move on a closed boundary). The state
   exposes only present, locally observable costs, matching the non-predictive
-  dynamic state charted for most corpus systems.
+  dynamic state recorded for most corpus systems.
 
 Actions: 0=N (r-1), 1=E (c+1), 2=S (r+1), 3=W (c-1).
 """

@@ -1,6 +1,6 @@
-"""Boundary-open inversion on a real benchmark network (Sioux Falls).
+"""Boundary-open completion collapse on a real benchmark network (Sioux Falls).
 
-The completion inversion demonstrated on the bespoke 5x5 grid in Section V invites the
+The completion collapse demonstrated on the bespoke 5x5 grid in Section V invites the
 objection that a regular, purpose-built topology is what produces it. This script reproduces the same four conditions on the canonical Sioux Falls network
 (LeBlanc 1975; 24 nodes, 76 directed links), a standard, irregular transportation
 benchmark, using the same time-varying congestion model, the same non-predictive local

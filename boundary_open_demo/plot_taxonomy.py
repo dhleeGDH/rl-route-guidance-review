@@ -1,9 +1,9 @@
-"""Design-space taxonomy of the 94 charted systems (main-text Fig. 2).
+"""Design-space taxonomy of the 94 reviewed studies (main-text Fig. 2).
 
-Organizes the corpus along two charted axes at once: algorithm family (rows) and reward
+Organizes the corpus along two recorded axes at once: algorithm family (rows) and reward
 alignment (stacked segments), with the count of forecast-conditioned systems in each family
 annotated at the right. The result maps the design space of the field before the two
-conditions are read against it. Counts are from the released charting
+conditions are read against it. Counts are from the released extraction
 (data/screened/corpus_v9_coded.csv), N = 94.
 """
 import numpy as np
@@ -42,9 +42,10 @@ def main():
     for j in range(4):
         ax.barh(y, vals[:, j], left=left, color=COL[j], label=SEG[j], height=0.62)
         for i in range(len(DATA)):
-            if vals[i, j] >= 2:
+            if vals[i, j] >= 1:
                 ax.text(left[i] + vals[i, j] / 2, y[i], f"{int(vals[i, j])}",
-                        ha="center", va="center", fontsize=10,
+                        ha="center", va="center",
+                        fontsize=10 if vals[i, j] >= 2 else 7.5,
                         color="white" if j != 3 else "#333")
         left += vals[:, j]
     for i, (_, _, fc, tot) in enumerate(DATA):
