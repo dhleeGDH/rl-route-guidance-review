@@ -33,6 +33,7 @@ from dqn import DQNAgent                                         # noqa: E402
 
 CONDS = [
     ("shaping only",       dict(beta=1.0, r_goal=0.0,  r_exit=0.0)),
+    ("shaping vanishing",  dict(beta=1.0, r_goal=0.0,  r_exit=0.0, vanish_potential=True)),
     ("arrival bonus only", dict(beta=0.0, r_goal=10.0, r_exit=0.0)),
     ("exit penalty only",  dict(beta=0.0, r_goal=0.0,  r_exit=5.0)),
     ("full aligned",       dict(beta=1.0, r_goal=10.0, r_exit=5.0)),

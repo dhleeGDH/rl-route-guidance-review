@@ -65,6 +65,23 @@
         29.5,
         55.0
       ]
+    },
+    "shaping vanishing": {
+      "terms": {
+        "beta": 1.0,
+        "r_goal": 0.0,
+        "r_exit": 0.0,
+        "vanish_potential": true
+      },
+      "completion_mean": 0.0,
+      "completion_sd": 0.0,
+      "per_seed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
     }
   }
 }
