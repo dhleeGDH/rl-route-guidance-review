@@ -1,0 +1,54 @@
+{
+  "ieee": 40,
+  "non_ieee": 54,
+  "fields": {
+    "forecast_conditioned": {
+      "ieee": [
+        8,
+        40
+      ],
+      "non_ieee": [
+        9,
+        48
+      ],
+      "ieee_pct": 20.0,
+      "non_ieee_pct": 18.8
+    },
+    "open_boundary": {
+      "ieee": [
+        7,
+        40
+      ],
+      "non_ieee": [
+        12,
+        51
+      ],
+      "ieee_pct": 17.5,
+      "non_ieee_pct": 23.5
+    },
+    "trip_completion": {
+      "ieee": [
+        5,
+        40
+      ],
+      "non_ieee": [
+        11,
+        51
+      ],
+      "ieee_pct": 12.5,
+      "non_ieee_pct": 21.6
+    },
+    "code_release": {
+      "ieee": [
+        4,
+        40
+      ],
+      "non_ieee": [
+        6,
+        51
+      ],
+      "ieee_pct": 10.0,
+      "non_ieee_pct": 11.8
+    }
+  }
+}

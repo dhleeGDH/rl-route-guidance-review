@@ -1,0 +1,1414 @@
+[
+ {
+  "paperId": "oa_W4410001291",
+  "title": "Enhancing Airport Traffic Flow: Intelligent System Based on VLC, Rerouting Techniques, and Adaptive Reward Learning",
+  "authors": [
+   "M. Vieira",
+   "Manuela Vieira",
+   "Manuel Augusto Vieira",
+   "Manuel Augusto Vieira",
+   "Gonçalo Galvão",
+   "P. Louro",
+   "Alessandro Fantoni",
+   "Pedro Vieira",
+   "Mário Véstias"
+  ],
+  "year": 2025,
+  "abstract": "Airports are complex environments where efficient localization and intelligent traffic management are essential for ensuring smooth navigation and operational efficiency for both pedestrians and Autonomous Guided Vehicles (AGVs). This study presents an Artificial Intelligence (AI)-driven airport traffic management system that integrates Visible Light Communication (VLC), rerouting techniques, and adaptive reward mechanisms to optimize traffic flow, reduce congestion, and enhance safety. VLC-enabled luminaires serve as transmission points for location-specific guidance, forming a hybrid mesh network based on tetrachromatic LEDs with On-Off Keying (OOK) modulation and SiC optical receivers. AI agents, driven by Deep Reinforcement Learning (DRL), continuously analyze traffic conditions, apply adaptive rewards to improve decision-making, and dynamically reroute agents to balance traffic loads and avoid bottlenecks. Traffic states are encoded and processed through Q-learning algorithms, enabling intelligent phase activation and responsive control strategies. Simulation results confirm that the proposed system enables more balanced green time allocation, with reductions of up to 43% in vehicle-prioritized phases (e.g., Phase 1 at C1) to accommodate pedestrian flows. These adjustments lead to improved route planning, reduced halting times, and enhanced coordination between AGVs and pedestrian traffic across multiple intersections. Additionally, traffic flow responsiveness is preserved, with critical clearance phases maintaining stability or showing slight increases despite pedestrian prioritization. Simulation results confirm improved route planning, reduced halting times, and enhanced coordination between AGVs and pedestrian flows. The system also enables accurate indoor localization without relying on a Global Positioning System (GPS), supporting seamless movement and operational optimization. By combining VLC, adaptive AI models, and rerouting strategies, the proposed approach contributes to safer, more efficient, and human-centered airport mobility.",
+  "venue": "Sensors",
+  "citationCount": 6,
+  "doi": "10.3390/s25092842",
+  "query": "\"deep reinforcement learning\" AND \"route guidance\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4408601433",
+  "title": "Enhancing airport traffic management: innovative integration of visible light communication and artificial intelligence",
+  "authors": [
+   "M. Vieira",
+   "Manuel Augusto Vieira",
+   "Gonçalo Galvão",
+   "P. Louro",
+   "Alessandro Fantoni",
+   "Pedro Vieira",
+   "Mário Véstias"
+  ],
+  "year": 2025,
+  "abstract": "Airports are complex environments with terminals, gates, shops, and facilities hosting assets like luggage carts, maintenance tools, and ground vehicles. In these spaces, pedestrians and Autonomous Guided Vehicles (AGVs) require precise indoor localization for efficient navigation. Real-time localization reduces confusion, saves time, and enhances passenger experiences by providing clear directions to gates, check-ins, baggage claims, and lounges. This study proposes an AI and Visible Light Communication (VLC)-based airport management system to optimize traffic, reduce congestion, and improve safety. VLC-enabled luminaires serve as transmission points, offering location-specific guidance, while AI agents track and manage assets in real time. Tetrachromatic LED luminaires with On-Off Keying (OOK) modulation and SiC optical receivers replace traditional gateways, forming a mesh hybrid network for reliable data exchange. AI agents use deep reinforcement learning (DRL) to process data, optimize routes, and prioritize movements. Traffic states are encoded as inputs to neural networks trained via Q-learning. Results show improved traffic control, travel direction inference, and route optimization through agent-based simulations. This approach enhances indoor navigation without GPS, ensuring smooth operations for AGVs and pedestrians. Integrating AI and VLC improves airport efficiency, safety, and passenger satisfaction.",
+  "venue": "",
+  "citationCount": 0,
+  "doi": "10.1117/12.3039146",
+  "query": "\"deep reinforcement learning\" AND \"route guidance\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4416143740",
+  "title": "Guest Editorial: Enhancing Safety in Connected Automated Vehicles (CAVs) for Mixed Traffic Environments",
+  "authors": [
+   "Chao Huang",
+   "Igal Bilik",
+   "Beatriz L. Boada",
+   "Yue Huang"
+  ],
+  "year": 2025,
+  "abstract": "Intelligent transportation systems (ITS) leverage information and communication technologies to enhance the efficiency, safety, and sustainability of road transportation. Connected vehicles play a crucial role in ITS as they enable communication with other vehicles and infrastructure, facilitating more efficient traffic management and safer driving experiences. They can provide real-time traffic information to help drivers avoid congestion and accidents, as well as navigation and route planning recommendations. Additionally, it can communicate with traffic signal equipment to optimise signal timing, reducing wait times and queue lengths. Implementation of connected vehicles in intelligent transportation systems will revolutionise the way we drive. However, many challenges need to be addressed to achieve maximum potential, including privacy and security issues, data processing and storage, the development of standards and regulations across all platforms, and the establishment of new communication protocols and system architectures. This Special Issue on Enhancing Safety in Connected Automated Vehicles (CAVs) for Mixed Traffic Environments of the IET INTELLIGENT TRANSPORT SYSTEMS presents recent progress in theories, methods, and applications addressing safety-critical challenges in autonomous and intelligent transportation systems. After a rigorous peer-review process, 12 papers were selected from a wide range of international submissions. The accepted papers are grouped into seven principal research themes, each reflecting a key aspect of the Special Issue's scope. The research in ‘A Lightweight Social Cognitive Risk Potential Field Model for Path Planning with Dedicated Dynamic and Static Traffic Factors’ addresses the issue of dependable risk assessment in autonomous driving by presenting a lightweight social cognitive risk potential field model derived from Coulomb's law. The model combines both static and dynamic traffic variables, including mass, velocity, acceleration, heading angle, and road boundaries, while reducing undetermined variables by 36%–50% relative to existing models. The model demonstrated high reliability and logical classification of factors through parametric and sensitivity analyses. Integrated with a model predictive controller, it proficiently enabled safe path planning in both static and dynamic environments, surpassing traditional risk field models in generating safer and more flexible driving trajectories. In ‘Safe Passage Strategy with Swarm Intelligence for CAVs in Urban Road Heterogeneous Traffic Flow Using Standard Alliance Game’, the issue of safe navigation for connected automated vehicles within diverse traffic conditions is addressed by proposing a cooperative control strategy based on a standard alliance game. Each vehicle is considered a player, with payoffs reflecting safety, fairness, and efficiency. Three interaction protocols are established to direct decision-making. The methodology addresses multi-vehicle conflicts through conflict decoupling and classification, enabling distributed control among human-driven vehicles. Simulations demonstrate that the strategy enhances safety, maintains robust control, and improves traffic efficiency by at least ten % with robust performance in low-density, high-penetration environments. ‘Decision Making Improvement based on the Ahead Traffic Flow during the Lane Change Manoeuvre via Model Predictive Control’ aims to enhance decision-making for lane change manoeuvres by integrating the effect of forward traffic flow with the independent decisions of adjacent drivers. The authors present a model predictive control system that incorporates microscopic and macroscopic traffic models to identify safe target points and optimal manoeuvre timing. This dual-unit decision-making system enables adaptive trajectory planning that considers changing traffic conditions, thereby avoiding crashes during complex manoeuvres. The simulation outcomes in IPG CarMaker (a vehicle dynamics and traffic scenario simulation platform developed by IPG Automotive) demonstrate the algorithm's robustness and adaptability, demonstrating its capacity to generate safe and collision-free routes. This method indicates advancement toward more reliable and secure automated lane changes. ‘Trajectory Optimization for Automated Vehicles of Different Cooperation Classes Using Reinforcement Learning at a Signalized Intersection’ employs reinforcement learning to solve the problem of trajectory optimisation for cooperative automated driving systems at signalised intersections. A deep deterministic policy gradient strategy is used to describe multiple cooperation classes among vehicles, moving beyond the assumption of uniform cooperation. The framework integrates state, action, and reward structures to generate real-time optimal trajectories. Simulation findings in the Simulation of Urban Mobility (SUMO) demonstrate over 50% reductions in travel delay and stop times compared to human-driven baselines, highlighting the method's robustness, adaptability, and practical viability. ‘Safety-Critical Kinematically-Executable Overtake Planning via Contingency Path-Speed Iterative Algorithm for Automated Valet Parking’ develops a safety-critical contingency path-speed iterative algorithm for overtaking in automated valet parking (AVP). The method introduces curvature and contour constraints, incorporates multi-modal obstacle prediction probabilities, and leverages historical trajectories to reduce low-speed stochasticity. Compared with EM Planner, it provides smoother, collision-free trajectories with reduced speed oscillations. Simulations and on-road experiments verify superior overtaking safety and performance. The work advances probabilistic planning for AVP, providing practical insights for safer and more reliable low-speed autonomous driving in parking environments. In ‘Evaluation of Automated Driving Safety in Urban Mixed Traffic Environments’ the safety evaluation in mixed traffic, which includes both autonomous and human-driven cars, is explored. A multi-agent simulator and VISSIM to calculate safety indicators and risk rankings for urban roads were used. The findings emphasise poor safety at unsignalised intersections, roundabouts, and parking lots, which is primarily attributable to automated vehicles (AVs) spacing behaviour and manually driven vehicles unpredictability. This work shows that targeted evaluation can identify high-risk road infrastructures and benefit improvements in design, laws, and AV driving techniques, resulting in safer integration. ‘Fault-Tolerant Robust Output-Feedback Control of a Vehicle Platoon Considering Measurement Noise and Road Disturbances’ discusses fault-tolerant control for heterogeneous electric vehicle platoons that are affected by measurement noise, external disturbances, and actuator problems. A Kalman filter is used in the design of a static output feedback controller to estimate and minimise adverse effects such as road slope, rolling resistance, wind, and engine failures. The framework enhances resilience, maintains platoon stability, and improves safety in uncertain situations. The simulation and experimental results show effective cohesion, reliability, and energy efficiency, demonstrating the approach's potential for future intelligent transportation systems. ‘Lane-Changing-Enabled Eco Approach Control for Autonomous Vehicles at a Signalized Intersection in Mixed Traffic Environment’ introduces an Eco (eco-driving) approach control technique with lane-changing capabilities for autonomous cars at signalised intersections. A hierarchical receding horizon control system utilises mixed vehicle platoon modelling and a model predictive controller to optimise lane choice and speed profiles, taking into account traffic signals, queues, and nearby vehicles. The simulations demonstrate significant reductions in fuel consumption and trip delay. The proposed approach outperforms traditional eco-driving and car-following strategies, improving both energy efficiency and traffic flow in urban areas. In ‘The Joint Impact of Traffic Signal Control and Automated Vehicles on Traffic Efficiency, Safety and Emissions: A Deep Reinforcement Learning Approach’, it is investigated how deep reinforcement learning (DRL)-based traffic signal regulation, when combined with automated vehicles, affects intersection efficiency, safety, and emissions. Using calibrated real-world driving behaviours and rigorous statistical analysis, this article addresses gaps in prior studies. The results show that reinforcement learning (DRL)-based control outperforms fixed-time and actuated systems in terms of reducing emissions, congestion, and conflicts. Automated vehicles enhance these benefits, underscoring the potential of this integration to deliver safer, cleaner, and more efficient urban traffic management. ‘A Dynamic Emergency Lane Clearing Method for Urban Roads Considering Vehicle Turning Information in a Connected Vehicle Environment’ presents a dynamic emergency lane-clearing strategy for connected vehicle environments that enables the timely passage of emergency vehicles on congested urban roads. A bi-level optimisation framework is established, integrating an enhanced A* algorithm with vehicle turning information to provide efficient lane change trajectories, alongside a mixed-integer nonlinear programming model to determine optimal clearance trigger points. Numerical experiments indicate significant enhancements, including a 50% decrease in deceleration time and a 45% reduction in the number of affected vehicles, demonstrating the approach's efficacy and flexibility. Article ‘DCSTNet: A Dual-Channel Spatio-Temporal Information Fusion Network for Map-Free Vehicle Trajectory Prediction’ proposes DCSTNet, a dual-channel spatiotemporal information fusion framework designed for vehicle trajectory prediction, specifically for scenarios without high-definition maps. The model enhances feature extraction efficiency and increases prediction precision by decoupling temporal and spatial interaction modules using a transformer-based encoder. Validation of the Argoverse dataset reveals that DCSTNet outperforms numerous map-based methodologies, demonstrating exceptional adaptability in complex traffic scenarios. Ablation and sensitivity analysis further validate its robustness, underscoring the potential of this approach to enhance the safety of autonomous driving systems. ‘Facets of Security and Safety Problems and Paradigms for Smart Aerial Mobility and Intelligent Logistics’ investigates the security and safety challenges of deploying unmanned aerial vehicles (UAVs) in smart mobility and intelligent logistics ecosystems. It highlights cognitive, cyber, and cataclysmic intelligence frameworks as the basis for UAV operation, addressing risks from communication vulnerabilities, cyberattacks, and collisions. The results demonstrate the importance of explainable artificial intelligence (AI), blockchain, and zero-trust architecture in enhancing transparency, data protection, and governance. By integrating these paradigms, the article identifies pathways for the safer and more sustainable adoption of UAVs, thereby expanding innovative logistics capacity. The papers selected for this Special Issue demonstrate the extensive range of contemporary research focused on the safety and reliability of connected and autonomous vehicles in mixed traffic situations. The contributions encompass optimisation algorithms and decision support frameworks for path planning, cooperative control, and trajectory optimisation, as well as modelling and control of vehicle platoons, safety assessment via simulation, and eco-driving strategies at intersections. The variety of the collected works highlights progress in testing and verification for intelligent traffic systems, novel techniques for motion prediction, and security issues in smart logistics. These studies collectively provide novel insights and pragmatic guidance for enhanced safety and intelligence in transportation networks. We would like to express our appreciation to all authors who submitted to this special issue and to the experienced reviewers who played a crucial role in the review process. We like to express our profound gratitude to the Editor-in-Chief and Peer-Review Support Specialist of IET INTELLIGENT TRANSPORT SYSTEMS, as well as the entire editorial team, for their help and direction in managing this Special Issue. Dr Chao Huang, Senior Lecturer, The University of Adelaide, Australia. Dr Chao Huang is a senior lecturer at the School of Electrical and Mechanical Engineering, University of Adelaide. Prior to UofA, she was a research assistant professor at the Department of Industrial and Systems Engineering, The Hong Kong Polytechnic University (PolyU), from August 2021 to July 2025. She received her Ph.D. degree from the University of Wollongong, Australia, in 2018. She received her Bachelor of Automation from the China University of Petroleum (Beijing), China. Dr Chao Huang is the author/co-author of more than 100 papers in conferences, book chapters, and journals, with a significant number of them falling under the areas of mechanical engineering, civil engineering, electrical engineering, transportation science, aerospace engineering, computer science, and robotics. Dr Huang is currently serving as an associate editor in Engineering Applications of Artificial Intelligence, IEEE Transactions on Consumer Electronics, IEEE Transactions on Intelligent Vehicles, IEEE Transactions on Transportation Electrification, IEEE Women in Engineering Magazine, International Journal of Control, Automation and Systems (IJCAS), and IET Intelligent Transport Systems. Dr Igal Bilik, Associate Professor, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev, Israel. Dr Igal Bilik received B.Sc., M.Sc., and Ph.D. degrees in electrical and computer engineering from the Ben-Gurion University of the Negev, Beer Sheva, Israel, in 1997, 2003, and 2006, respectively. During 2006–2008, he was a postdoctoral research associate in the Department of Electrical and Computer Engineering at Duke University, Durham, NC. During 2008–2011, he was an Assistant Professor in the Department of Electrical and Computer Engineering at the University of Massachusetts, Dartmouth. During 2011-2019, he was a staff researcher at GM Advanced Technical Centre, Israel. Since October 2020, Dr Bilik has been an Assistant Professor in the School of Electrical and Computer Engineering at the Ben-Gurion University of the Negev. He is a member of the IEEE AESS Radar Systems Panel Committee and the chair of the Civilian Radar Committee. Since 2025 he has been a member of the IEEE VTS Committee on Autonomous Vehicles and of the steering committee of the IEEE Autonomous Systems Initiative. Dr Bilik serves as the Chair of the IEEE Vehicular Technology Chapter in Israel, Vice-Chair of IEEE Transactions on Aerospace and Electronic Systems and chairs the Autonomous and Connected Transportation Committee at the Israeli Centre for Smart Mobility Research. He served as an Associate Editor (AE) for the IEEE Transactions on Aerospace and Electronic Systems during 2020–2024 and is currently an Associate Editor in Chief (AEiC) for these transactions. He has been an AE of the IEEE Sensors and IEEE TRS since 2022 and a member of the Transactions on Radar Systems Editorial Committee. Dr Bilik has more than 240 patent inventions, has authored more than 100 peer-reviewed academic publications, and has received the Best Student Paper Awards at the IEEE RADAR 2005 and IEEE RADAR 2006 Conferences, the Student Paper Award at the 2006 IEEE 24th Convention of Electrical and Electronics Engineers in Israel, the GM Product Excellence Recognition in 2017, the IEEE AESS Industrial Innovation Award 2024, and the IEEE AESS Distinguished Lecturer 2025–2027. Professor Beatriz López Boada, Professor, Universidad Carlos III de Madrid Leganes, Spain. Prof. Beatriz L. Boada received the industrial engineering and doctoral degrees from the Universidad Carlos III de Madrid (UC3M), Madrid, Spain, in 1996 and 2002, respectively, where she is currently a full professor with the mechanical engineering department. From 1997 to 2002, she was a research assistant with the Department of Systems and Automation Engineering, UC3M. She was with localisation and mapping problems in the field of robotics. She is co-responsible for the Research Group Advanced Vehicle Dynamics and Mechatronic Systems. Her research interests include intelligent vehicles, both autonomous and motorised, and control of vehicles in vertical and lateral dynamics, magnetorheological dampers, uncertainty modelling, and estimation of mechanical systems. Since 2021, she has been among the 2% of the world's most cited in my respective field (vehicle dynamics), according to the Ranking of World Scientists carried out by the University of Stanford. Dr Yue Huang, Research Scientist, CSIRO's Data 61, Australia. Dr Yue Huang is a research scientist at CSIRO's Data61 whose work focuses on human-centred approaches to cybersecurity, privacy, and human-computer interaction (HCI). She holds a Ph.D. in Electrical and Computer Engineering from the University of British Columbia, where her dissertation examined users’ understanding, concerns, and strategies regarding private information sharing. Her research explores mental models, decision-making processes, and privacy challenges across technologies such as IoT devices, cryptocurrencies, and smartphones, and she has led projects on scams, vulnerable populations, quantum technologies, and cybersecurity games. Her work has been published in top venues, including ACM CHI, CSCW, USENIX Security, SOUPS, and IEEE S&P, and recognised with awards such as an Honourable Mention at CHI 2020 and CSIRO's Early Career in Science Award in 2025.",
+  "venue": "IET Intelligent Transport Systems",
+  "citationCount": 0,
+  "doi": "10.1049/itr2.70091",
+  "query": "\"deep reinforcement learning\" AND \"route guidance\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W3133988851",
+  "title": "Towards Multi-Modal Perception-Based Navigation: A Deep Reinforcement Learning Method",
+  "authors": [
+   "Xueqin Huang",
+   "Han Deng",
+   "Wei Zhang",
+   "Ran Song",
+   "Yibin Li"
+  ],
+  "year": 2021,
+  "abstract": "In this letter, we present a novel navigation system of unmanned ground vehicle (UGV) for local path planning based on deep reinforcement learning. The navigation system decouples perception from control and takes advantage of multi-modal perception for a reliable online interaction with the surrounding environment of the UGV, which enables a direct policy learning for generating flexible actions to avoid collisions with obstacles in the navigation. By replacing the raw RGB images with their semantic segmentation maps as the input and applying a multi-modal fusion scheme, our system trained only in simulation can handle real-world scenes containing dynamic obstacles such as vehicles and pedestrians. We also introduce a modal separation learning to accelerate the training and further boost the performance. Extensive experiments demonstrate that our method closes the gap between simulated and real environments, exhibiting the superiority over state-of-the-art approaches. Please refer to https://vsislab.github.io/mmpbnv1/ for the supplementary video demonstration of UGV navigation in both simulated and real-world environments.",
+  "venue": "IEEE Robotics and Automation Letters",
+  "citationCount": 59,
+  "doi": "10.1109/lra.2021.3064461",
+  "query": "\"deep reinforcement learning\" AND \"path planning\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4408689473",
+  "title": "Autonomous Navigation of Unmanned Vehicle Through Deep Reinforcement Learning",
+  "authors": [
+   "Letian Xu",
+   "Hao Liu",
+   "Haopeng Zhao",
+   "Tianyao Zheng",
+   "Tongzhou Jiang",
+   "Lipeng Liu"
+  ],
+  "year": 2024,
+  "abstract": "This paper explores the use of Deep Reinforcement Learning (DRL) to achieve autonomous navigation for unmanned vehicles, with a focus on the Deep Deterministic Policy Gradient (DDPG) algorithm. The main challenge addressed is handling high-dimensional, continuous action spaces, which are commonly encountered in autonomous navigation tasks. The study presents the Ackermann robot model used for testing and provides an explanation of how the DDPG algorithm is applied to the navigation problem. Through experiments conducted in a simulation environment, the feasibility and effectiveness of the proposed approach are verified. The results indicate that the DDPG algorithm outperforms traditional reinforcement learning algorithms, such as Deep Q-Network (DQN) and Double Deep Q-Network (DDQN), particularly in path planning tasks. The improved algorithm demonstrates better decision-making, leading to more accurate and reliable navigation in comparison to the traditional methods.",
+  "venue": "",
+  "citationCount": 14,
+  "doi": "10.1145/3716895.3716980",
+  "query": "\"deep reinforcement learning\" AND \"path planning\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4410060849",
+  "title": "Latest breakthroughs, research results, and challenges in intelligent control of autonomous vehicles",
+  "authors": [
+   "Tadele Bishaw Achenef",
+   "Solomon Nigusu Abera",
+   "Yibeltal Antehunegn Admas",
+   "Sewagegn Zewudie Tegegne"
+  ],
+  "year": 2025,
+  "abstract": "Major companies like Google, Tesla, and Uber have invested heavily in autonomous technology, testing them in countries like the US, China, and Germany. Autonomous vehicle (AV) technology has advanced significantly, with deep learning algorithms, high-definition mapping systems, and vehicle-to-everything (V2X) communication. Sensor technology like lidar, radar, and cameras has also been developed for safe navigation. Recent advancements in intelligent control technology have improved performance and capabilities, with artificial intelligence (AI) and machine learning (ML) playing a crucial role in developing intelligent control systems. Researchers are developing algorithms for safe navigation, sensor fusion techniques, predictive modeling, and advanced planning algorithms to enhance navigation, lane changes, and intersection handling. Safety in AV control requires rigorous testing, cybersecurity, redundancy, and failsafe mechanisms. This review synthesizes a wide range of methodologies, such as statistical analysis, simulation-based approaches, deep learning models, reinforcement learning algorithms, and genetic algorithms, that have been used throughout many studies on Autonomous Vehicles (AVs). These techniques have greatly improved the performance of AVs, especially in terms of maximizing mixed traffic flow, strengthening sensor integration, and honing decision-making in challenging situations. Research findings show significant advancements; for instance, deep learning improves vehicle control and pedestrian recognition in difficult situations, while simulation-based models emphasize the benefits of autonomous vehicles on traffic efficiency. The optimization of AV routing and traffic management has been demonstrated by the successful combination of genetic algorithms and reinforcement learning. Despite these developments, a number of significant challenges still need to be overcome, including the requirement for flexible and scalable infrastructure as well as policy frameworks, sensor susceptibilities to inclement weather, and security and privacy concerns. The necessity for more reliable fixes for these vulnerabilities and the incorporation of AVs into the current transportation infrastructure are too prominent research needs. Numerous studies also stress how important it is to have sophisticated governance frameworks in place to handle the moral, legal, and security issues related to the use of AVs. The review identifies that AV research predominantly focuses on improving communication technologies, AI-enabled decision-making, and sensor integration. Future research directions should explore AV interactions with urban infrastructure, develop equitable policy adaptations, and implement advanced safety measures in the absence of connectivity. Overall, this review provides comprehensive insights into the current state, challenges, and future potential of AV technologies, guiding researchers and policymakers in addressing critical gaps to accelerate the global development and adoption of AV systems.",
+  "venue": "Proceedings of the Institution of Mechanical Engineers Part D Journal of Automobile Engineering",
+  "citationCount": 4,
+  "doi": "10.1177/09544070251327616",
+  "query": "\"deep reinforcement learning\" AND \"traffic routing\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W7124828824",
+  "title": "Adaptive electric vehicle routing and charging with deep reinforcement learning",
+  "authors": [
+   "Mandana Farhang Ghahfarokhi",
+   "Hyoshin Park",
+   "Venktesh Pandey",
+   "Gyugeun Yoon"
+  ],
+  "year": 2026,
+  "abstract": "As electric vehicles (EVs) gain popularity, efficient routing and charging solutions remain challenging due to time-dependent travel variability, sparse charging infrastructure, and heterogeneous user preferences. To address these challenges, this paper introduces a decision-support system that integrates three complementary methods: Temporal Multimodal Multivariate Learning (TMML) for real-time characterization of travel time uncertainty, Time-Dependent Shortest Path (TDSP) for reliability-aware route choice, and Deep Q-Network (DQN) reinforcement learning for adaptive charging decisions in sparse infrastructure environments. TMML updates link-level travel time distributions in real-time through Bayesian inference with cluster-based propagation, reducing uncertainties across the network. TDSP leverages these updated distributions to estimate remaining travel time and reliability scores for route planning. DQN learns optimal charging policies by determining when to charge, how much to charge (partial charging at 25%, 50%, 75%, or 100% levels), and which route to take based on battery state, traffic patterns, and available stationary charging stations (SCSs) and mobile charging infrastructure—including Mobile Energy Distributors (MEDs) and Dynamic Inductive Charging (DIC). DQN training uses simulation-based learning from actual traffic patterns of the Washington, DC metropolitan region, allowing the agent to explore charging-route pairs and discover efficient solutions through trial and error. To accommodate heterogeneous user preferences, the system calculates multiple Pareto-optimal solutions that trade off travel time, charging cost, battery safety, and route reliability, enabling users to select alternatives that match their current priorities without specifying preference weights in advance.",
+  "venue": "Transportation Research Interdisciplinary Perspectives",
+  "citationCount": 0,
+  "doi": "10.1016/j.trip.2025.101795",
+  "query": "\"deep reinforcement learning\" AND \"traffic routing\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2991607840",
+  "title": "Deep Reinforcement Learning based Vehicle Navigation amongst pedestrians using a Grid-based state representation",
+  "authors": [
+   "Niranjan Deshpande",
+   "Anne Spalanzani"
+  ],
+  "year": 2019,
+  "abstract": "Autonomous navigation in structured urban environments amongst pedestrians is a challenging and less explored problem. In this work, we propose to use a deep reinforcement learning based method to solve this problem of navigation. A Deep Q-Network based agent is trained in a simulator for a typical intersection crossing setup amongst pedestrians. We propose a grid based representation as a state space input to the learning agent. With this grid based representation and our reward function the agent learns a policy capable of driving safely around pedestrians and also follow the traffic rules.",
+  "venue": "",
+  "citationCount": 34,
+  "doi": "10.1109/itsc.2019.8917299",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2759463506",
+  "title": "Self-Supervised Deep Reinforcement Learning with Generalized Computation Graphs for Robot Navigation",
+  "authors": [
+   "Gregory Kahn",
+   "Adam Villaflor",
+   "Bosen Ding",
+   "Pieter Abbeel",
+   "Sergey Levine"
+  ],
+  "year": 2018,
+  "abstract": "Enabling robots to autonomously navigate complex environments is essential for real-world deployment. Prior methods approach this problem by having the robot maintain an internal map of the world, and then use a localization and planning method to navigate through the internal map. However, these approaches often include a variety of assumptions, are computationally intensive, and do not learn from failures. In contrast, learning-based methods improve as the robot acts in the environment, but are difficult to deploy in the real-world due to their high sample complexity. To address the need to learn complex policies with few samples, we propose a generalized computation graph that subsumes value-based model-free methods and model-based methods, with specific instantiations interpolating between model-free and model-based. We then instantiate this graph to form a navigation model that learns from raw images and is sample efficient. Our simulated car experiments explore the design decisions of our navigation model, and show our approach outperforms single-step and <i xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">N</i> -step double Q-learning. We also evaluate our approach on a real-world RC car and show it can learn to navigate through a complex indoor environment with a few hours of fully autonomous, self-supervised training. Videos of the experiments and code can be found at github.com/gkahn13/gcg.",
+  "venue": "",
+  "citationCount": 24,
+  "doi": "10.1109/icra.2018.8460655",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4319923012",
+  "title": "A Multi-Stage Deep Reinforcement Learning with Search-Based Optimization for Air–Ground Unmanned System Navigation",
+  "authors": [
+   "Xiaohui Chen",
+   "Yuhua Qi",
+   "Yizhen Yin",
+   "Yidong Chen",
+   "Li Liu",
+   "Hongbo Chen"
+  ],
+  "year": 2023,
+  "abstract": "An important challenge for air–ground unmanned systems achieving autonomy is navigation, which is essential for them to accomplish various tasks in unknown environments. This paper proposes an end-to-end framework for solving air–ground unmanned system navigation using deep reinforcement learning (DRL) while optimizing by using a priori information from search-based path planning methods, which we call search-based optimizing DRL (SO-DRL) for the air–ground unmanned system. SO-DRL enables agents, i.e., an unmanned aerial vehicle (UAV) or an unmanned ground vehicle (UGV) to move to a given target in a completely unknown environment using only Lidar, without additional mapping or global planning. Our framework is equipped with Deep Deterministic Policy Gradient (DDPG), an actor–critic-based reinforcement learning algorithm, to input the agents’ state and laser scan measurements into the network and map them to continuous motion control. SO-DRL draws on current excellent search-based algorithms to demonstrate path planning and calculate rewards for its behavior. The demonstrated strategies are replayed in an experienced pool along with the autonomously trained strategies according to their priority. We use a multi-stage training approach based on course learning to train SO-DRL on the 3D simulator Gazebo and verify the robustness and success of the algorithm using new test environments for path planning in unknown environments. The experimental results show that SO-DRL can achieve faster algorithm convergence and a higher success rate. We piggybacked SO-DRL directly onto a real air–ground unmanned system, and SO-DRL can guide a UAV or UGV for navigation without adjusting any networks.",
+  "venue": "Applied Sciences",
+  "citationCount": 19,
+  "doi": "10.3390/app13042244",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2970920473",
+  "title": "Distributed and Energy-Efficient Mobile Crowdsensing with Charging Stations by Deep Reinforcement Learning",
+  "authors": [
+   "Chi Harold Liu",
+   "Zipeng Dai",
+   "Yinuo Zhao",
+   "Jon Crowcroft",
+   "Dapeng Wu",
+   "Kin K. Leung"
+  ],
+  "year": 2019,
+  "abstract": "Mobile crowdsensing (MCS) represents a new sensing paradigm that utilizes the smart mobile devices to collect and share data. Traditional MCS systems mainly leverages the people carried smartphones and other wearable devices which are constrained by the limited sensing capability and battery power. With the popularity of unmanned vehicles like unmanned aerial vehicles (UAVs) and driverless cars, they can provide much more reliable, accurate and cost-efficient sensing services due to to their equipped more powerful sensors. In this paper, we propose a distributed control framework for energy-efficient and DIstributed VEhicle navigation with chaRging sTations, called “e-Divert”. It is a distributed multi-agent deep reinforcement learning (DRL) solution, which uses a convolutional neural network (CNN) to extract useful spatial features as the input to the actor-critic network to produce a real-time action. Also, e-Divert incorporates a distributed prioritized experience replay for better exploration and exploitation, and a long short-term memory (LSTM) enabled N-step temporal sequence modeling module. The solution fully explores the spatiotemporal nature of the considered scenario for better vehicle cooperation and competition between themselves and charging stations, to maximize the energy efficiency, data collection ratio, geographic fairness, and minimize the energy consumption simultaneously. Through extensive simulations, we find an appropriate set of hyperparameters that achieve the best performance, i.e., 5 actors in Ape-X architecture, priority exponent 0.5, and LSTM sequence length 3. Finally, we compare with four baselines including one state-of-the-art approach MADDPG. Results show that our proposed e-Divert significantly improves the energy efficiency, as compared to MADDPG, by 3.62 and 2.36 times on average when varying different numbers of vehicles and charging stations, respectively.",
+  "venue": "IEEE Transactions on Mobile Computing",
+  "citationCount": 132,
+  "doi": "10.1109/tmc.2019.2938509",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4389474719",
+  "title": "CoverNav: Cover Following Navigation Planning in Unstructured Outdoor Environment with Deep Reinforcement Learning",
+  "authors": [
+   "Jumman Hossain",
+   "Abu-Zaher Faridee",
+   "Nirmalya Roy",
+   "Anjan Basak",
+   "Derrik E. Asher"
+  ],
+  "year": 2023,
+  "abstract": "Autonomous navigation in off-road environments has been extensively studied in the robotics field. However, navigation in covert situations where an autonomous vehicle needs to remain hidden from outside observers remains an under-explored area. In this paper, we propose CoverNav, a novel Deep Reinforcement Learning (DRL) based algorithm, for identifying covert and navigable trajectories with minimal cost in off-road terrains and jungle environments in the presence of observers. CoverNav focuses on unmanned ground vehicles seeking shelters and taking covers while safely navigating to a predefined destination. Our proposed DRL method computes a local cost map that helps distinguish which path will grant the maximal covertness while maintaining a low-cost trajectory using an elevation map generated from 3D point cloud data, the robot’s pose, and directed goal information. If an observer is spotted, CoverNav enables the robot to select natural obstacles (e.g., rocks, houses, trees, etc.) and use them as shelters to hide behind. We evaluate CoverNav using the Unity simulation environment and show that it guarantees dynamically feasible velocities in the terrain when fed with an elevation map generated by another DRL-based navigation algorithm. Additionally, we evaluate CoverNav’s effectiveness in achieving a maximum goal distance of 12 meters and its success rate in different elevation scenarios with and without cover objects. We observe competitive performance comparable to state-of-the-art (SOTA) methods without compromising accuracy.",
+  "venue": "",
+  "citationCount": 12,
+  "doi": "10.1109/acsos58161.2023.00030",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4319160361",
+  "title": "Multi-sensor integrated navigation/positioning systems using data fusion: From analytics-based to learning-based approaches",
+  "authors": [
+   "Yuan Zhuang",
+   "Xiao Sun",
+   "You Li",
+   "Jianzhu Huai",
+   "Luchi Hua",
+   "Xiansheng Yang",
+   "Xiaoxiang Cao",
+   "Peng Zhang",
+   "Yue Cao",
+   "Longning Qi",
+   "Jun Yang",
+   "Nashwa El-Bendary",
+   "Naser El‐Sheimy",
+   "John Thompson",
+   "Ruizhi Chen"
+  ],
+  "year": 2023,
+  "abstract": "Navigation/positioning systems have become critical to many applications, such as autonomous driving, Internet of Things (IoT), Unmanned Aerial Vehicle (UAV), and smart cities. However, it is difficult to provide a robust, accurate, and seamless solution with single navigation/positioning technology. For example, the Global Navigation Satellite System (GNSS) cannot perform satisfactorily indoors; consequently, multi-sensor integrated systems provide the solution, as they compensate for the limitations of single technology by using the complementary characteristics of different sensors. This article describes a thorough investigation into multi-sensor data fusion, which over the last ten years has been used for integrated positioning/navigation systems. In this article, different navigation/positioning systems are classified and elaborated upon from three aspects: (1) sources, (2) algorithms and architectures, and (3) scenarios, which we further divide into two categories: (i) analytics-based fusion and (ii) learning-based fusion. For analytics-based fusion, we discuss the Kalman filter and its variants, graph optimization methods, and integrated schemes. For learning-based fusion, several supervised, unsupervised, reinforcement learning, and deep learning techniques are illustrated in multi-sensor integrated positioning/navigation systems. Design consideration of these integrated systems is discussed in detail from several aspects and their application scenarios are categorized. Finally, future directions for their research and implementation are discussed.",
+  "venue": "Information Fusion",
+  "citationCount": 234,
+  "doi": "10.1016/j.inffus.2023.01.025",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4411544886",
+  "title": "Navigation in a simplified urban flow through deep reinforcement learning",
+  "authors": [
+   "Federica Tonti",
+   "Jean Rabault",
+   "Ricardo Vinuesa"
+  ],
+  "year": 2025,
+  "abstract": "The increasing number of unmanned aerial vehicles (UAVs) in urban environments requires a strategy to minimize their environmental impact, both in terms of energy efficiency and noise reduction, and novel strategies for developing prediction models and optimization of flight planning are needed. Our goal is to develop deep reinforcement learning (DRL) algorithms capable of enabling the autonomous navigation of UAVs in urban environments, taking into account their complexity, and optimizing the trajectories to reduce both energy consumption and noise. Fluid flow simulations represent the environment in which the UAV navigates. The UAV is trained as an agent that interacts with an urban environment. In this work, the domain is represented by a two-dimensional flow field with obstacles, ideally representing buildings, extracted from a three-dimensional high-fidelity numerical simulation. The presented methodology, using PPO+LSTM cells, was validated by reproducing a simple but fundamental problem in navigation, namely the Zermelo’s problem, which deals with the trajectory optimization of a vessel navigating in a turbulent flow. The current method shows a significant improvement with respect to both a vanilla PPO and a TD3 algorithm, with a success rate (SR) of the PPO+LSTM trained policy of 98.7%, and a crash rate (CR) of 0.1%, outperforming both PPO (SR = 75.6%, CR = 18.6%) and TD3 (SR = 77.4% and CR = 14.5%). This is the first step towards DRL strategies which will guide UAVs in a three-dimensional flow field using real-time signals, making the navigation efficient in terms of flight time and avoiding damages to the vehicle.",
+  "venue": "Journal of Computational Physics",
+  "citationCount": 7,
+  "doi": "10.1016/j.jcp.2025.114194",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W3207380869",
+  "title": "Navigation In Urban Environments Amongst Pedestrians Using\\n Multi-Objective Deep Reinforcement Learning",
+  "authors": [
+   "Niranjan Deshpande",
+   "Dominique Vaufreydaz",
+   "Anne Spalanzani"
+  ],
+  "year": 2021,
+  "abstract": "Urban autonomous driving in the presence of pedestrians as vulnerable road\\nusers is still a challenging and less examined research problem. This work\\nformulates navigation in urban environments as a multi objective reinforcement\\nlearning problem. A deep learning variant of thresholded lexicographic\\nQ-learning is presented for autonomous navigation amongst pedestrians. The\\nmulti objective DQN agent is trained on a custom urban environment developed in\\nCARLA simulator. The proposed method is evaluated by comparing it with a single\\nobjective DQN variant on known and unknown environments. Evaluation results\\nshow that the proposed method outperforms the single objective DQN variant with\\nrespect to all aspects.\\n",
+  "venue": "arXiv (Cornell University)",
+  "citationCount": 10,
+  "doi": "10.48550/arxiv.2110.05205",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4390467259",
+  "title": "Self-Learning Robot Autonomous Navigation with Deep Reinforcement Learning Techniques",
+  "authors": [
+   "Borja Pintos Gómez de las Heras",
+   "Rafael Martínez‐Tomás",
+   "José Manuel Cuadra Troncoso"
+  ],
+  "year": 2023,
+  "abstract": "Complex and high-computational-cost algorithms are usually the state-of-the-art solution for autonomous driving cases in which non-holonomic robots must be controlled in scenarios with spatial restrictions and interaction with dynamic obstacles while fulfilling at all times safety, comfort, and legal requirements. These highly complex software solutions must cover the high variability of use cases that might appear in traffic conditions, especially when involving scenarios with dynamic obstacles. Reinforcement learning algorithms are seen as a powerful tool in autonomous driving scenarios since the complexity of the algorithm is automatically learned by trial and error with the help of simple reward functions. This paper proposes a methodology to properly define simple reward functions and come up automatically with a complex and successful autonomous driving policy. The proposed methodology has no motion planning module so that the computational power can be limited like in the reactive robotic paradigm. Reactions are learned based on the maximization of the cumulative reward obtained during the learning process. Since the motion is based on the cumulative reward, the proposed algorithm is not bound to any embedded model of the robot and is not being affected by uncertainties of these models or estimators, making it possible to generate trajectories with the consideration of non-holonomic constrains. This paper explains the proposed methodology and discusses the setup of experiments and the results for the validation of the methodology in scenarios with dynamic obstacles. A comparison between the reinforcement learning algorithm and state-of-the-art approaches is also carried out to highlight how the methodology proposed outperforms state-of-the-art algorithms.",
+  "venue": "Applied Sciences",
+  "citationCount": 7,
+  "doi": "10.3390/app14010366",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2795561664",
+  "title": "Learning with Training Wheels: Speeding up Training with a Simple Controller for Deep Reinforcement Learning",
+  "authors": [
+   "Linhai Xie",
+   "Sen Wang",
+   "Stefano Rosa",
+   "Andrew Markham",
+   "Niki Trigoni"
+  ],
+  "year": 2018,
+  "abstract": "Deep Reinforcement Learning (DRL) has been applied successfully to many robotic applications. However, the large number of trials needed for training is a key issue. Most of existing techniques developed to improve training efficiency (e.g. imitation) target on general tasks rather than being tailored for robot applications, which have their specific context to benefit from. We propose a novel framework, Assisted Reinforcement Learning, where a classical controller (e.g. a PID controller) is used as an alternative, switchable policy to speed up training of DRL for local planning and navigation problems. The core idea is that the simple control law allows the robot to rapidly learn sensible primitives, like driving in a straight line, instead of random exploration. As the actor network becomes more advanced, it can then take over to perform more complex actions, like obstacle avoidance. Eventually, the simple controller can be discarded entirely. We show that not only does this technique train faster, it also is less sensitive to the structure of the DRL network and consistently outperforms a standard Deep Deterministic Policy Gradient network. We demonstrate the results in both simulation and real-world experiments.",
+  "venue": "",
+  "citationCount": 83,
+  "doi": "10.1109/icra.2018.8461203",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W3200633137",
+  "title": "Robust ASV Navigation Through Ground to Water Cross-Domain Deep Reinforcement Learning",
+  "authors": [
+   "Reeve Lambert",
+   "Jianwen Li",
+   "Lifan Wu",
+   "Nina Mahmoudian"
+  ],
+  "year": 2021,
+  "abstract": "This paper presents a framework to alleviate the Deep Reinforcement Learning (DRL) training data sparsity problem that is present in challenging domains by creating a DRL agent training and vehicle integration methodology. The methodology leverages accessible domains to train an agent to solve navigational problems such as obstacle avoidance and allows the agent to generalize to challenging and inaccessible domains such as those present in marine environments with minimal further training. This is done by integrating a DRL agent at a high level of vehicle control and leveraging existing path planning and proven low-level control methodologies that are utilized in multiple domains. An autonomy package with a tertiary multilevel controller is developed to enable the DRL agent to interface at the prescribed high control level and thus be separated from vehicle dynamics and environmental constraints. An example Deep Q Network (DQN) employing this methodology for obstacle avoidance is trained in a simulated ground environment, and then its ability to generalize across domains is experimentally validated. Experimental validation utilized a simulated water surface environment and real-world deployment of ground and water robotic platforms. This methodology, when used, shows that it is possible to leverage accessible and data rich domains, such as ground, to effectively develop marine DRL agents for use on Autonomous Surface Vehicle (ASV) navigation. This will allow rapid and iterative agent development without the risk of ASV loss, the cost and logistic overhead of marine deployment, and allow landlocked institutions to develop agents for marine applications.",
+  "venue": "Frontiers in Robotics and AI",
+  "citationCount": 7,
+  "doi": "10.3389/frobt.2021.739023",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2796188582",
+  "title": "Natural Behavior Learning Based on Deep Reinforcement Learning for Autonomous Navigation of Mobile Robots",
+  "authors": [
+   "Ki-Seo Kim",
+   "Jeong-Hwan Moon",
+   "Dong‐Kyu Kim",
+   "Seung-beom Jo",
+   "Jang-Myung Lee"
+  ],
+  "year": 2018,
+  "abstract": "This paper proposes a new autonomous navigation method for two-wheeled mobile robots in an unknown environment using LiDAR sensors. Recently, a deep Q-network (DQN), which is a combination of deep learning and Q-learning theory, has attracted attention as a reinforcement learning algorithm. It is used to train the robot to recognize obstacles and avoid collisions while it is moving toward a designated destination. However, the existing DQN method can handle only discrete tasks and low-dimensional spaces, meaning it is not suitable for continuous, especially the control of mobile robots. In addition, the existing LiDAR sensor method uses distance as the input for learning, with the system determining the next action based only on the distance from the mobile robot to the obstacle. In this process, due to the frequent fluctuation in the action values, unnatural acceleration/deceleration actions are required, which leads to physical shocks to the robot and low driving power efficiency. In this paper, this problem is solved by applying a replay buffer to store the output of the network. That is, the action values are stored in the memory and fed back as input again following the action order of the network. Experiments are carried out on an actual robot after reinforcement learning in ROS-GAZEBO simulations and the validity of the algorithm is verified through an analysis of the experimental data.",
+  "venue": "Journal of Institute of Control Robotics and Systems",
+  "citationCount": 4,
+  "doi": "10.5302/j.icros.2018.17.0230",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4416673323",
+  "title": "Deep reinforcement learning for robust robot navigation in complex and crowded environments",
+  "authors": [
+   "Jin Meng",
+   "Jiahui Zou",
+   "Shifeng Wang",
+   "R Yang",
+   "Aakash Kumar",
+   "Jonghyuk Kim"
+  ],
+  "year": 2025,
+  "abstract": "In complex environments with dense pedestrian traffic, mobile robots often experience errors and instability during trajectory tracking and dynamic obstacle avoidance tasks. This paper presents a scene perception and decision-making strategy combined with deep reinforcement learning. Temporal sequences of LiDAR data and sub-goal were used as input, and action output is generated via an end-to-end network. We designed an adaptive heading reward that guides the robot to proactively avoid pedestrians while efficiently moving toward its target. Through continuous interaction with a dynamic environment, the robot learns an optimal decision-making strategy by maximizing cumulative rewards. A series of simulation experiments and real-world validations demonstrate that the proposed strategy achieves an effective balance between collision avoidance and real-time performance in robotic navigation. Furthermore, extensive results confirm that the method remains robust in unfamiliar environments and in varying crowd densities. Finally, tests on a hardware platform indicate that the strategy offers strong stability and adaptability in practical applications, effectively meeting obstacle avoidance requirements and validating its reliability in complex dynamic settings.",
+  "venue": "Journal of King Saud University - Computer and Information Sciences",
+  "citationCount": 4,
+  "doi": "10.1007/s44443-025-00357-z",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4399378736",
+  "title": "Aquatic Navigation: A Challenging Benchmark for Deep Reinforcement Learning",
+  "authors": [
+   "Davide Corsi",
+   "Davide Camponogara",
+   "Alessandro Farinelli"
+  ],
+  "year": 2024,
+  "abstract": "An exciting and promising frontier for Deep Reinforcement Learning (DRL) is its application to real-world robotic systems. While modern DRL approaches achieved remarkable successes in many robotic scenarios (including mobile robotics, surgical assistance, and autonomous driving) unpredictable and non-stationary environments can pose critical challenges to such methods. These features can significantly undermine fundamental requirements for a successful training process, such as the Markovian properties of the transition model. To address this challenge, we propose a new benchmarking environment for aquatic navigation using recent advances in the integration between game engines and DRL. In more detail, we show that our benchmarking environment is problematic even for state-of-the-art DRL approaches that may struggle to generate reliable policies in terms of generalization power and safety. Specifically, we focus on PPO, one of the most widely accepted algorithms, and we propose advanced training techniques (such as curriculum learning and learnable hyperparameters). Our extensive empirical evaluation shows that a well-designed combination of these ingredients can achieve promising results. Our simulation environment and training baselines are freely available to facilitate further research on this open problem and encourage collaboration in the field.",
+  "venue": "arXiv (Cornell University)",
+  "citationCount": 2,
+  "doi": "10.48550/arxiv.2405.20534",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4382050589",
+  "title": "AV Navigation in 3D Urban Environments with Curriculum-based Deep Reinforcement Learning",
+  "authors": [
+   "Kevin B. de Carvalho",
+   "Iure Rosa L. de Oliveira",
+   "Alexandre S. Brandão"
+  ],
+  "year": 2023,
+  "abstract": "Unmanned Aerial Vehicles (UAVs) are widely used in various applications, from inspection and surveillance to transportation and delivery. Navigating UAVs in complex 3D environments is a challenging task that requires robust and efficient decision-making algorithms. This paper presents a novel approach to UAV navigation in 3D environments using a Curriculum-based Deep Reinforcement Learning (DRL) approach. The proposed method utilizes a deep neural network to model the UAV’s decision-making process and to learn a mapping from the state space to the action space. The learning process is guided by a reinforcement signal that reflects the performance of the UAV in terms of reaching its target while avoiding obstacles and with energy efficiency. Simulation results show that the proposed method has a positive trade off when compared to the baseline algorithm. The proposed method was able to perform well in environments with a state space size of 22 millions, allowing the usage in big environments or in maps with high resolution. The results demonstrate the potential of DRL for enabling UAVs to operate effectively in complex environments.",
+  "venue": "",
+  "citationCount": 3,
+  "doi": "10.1109/icuas57906.2023.10156524",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4399310716",
+  "title": "On Transforming Reinforcement Learning With Transformers: The Development Trajectory",
+  "authors": [
+   "Shengchao Hu",
+   "Li Shen",
+   "Ya Zhang",
+   "Yixin Chen",
+   "Dacheng Tao"
+  ],
+  "year": 2024,
+  "abstract": "Transformers, originally devised for natural language processing (NLP), have also produced significant successes in computer vision (CV). Due to their strong expression power, researchers are investigating ways to deploy transformers for reinforcement learning (RL), and transformer-based models have manifested their potential in representative RL benchmarks. In this paper, we collect and dissect recent advances concerning the transformation of RL with transformers (transformer-based RL (TRL)) to explore the development trajectory and future trends of this field. We group the existing developments into two categories: architecture enhancements and trajectory optimizations, and examine the main applications of TRL in robotic manipulation, text-based games (TBGs), navigation, and autonomous driving. Architecture enhancement methods consider how to apply the powerful transformer structure to RL problems under the traditional RL framework, facilitating more precise modeling of agents and environments compared to traditional deep RL techniques. However, these methods are still limited by the inherent defects of traditional RL algorithms, such as bootstrapping and the \"deadly triad\". Trajectory optimization methods treat RL problems as sequence modeling problems and train a joint state-action model over entire trajectories under the behavior cloning framework; such approaches are able to extract policies from static datasets and fully use the long-sequence modeling capabilities of transformers. Given these advancements, the limitations and challenges in TRL are reviewed and proposals regarding future research directions are discussed. We hope that this survey can provide a detailed introduction to TRL and motivate future research in this rapidly developing field.",
+  "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+  "citationCount": 61,
+  "doi": "10.1109/tpami.2024.3408271",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4388890287",
+  "title": "Safe Navigation: Training Autonomous Vehicles using Deep Reinforcement Learning in CARLA",
+  "authors": [
+   "G.H. Nehme",
+   "Tejas Y. Deo"
+  ],
+  "year": 2023,
+  "abstract": "Autonomous vehicles have the potential to revolutionize transportation, but they must be able to navigate safely in traffic before they can be deployed on public roads. The goal of this project is to train autonomous vehicles to make decisions to navigate in uncertain environments using deep reinforcement learning techniques using the CARLA simulator. The simulator provides a realistic and urban environment for training and testing self-driving models. Deep Q-Networks (DQN) are used to predict driving actions. The study involves the integration of collision sensors, segmentation, and depth camera for better object detection and distance estimation. The model is tested on 4 different trajectories in presence of different types of 4-wheeled vehicles and pedestrians. The segmentation and depth cameras were utilized to ensure accurate localization of objects and distance measurement. Our proposed method successfully navigated the self-driving vehicle to its final destination with a high success rate without colliding with other vehicles, pedestrians, or going on the sidewalk. To ensure the optimal performance of our reinforcement learning (RL) models in navigating complex traffic scenarios, we implemented a pre-processing step to reduce the state space. This involved processing the images and sensor output before feeding them into the model. Despite significantly decreasing the state space, our approach yielded robust models that successfully navigated through traffic with high levels of safety and accuracy.",
+  "venue": "arXiv (Cornell University)",
+  "citationCount": 3,
+  "doi": "10.48550/arxiv.2311.10735",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4409102116",
+  "title": "Learning Implicit Social Navigation Behavior Using Deep Inverse Reinforcement Learning",
+  "authors": [
+   "Tribhi Kathuria",
+   "Ke Liu",
+   "Junwoo Jang",
+   "X. Jessie Yang",
+   "Maani Ghaffari"
+  ],
+  "year": 2025,
+  "abstract": "This paper reports on learning a reward map for social navigation in dynamic environments where the robot can reason about its path at any time, given agent trajectories and scene geometry. Humans navigating in dense and dynamic indoor environments often work with several implied social rules. A rule-based approach fails to model all possible interactions between humans, robots, and scenes. We propose a novel Smooth Maximum Entropy Deep Inverse Reinforcement Learning (S-MEDIRL) algorithm that can extrapolate beyond expert demos to better encode scene navigability from few-shot demonstrations. The agent learns to predict the cost maps based on trajectory data as well as scene geometry. The trajectory sampled from the learned cost map is then executed using a local crowd navigation controller. We present results in a photo-realistic simulation environment, with a robot and a human navigating a narrow crossing scenario. The robot implicitly learns to exhibit social behaviors such as yielding to oncoming traffic and avoiding deadlocks. We compare the proposed approach to the popular model-based crowd navigation algorithm ORCA and a rule-based agent that exhibits yielding. The code and dataset are publicly available at <uri xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">https://github.com/UMich-CURLY/habicrowd</uri>.",
+  "venue": "IEEE Robotics and Automation Letters",
+  "citationCount": 2,
+  "doi": "10.1109/lra.2025.3557299",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W3004647015",
+  "title": "Deep Deterministic Policy Gradient for Navigation of Mobile Robots in Simulated Environments",
+  "authors": [
+   "Junior Costa de Jesus",
+   "Jair Augusto Bottega",
+   "Marco Antônio de Souza Leite Cuadros",
+   "Daniel Fernando Tello Gamarra"
+  ],
+  "year": 2019,
+  "abstract": "This paper presents a study of a deep reinforcement learning technique that uses a Deep Deterministic Policy Gradient network for application in navigation of mobile robots. In order for the robot to arrive to a target on a map, the network has 10 laser range findings, the previous linear and angular velocity, and relative position and angle of the mobile robot to the target as inputs. As outputs, the network has the linear and angular velocity. From the results analysis, it is possible to conclude that the deep reinforcement learning's algorithms, with continuous actions, are effective for decision-make of a robotic vehicle. However, it is necessary to create a good reward system for the intelligent agent to accomplish your objectives. This research uses different virtual simulation environments provided by ROBOTIS in the robot simulation software Gazebo in order to test the performance of the algorithm. A supplementary video can be accessed at the following link: https://youtu.be/NhGxEC3g7sU. That shows the performance of the proposed system.",
+  "venue": "",
+  "citationCount": 51,
+  "doi": "10.1109/icar46387.2019.8981638",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4383109373",
+  "title": "Learning Risk-Aware Costmaps via Inverse Reinforcement Learning for Off-Road Navigation",
+  "authors": [
+   "Samuel Triest",
+   "Mateo Guaman Castro",
+   "Parv Maheshwari",
+   "Matthew Sivaprakasam",
+   "Wenshan Wang",
+   "Sebastian Scherer"
+  ],
+  "year": 2023,
+  "abstract": "The process of designing costmaps for off-road driving tasks is often a challenging and engineering-intensive task. Recent work in costmap design for off-road driving focuses on training deep neural networks to predict costmaps from sensory observations using corpora of expert driving data. However, such approaches are generally subject to over-confident mis-predictions and are rarely evaluated in-the-loop on physical hardware. We present an inverse reinforcement learning-based method of efficiently training deep cost functions that are uncertainty-aware. We do so by leveraging recent advances in highly parallel model-predictive control and robotic risk estimation. In addition to demonstrating improvement at reproducing expert trajectories, we also evaluate the efficacy of these methods in challenging off-road navigation scenarios. We observe that our method significantly outperforms a geometric baseline, resulting in 44% improvement in expert path reconstruction and 57% fewer interventions in practice. We also observe that varying the risk tolerance of the vehicle results in qualitatively different navigation behaviors, especially with respect to higher-risk scenarios such as slopes and tall grass. <sup xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">3</sup> <sup xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">3</sup> More detailed algorithms and additional visualizations are provided in the appendix Appendix (appendix link: tinyurl.com/mtkj63e8)",
+  "venue": "",
+  "citationCount": 25,
+  "doi": "10.1109/icra48891.2023.10161268",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2940572873",
+  "title": "How You Act Tells a Lot: Privacy-Leaking Attack on Deep Reinforcement Learning",
+  "authors": [
+   "Xinlei Pan",
+   "Weiyao Wang",
+   "Xiaoshuai Zhang",
+   "Bo Li",
+   "Jinfeng Yi",
+   "Dawn Song"
+  ],
+  "year": 2019,
+  "abstract": "Machine learning has been widely applied to various applications, some of which involve training with privacy-sensitive data. A modest number of data breaches have been studied, including credit card information in natural language data and identities from face dataset. However, most of these studies focus on supervised learning models. As deep reinforcement learning (DRL) has been deployed in a number of real-world systems, such as indoor robot navigation, whether trained DRL policies can leak private information requires in-depth study.To explore such privacy breaches in general, we mainly propose two methods: environment dynamics search via genetic algorithm and candidate inference based on shadow policies. We conduct extensive experiments to demonstrate such privacy vulnerabilities in DRL under various settings. We leverage the proposed algorithms to infer floor plans from some trained Grid World navigation DRL agents with LiDAR perception. The proposed algorithm can correctly infer most of the floor plans and reaches an average recovery rate of 95.83% using policy gradient trained agents. In addition, we are able to recover the robot configuration in continuous control environments and an autonomous driving simulator with high accuracy. To the best of our knowledge, this is the first work to investigate privacy leakage in DRL settings and we show that DRL-based agents do potentially leak privacy-sensitive information from the trained policies.",
+  "venue": "",
+  "citationCount": 38,
+  "doi": "10.65109/vytc7933",
+  "query": "\"deep reinforcement learning\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4406107689",
+  "title": "Path Planning under High-dimensional Input States Based on Deep Q-Network",
+  "authors": [
+   "Yixian Yang"
+  ],
+  "year": 2024,
+  "abstract": "The field of autonomous navigation continues to face challenges in path planning, particularly when addressing the complex, high-dimensional input states that conventional algorithms struggle to process efficiently. This study presents a novel path-planning approach that utilizes Deep Q-Networks (DQN) to manage intricate and multidimensional environmental data. By integrating a DQN with path planning, this study aims to develop an adaptive system capable of making real-time decisions in dynamic environments. The methodology involves training a neural network to approximate the Q-function, enabling the agent to learn optimal strategies directly from unprocessed sensor data such as visual or LiDAR inputs. Experiments conducted in both simulated and real-world scenarios demonstrated the efficacy of this method, revealing significant improvements in route optimization, computational efficiency, and robustness against unforeseen obstacles compared to traditional techniques. The proposed system was evaluated in diverse settings, including urban environments and challenging terrain, illustrating its versatility. These findings suggest that DQN-based path planning has considerable potential for applications in robotics, autonomous vehicles, and other domains requiring intelligent decision-making under uncertainty.",
+  "venue": "Highlights in Science Engineering and Technology",
+  "citationCount": 4,
+  "doi": "10.54097/r6fs0580",
+  "query": "\"deep Q-network\" AND \"path planning\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4308870593",
+  "title": "Double-DQN-Based Path-Tracking Control Algorithm for Orchard Traction Spraying Robot",
+  "authors": [
+   "Zhigang Ren",
+   "Zhijie Liu",
+   "Minxin Yuan",
+   "Heng Liu",
+   "Wang Wang",
+   "Jifeng Qin",
+   "Fuzeng Yang"
+  ],
+  "year": 2022,
+  "abstract": "The precise path-tracking control of tractors and trailers is the key to realizing agricultural automation. In order to improve the path-tracking control accuracy and driving stability of orchard traction spraying robots, this study proposed a navigation path-tracking control algorithm based on Double Deep Q-Network (Double DQN). Drawing on the driver’s driving experience and referring to the principle of radar scanning and the principle of image recognition, a virtual radar model was constructed to generate a virtual radar map. The virtual radar map was used to describe the position relationship between the traction spraying robot and the planned path. Combined with the deep reinforcement learning method, all possible robot driving actions under the current virtual radar map were scored, and the best driving action was selected as the output of the network. In this study, a path-tracking algorithm was self-developed with a deep Q-network trained by driving the traction spraying robot in a simulated virtual environment. The algorithm was tested in both simulations and in a field to follow a typical ‘U’-shaped path. The simulation results showed that the proposed algorithm was able to achieve accurate path-tracking control of the spraying trailer. The field tests showed that when the vehicle speed was 0.36 m/s and 0.75 m/s, the maximum lateral deviation of the algorithm was 0.233 m and 0.266 m, the average lateral deviation was 0.071 m and 0.076 m, and the standard deviation was 0.051 m and 0.057 m, respectively. Compared with the algorithm based on the virtual radar model, the maximum lateral deviation was reduced by 56.37% and 51.54%, the average lateral deviation was reduced by 7.8% and 5.0%, and the standard deviation was reduced by 20.31% and 8.1%, respectively. The results showed that the Double-DQN-based navigation path-tracking control algorithm for the traction spraying robot in the orchard had higher path-tracking accuracy and driving stability, which could meet the actual operational requirements of traditional orchards.",
+  "venue": "Agronomy",
+  "citationCount": 7,
+  "doi": "10.3390/agronomy12112803",
+  "query": "\"deep Q-network\" AND \"path planning\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4411452848",
+  "title": "An Intelligent Path Planning System for Urban Airspace Monitoring: From Infrastructure Assessment to Strategic Optimization",
+  "authors": [
+   "Qianyu Liu",
+   "Wei Dai",
+   "Zichun Yan",
+   "Claudio J. Tessone"
+  ],
+  "year": 2025,
+  "abstract": "Urban Air Mobility (UAM) requires reliable communication and surveillance infrastructures to ensure safe Unmanned Aerial Vehicle (UAV) operations in dense metropolitan environments. However, urban infrastructure is inherently heterogeneous, leading to significant spatial variations in monitoring performance. This study proposes a unified framework that integrates infrastructure readiness assessment with Deep Reinforcement Learning (DRL)-based UAV path planning. Using Singapore as a representative case, we employ a data-driven methodology combining clustering analysis and in situ measurements to estimate the citywide distribution of surveillance quality. We then introduce an infrastructure-aware path planning algorithm based on a Double Deep Q-Network (DQN) with a convolutional architecture, which enables UAVs to learn efficient trajectories while avoiding surveillance blind zones. Extensive simulations demonstrate that the proposed approach significantly improves path success rates, reduces traversal through poorly monitored regions, and maintains high navigation efficiency. These results highlight the potential of combining infrastructure modeling with DRL to support performance-aware airspace operations and inform future UAM governance systems.",
+  "venue": "Smart Cities",
+  "citationCount": 3,
+  "doi": "10.3390/smartcities8030100",
+  "query": "\"deep Q-network\" AND \"path planning\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W7166590786",
+  "title": "Enhancing non-motorized travel using reinforcement learning: a novel dynamic route planning approach",
+  "authors": [
+   "Xue Yang",
+   "Chengen Wu",
+   "Zhao Yan",
+   "Zihan Kan",
+   "Qingfeng Guan",
+   "Luliang Tang"
+  ],
+  "year": 2026,
+  "abstract": "Non-motorized travelers, such as pedestrians and cyclists, are highly sensitive to infrastructures like stairs, tunnels, and overpasses that impede movement. Dynamically avoiding such barriers to find optimal paths remains a key challenge in route planning, as existing models often inadequately capture the interplay of road types, traveler behavior, and environmental dynamics. To address this, we propose UED-Q, a novel path planning method based on Q-learning, enhanced by Upper Confidence Bound (UCB)-guided exploitation and a dynamic learning rate tuning mechanism. UED-Q introduces a reward-shaping function that integrates road characteristics, user behavior, and real-time environmental changes. Evaluated on Wuhan’s real-world road network, UED-Q outperforms several advanced methods, including Q-learning with the Artificial Potential Field (QAPF), Combining Manhattan Distance and Q-Learning (CMDQL), Deep Q-Network (DQN), Dueling DQN, and A* in both static and dynamic scenarios. It reduces the average path length by 7.12% (vs. DQN), 4.26% (vs. A*), and 9.47% (vs. Dueling DQN), and cuts the estimated travel time by up to 8.36%. Notably, the convergence speed improves by 92.58% over DQN and 96.71% over Dueling DQN. This work delivers an efficient, empirically validated framework for intelligent non-motorized navigation, supporting sustainable urban mobility.",
+  "venue": "Geo-spatial Information Science",
+  "citationCount": 0,
+  "doi": "10.1080/10095020.2026.2684864",
+  "query": "\"deep Q-network\" AND \"dynamic routing\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4415639477",
+  "title": "Task Scheduling and Path Planning of Hotel Service Robots Driven by Artificial Intelligence",
+  "authors": [
+   "Jingyi Han"
+  ],
+  "year": 2025,
+  "abstract": "Many hotels embrace intelligent service robots as a novel approach to enhancing customer satisfaction and streamlining operations. However, the ever changing hotel environment makes scheduling and managing obligations difficult. This research introduces Scheduling + Navigation Robotic Executor (SchedNav RX) for real time route planning and job prioritization. The proposed SchedNav RX utilizes a deep Q network based adaptive task scheduling reinforcement learning model, enabling robots to reschedule and prioritize tasks based on urgency and context dynamically. A convolutional neural network (CNN) enhances the standard A* algorithm for navigation by predicting obstacles in real time. This makes dynamic interior navigation safer and more efficient. TurtleBot 3 units were used for physical validation to enhance performance evaluation. SchedNav RX outperforms standard planning systems by 27% in task completion time and 35% in navigation safety while dealing with unexpected vehicle traffic. These findings demonstrate that SchedNav RX is essential for intelligent, autonomous robots to perform hotel service tasks efficiently and easily. The concept allows complicated hospitality environments to accommodate dispersed robotic systems driven by artificial intelligence. This work will evolve to incorporate reinforcement learning based guest feedback and interaction modules, enhancing the system's capabilities.",
+  "venue": "Informatica",
+  "citationCount": 0,
+  "doi": "10.31449/inf.v49i9.9444",
+  "query": "\"deep Q-network\" AND \"dynamic routing\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4413104083",
+  "title": "Research on Disaster Environment Map Fusion Construction and Reinforcement Learning Navigation Technology Based on Air–Ground Collaborative Multi-Heterogeneous Robot Systems",
+  "authors": [
+   "Hongtao Tao",
+   "Wen Zhao",
+   "Li Zhao",
+   "Junlong Wang"
+  ],
+  "year": 2025,
+  "abstract": "The primary challenge that robots face in disaster rescue is to precisely and efficiently construct disaster maps and achieve autonomous navigation. This paper proposes a method for air-ground collaborative map construction. It utilizes the flight capability of an unmanned aerial vehicle (UAV) to achieve rapid three-dimensional space coverage and complex terrain crossing for rapid and efficient map construction. Meanwhile, it utilizes the stable operation capability of an unmanned ground vehicle (UGV) and the ground detail survey capability to achieve precise map construction. The maps constructed by the two are accurately integrated to obtain precise disaster environment maps. Among them, the map construction and positioning technology is based on the FAST LiDAR-inertial odometry 2 (FAST-LIO2) framework, enabling the robot to achieve precise positioning even in complex environments, thereby obtaining more accurate point cloud maps. Before conducting map fusion, the point cloud is preprocessed first to reduce the density of the point cloud and also minimize the interference of noise and outliers. Subsequently, the coarse and fine registrations of the point clouds are carried out in sequence. The coarse registration is used to reduce the initial pose difference of the two point clouds, which is conducive to the subsequent rapid and efficient fine registration. The coarse registration uses the improved sample consensus initial alignment (SAC-IA) algorithm, which significantly reduces the registration time compared with the traditional SAC-IA algorithm. The precise registration uses the voxelized generalized iterative closest point (VGICP) algorithm. It has a faster registration speed compared with the generalized iterative closest point (GICP) algorithm while ensuring accuracy. In reinforcement learning navigation, we adopted the deep deterministic policy gradient (DDPG) path planning algorithm. Compared with the deep Q-network (DQN) algorithm and the A* algorithm, the DDPG algorithm is more conducive to the robot choosing a better route in a complex and unknown environment, and at the same time, the motion trajectory is smoother. This paper adopts Gazebo simulation. Compared with physical robot operation, it provides a safe, controllable, and cost-effective environment, supports efficient large-scale experiments and algorithm debugging, and also supports flexible sensor simulation and automated verification, thereby optimizing the overall testing process.",
+  "venue": "Sensors",
+  "citationCount": 2,
+  "doi": "10.3390/s25164988",
+  "query": "\"deep Q-network\" AND \"vehicle routing\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2942924254",
+  "title": "Autonomous Robot Navigation System Without Grid Maps Based on Double Deep Q-Network and RTK-GNSS Localization in Outdoor Environments",
+  "authors": [
+   "Yuki Kato",
+   "Kazuyuki Morioka"
+  ],
+  "year": 2019,
+  "abstract": "This paper proposes an autonomous mobile robot navigation system without grid maps in outdoor environments. The system integrates local navigation based on deep reinforcement learning and localization using RTK-GNSS. Local navigation is to travel between waypoints by using a learned policy. Localization is required for state of learning-based navigation and arrival evaluation of waypoints. First, a robot learns a policy traveling between waypoints in an environment that imitates an actual outdoor environment and avoiding collision with obstacles in our original simulator. DDQN(Double Deep Q-Network) is applied as an learning algorithm. We aim for learning that a robot can take an adequate action from obstacle positions obtained from 2D-LiDAR, a relative distance and a relative angle to a destination. Then, a robot performs navigation in outdoor environments based on the learned policy. Experimental results include learning in several environments, accuracy of RTK-GNSS and the integrated navigation system in an actual outdoor environment. Especially, our proposed system could travel approximately 600[m] in a general urban environments.",
+  "venue": "",
+  "citationCount": 15,
+  "doi": "10.1109/sii.2019.8700426",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2998957467",
+  "title": "Autonomous Navigation via a Deep Q Network with One-Hot Image Encoding",
+  "authors": [
+   "Will C. Anderson",
+   "Kevin Carey",
+   "Eric Sturzinger",
+   "Christopher J. Lowrance"
+  ],
+  "year": 2019,
+  "abstract": "Common autonomous driving techniques employ various combinations of convolutional and deep neural networks to safely and efficiently navigate unique road and traffic conditions. This paper investigates the feasibility of employing a reinforcement learning (RL) model for autonomous navigation using a low dimensional input. While many navigation applications generate each individual state as a function of a frame's raw pixel information, we use a deep Q network (DQN) with reduced input dimensionality to train a mobile robot to continuously remain within a lane around an elliptical track. We accomplish this by using a one-hot encoding scheme that assigns a binary variable to each element in a square array. This value is a function of whether the input frame detects the presence of a lane boundary. Our ultimate goal was to determine the minimum number of training samples required to consistently train the robot to complete one cycle around the track, from multiple starting positions and directions, without crossing a lane boundary. We found that by intelligently balancing exploration and exploitation of its environment, as well as the rewards for staying in the lane, the robot was able to achieve its goal with a small number of samples.",
+  "venue": "",
+  "citationCount": 4,
+  "doi": "10.1109/ismcr47492.2019.8955697",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2972975270",
+  "title": "Double-DQN based path smoothing and tracking control method for robotic vehicle navigation",
+  "authors": [
+   "Wenyu Zhang",
+   "Jingyao Gai",
+   "Zhigang Zhang",
+   "Lie Tang",
+   "Qingxi Liao",
+   "Youchun Ding"
+  ],
+  "year": 2019,
+  "abstract": "",
+  "venue": "Computers and Electronics in Agriculture",
+  "citationCount": 108,
+  "doi": "10.1016/j.compag.2019.104985",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4307824574",
+  "title": "Deep-Q-Network Hybridization with Extended Kalman Filter for Accelerate Learning in Autonomous Navigation with the Auxiliary Security Module",
+  "authors": [
+   "Carlos Daniel de Sousa Bezerra",
+   "Flávio Henrique Teles Vieira",
+   "Anderson da Silva Soares"
+  ],
+  "year": 2022,
+  "abstract": "This article proposes an algorithm for autonomous navigation of mobile robots that merges Reinforcement Learning with Extended Kalman Filter (EKF) as a localization technique, namely, EKF-DQN, aiming to accelerate learning and improve the reward values obtained in the process of apprenticeship. More specifically, Deep Neural Networks (DQN - Deep-Q-Networks ) are used to control the trajectory of an autonomous vehicle in an indoor environment. Due to the ability of EKF to predict states, this algorithm is proposed to be used as a learning accelerator of the DQN network, predicting states ahead and inserting this information in the memory replay. Aiming at the safety of the navigation process, it is also proposed a visual safety system that avoids collisions of the mobile vehicle with people moving in the environment. The efficiency of the proposed algorithm is verified through computer simulations using the CoppeliaSIM simulator with code insertion in Python. The simulation results show that the EKF-DQN algorithm accelerates the maximization of rewards obtained and provides a higher success rate in fulfilling the proposed mobile robot mission compared to the DQN and Q-Learning algorithms.",
+  "venue": "",
+  "citationCount": 1,
+  "doi": "10.22541/au.166733707.70698096/v1",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2892310933",
+  "title": "Deep Learning Based on Smooth Driving for Autonomous Navigation",
+  "authors": [
+   "Ki-Seo Kim",
+   "Dong-Eon Kim",
+   "Jang-Myung Lee"
+  ],
+  "year": 2018,
+  "abstract": "This paper proposes a new autonomous navigation method of a two-wheeled mobile robot using LiDAR sensor in an unknown environment. Recently, Deep Q Network(DQN) which is a combination of deep learning and Q-learning theory is attracting attention as a reinforcement learning algorithm. It is used to learn the robot itself to recognize obstacles and to avoid collisions while it is moving to a designated destination. The existing DQN method can handle only discrete and low dimensional space work, which is not suitable for continuous, especially the control of mobile robot. The existing LiDAR sensor method uses the distance value as the state used for the input of the learning, and therefore the system determines the next action only by the distance of the obstacle from the mobile robot. In this process, due to the frequent fluctuation of the action value, unnatural acceleration / deceleration actions are required, which cause not only physical shocks to the robot but also low driving power efficiency. In this paper, the problem has been solved by applying the replay buffer to store the output of the network. That is, the action values are stored in the memory and fed back to the input again following the action order of the network. Experiments are carried out on an actual robot after reinforcement learning in the ROS-GAZEBO simulations and the validity of the algorithm is verified through the analysis of the experimental data.",
+  "venue": "",
+  "citationCount": 11,
+  "doi": "10.1109/aim.2018.8452266",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4400314992",
+  "title": "Integrating Deep Q-Networks and YOLO with Autonomous Robots for Efficient Warehouse Management",
+  "authors": [
+   "Vivek Narayanan",
+   "A. Suriya",
+   "Kamala Venkateswaran",
+   "N.V. Chinnasamy",
+   "Akshya Jothi",
+   "M Sundarrajan",
+   "Mani Deepak Choudhry"
+  ],
+  "year": 2024,
+  "abstract": "Autonomous robotic cars' rapid, accurate, and efficient product handling and navigation are changing warehouse inventory management. These 24/7 smart vehicles save labor costs, human error, and operational inefficiencies. Time-consuming and incorrect manual scanning and recording is used for inventory management. Traditional autonomous car Q-learning algorithms may suffer in dynamic inventory circumstances and lack the complexity needed for real-time decision-making. Our research creates novel algorithms for autonomous robotic cars. The Deep Q-Network (DQN) we utilize for navigation adapts better to changing circumstances than ordinary Q-learning. YOLO object detection replaces slower QR code recognition for inventory monitoring. We use Decision Trees to find QR code data insights for decision-making. Our research results are promising. A greater cumulative reward curve over 100 simulated episodes gives DQN a 40% learning efficiency advantage over Q-learning. With 95% accuracy, YOLO outperformed Haar Cascade classifiers in QR code detection by 40% speed and 15% accuracy. Decision Trees identified QR code data 5.9% better than Rule-Based Systems, indicating inventory dependability. Autonomous robots can simplify inventory management in warehouses. Algorithmic technology allows these ambulances to drive intelligently, detect warehouse things faster and more accurately, and make decisions based on complicated data. These advanced artificial intelligence algorithms may make robotic systems more responsive and customized, changing inventory management subfields. These algorithms must be updated so autonomous cars can drive to meet logistical needs<sup xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">.</sup>",
+  "venue": "",
+  "citationCount": 9,
+  "doi": "10.1109/icrtcst61793.2024.10578347",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4221000910",
+  "title": "Navigation robot training with Deep Q-Learning monitored by Digital Twin",
+  "authors": [
+   "Madson Rodrigues Lemos",
+   "Valtemar Fernandes Cardoso",
+   "Mario Otani",
+   "Rivelino Nunes",
+   "Vandermi João da Silva",
+   "Vicente Ferreira de Lucena"
+  ],
+  "year": 2022,
+  "abstract": "This paper aims to present adherence to the Deep Q-learning algorithm applied to the movement and execution of tasks in a vehicular navigation robot. The robot&#x0027;s objective was to transport parts through a delimited environment. A decision system was developed according to the Deep Q-learning algorithm with an artificial neural network that received sensor data as input and enabled autonomous navigation in an environment with different obstacles. This article will also present the application process and experiments with the DQN algorithm, finally showing the results of the learning process and the use of the concept of digital twins to monitor the movement and signals sent by the robot to a Cloud service, which allows the visualization of navigation through augmented reality.",
+  "venue": "2022 IEEE International Conference on Consumer Electronics (ICCE)",
+  "citationCount": 3,
+  "doi": "10.1109/icce53296.2022.9730282",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W3161533296",
+  "title": "Robot Training and Navigation through the Deep Q-Learning Algorithm",
+  "authors": [
+   "Madson Rodrigues Lemos",
+   "Anne Vitoria Rodrigues de Souza",
+   "Renato Souza de Lira",
+   "Carlos Alberto Oliveira de Freitas",
+   "Vandermi João da Silva",
+   "Vicente Ferreira de Lucena"
+  ],
+  "year": 2021,
+  "abstract": "The paper aims to present the results of an assessment of adherence to the Deep Q-learning algorithm, applied to a vehicular navigation robot. The robot's job was to transport parts through an environment, for this purpose, a decision system was built based on the Deep Q-learning algorithm, with the aid of an artificial neural network that received data from the sensors as input and allowed autonomous navigation in an environment. For the experiments, the mobile robot-maintained communication via the network with other robotic components present in the environment through the MQTT protocol.",
+  "venue": "",
+  "citationCount": 2,
+  "doi": "10.1109/icce50685.2021.9427675",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4387682300",
+  "title": "Federated Double Deep Q-Learning-Based Computation Offloading in Mobility-Aware Vehicle Clusters",
+  "authors": [
+   "Wenhui Ye",
+   "Ke Zheng",
+   "Yuanyu Wang",
+   "Yuliang Tang"
+  ],
+  "year": 2023,
+  "abstract": "On the edge side of internet of vehicles (IoV), mobile edge computing (MEC) servers with certain computational resources are deployed to provide computational service for vehicles. However, with the generation of a series of vehicle computing intensive and delay sensitive applications such as virtual reality (VR) navigation and vehicle-mounted games, the quality of service (QoS) for vehicle applications cannot be guaranteed with the limited computational resources in MECs. In this article, adjacent vehicles in IoV are converged into clusters based on topological stability. The idle computational resources of vehicles within the cluster are integrated and scheduled uniformly to serve vehicles within the cluster with computation task requirements. This reduces the dynamic changes in idle computational resources caused by rapid vehicle movement, and effectively ensured reliable feedback of computing results after offloading computing tasks. In order to reduce the task completion time, the task is decomposed into multiple subtasks with time dependencies, which can be processed in parallel. A directed acyclic graph (DAG) is used to characterize the task model. To further minimize latency in completing computing tasks, a federated double deep Q network-based computation task offloading (FDTO) strategy is proposed for vehicle clusters. The optimal computation task offloading decision is obtained based on the collaborative training and updating of double deep Q network (DDQN). Unlike traditional machine learning algorithms that require centralized training, federated learning (FL) allows only the training model parameters to be passed between vehicles, which not only protects data privacy but also reduces communication overhead. Simulation results show that the proposed strategy can effectively reduce task completion latency compared to the benchmark strategies.",
+  "venue": "IEEE Access",
+  "citationCount": 10,
+  "doi": "10.1109/access.2023.3324718",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W3170063459",
+  "title": "Safe Deep Q-Network for Autonomous Vehicles at Unsignalized Intersection",
+  "authors": [
+   "Kasra Mokhtari",
+   "Alan R. Wagner"
+  ],
+  "year": 2021,
+  "abstract": "We propose a safe DRL approach for autonomous vehicle (AV) navigation through crowds of pedestrians while making a left turn at an unsignalized intersection. Our method uses two long-short term memory (LSTM) models that are trained to generate the perceived state of the environment and the future trajectories of pedestrians given noisy observations of their movement. A future collision prediction algorithm based on the future trajectories of the ego vehicle and pedestrians is used to mask unsafe actions if the system predicts a collision. The performance of our approach is evaluated in two experiments using the high-fidelity CARLA simulation environment. The first experiment tests the performance of our method at intersections that are similar to the training intersection and the second experiment tests our method at intersections with a different topology. For both experiments, our methods do not result in a collision with a pedestrian while still navigating the intersection at a reasonable speed.",
+  "venue": "arXiv (Cornell University)",
+  "citationCount": 4,
+  "doi": "10.48550/arxiv.2106.04561",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4409641659",
+  "title": "Advanced Decision-Making for Autonomous Vehicles Utilizing Deep Q Networks",
+  "authors": [
+   "Akash IJ Britto",
+   "S Abhishek",
+   "S Dhanush",
+   "Soja Salim",
+   "B. Soniya"
+  ],
+  "year": 2025,
+  "abstract": "Autonomous vehicles are poised to revolutionize the transportation industry by offering safer and more efficient navigation in dynamic environments. A critical challenge is managing interactions with other vehicles, pedestrians, and road obstacles, which complicates framing autonomous driving as a supervised learning problem. This study leverages Deep Q-Networks (DQN), a reinforcement learning technique, to control steering, throttle, and braking in autonomous vehicles. The DQN approach enables vehicles to autonomously learn and improve driving strategies, thereby enhancing their ability to navigate complex traffic scenarios effectively. Our objective is to train a model using a Deep Reinforcement Learning (DRL) algorithm, guiding the vehicle to adhere to a predetermined itinerary while adapting to real-time traffic conditions. This work emphasizes the potential of reinforcement learning for enabling continuous learning and adaptation in complex traffic scenarios, laying the groundwork for more reliable and adaptive autonomous driving systems.",
+  "venue": "",
+  "citationCount": 2,
+  "doi": "10.1109/etis64005.2025.10961346",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2949249362",
+  "title": "Autonomous Driving using Deep Reinforcement Learning in Urban Environment",
+  "authors": [
+   "Hashim Shakil Ansari",
+   "Rahul Goutam"
+  ],
+  "year": 2019,
+  "abstract": "Deep Reinforcement Learning has led us to newer possibilities in solving complex control and navigation related tasks. The paper presents Deep Reinforcement Learning autonomous navigation and obstacle avoidance of selfdriving cars, applied with Deep Q Network to a simulated car an urban environment. \"The car, using a variety of sensors will be easily able to detect pedestrians, objects will allow the car to slow or stop suddenly. As a computer is far more precise and subject to fewer errors than a human, accident rates may reduce when these vehicles become available to consumers. This autonomous technology would lead to fewer traffic jams and safe road\".",
+  "venue": "International Journal of Trend in Scientific Research and Development",
+  "citationCount": 5,
+  "doi": "10.31142/ijtsrd23442",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4416078345",
+  "title": "Research on Geomagnetic Perceiving Navigation Method Based on Deep Reinforcement Learning",
+  "authors": [
+   "Hong Li",
+   "Chenyan Xu",
+   "Hengyu Liu"
+  ],
+  "year": 2025,
+  "abstract": "Autonomous underwater vehicle (AUV) navigation poses significant challenges in unknown environments lacking prior information. In this article, a deep Q-network-based geomagnetic sensing navigation method is proposed to solve the navigation problem without prior maps. By constructing a deep Q-network model, the method utilizes the powerful representation capability of deep learning to handle complex geomagnetic sensing data. Meanwhile, an action selection strategy combining heuristic and greedy search is introduced to balance exploration and exploitation and enhance the autonomous navigation capability of underwater vehicles in unknown environments. The strategy dynamically adjusts the exploration probability based on the distance to the target, ensuring effective exploration at an early stage and efficient utilization of the learned knowledge when approaching the target. Moreover, the AUV explores the environment using local geomagnetic data and trains a regression model to predict the global geomagnetic map. Simulation results show that the method is significantly effective in reducing path lengths, improving exploration efficiency, and enhancing geomagnetic map accuracy. The results show that the method significantly improves the robot’s navigation performance in unknown environments and provides a new way to construct geomagnetic maps.",
+  "venue": "IEEE Journal of Oceanic Engineering",
+  "citationCount": 1,
+  "doi": "10.1109/joe.2025.3596672",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W3098317736",
+  "title": "Learning Generative State Space Models for Active Inference",
+  "authors": [
+   "Ozan Çatal",
+   "Samuel T. Wauthier",
+   "Cedric De Boom",
+   "Tim Verbelen",
+   "Bart Dhoedt"
+  ],
+  "year": 2020,
+  "abstract": "In this paper we investigate the active inference framework as a means to enable autonomous behavior in artificial agents. Active inference is a theoretical framework underpinning the way organisms act and observe in the real world. In active inference, agents act in order to minimize their so called free energy, or prediction error. Besides being biologically plausible, active inference has been shown to solve hard exploration problems in various simulated environments. However, these simulations typically require handcrafting a generative model for the agent. Therefore we propose to use recent advances in deep artificial neural networks to learn generative state space models from scratch, using only observation-action sequences. This way we are able to scale active inference to new and challenging problem domains, whilst still building on the theoretical backing of the free energy principle. We validate our approach on the mountain car problem to illustrate that our learnt models can indeed trade-off instrumental value and ambiguity. Furthermore, we show that generative models can also be learnt using high-dimensional pixel observations, both in the OpenAI Gym car racing environment and a real-world robotic navigation task. Finally we show that active inference based policies are an order of magnitude more sample efficient than Deep Q Networks on RL tasks.",
+  "venue": "Frontiers in Computational Neuroscience",
+  "citationCount": 39,
+  "doi": "10.3389/fncom.2020.574372",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4401414731",
+  "title": "SCALE: Self-Correcting Visual Navigation for Mobile Robots via Anti-Novelty Estimation",
+  "authors": [
+   "Chang Chen",
+   "Yuecheng Liu",
+   "Yuzheng Zhuang",
+   "Sitong Mao",
+   "Kaiwen Xue",
+   "Shunbo Zhou"
+  ],
+  "year": 2024,
+  "abstract": "Although visual navigation has been extensively studied using deep reinforcement learning, online learning for real-world robots remains a challenging task. Recent work directly learned from offline dataset to achieve broader generalization in the real-world tasks, which, however, faces the out-of-distribution (OOD) issue and potential robot localization failures in a given map for unseen observation. This significantly drops the success rates and even induces collision. In this paper, we present a self-correcting visual navigation method, SCALE, that can autonomously prevent the robot from the OOD situations without human intervention. Specifically, we develop an image-goal conditioned offline reinforcement learning method based on implicit Q-learning (IQL). When facing OOD observation, our novel localization recovery method generates the potential future trajectories by learning from the navigation affordance, and estimates the future novelty via random network distillation (RND). A tailored cost function searches for the candidates with the least novelty that can lead the robot to the familiar places. We collect offline data and conduct evaluation experiments in three real-world urban scenarios. Experiment results show that SCALE outperforms the previous state-of-the-art methods for open-world navigation with a unique capability of localization recovery, significantly reducing the need for human intervention. Code is available at https://github.com/KubeEdge4Robotics/ScaleNav.",
+  "venue": "",
+  "citationCount": 3,
+  "doi": "10.1109/icra57147.2024.10610847",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4223486406",
+  "title": "Semi-Communicate Social Navigation using Deep Q Networks",
+  "authors": [
+   "Heung-Min Park",
+   "Donghwi Jung",
+   "Seong-Woo Kim"
+  ],
+  "year": 2022,
+  "abstract": "The research of mobile robot and pedestrian social interaction aware in human-robot interaction is focused on solving the problem of pedestrian trajectory prediction based on RNN or reinforcement learning. This method has problems such as a low success rate and an uneven path in predicting and avoiding the trajectory of a new environment and an object that is not pre-trained. Because of these problems, it is very difficult to navigate and control existing mobile robots using reinforcement learning. However, many previous reinforcement learning experiments did not consider the precise positioning design of robots and pedestrians to have a mobile robot navigation system with high success rate and safety. In order to alleviate this dilemma, this study aims to improve driving efficiency and learning safety by setting states through precise positioning design of robots and dynamic objects in Deep Q Networks.",
+  "venue": "2022 International Conference on Electronics, Information, and Communication (ICEIC)",
+  "citationCount": 0,
+  "doi": "10.1109/iceic54506.2022.9748263",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4416953188",
+  "title": "HAVEN: Hierarchical Adversary-aware Visibility-Enabled Navigation with Cover Utilization using Deep Transformer Q-Networks",
+  "authors": [
+   "Mihir Chauhan",
+   "Damon Conover",
+   "Aniket Bera"
+  ],
+  "year": 2025,
+  "abstract": "Autonomous navigation in partially observable environments requires agents to reason beyond immediate sensor input, exploit occlusion, and ensure safety while progressing toward a goal. These challenges arise in many robotics domains, from urban driving and warehouse automation to defense and surveillance. Classical path planning approaches and memoryless reinforcement learning often fail under limited fields of view (FoVs) and occlusions, committing to unsafe or inefficient maneuvers. We propose a hierarchical navigation framework that integrates a Deep Transformer Q-Network (DTQN) as a high-level subgoal selector with a modular low-level controller for waypoint execution. The DTQN consumes short histories of task-aware features, encoding odometry, goal direction, obstacle proximity, and visibility cues, and outputs Q-values to rank candidate subgoals. Visibility-aware candidate generation introduces masking and exposure penalties, rewarding the use of cover and anticipatory safety. A low-level potential field controller then tracks the selected subgoal, ensuring smooth short-horizon obstacle avoidance. We validate our approach in 2D simulation and extend it directly to a 3D Unity-ROS environment by projecting point-cloud perception into the same feature schema, enabling transfer without architectural changes. Results show consistent improvements over classical planners and RL baselines in success rate, safety margins, and time to goal, with ablations confirming the value of temporal memory and visibility-aware candidate design. These findings highlight a generalizable framework for safe navigation under uncertainty, with broad relevance across robotic platforms.",
+  "venue": "arXiv (Cornell University)",
+  "citationCount": 0,
+  "doi": "10.48550/arxiv.2512.00592",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4410852875",
+  "title": "Computation Offloading and Resource Allocation in Vehicular MEC: A Parameterized Deep Reinforcement Learning Approach",
+  "authors": [
+   "Ruofei Ma",
+   "Jingyang Zhou",
+   "Ruisong Wang",
+   "Hsiao‐Hwa Chen",
+   "Gongliang Liu"
+  ],
+  "year": 2025,
+  "abstract": "Rapid advancement of the Internet of vehicles (IoV) technology has created a lot of intelligent vehicle applications, such as real-time navigation, collision avoidance, and autonomous driving, etc., which in turn generates a significant amount of computation-intensive tasks. Due to limited computation capabilities of in-vehicle devices, mobile edge and cloud computing are viewed as promising solutions to offload latency-sensitive tasks to mobile edge computing servers to meet the requirements for euRLLC in 5 G/6 G applications. Vehicular edge computing systems require effective offloading decision-making and resource management to maximize resource utilization. However, existing scheduling schemes suffer a high complexity to deal with multi-dimensional resource optimization problems, thereby introducing a significant latency and compromising resource utilization efficiency. This paper aims to address the issues on latency, energy consumption, and cost jointly within a vehicular edge computing system. In particular, a multi-objective optimization problem is formulated for its joint optimization on computation offloading and resource allocation with the help of a deep reinforcement learning (DRL) approach. To this end, a parameterized deep Q-networks (P-DQN) algorithm is introduced for solving a binary offloading problem. Extensive numerical simulations validate the superiority of the proposed scheme compared to well-known algorithms in the literatures.",
+  "venue": "IEEE Transactions on Vehicular Technology",
+  "citationCount": 2,
+  "doi": "10.1109/tvt.2025.3574783",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4408915249",
+  "title": "Inverse RL Scene Dynamics Learning for Nonlinear Predictive Control in Autonomous Vehicles",
+  "authors": [
+   "Sorin Grigorescu",
+   "Mihai Zaha"
+  ],
+  "year": 2025,
+  "abstract": "This article introduces the deep learning-based nonlinear model predictive controller with scene dynamics (DL-NMPC-SD) method for autonomous navigation. DL-NMPC-SD uses an a priori nominal vehicle model in combination with a scene dynamics model learned from temporal range sensing information. The scene dynamics model is responsible for estimating the desired vehicle trajectory, as well as to adjust the true system model used by the underlying model predictive controller. We propose to encode the scene dynamics model within the layers of a deep neural network, which acts as a nonlinear approximator for the high-order state space of the operating conditions. The model is learned based on temporal sequences of range-sensing observations and system states, both integrated by an Augmented Memory component. We use inverse reinforcement learning (IRL) and the Bellman optimality principle to train our learning controller with a modified version of the deep Q-learning (DQL) algorithm, enabling us to estimate the desired state trajectory as an optimal action-value function. We have evaluated DL-NMPC-SD against the baseline dynamic window approach (DWA), as well as against two state-of-the-art End2End and RL methods, respectively. The performance has been measured in three experiments: 1) in our GridSim virtual environment; 2) on indoor and outdoor navigation tasks using our RovisLab autonomous mobile test unit (AMTU) platform; and 3) on a full-scale autonomous test vehicle driving on public roads.",
+  "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+  "citationCount": 1,
+  "doi": "10.1109/tnnls.2025.3549816",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4403826753",
+  "title": "Smart Medical Rescue via Efficient Vehicle Road Cooperation: AIoT Framework",
+  "authors": [
+   "Xiaohong Lyu",
+   "Shalli Rani",
+   "S. Manimurugan",
+   "Yanhong Feng"
+  ],
+  "year": 2024,
+  "abstract": "Smart medical rescue vehicles (SMRVs) are crucial in providing timely and effective emergency medical services in urban environments. However, the efficiency and safety of SMRVs are often hindered by dynamic and complex traffic conditions, leading to longer response times and increased risk of accidents. To address these challenges, this article proposes a novel lane-changing strategy called AIoT-LC, which leverages the Augmented Intelligence of Things (AIoT) framework to enable efficient vehicle road cooperation for smart medical rescue. First, a deep Q-network is employed to process real-time data streaming from SMRVs and support their collaborative management with roads and pedestrians. Then, a cooperative lane-changing strategy is developed to ensure the safe and efficient navigation of SMRVs through dynamic traffic environments, considering factors, such as safety distance, lane-changing trajectory planning, and multivehicle coordination. Finally, a collision resolution and avoidance strategy is proposed for SMRVs at intersections, leveraging the vehicle-infrastructure cooperative environment and the AIoT framework to minimize the risk of collisions and optimize the intersection crossing process. The experimental results demonstrate that the proposed AIoT-LC method significantly outperforms existing approaches, reducing average travel time for SMRVs by up to 25%, improving average speed by 15%, and increasing the success rate of emergency responses by 20% points compared to the best performing baseline method. Additionally, the proposed method reduces fuel consumption by 11.7% and CO2 emissions by 11.7% while improving overall traffic flow efficiency by 8.9%.",
+  "venue": "IEEE Internet of Things Journal",
+  "citationCount": 2,
+  "doi": "10.1109/jiot.2024.3479244",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4413967374",
+  "title": "Deep Q-Network Based UWB Anchor and Strategy Selection for Accurate Pedestrian Localization in Vehicular Environments",
+  "authors": [
+   "Dong Hoon Kim",
+   "Jiwoong Park",
+   "Young-Bae Ko",
+   "Junghun Choi"
+  ],
+  "year": 2025,
+  "abstract": "Ultra-wideband (UWB) technology is emerging as a key technology for indoor navigation and positioning systems, offering reliable, accurate, and energy-efficient performance. This characteristics of UWB can be leveraged to localize pedestrians in vehicles equipped with UWB technology. However, the localization of pedestrians in a vehicle environment, which is a more complex scenario than an indoor environment, requires further consideration. In particular, the selection of a line-of-sight (LoS) link and the delusion of pecision (DoP) problem are of paramount importance for the performance of the localization process. To address these issues, we propose a deep Q-network based UWB anchor and localization strategy selection that improves the localization success rate by identifying LoS links without relying on complex LoS/NLoS identification methods. Additionally, it determines the optimal localization method and addresses DoP issues to enhance location accuracy. The proposed scheme is evaluated against existing techniques in terms of localization precision at varying distances, LoS/NLoS conditions, and scenarios involving vehicle and pedestrian moving. The results demonstrate that the proposed approach outperforms existing methods.",
+  "venue": "",
+  "citationCount": 0,
+  "doi": "10.1109/icmlcn64995.2025.11140457",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4405128071",
+  "title": "A Reinforcement Learning Approach for Training Complex Decision - Making Models",
+  "authors": [
+   "Sarbaree Mishra"
+  ],
+  "year": 2022,
+  "abstract": "Reinforcement learning (RL) is a powerful branch of machine learning that enables systems to learn optimal strategies through trial-and-error interactions with their environments, making it a natural fit for tackling complex decision-making problems. Unlike traditional methods that rely on predefined rules or labelled datasets, RL trains models by rewarding desired behaviours, allowing them to adapt dynamically to changing conditions. This ability to self-learn and improve has made RL increasingly crucial across industries, from robotics and gaming to finance and healthcare, where intelligent systems must make nuanced decisions in unpredictable settings. This article explores the core principles of reinforcement learning, shedding light on how agents learn by balancing exploration and exploitation. We dive into popular algorithms like Q-learning, Deep Q-Networks, and Policy Gradient methods, explaining their relevance in solving real-world challenges. Through practical examples, such as optimizing supply chain logistics or enhancing autonomous vehicle navigation, we illustrate the transformative potential of RL in training systems to handle intricate decision-making tasks. However, implementing RL in real-world scenarios is not without hurdles?issues like sample inefficiency, reward shaping, and the complexity of scaling solutions can impede progress. We provide actionable recommendations for addressing these challenges, including leveraging hybrid methods, improving environment simulation fidelity, and designing robust reward structures. Furthermore, we discuss the importance of combining RL with other techniques, such as supervised learning or evolutionary algorithms, to unlock its full potential. This discussion highlights RL's opportunities and limitations, emphasizing the need for continued innovation and collaboration between researchers and practitioners. This article is a comprehensive guide for those looking to harness reinforcement learning in building intelligent, adaptable decision-making models by bridging theoretical concepts with hands-on strategies.",
+  "venue": "International Journal of Science and Research (IJSR)",
+  "citationCount": 1,
+  "doi": "10.21275/sr22051120903",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4403091160",
+  "title": "A Survey on Deep Reinforcement Learning Applications in Autonomous Systems",
+  "authors": [
+   "R. W. Peterson"
+  ],
+  "year": 2021,
+  "abstract": "Deep Reinforcement Learning (DRL) is a rapidly evolving field that has significantly influenced autonomous systems such as self-driving cars, drones, and robotics. This survey aims to provide a comprehensive overview of the state-of-the-art DRL techniques and their applications in real-world autonomous systems. The paper discusses various architectures such as Deep Q-Networks (DQNs), Policy Gradient methods, and Actor-Critic models, analyzing their strengths and weaknesses in dynamic and complex environments. Moreover, the study focuses on how DRL can address specific challenges in decision-making, navigation, and obstacle avoidance for autonomous vehicles. The integration of DRL with sensor data, such as LIDAR and camera inputs, is explored to understand how these systems can learn more efficiently in real-time environments. Furthermore, the paper examines the scalability of DRL models in large-scale autonomous systems and presents the most recent advancements in this domain. Challenges such as overfitting, reward shaping, and sample inefficiency are discussed, alongside potential future directions like multi-agent systems and cooperative DRL. The review also highlights real-world applications and case studies, illustrating how DRL is implemented in autonomous systems. Finally, the ethical and safety concerns associated with autonomous DRL systems are considered, particularly in the context of self-driving cars and other autonomous technologies that interact with humans.",
+  "venue": "Universal Research Reports",
+  "citationCount": 0,
+  "doi": "10.36676/urr.v8.i4.1399",
+  "query": "\"deep Q-network\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4415199179",
+  "title": "A comprehensive review of path planning algorithms for autonomous navigation",
+  "authors": [
+   "Sangeeth Venu",
+   "Muralimohan Gurusamy"
+  ],
+  "year": 2025,
+  "abstract": "• The paper categorizes path planning algorithms into classical, metaheuristic , and AI/ML-based approaches, providing a structured comparison of their strengths, limitations, and applications. • Classical algorithms like Dijkstra’s, A* , and Potential Field Methods are explored in depth, including their deterministic nature, mathematical foundation, and constraints in dynamic or high-dimensional environments. • Nature-inspired algorithms like Genetic Algorithms, Particle Swarm Optimization, Ant Colony Optimization , and Simulated Annealing are highlighted for their flexibility in handling complex, non-linear, and high-dimensional path planning problems. • The paper details the impact of Reinforcement Learning (RL), Neural Networks , and Hybrid AI-Classical systems in enabling real-time, adaptive, and data-driven path planning, especially in unpredictable environments. • Key challenges discussed include high-dimensional search spaces, dynamic environments, trade-offs between optimality and computational efficiency, scalability issues, and handling uncertainty. • Techniques like Rapidly-Exploring Random Trees (RRT) and Probabilistic Roadmaps (PRM) are analyzed for their effectiveness in high-dimensional spaces and applications requiring scalable planning. • Algorithms such as Proximal Policy Optimization (PPO), MAPPO, SAC , and MADDPG are presented as state-of-the-art solutions for single-agent and multi-agent navigation in dynamic settings. • Emphasis is placed on Multi-Agent Path Planning (MAP) techniques and architectures like Centralized Training with Decentralized Execution (CTDE) and Hierarchical RL , which are crucial for collaborative robotics. • Simulation platforms like OMPL, ROS, MoveIt, CARLA , and AirSim are discussed as standard tools for benchmarking and developing path planning systems. • The paper identifies emerging trends such as the integration of AI with classical planners, real-time path planning using edge/cloud computing, semantic-environment understanding , and explainability and ethics in decision-making for autonomous systems. Path planning enables autonomous agents such as robots, self-driving vehicles, and UAVs to navigate from a starting point to a target destination while avoiding obstacles and adhering to operational constraints. As autonomous technologies become more prevalent in real-world applications, the demand for robust, adaptive, and computationally efficient path planning algorithms has intensified. This paper presents a comprehensive review of path planning strategies, focusing on classical, metaheuristic, and AI-based approaches. It explores the challenges posed by dynamic environments, non-holonomic constraints, and varying levels of environmental knowledge. The review also examines the strengths and limitations of each algorithmic category, highlighting their suitability for diverse applications ranging from industrial automation to autonomous navigation. Furthermore, the paper discusses emerging trends, including the integration of machine learning and reinforcement learning techniques, and outlines future research directions aimed at enhancing the adaptability and performance of path planning systems in complex, unstructured environments.",
+  "venue": "Results in Engineering",
+  "citationCount": 13,
+  "doi": "10.1016/j.rineng.2025.107750",
+  "query": "\"proximal policy optimization\" AND \"path planning\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4416232048",
+  "title": "An Internet of Things-enabled adaptive robotic framework for autonomous navigation in smart campus and urban mobility systems",
+  "authors": [
+   "Indra Kishor",
+   "Udit Mamodiya",
+   "Sumit Saini",
+   "Mohammed Amin Almaiah",
+   "Vaibhav Gandhi"
+  ],
+  "year": 2025,
+  "abstract": "Abstract This research proposes an Internet of Things (IoT)-enabled adaptive robotic navigation framework tailored for smart campuses and urban mobility systems. It aims to overcome critical limitations in existing systems that rely on static data, lack real-time adaptability, and perform poorly in dynamic or adverse environments. The proposed system uniquely integrates heterogeneous real-time data sources including traffic, obstacle, and weather captured from IoT sensors into a unified decision-making architecture. It combines a graph neural network for dynamic environmental modeling, a convolutional neural network for obstacle mapping, and a multilayer perceptron for weather-aware path assessment. A proximal policy optimization-based reinforcement learning (RL) controller then computes continuous control actions. A novel multi-objective reward function adaptively adjusts priorities between travel time, energy efficiency, collision risk, and terrain stability based on the current IoT context, enabling fine-grained, scenario-aware optimization. The system is deployed on resource-constrained edge hardware (Jetson Nano), proving its feasibility for real-time embedded applications. Simulations across diverse scenarios including urban traffic congestion, dynamic obstacle handling, and adverse weather demonstrate 95% navigation accuracy, 98% obstacle detection precision, and near-optimal route selection. The framework sustains real-time operation with 10 Hz decision throughput and sub-300 ms latency, outperforming traditional static and rule-based systems while sustaining over 92% performance consistency under adverse weather. This work introduces a first-of-its-kind modular framework that fuses IoT sensory data, adaptive RL control, and edge deployment for robust, efficient navigation. It establishes a scalable baseline for real-world autonomous mobility in smart city ecosystems.",
+  "venue": "Robotica",
+  "citationCount": 3,
+  "doi": "10.1017/s026357472510283x",
+  "query": "\"proximal policy optimization\" AND \"dynamic routing\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4285222939",
+  "title": "VWP:An Efficient DRL-Based Autonomous Driving Model",
+  "authors": [
+   "Yanliang Jin",
+   "Zeyu Ji",
+   "Dan Zeng",
+   "Xiao–Ping Zhang"
+  ],
+  "year": 2022,
+  "abstract": "In this paper, a novel DRL-based model (VWP, VAE-WGAN-PPOE) is proposed to solve the problem of long training time and unsatisfactory training effect in the end-to-end autonomous driving. The model is optimized from feature extraction and algorithm decision. In feature extraction, we encode the input video by combining variational auto encoder (VAE) with wasserstein generative adversarial network (WGAN). The state dimension is reduced and the problem of mode collapse and gradient disappearance caused by generative adversarial network (GAN) training is solved. In decision algorithm, we formulate a new reward function by analyzing the factors affecting driving performance. Furthermore, we propose an enhanced algorithm PPOE based on the proximal policy optimization (PPO). In the CARLA simulator, compared with CNN and ResNet34, the convergence speed of the DRL model based on VAE-WGAN increases by 26.1% and 20.3%, the navigation task completion rate increases by 18.5% and 9.2%, and the collision rate decreases by 13.6% and 9.4%. Compared with deep deterministic policy gradient (DDPG) decision algorithm, the convergence speed of the DRL model based on PPOE increases by 23.3%, the navigation task completion rate increases by 5.0% in sunny days and 8.4% in severe weather, the collision rate decreases by 3.5% in sunny days and 6.6% in severe weather. Extensive experiments show that the proposed model enables the agent to drive safely along the navigational route in the complex environment with pedestrian and vehicle interaction, even in severe weather.",
+  "venue": "IEEE Transactions on Multimedia",
+  "citationCount": 25,
+  "doi": "10.1109/tmm.2022.3177942",
+  "query": "\"proximal policy optimization\" AND \"vehicle routing\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4413279298",
+  "title": "Optimizing Autonomous Vehicle Navigation Through Reinforcement Learning in Dynamic Urban Environments",
+  "authors": [
+   "Mohammed Alsuwaiket"
+  ],
+  "year": 2025,
+  "abstract": "Autonomous vehicle (AV) navigation in dynamic urban environments faces challenges such as unpredictable traffic conditions, varying road user behaviors, and complex road networks. This study proposes a novel reinforcement learning-based framework that enhances AV decision making through spatial-temporal context awareness. The framework integrates Proximal Policy Optimization (PPO) and Graph Neural Networks (GNNs) to effectively model urban features like intersections, traffic density, and pedestrian zones. A key innovation is the urban context-aware reward mechanism (UCARM), which dynamically adapts the reward structure based on traffic rules, congestion levels, and safety considerations. Additionally, the framework incorporates a Dynamic Risk Assessment Module (DRAM), which uses Bayesian inference combined with Markov Decision Processes (MDPs) to proactively evaluate collision risks and guide safer navigation. The framework’s performance was validated across three datasets—Argoverse, nuScenes, and CARLA. Results demonstrate significant improvements: An average travel time of 420 ± 20 s, a collision rate of 3.1%, and energy consumption of 11,833 ± 550 J in Argoverse; 410 ± 20 s, 2.5%, and 11,933 ± 450 J in nuScenes; and 450 ± 25 s, 3.6%, and 13,000 ± 600 J in CARLA. The proposed method achieved an average navigation success rate of 92.5%, consistently outperforming baseline models in safety, efficiency, and adaptability. These findings indicate the framework’s robustness and practical applicability for scalable AV deployment in real-world urban traffic conditions.",
+  "venue": "World Electric Vehicle Journal",
+  "citationCount": 4,
+  "doi": "10.3390/wevj16080472",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4295854626",
+  "title": "LADFN: Learning Actions for Drift-Free Navigation in Highly Dynamic Scenes",
+  "authors": [
+   "Mohd Omama",
+   "Sundar Sripada V. S.",
+   "Sandeep Chinchali",
+   "K. Madhava Krishna"
+  ],
+  "year": 2022,
+  "abstract": "We embark on a hitherto unreported problem of an autonomous robot (self-driving car) navigating in dynamic scenes in a manner that reduces its localization error and eventual cumulative drift or Absolute Trajectory Error, which is pronounced in such dynamic scenes. With the hugely popular Velodyne-16 3D LIDAR as the main sensing modality, and the accurate LIDAR-based Localization and Mapping algorithm, LOAM, as the state estimation framework, we show that in the absence of a navigation policy, drift rapidly accumulates in the presence of moving objects. To overcome this, we learn actions that lead to drift-minimized navigation through a suitable set of reward and penalty functions. We use Proximal Policy Optimization, a class of Deep Reinforcement Learning methods, to learn the actions that result in drift-minimized trajectories. We show by extensive comparisons on a variety of synthetic, yet photo-realistic scenes made available through the CARLA Simulator the superior performance of the proposed framework vis-á-vis methods that do not adopt such policies.",
+  "venue": "2022 American Control Conference (ACC)",
+  "citationCount": 1,
+  "doi": "10.23919/acc53348.2022.9867473",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4389042763",
+  "title": "Deep Reinforcement Learning for Autonomous Navigation on Duckietown Platform: Evaluation of Adversarial Robustness",
+  "authors": [
+   "Abdullah Hosseini",
+   "Saeid Houti",
+   "Junaid Qadir"
+  ],
+  "year": 2023,
+  "abstract": "Self-driving cars have gained widespread attention in recent years due to their potential to revolutionize the transportation industry. However, their success critically depends on the ability of reinforcement learning (RL) algorithms to navigate complex environments safely. In this paper, we investigate the potential security risks associated with end-to-end deep RL (DRL) systems in autonomous driving environments that rely on visual input for vehicle control, using the open-source Duckietown platform for robotics and self-driving vehicles. We demonstrate that current DRL algorithms are inherently susceptible to attacks by designing a general state adversarial perturbation and a reward tampering approach. Our strategy involves evaluating how attacks can manipulate the agent's decision-making process and using this understanding to create a corrupted environment that can lead the agent towards low-performing policies. We introduce our state perturbation method, accompanied by empirical analysis and extensive evaluation, and then demonstrate a targeted attack using reward tampering that leads the agent to catastrophic situations. Our experiments show that our attacks are effective in poisoning the learning of the agent when using the gradient-based Proximal Policy Optimization algorithm within the Duckietown environment. The results of this study are of interest to researchers and practitioners working in the field of autonomous driving, DRL, and computer security, and they can help inform the development of safer and more reliable autonomous driving systems.",
+  "venue": "",
+  "citationCount": 1,
+  "doi": "10.1109/isncc58260.2023.10323905",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W7131097901",
+  "title": "Multimodal AI-Based Robot Autonomous Navigation and Decision Optimization in Complex Dynamic Environments",
+  "authors": [
+   "Gangzheng Zhang",
+   "Bocheng Shi",
+   "Menglu Xuan",
+   "Jie Chen"
+  ],
+  "year": 2025,
+  "abstract": "Traditional single-modal navigation pipelines suffer from illumination variance, occlusions, and poor generalization under highly dynamic scenarios. We propose a four-stage closed-loop framework- “multimodal perception, feature fusion, navigation modeling, decision optimization”-to boost the autonomous mobility of service robots. First, a Multimodal Transformer (MM-Transformer) is designed to align visual, LiDAR, and IMU features through spatio-temporal cross-attention and adaptive weighting. Second, a hybrid “geometric + semantic” dynamic map is updated at 10 Hz while a novel Dynamic-RRT* planner fuses kinodynamic and social constraints. Third, a multi-objective Proximal Policy Optimization (PPO) policy is trained to trade off localization accuracy, path efficiency, and energy cost. Extensive experiments on a TurtleBot4 platform are conducted in indoor corridors (high pedestrian density) and outdoor campus roads (mixed traffic). Compared with the baseline LOAM+EKF fusion, our method reduces Absolute Trajectory Error / Relative Pose Error by <tex xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">$\\mathbf{2 5} \\boldsymbol{\\%} \\boldsymbol{-} \\mathbf{3 0} \\boldsymbol{\\%}$</tex>, improves dynamic obstacle avoidance success rate by <tex xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">$\\mathbf{1 5} \\boldsymbol{\\%} \\boldsymbol{-} \\mathbf{2 0} \\boldsymbol{\\%}$</tex>, and yields 20% <tex xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">$\\mathbf{2 5} \\boldsymbol{\\%}$</tex> higher composite decision score while keeping decision latency below 100 ms. The proposed framework offers a deployable and cost-effective solution for robust robot navigation in real-world dynamic environments.",
+  "venue": "",
+  "citationCount": 0,
+  "doi": "10.1109/ricai68060.2025.11384827",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W3208652227",
+  "title": "Learning Actions for Drift-Free Navigation in Highly Dynamic Scenes",
+  "authors": [
+   "Mohd Omama",
+   "Venkatesh Sripada",
+   "Sandeep Chinchali",
+   "K. Madhava Krishna"
+  ],
+  "year": 2021,
+  "abstract": "We embark on a hitherto unreported problem of an autonomous robot (self-driving car) navigating in dynamic scenes in a manner that reduces its localization error and eventual cumulative drift or Absolute Trajectory Error, which is pronounced in such dynamic scenes. With the hugely popular Velodyne-16 3D LIDAR as the main sensing modality, and the accurate LIDAR-based Localization and Mapping algorithm, LOAM, as the state estimation framework, we show that in the absence of a navigation policy, drift rapidly accumulates in the presence of moving objects. To overcome this, we learn actions that lead to drift-minimized navigation through a suitable set of reward and penalty functions. We use Proximal Policy Optimization, a class of Deep Reinforcement Learning methods, to learn the actions that result in drift-minimized trajectories. We show by extensive comparisons on a variety of synthetic, yet photo-realistic scenes made available through the CARLA Simulator the superior performance of the proposed framework vis-a-vis methods that do not adopt such policies.",
+  "venue": "arXiv (Cornell University)",
+  "citationCount": 0,
+  "doi": "10.48550/arxiv.2110.14928",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4391186964",
+  "title": "Acquisition of Autonomous Navigation Models for Mobile Robots by Deep Reinforcement Learning in Automatically Generated Urban Simulation Environments Including Pedestrians",
+  "authors": [
+   "Kei Soutome",
+   "Kazuyuki Morioka"
+  ],
+  "year": 2023,
+  "abstract": "This paper presents an acquisition method of autonomous navigation models for mobile robots by deep reinforcement learning in the game engine Unity. In this study, the mobile robots are required to reach goals in virtual urban environments while avoiding pedestrians using only a monocular camera and positional information, without using any 3D range data from laser sensors. The navigation models are trained by performing reinforcement learning based on Proximal Policy Optimization and input images to predict the pedestrians’ movements including last five frames. As a result of curriculum learning, the robot was able to reach goals at a rate of more than 80% in both of the navigations on the sidewalk and in crosswalks.",
+  "venue": "The Proceedings of JSME annual Conference on Robotics and Mechatronics (Robomec)",
+  "citationCount": 0,
+  "doi": "10.1299/jsmermd.2023.2a2-f27",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W7113319238",
+  "title": "Leveraging ground penetrating radar with deep reinforcement learning for subsurface-informed navigation in autonomous agricultural robotics",
+  "authors": [
+   "Rettore, Riccardo"
+  ],
+  "year": 2025,
+  "abstract": "Reinforcement Learning (RL), driven by advances in Deep Learning, has recently achieved remarkable success in solving complex decision-making problems across a wide range of do- mains, such as robotics, autonomous driving, and large-scale language modeling. These sys- tems can now perform high-level reasoning, perception-action coordination, and long-horizon planning directly from raw sensory data. From robotic arms mastering dexterous manipula- tion, to autonomous vehicles navigating complex environments, to conversational agents that understand and generate human-like language, modern RL systems are now solving challenges once thought out of reach. Initially celebrated for mastering games like Go and StarCraft, RL has evolved toward real-world applications, with robotics emerging as one of the most promising domains. Recent breakth- roughs by leading organizations such as NVIDIA, Tesla, and Google DeepMind have shown the promise of combining Deep Reinforcement Learning with large-scale simulation and real-word data to train agents capable of performing complex tasks, from dexterous manipulation to agile locomotion in unstructured environments. Among emerging domains, precision agriculture presents a promising opportunity for inte- lligent robotic systems. Despite its potential, this field has seen limited exploration of Deep RL. However, as challenges related to water scarcity, food security, and sustainability intensify, the need for intelligent, adaptive systems in agriculture becomes increasingly critical. Robotic systems equipped with advanced sensing and learning capabilities holds the promise of revo- lutionizing the way soil and crop conditions are monitored and managed. This thesis addresses this gap by proposing novel reinforcement learning frameworks for au- tonomous navigation in agricultural environments, driven also by subsurface field conditions. Specifically, Ground Penetrating Radar (GPR) is used as the primary sensing modality to en- able both soil monitoring and environment-aware decision-making. This sensor is selected for its non-destructive nature and its unique ability to reveal underground structures, such as soil layers and moisture distribution, which are critical for precision agriculture. The project be- gins with the acquisition and processing of real GPR data, which are compressed into structu- red latent representations using custom convolutional autoencoders. These compact encodings serves as observation inputs for the RL agents which operate in simulation environments built on the Gymnasium framework. Both discrete and continuous space-action spaces are explo- red under varying environmental complexities. Within these custom environments, agents are trained for goal-directed navigation while adapting to varying subsurface conditions. The trai- ning pipeline leverages state-of-the-art algorithms such as Proximal Policy Optimization and Soft Actor-Critic, enabling the agents to learn effective policies in both discrete and continuous scenarios. Experimental results demonstrate that the agents learn effective policies that leverage subsurfa- ce information for informed navigation. This work provides a novel integration of deep RL and geophysical sensing for agricultural robotics, offering scalable solutions for autonomous soil monitoring and subsurface-aware navigation in agriculture. By bridging GPR-based sensing with deep RL, this project contributes a foundation for next-generation agricultural systems capable of data-driven, non-destructive environmental exploration and decision-making.",
+  "venue": "UPCommons institutional repository (Universitat Politècnica de Catalunya)",
+  "citationCount": 0,
+  "doi": "",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W7138844344",
+  "title": "Mechanically Grounded Optimization Framework for Enhanced Robotic Design and Performance",
+  "authors": [
+   "Kumar M.R. Pavan",
+   "Korhan Cengiz"
+  ],
+  "year": 2026,
+  "abstract": "Human response time, constrained maneuverability in dynamic battlefield environments, and high communication latency in GPS-denied or jammed environments are the main drawbacks of conventional defense systems that are highly reliant on human observation and remotely operated robots. During the critical course of operations, such vulnerabilities compromise personnel safety alongside operational efficiency. To address such issues, we introduce ARMSec, an Autonomous Robotic Monitoring System comprising a Vision-based Threat Assessment Module (VTAM) and a Multi-Agent Reinforcement Learning (MARL) framework to enable autonomous navigation and real-time decision-making in adversarial and unstructured environments. ARMSec deploys a swarm of heterogeneous robotic agents with LIDAR, infrared cameras, and encrypted communication modules. Distributed attention mechanism and Proximal Policy Optimization (PPO) are utilized in training the system so that the system is enabled to detect suspect behavior, allocate dynamic patrol, and activate countermeasures independently. Relative to earlier semi-autonomous systems, experimental deployment in a simulated urban warfare scenario (constructed with Gazebo and ROS) had a 94.8% mission success rate, a 67.4% decrease in threat response time, and a 91.3% decrease in undetected incursions. Moreover, ARMSec demonstrated consistent performance under signal jamming and bad weather, affirming its robustness. The suggested framework makes integration with national defense communication networks easy and can be fully integrated on commercially sold autonomous platforms. ARMSec is an efficient and secure alternative for the next generation defense systems since it offers a radical enhancement in autonomous battlefield intelligence as well as perimeter defense.",
+  "venue": "",
+  "citationCount": 0,
+  "doi": "10.1201/9781003663461-3",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4414648316",
+  "title": "Application of Reinforcement Learning for Developing Tactics for Using INS in the Event of Information Failures",
+  "authors": [
+   "Vladislav G. Karaulov",
+   "Oleg V. Zaitsev",
+   "E. V. Dranitsyna"
+  ],
+  "year": 2025,
+  "abstract": "This article explores the application of Reinforcement Learning (RL) for developing tactics for using Inertial Navigation Systems (INS) in the event of information failures. The study focuses on an unmanned vehicle traveling from point A to point B, equipped with a navigation complex comprising three INS units. The proposed solution involves dynamically adjusting the trust coefficients for INS output data using the Proximal Policy Optimization (PPO) algorithm. Simulation results demonstrate a significant reduction in positioning errors, with radial errors reduced by 2–25 times across various test scenarios. The results highlight the potential of RL for enhancing the reliability of autonomous navigation systems, particularly in marine robotics, where such applications remain underexplored.",
+  "venue": "",
+  "citationCount": 0,
+  "doi": "10.1109/rusautocon65989.2025.11177362",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W7116722405",
+  "title": "Long-Short Time Memory-Driven Deep Reinforcement Learning Approaches for Trajectory Tracking Control of Ground Mobile Vehicle",
+  "authors": [
+   "José Alcayaga Alcayaga",
+   "Alvaro Prado Romo"
+  ],
+  "year": 2025,
+  "abstract": "Autonomous driving in mining environments suffers from degraded performance due to complex topography and external disturbances. This study evaluates Deep Reinforcement Learning (DRL) approaches for robust trajectory tracking control of a skid-steer mobile robot. Four DRL algorithms-Proximal Policy Optimization (PPO), Deep Deterministic Policy Gradient (DDPG), Twin Delayed DDPG (TD3), and Soft Actor-Critic (SAC)-are tested under varying environmental conditions. Additionally, Long Short-Term Memory (LSTM) networks are explored to handle partially observable environments, enabling agents to infer full system states from historical data. Agents were trained on a lemniscate trajectory, tested on a square path, and exposed to disturbances, successfully tracking position, orientation, and speed references. The results highlight the potential of memory-augmented DRL in autonomous navigation within unstructured and uncertainty maneuverability environments.",
+  "venue": "",
+  "citationCount": 0,
+  "doi": "10.1109/icarm65671.2025.11293722",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4415318205",
+  "title": "HyPlan: Hybrid Learning-Assisted Planning Under Uncertainty for Safe Autonomous Driving",
+  "authors": [
+   "Donald Pfaffmann",
+   "Matthias Klusch",
+   "Marcel Steinmetz"
+  ],
+  "year": 2025,
+  "abstract": "We present a novel hybrid learning-assisted planning method, named HyPlan, for solving the collision-free navigation problem for self-driving cars in partially observable traffic environments. HyPlan combines methods for multi-agent behavior prediction, deep reinforcement learning with proximal policy optimization and approximated online POMDP planning with heuristic confidence-based vertical pruning to reduce its execution time without compromising safety of driving. Our experimental performance analysis on the CARLA-CTS2 benchmark of critical traffic scenarios with pedestrians revealed that HyPlan may navigate safer than selected relevant baselines and perform significantly faster than considered alternative online POMDP planners.",
+  "venue": "arXiv (Cornell University)",
+  "citationCount": 0,
+  "doi": "10.48550/arxiv.2510.07210",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4412676490",
+  "title": "AI to the Rescue Deploying Swarm-Based Microagents for Autonomous Search and Relief in Crisis Zones Using Deep Reinforcement Learning",
+  "authors": [
+   "Muhammad Ahmad Shahid",
+   "Shehryar Ali",
+   "Abdur Rafay Goraya",
+   "Mudassar Rauf",
+   "Rayyan Babar"
+  ],
+  "year": 2025,
+  "abstract": "This paper presents the potential of applying deep reinforcement learning (DRL) and combining them with swarm-based microagents to enable autonomous functioning that can be utilized in emergency and disaster response. This is done by utilizing a sum of the behavior of decentralized robotic agents to achieve effective navigation, search and rescues, and delivery of essential supplies, in dynamic and hazardous conditions. Driving such microagents with DRL algorithms, like Deep Q-Networks (DQN) or Proximal Policy Optimization (PPO), allows them to work with complex data and update their decision-making policies on a real-time basis. There are also frameworks such as Microagent that facilitate easy coordination of different agents, which is a major factor when in crisis situations where stakes are high. Although they have some promise, practical implementation of these systems can be questioned due to restrictions related to infrastructure, difficulties as far as coordination is concerned as well as ethical concerns, especially when it comes to accountability in decentralized systems. The other factor that is explored in this study is the disadvantages of the existing simulation environments and how much essential it is to overcome such hindrances in order to achieve the highest utility to the actual experience which ought to be the end goal of any simulation environment. In the future, larger-scale, more resilient and cooperative swarm intelligence is seen to have the potential to radically change disaster response and other high-risk applications, and the improvements of optimization methods, robustness and security are deemed to be catalysts.",
+  "venue": "ACADEMIA International Journal for Social Sciences",
+  "citationCount": 0,
+  "doi": "10.63056/acad.004.03.0456",
+  "query": "\"proximal policy optimization\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4391099967",
+  "title": "Deep Reinforcement Learning for Autonomous Driving with an Auxiliary Actor Discriminator",
+  "authors": [
+   "Qiming Gao",
+   "Fangle Chang",
+   "Jiahong Yang",
+   "Tao Yu",
+   "Longhua Ma",
+   "Hongye Su"
+  ],
+  "year": 2024,
+  "abstract": "In the research of robot systems, path planning and obstacle avoidance are important research directions, especially in unknown dynamic environments where flexibility and rapid decision makings are required. In this paper, a state attention network (SAN) was developed to extract features to represent the interaction between an intelligent robot and its obstacles. An auxiliary actor discriminator (AAD) was developed to calculate the probability of a collision. Goal-directed and gap-based navigation strategies were proposed to guide robotic exploration. The proposed policy was trained through simulated scenarios and updated by the Soft Actor-Critic (SAC) algorithm. The robot executed the action depending on the AAD output. Heuristic knowledge (HK) was developed to prevent blind exploration of the robot. Compared to other methods, adopting our approach in robot systems can help robots converge towards an optimal action strategy. Furthermore, it enables them to explore paths in unknown environments with fewer moving steps (showing a decrease of 33.9%) and achieve higher average rewards (showning an increase of 29.15%).",
+  "venue": "Sensors",
+  "citationCount": 4,
+  "doi": "10.3390/s24020700",
+  "query": "\"actor-critic\" AND \"path planning\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4394910042",
+  "title": "Attention-Based Value Classification Reinforcement Learning for Collision-Free Robot Navigation",
+  "authors": [
+   "Chao Sun",
+   "Xing Wu",
+   "Yuanda Wang",
+   "Changyin Sun"
+  ],
+  "year": 2024,
+  "abstract": "Collision avoidance is a crucial technique to achieve safe and efficient robotic vehicle navigation in unknown environments. However, moving obstacles with unpredictability in dynamic scenarios, usually increase the difficulty and complexity in collision avoidance of robotic vehicles. To enhance the stability of collision avoidance and boost its adaptability to uncertain dynamic scenes, a new attention-based value classification actor-critic (AVCAC) architecture is proposed. It is an end-to-end robot navigation model that utilizes imperfect local observation to directly plan accurate collision-free motion commands. First, we design a value-classified rollout replaybuffer to categorize the experiences into different pools. It can prevent any overfitting or bias that may result from repeatedly sampling experiences of a certain type during policy learning. Then, we improve the conventional actor-critic network with a multi-head local attention module to extract the local observations at entity-level. This way, the collision avoidance system can focus on key environmental features to operate more efficiently and respond more swiftly to dynamic changes in the environment. Moreover, a lookahead multi-step prediction (LMP) reward setting is devised in the AVCAC-based reinforcement learning (RL) framework to facilitate more informed and forward-looking decision-making. Finally, the policy entropy (PE) and policy delay (PD) are extended to AVCAC model to enhance policy exploration and make policy more robust. Extensive experimental results reveal that our method can generate time-efficient and collision-free guide paths to dodge collisions under complex dynamic environments.",
+  "venue": "IEEE Transactions on Intelligent Vehicles",
+  "citationCount": 6,
+  "doi": "10.1109/tiv.2024.3391007",
+  "query": "\"actor-critic\" AND \"path planning\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4415716309",
+  "title": "Adaptive Multi-Agent Coordination for Urban Medicine Delivery in Elderly Care Facilities",
+  "authors": [
+   "Sushil Pokhrel"
+  ],
+  "year": 2025,
+  "abstract": "In senior care facilities, where staff availability is limited and patient needs are timesensitive, effective and dependable medication delivery systems are essential. These issues are successfully addressed by multi-robot systems that use adaptive Multi-Agent Reinforcement Learning (MARL) to coordinate Autonomous Mobile Robots (AMRs) for on-time delivery. These systems improve operational efficiency in care facilities by enabling navigation of complex environments with both static and dynamic obstacles by utilizing powerful simulations (e.g., Webots). By integrating sophisticated MARL algorithms like Factored Centralized Actor-Critic (FACMAC) and Counterfactual Multi-Agent (COMA) into the Robot Operating System 2 (ROS 2) framework and the PyTorch library, it is possible to allocate tasks adaptively and enhance the coordination of multiple robots in real-time scenarios with varying human interactions. These algorithms improve the robots' capacity to anticipate and react to people's movements within the assisted living facility. Extensive training results show that MARLcoordinated robots achieve 92-95% completion rates with fewer collisions and improved routing efficiency, significantly outperforming classical multi-agent path finding(MAPF) systems. Insights also highlight the potential for deploying multiple physical robots and emphasize the significance of using digital twin simulations for safe training environments. The results corroborate the expanding body of research that argues for the use of intelligent robotic systems in eldercare to improve care quality and alleviate caregiver shortages. To sum up, the use of sophisticated algorithms in robotics creates the foundation for more effective and efficient drug delivery systems in senior care settings. Future research should concentrate on applying learned policies from simulation to real-world applications while maintaining ethical considerations, especially with regard to the dynamics of the relationship between elderly patients and robots.",
+  "venue": "",
+  "citationCount": 0,
+  "doi": "10.36227/techrxiv.176186833.39704028/v1",
+  "query": "\"actor-critic\" AND \"dynamic routing\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W7124149305",
+  "title": "SEVAC: Sample Efficient Variational Actor Critic for Reliable Navigation Learning in Uncertain Topological Networks",
+  "authors": [
+   "Hongliang Guo",
+   "Yu Wang",
+   "Jing Zhang",
+   "Anguo Zhang"
+  ],
+  "year": 2026,
+  "abstract": "This article investigates the reliable navigation problem, which requires that the ego vehicle navigates itself to the destination with the maximized stochastic on-time arrival (SOTA) probability in a given <italic xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">uncertain</i> topological transportation network. One distinctive characteristic of the SOTA problem explored in this paper is the inherent uncertainty stemming from the underlying network's topology, i.e., some of the edges might become untraversable during navigation. To the best of our knowledge, almost all conventional SOTA solutions presume that the network topology remains the same during the ego vehicle's navigation process. However, when facing uncertainties in the network's topology, these algorithms may experience a significant performance degradation. To address the challenge of uncertain network topology, we first formulate the special reliable navigation problem into the <italic xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">variational</i> Markov decision process (MDP) framework, and then initiate a new reinforcement learning (RL)-based algorithm, namely sample efficient variational actor critic (SEVAC) as its solution. SEVAC comprises the variational policy gradient (VPG) module, which optimizes the vehicle's routing policy, and the masked temporal difference (MTD) module, which approximates the underlying routing policy's SOTA probability. Both modules are extended to their off-policy counterparts, namely off-policy VPG and off-policy MTD, to improve the algorithm's sample efficiency. SEVAC is compared with several conventional SOTA solutions as well as Canadian traveller problem (CTP) algorithms in a variety of commonly used transportation test networks, and achieves the best overall SOTA performance. Furthermore, we validate SEVAC's application to real-world scenarios by navigating a physical robot in a self-constructed indoor environment as well as a real-world building environment with uncertain topology.",
+  "venue": "IEEE Transactions on Robotics",
+  "citationCount": 0,
+  "doi": "10.1109/tro.2026.3653857",
+  "query": "\"actor-critic\" AND \"vehicle routing\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4327971797",
+  "title": "Reinforcement and Curriculum Learning for Off-Road Navigation of an UGV with a 3D LiDAR",
+  "authors": [
+   "Manuel Sánchez-Montero",
+   "Jesús Morales",
+   "Jorge L. Martínez"
+  ],
+  "year": 2023,
+  "abstract": "This paper presents the use of deep Reinforcement Learning (RL) for autonomous navigation of an Unmanned Ground Vehicle (UGV) with an onboard three-dimensional (3D) Light Detection and Ranging (LiDAR) sensor in off-road environments. For training, both the robotic simulator Gazebo and the Curriculum Learning paradigm are applied. Furthermore, an Actor-Critic Neural Network (NN) scheme is chosen with a suitable state and a custom reward function. To employ the 3D LiDAR data as part of the input state of the NNs, a virtual two-dimensional (2D) traversability scanner is developed. The resulting Actor NN has been successfully tested in both real and simulated experiments and favorably compared with a previous reactive navigation approach on the same UGV.",
+  "venue": "Sensors",
+  "citationCount": 10,
+  "doi": "10.3390/s23063239",
+  "query": "\"actor-critic\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4411725096",
+  "title": "A Neuro-Inspired Control Architecture to Enhance Robot Self-Preservation and Adaptation in Autonomous Navigation Tasks",
+  "authors": [
+   "Andrea Usai",
+   "Alessandro Rizzo"
+  ],
+  "year": 2025,
+  "abstract": "Ensuring survival and self-preservation is essential to design intelligent robots that adapt to dynamic and unfamiliar environments. Inspired by the dual-pathway model from neuroscience, we introduce a control architecture designed to ensure the adaptability of robotic behavior during navigation. This approach parallels the neuroscientific “Low Road” paradigm by incorporating constructs resembling the thalamus, implemented as a nonlinear filter; the amygdala, modeled as a Soft Actor-Critic (SAC) reinforcement learning agent; and the brainstem-cerebellum connection, represented by a Nonlinear Model Predictive Controller (NMPC). Our findings indicate superior adaptiveness, generalizability, and computational efficiency compared to standard NMPCs and Artificial Potential Fields in both static and dynamic environments with obstacles of varying risk levels.",
+  "venue": "IEEE Robotics and Automation Letters",
+  "citationCount": 1,
+  "doi": "10.1109/lra.2025.3583630",
+  "query": "\"actor-critic\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4387118678",
+  "title": "Efficient Focus Autoencoders for Fast Autonomous Flight in Intricate Wild Scenarios",
+  "authors": [
+   "Kaiyu Hu",
+   "Huanlin Li",
+   "Jiafan Zhuang",
+   "Zhifeng Hao",
+   "Zhun Fan"
+  ],
+  "year": 2023,
+  "abstract": "The autonomous navigation of aerial robots in unknown and complex outdoor environments is a challenging problem that typically requires planners to generate collision-free trajectories based on human expert rules for fast navigation. Presently, aerial robots suffer from high latency in acquiring environmental information, which limits the control strategies that the vehicle can implement. In this study, we proposed the SAC_FAE algorithm for high-speed navigation in complex environments using deep reinforcement learning (DRL) policies. Our approach consisted of a soft actor–critic (SAC) algorithm and a focus autoencoder (FAE). Our end-to-end DRL navigation policy enabled a flying robot to efficiently accomplish navigation tasks without prior map information by relying solely on the front-end depth frames and its own pose information. The proposed algorithm outperformed existing trajectory-based optimization approaches at flight speeds exceeding 3 m/s in multiple testing environments, which demonstrates its effectiveness and efficiency.",
+  "venue": "Drones",
+  "citationCount": 5,
+  "doi": "10.3390/drones7100609",
+  "query": "\"actor-critic\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W4404650329",
+  "title": "Trajectory Tracking Using Frenet Coordinates with Deep Deterministic Policy Gradient",
+  "authors": [
+   "Tongzhou Jiang",
+   "Lipeng Liu",
+   "Junyue Jiang",
+   "Tianyao Zheng",
+   "Yuhui Jin",
+   "Kunpeng Xu"
+  ],
+  "year": 2024,
+  "abstract": "This paper studies the application of the DDPG algorithm in trajectory-tracking tasks and proposes a trajectorytracking control method combined with Frenet coordinate system. By converting the vehicle's position and velocity information from the Cartesian coordinate system to Frenet coordinate system, this method can more accurately describe the vehicle's deviation and travel distance relative to the center line of the road. The DDPG algorithm adopts the Actor-Critic framework, uses deep neural networks for strategy and value evaluation, and combines the experience replay mechanism and target network to improve the algorithm's stability and data utilization efficiency. Experimental results show that the DDPG algorithm based on Frenet coordinate system performs well in trajectory-tracking tasks in complex environments, achieves high-precision and stable path tracking, and demonstrates its application potential in autonomous driving and intelligent transportation systems. Keywords- DDPG; path tracking; robot navigation",
+  "venue": "arXiv (Cornell University)",
+  "citationCount": 2,
+  "doi": "10.48550/arxiv.2411.13885",
+  "query": "\"actor-critic\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W2892320022",
+  "title": "Path Following in Simulated Environments using the A3C Reinforcement Learning Method",
+  "authors": [
+   "Emil Andreas Lund"
+  ],
+  "year": 2018,
+  "abstract": "Using reinforcement learning as a part of a Guidance, Navigation and Control (GNC) system is a relatively unexplored field. This thesis explores the use of deep reinforcement learning in a path following control algorithm in a realistic simulated environment. A reinforcement learning method called the Asynchronous Advantage Actor-Critic (A3C) method has been implemented using artificial neural networks to model the learning, making it \\\\textit{deep} reinforcement learning. In addition, the software needed to use the V-REP robot simulator together with the A3C algorithm was developed. This was used to successfully learn to control a vehicle model in a path following situation in the V-REP simulator. In addition, the algorithm was used to learn to control a much simpler ship model simulated without V-REP. It was found that the learned behavior from the ship model could be transferred and used to control the vehicle model in the more complex environment, substantially speeding up the total time of learning process for the vehicle.",
+  "venue": "Duo Research Archive (University of Oslo)",
+  "citationCount": 1,
+  "doi": "",
+  "query": "\"actor-critic\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W7130679527",
+  "title": "Self-Calibrating UAS Navigation: Reinforcement Learning Approaches for Horizontal Trajectory Estimation",
+  "authors": [
+   "Shirin Nasr-Esfahani",
+   "S. Jagannathan"
+  ],
+  "year": 2026,
+  "abstract": "Accurate unmanned aerial vehicle (UAV) trajectory estimation is essential for autonomous navigation, particularly in GPS-denied environments. Visualodometry and simultaneous localization and mapping (SLAM) approaches require precise camera intrinsic parameters, which are typically obtained through predefined or offline calibration. Instead, in this work, we propose a reinforcement learning (RL)-based self-calibration framework that estimates camera intrinsic parameters directly from monocular video sequences, without requiring prior knowledge of the camera, environment, or calibration targets. This intrinsic parameter estimation is then leveraged to achieve robust UAV trajectory estimation using only video data. We formulate the problem as a sequential decision-making task, where an RL agent iteratively refines intrinsic parameters (focal lengths and principal point) by minimizing projection error. The proposed framework is implemented using the Soft Actor-Critic (SAC) algorithm, which is well-suited for continuous action spaces and promotes efficient exploration. We validate our approach on real-world datasets, which provide ground truth intrinsic parameters and trajectory data. Our results demonstrate that the estimated intrinsic parameters enable effective UAV trajectory reconstruction in GPS-denied environments, showing promising results. Thereby, this approach enables the estimation of the UAV's 3D trajectory without prior knowledge of the camera.",
+  "venue": "IEEE Transactions on Aerospace and Electronic Systems",
+  "citationCount": 0,
+  "doi": "10.1109/taes.2026.3666833",
+  "query": "\"actor-critic\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ },
+ {
+  "paperId": "oa_W7140119537",
+  "title": "Wheeled-Robot Navigation in Harsh Environments Using Deep Reinforcement Learning—Systematic Literature Review and Taxonomy",
+  "authors": [
+   "Eslam Mohamed",
+   "A Sousa",
+   "Filipe Neves dos Santos"
+  ],
+  "year": 2026,
+  "abstract": "Wheeled mobile robots are increasingly deployed in harsh environments where dense obstacles, traps, variable terrain, soil effects, tight energy budgets, and sensor noise often deem classical navigation stacks insufficient. This paper presents a PRISMA-guided systematic review of recent work on Deep Reinforcement Learning (DRL) for wheeled ground-robot navigation in harsh environments and organizes the field via a practical six-dimensional taxonomy: environmental challenges, navigation architecture, observation modality, action strategy, action space, and learning algorithm. The taxonomy is refined through an iterative, evidence-grounded coding process on the included studies, and applied under a transparent coding protocol to support reproducible categorization. Across the literature, DRL appears both as a planner module as well as end-to-end policy (behavior) implementer tool. Regarding observation, mapless navigation based on LiDAR or cameras are prevalent. Actions are predicted mostly one time step ahead and are continuous. Actor–critic methods are prevalent, notably PPO and SAC are the common DRL methods used. As for the evaluation methodology, it remains largely simulation-based, with only limited sim-to-real protocols. Building on these findings, we use the previously mentioned taxonomy to identify common design choices for navigation in harsh terrains, propose minimum reporting practices to enable reproducible comparison, and propose research directions including energy-aware learning, improved robustness to sensor degradation, all weather soil–vehicle interaction modeling, short-horizon look-ahead for stability and smoothness, standardized tasks and metrics. The proposed taxonomy and guidelines, as well as identified trends, intend to help researchers and practitioners select methods that best suits their own objectives and constraints, thus hopefully accelerating progress from promising simulation results to dependable, field-ready autonomy.",
+  "venue": "IEEE Access",
+  "citationCount": 0,
+  "doi": "10.1109/access.2026.3676650",
+  "query": "\"actor-critic\" AND \"navigation\"",
+  "source": "gate1_openalex"
+ }
+]

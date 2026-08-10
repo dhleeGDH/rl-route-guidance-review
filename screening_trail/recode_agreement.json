@@ -1,0 +1,26 @@
+{
+  "n": 28,
+  "fields": {
+    "predictive_representation": {
+      "label": "state form",
+      "raw": 67.9,
+      "kappa": 0.33,
+      "ac1": 0.62,
+      "categories": 4
+    },
+    "reward_temporality": {
+      "label": "reward temporality",
+      "raw": 64.3,
+      "kappa": 0.38,
+      "ac1": 0.56,
+      "categories": 4
+    },
+    "generalization_mechanism": {
+      "label": "generalization mechanism",
+      "raw": 60.7,
+      "kappa": 0.31,
+      "ac1": 0.56,
+      "categories": 6
+    }
+  }
+}

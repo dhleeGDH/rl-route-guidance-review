@@ -32,13 +32,19 @@ NET = os.path.join(os.path.dirname(__file__), "grid5.net.xml")
 N = 5                       # 5x5 grid
 
 
-def _boundary_cells(n=N):
+def _boundary_cells(n=None):
+    # n resolves to the module-level N at CALL time. Binding it as a default value instead bound
+    # it once at import, so sumo_recon.py's `sumo_env.N = 7` left both helpers computing 5x5
+    # geometry on a 7x7 network: index 4 counted as the perimeter and the real perimeter at
+    # index 6 carried no exit action. For the 5x5 networks the two forms agree exactly.
+    n = N if n is None else n
     return [(c, r) for c in range(n) for r in range(n)
             if c in (0, n - 1) or r in (0, n - 1)]
 
 
-def _exit_action_at(c, r, n=N):
+def _exit_action_at(c, r, n=None):
     """An off-grid action index available at boundary cell (c,r), or None."""
+    n = N if n is None else n
     from itertools import count
     order = []
     if r == n - 1: order.append(0)   # top

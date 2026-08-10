@@ -1,0 +1,31 @@
+corpus_idx,pdf_path
+3,D:\review_paper\drl-rgs-review\data\pdfs\Hierarchical Reinforcement Learning for Dynamic Autonomous Vehicle Navigation at Intelligent Intersections.pdf
+4,D:\review_paper\drl-rgs-review\data\pdfs\Urban Traffic Route Guidance Method With High Adaptive Learning Ability Under Diverse Traffic Scenarios.pdf
+7,D:\review_paper\drl-rgs-review\data\pdfs\An Adaptive Route Guidance Model Considering the Effect of Traffic Signals Based on Deep Reinforcement Learning.pdf
+9,D:\review_paper\drl-rgs-review\data\pdfs\Development of Reinforcement Learning-based Traffic Predictive Route Guidance Algorithm Under Uncertain Traffic Environment.pdf
+12,D:\review_paper\drl-rgs-review\data\pdfs\Congestion-Aware Path Planning With Vehicle-Road Cooperation in AIoV.pdf
+16,D:\review_paper\drl-rgs-review\data\pdfs\Reinforcement_Learning-based_Sequential_Route_Recommendation_for_System-Optimal__1de72023.pdf
+19,D:\review_paper\drl-rgs-review\data\pdfs\Deep Reinforcement Learning for Vehicle Swarm Navigation and Urban Traffic Optimization.pdf
+27,D:\review_paper\drl-rgs-review\data\pdfs\Optimization Method of DRL-based Route Planning under Limited Resources.pdf
+28,D:\review_paper\drl-rgs-review\data\pdfs\Vehicle-Road Collaborative Path Planning Based on A_star-assisted Deep Reinforcement Learning.pdf
+33,D:\review_paper\drl-rgs-review\data\pdfs\Deep Q-Learning-based Route Optimization for Traffic Network.pdf
+34,D:\review_paper\drl-rgs-review\data\pdfs\Urban Multiple Route Planning Model Using Dynamic Programming in Reinforcement Learning.pdf
+35,D:\review_paper\drl-rgs-review\data\pdfs\GAQ-EBkSP A DRL-based Urban Traffic Dynamic Rerouting Framework using Fog-Cloud Architecture.pdf
+43,D:\review_paper\drl-rgs-review\data\pdfs\Agent-Based Route Planning with Deep Q Learning.pdf
+44,D:\review_paper\drl-rgs-review\data\pdfs\Urban_traffic_dynamic_rerouting_framework_A_DRL-based_model_with_fog-cloud_archi__2318a85b.pdf
+50,D:\review_paper\drl-rgs-review\data\pdfs\Regional route guidance with realistic compliance patterns_Application of deep reinforcement learning and MPC.pdf
+52,D:\review_paper\drl-rgs-review\data\pdfs\Connected vehicles' dynamic route planning based on reinforcement learning.pdf
+57,D:\review_paper\drl-rgs-review\data\pdfs_acquired\idx57_VEGA_Electric_Vehicle_Navigation_Agent.pdf
+59,D:\review_paper\drl-rgs-review\data\pdfs\Applying Markov decision process to adaptive dynamic route selection model.pdf
+63,D:\review_paper\drl-rgs-review\data\pdfs\A_Bi-Level_Network-Wide_Cooperative_Driving_Approach_Including_Deep_Reinforcement_Learning-Based_Routing.pdf
+66,D:\review_paper\drl-rgs-review\data\pdfs\SEGAC_ Sample Efficient Generalized Actor Critic for the Stochast.pdf
+68,D:\review_paper\drl-rgs-review\data\pdfs\Shortest-Time_Path_Planning_Under_Carbon_Emission_Constraints_via_Reinforcement_Learning.pdf
+71,D:\review_paper\drl-rgs-review\data\pdfs\Research_on_Emergency_Rescue_Path_Optimization_Method_Based_on_Deep_Reinforcement_Learning.pdf
+78,D:\review_paper\drl-rgs-review\data\pdfs\Resilient_Multi-Agent_Deep_Reinforcement_Learning_for_Routing_Control_via_Traffic_Cost_Fields.pdf
+79,D:\review_paper\drl-rgs-review\data\pdfs\Dynamic Route Optimization using D Lite and DQN Algorithm.pdf
+83,D:\review_paper\drl-rgs-review\data\pdfs\A_Deep_Q_Learning-Model_Predictive_Control_Approach_to_vehicle_routing_and_control_with_platoon_constraints.pdf
+85,D:\review_paper\drl-rgs-review\data\pdfs_unlocked\Path planning for vehicle platoons under routing decisions a distributed approach combining Deep Reinforcement Learning and Model Predictive Control.pdf
+88,D:\review_paper\drl-rgs-review\data\pdfs\Personalized and Context-aware Route Planning for Edge-assisted Vehicles.pdf
+92,D:\review_paper\drl-rgs-review\data\pdfs\Multi-Objective_Route_Optimization_via_Dueling_DQN_for_Teleoperated_Driving.pdf
+97,D:\review_paper\drl-rgs-review\data\pdfs\HERO_Heterogeneous-agent_rEinforcement_learning-based_Route_Optimization_for_Green_Transportation_in_IoVs.pdf
+101,D:\review_paper\drl-rgs-review\data\pdfs\Energy_Optimal_Route_Planning_Framework_for_Electric_Vehicles_Using_Hybrid_Artificial_Intelligence_Models.pdf

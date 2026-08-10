@@ -25,12 +25,12 @@ FS = 8.0
 plt.rcParams.update({
     "font.size": FS, "axes.titlesize": FS, "axes.labelsize": FS,
     "xtick.labelsize": FS - 0.5, "ytick.labelsize": FS - 0.5, "legend.fontsize": FS - 1.0,
-    "font.family": "serif", "font.serif": ["Times New Roman", "DejaVu Serif"],
+    "font.family": "serif", "font.serif": ["Times New Roman", "Liberation Serif", "DejaVu Serif"],
     "axes.linewidth": 0.6, "xtick.major.width": 0.6, "ytick.major.width": 0.6,
 })
 
 HERE = Path(__file__).parent
-OUT = Path(__file__).resolve().parents[2] / "05_writing" / "figures" / "fig_reward_condition.png"
+OUT = Path(__file__).resolve().parents[2] / "manuscript" / "figures" / "fig_reward_condition.png"
 INK = "#222222"
 CLOSED = "#08519c"
 OPEN = "#a50f15"
@@ -64,8 +64,8 @@ axA.grid(True, alpha=0.3, lw=0.5)
 axA.legend(loc="lower right", frameon=False, fontsize=FS - 1.0, handlelength=1.6)
 # The note sits in the clear band above both curves rather than across them.
 axA.set_ylim(min(mc.min(), mo.min()) * 1.12, 34)
-axA.text(steps[-1] * 0.5, 30, "converges higher: leaving costs almost nothing",
-         fontsize=FS - 1.5, color=OPEN, style="italic", ha="center", va="top")
+axA.text(steps[-1] * 0.5, 30, "boundary-open: higher return",
+         fontsize=FS - 1.5, color=OPEN, ha="center", va="top")
 
 # ---------------- (b) OD trip completion ----------------
 cc = band(axB, "closed_time_min__comp", CLOSED, "boundary-closed", scale=100.0)

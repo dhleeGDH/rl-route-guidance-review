@@ -7,3 +7,4 @@ checkpoint_*/
 *.tune_metadata
 .is_checkpoint
 .ipynb_checkpoints/
+sumo_corridor/sumo_recon_budget_log.txt

@@ -1,0 +1,56 @@
+year,title,doi,venue,decision,reason
+2026,Deep Learning Meets 5G: Optimizing Mobile Network Traffic through AI Algorithms,https://doi.org/10.70917/ijcisim-2026-3304,International Journal of Computer Information Systems and Industrial Management Applications,exclude,communication network
+2026,Flexible Mobile Battery Energy Storage System Control Considering Traffic Congestion Risk,https://doi.org/10.3390/esa3020009,Energy storage and applications,exclude,not a routing task
+2026,Adaptive electric vehicle routing and charging with deep reinforcement learning,https://doi.org/10.1016/j.trip.2025.101795,Transportation Research Interdisciplinary Perspectives,candidate,individual road-vehicle routing at title level
+2026,Integrated Sensing and Communication for Underwater Acoustic Networks Based on Deep Reinforcement Learning,https://doi.org/10.1109/tmc.2026.3678951,IEEE Transactions on Mobile Computing,exclude,underwater network
+2026,Mobility-aware predictive task offloading using deep reinforcement learning for future 6G-inspired vehicular networks,https://doi.org/10.1038/s41598-026-65256-3,Scientific Reports,exclude,computation offloading
+2026,Mobility-Aware Joint Task Offloading and Resource Allocation in SDN-Enabled MEC Networks via Hierarchical Deep Reinforcement Learning,https://doi.org/10.1109/jiot.2026.3685815,IEEE Internet of Things Journal,exclude,computation offloading
+2026,Task Offloading Algorithm Based on Preference Weight Adaptive Multi-objective Reinforcement Learning for Cloud-Assisted Mobile Edge Computing in Internet of Vehicles,https://doi.org/10.1007/s42154-024-00350-8,Automotive Innovation,exclude,computation offloading
+2026,Dynamic optimization scheme driven by incentives in FHVs-enabled MEC systems,https://doi.org/10.1007/s44443-025-00308-8,Journal of King Saud University - Computer and Information Sciences,exclude,computation offloading
+2026,Dynamic Deployment of Mobile Charging Trucks During Natural Disaster Evacuation: An Offline-to-Online Framework,https://doi.org/10.48550/arxiv.2605.16784,arXiv (Cornell University),exclude,fleet deployment
+2026,Dynamic Deployment of Mobile Charging Trucks During Natural Disaster Evacuation: An Offline-to-Online Framework,,arXiv (Cornell University),exclude,fleet deployment
+2026,Countering AI-Powered Threats in IoV: A Secure Task Offloading and Resource Allocation Scheme with RIS and Quantum Reinforcement Learning,https://doi.org/10.1109/tce.2026.3700700,IEEE Transactions on Consumer Electronics,exclude,computation offloading
+2025,Deep Reinforcement Learning and Nash Equilibrium Game-Based Task Offloading Optimization Strategy for the IoV,https://doi.org/10.1109/jsen.2025.3558228,IEEE Sensors Journal,exclude,computation offloading
+2025,Distributed Mobile Wireless Charging Vehicle Scheduling Optimization Based on Deep Reinforcement Learning,https://doi.org/10.1109/emie67682.2025.11369314,,exclude,fleet deployment
+2025,Encoder-Decoder Based Deep Reinforcement Learning for Multi-AUV Assisted Data Collection in UWSNs,https://doi.org/10.1109/tvt.2025.3642544,IEEE Transactions on Vehicular Technology,exclude,"sensing, not a route"
+2025,Multi-Agent Deep Reinforcement Learning for Dynamic Routing in MANETs Using Graph Neural Networks,https://doi.org/10.1109/access.2025.3601994,IEEE Access,exclude,packet routing
+2025,Real-Time Financial and Traffic for Marketing Management Through Deep Learning for IoT-Integrated Autonomous Vehicle System,https://doi.org/10.4018/979-8-3373-0442-7.ch028,Advances in computational intelligence and robotics book series,exclude,not a routing task
+2025,Advancements in AI-Powered Electric Vehicle Routing: Multi-Constraint Optimization and Infrastructure Integration Approaches for Evolving EVs—A Survey,https://doi.org/10.1109/access.2025.3589363,IEEE Access,candidate,individual road-vehicle routing at title level
+2025,Research on Autonomous Vehicle Lane-Keeping and Navigation System Based on Deep Reinforcement Learning: From Simulation to Real-World Application,https://doi.org/10.3390/electronics14132738,Electronics,exclude,driving task
+2025,Computation Offloading and Resource Allocation in Vehicular MEC: A Parameterized Deep Reinforcement Learning Approach,https://doi.org/10.1109/tvt.2025.3574783,IEEE Transactions on Vehicular Technology,exclude,computation offloading
+2025,FAIRM-WSN: A Fault-Aware Intelligent Routing and Maintenance Framework for Enhanced Wireless Sensor Network Performance,https://doi.org/10.1109/icecmsn68058.2025.11383399,,exclude,sensor network routing
+2025,AI-Driven Urban Traffic Optimization for Smart Cities,https://doi.org/10.1109/iccams65118.2025.11234432,,candidate,individual road-vehicle routing at title level
+2025,An Approach to Multi-AAV Ship Detection Based on Mobile Edge Computing Scenarios,https://doi.org/10.1109/tits.2025.3573512,IEEE Transactions on Intelligent Transportation Systems,exclude,computation offloading
+2024,FairSense: Fairness-Aware Urban Sensing with Submodular Spatio-Temporal Reward Maximization,https://doi.org/10.1109/mass62177.2024.00035,,exclude,task allocation
+2024,Dynamic Routing and Scheduling of Mobile Charging Stations for Electric Vehicles Using Deep Reinforcement Learning,https://doi.org/10.1109/pesgm51994.2024.10688695,,exclude,fleet deployment
+2024,Deep Reinforcement Learning based traffic routing on Mobile Edge Networks,https://doi.org/10.1109/i2ct61223.2024.10544087,,exclude,network routing
+2024,"Optimal Joint Vehicle Routing, Battery Redistributing and Recharging Schemes for Mobile Battery Swapping Services",https://doi.org/10.2139/ssrn.5056658,SSRN Electronic Journal,exclude,fleet deployment
+2024,Essays on Traditional and Emerging Transportation Issues,,KU ScholarWorks (The University of Kansas),exclude,thesis collection
+2024,Research on human-computer interaction personalized experience algorithm based on user experience theory,https://doi.org/10.1109/ispcem64498.2024.00115,,exclude,not a routing task
+2024,Information-Entropy-Based Trajectory Planning for AUV-Aided Network Localization: A Reinforcement Learning Approach,https://doi.org/10.1109/jiot.2024.3470019,IEEE Internet of Things Journal,exclude,underwater vehicle
+2023,Joint Energy Replenishment and Data Collection Based on Deep Reinforcement Learning for Wireless Rechargeable Sensor Networks,https://doi.org/10.1109/tce.2023.3327730,IEEE Transactions on Consumer Electronics,exclude,"sensing, not a route"
+2023,An AUV-Assisted Data Gathering Scheme Based on Deep Reinforcement Learning for IoUT,https://doi.org/10.3390/jmse11122279,Journal of Marine Science and Engineering,exclude,underwater vehicle
+2023,Dynamic Data Collection of AUV Based on Deep Reinforcement Learning,https://doi.org/10.1109/icspcc59353.2023.10400308,,exclude,"sensing, not a route"
+2023,An Intelligent Routing Mechanism Based on Deep Reinforcement Learning,https://doi.org/10.1109/iccsn57992.2023.10297377,,exclude,computation offloading
+2023,AUV-Aided Optical—Acoustic Hybrid Data Collection Based on Deep Reinforcement Learning,https://doi.org/10.3390/s23020578,Sensors,exclude,"sensing, not a route"
+2023,Deep Reinforcement Learning-Based Navigation Strategy for a Mobile Charging Station in a Dynamic Environment,https://doi.org/10.1109/sest57387.2023.10257478,,exclude,fleet deployment
+2023,A Deep Reinforcement Learning Decision-Making Approach for Adaptive Cruise Control in Autonomous Vehicles,https://doi.org/10.1109/icar58858.2023.10406331,,exclude,driving task
+2023,LSTM-Aided Selective Beam Tracking in Multi-Cell Scenario for mmWave Wireless Systems,https://doi.org/10.1109/twc.2023.3283267,IEEE Transactions on Wireless Communications,exclude,communication network
+2023,Federated Double Deep Q-Learning-Based Computation Offloading in Mobility-Aware Vehicle Clusters,https://doi.org/10.1109/access.2023.3324718,IEEE Access,exclude,computation offloading
+2022,Learning Based Dynamical Routing Mechanism for Ad Hoc Networks,https://doi.org/10.1109/icait56197.2022.9862732,,exclude,computation offloading
+2022,DeepRLGUIMAT: Deep Reinforcement Learning-based GUI Mobile Application Testing Approach,https://doi.org/10.11606/t.55.2022.tde-03062022-162453,,exclude,software testing
+2022,SmartDet: Context-Aware Dynamic Control of Edge Task Offloading for Mobile Object Detection,https://doi.org/10.1109/wowmom54355.2022.00034,,exclude,computation offloading
+2022,DeepRLGUIMAT: Abordagem de Aprendizado de Máquina Profundo por Esforço Aplicado a Testes de GUI de Aplicações Móveis,,LA Referencia (Red Federada de Repositorios Institucionales de Publicaciones Científicas),exclude,software testing
+2021,Collision Prediction and Optimal Trajectory Generation for Collision Avoidance Systems in Trackless Mobile Machines,https://doi.org/10.1051/matecconf/202134700032,MATEC Web of Conferences,exclude,driving task
+2021,Hindsight Intermediate Targets for Mapless Navigation With Deep Reinforcement Learning,https://doi.org/10.1109/tie.2021.3118407,IEEE Transactions on Industrial Electronics,exclude,robot navigation
+2021,Cybertwin-Driven Federated Learning Based Personalized Service Provision for 6G-V2X,https://doi.org/10.1109/tvt.2021.3133291,IEEE Transactions on Vehicular Technology,exclude,communication network
+2021,Index,https://doi.org/10.1108/978-1-83909-694-520211020,,exclude,front matter
+2021,Multi-Agent Reinforcement Learning for Mobile Crowdsensing Systems with Dedicated Vehicles on Road Networks,https://doi.org/10.1109/itsc48978.2021.9564834,,exclude,task allocation
+2021,Risk-Aware Multi-Agent Path Planning for Target Detection: A Multi-Agent Reinforcement Learning Approach,https://doi.org/10.2514/6.2021-0267,AIAA Scitech 2021 Forum,exclude,"search task, not an OD route"
+2020,Deep Reinforcement Learning for Collaborative Edge Computing in Vehicular Networks,https://doi.org/10.1109/tccn.2020.3003036,IEEE Transactions on Cognitive Communications and Networking,exclude,computation offloading
+2020,Collaborative Computing in Vehicular Networks: A Deep Reinforcement Learning Approach,https://doi.org/10.1109/icc40277.2020.9149333,,exclude,computation offloading
+2019,Exploring Applications of Deep Reinforcement Learning for Real-world Autonomous Driving Systems,https://doi.org/10.5220/0007520300002108,,exclude,driving task
+2019,Exploring applications of deep reinforcement learning for real-world autonomous driving systems,https://doi.org/10.48550/arxiv.1901.01536,arXiv (Cornell University),exclude,driving task
+2019,Exploring applications of deep reinforcement learning for real-world autonomous driving systems,,Research@THEA,exclude,driving task
+2019,Deep Reinforcement Learning for Social-Aware Edge Computing and Caching in Urban Informatics,https://doi.org/10.1109/tii.2019.2953189,IEEE Transactions on Industrial Informatics,exclude,computation offloading
+2018,Ship Collision Avoidance Using Constrained Deep Reinforcement Learning,https://doi.org/10.1109/besc.2018.8697262,,exclude,driving task

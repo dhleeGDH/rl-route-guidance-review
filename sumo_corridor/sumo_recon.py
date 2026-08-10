@@ -43,10 +43,19 @@ N = 7
 
 
 def make_eval_od(n=200, seed=12345, min_sep=4):
+    """Evaluation OD pairs, with destinations drawn the way training draws them.
+
+    The earlier form drew the destination uniformly over all 49 cells. 103 of the 200 pairs then
+    named an interior cell, where the environment offers no arrival action and no policy can
+    complete the trip, so the completion rate was computed over a set half of which was
+    unsatisfiable. Section S-I.E records the same correction for the 5x5 SUMO replication.
+    """
     rng = np.random.RandomState(seed)
+    bcells = sumo_env._boundary_cells()
     ods = []
     while len(ods) < n:
-        o = (rng.randint(N), rng.randint(N)); d = (rng.randint(N), rng.randint(N))
+        o = (rng.randint(N), rng.randint(N))
+        d = bcells[rng.randint(len(bcells))]
         if abs(o[0] - d[0]) + abs(o[1] - d[1]) >= min_sep:
             ods.append((o, d))
     return ods

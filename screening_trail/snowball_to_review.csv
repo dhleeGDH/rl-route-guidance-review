@@ -1,0 +1,26 @@
+﻿include,paperId,title,year,venue,citationCount
+,f5c512846dd79a3c31f30854c223b1bb210a1759,Modeling of route planning system based on Q value-based dynamic programming with multi-agent reinforcement learning algorithms,2014,Engineering applications of artificial intelligence,91
+,943a7e9916dabf0bf0be4e2d136c206c127b2e46,A vehicle path planning method based on a dynamic traffic network that considers fuel consumption and emissions.,2019,Science of the Total Environment,53
+,ee44286f9edcb1008136b6c1bc12da6a24a411cf,A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion game,2020,Applied Mathematics and Computation,53
+,3c34f551f0a29c77aea8322c9b290f19e55921c7,Deep Reinforcement Learning Based Dynamic Route Planning for Minimizing Travel Time,2020,2021 IEEE International Conference on Communications Workshops (ICC Workshops),44
+,855b12302e8de2bb0f1222a24bc3511209ed2b9a,A distributed dynamic route guidance approach based on short-term forecasts in cooperative infrastructure-vehicle systems,2019,Transportation Research Part D: Transport and Environment,36
+,ff7ef6700bb3eeac771d092e629bc7d891423c15,Regional route guidance with realistic compliance patterns: Application of deep reinforcement learning and MPC,2024,Transportation Research Part C: Emerging Technologies,32
+,f59132e0ce18c5833ce19622776a15548c840d6c,Individual versus Difference Rewards on Reinforcement Learning for Route Choice,2014,Brazilian Conference on Intelligent Systems,24
+,5ce79d44a72abf5a6c82accc2ad7658518fc2ec6,A dynamic route guidance arithmetic based on reinforcement learning,2005,International Conference on Machine Learning and Computing,15
+,96c298432361877756deff4b54df0c7d344a6b9b,Route guidance system using multi-agent reinforcement learning,2011,International Conference on Information Technology in Asia,12
+,d2f1eb057384471ff1b4938129097c2f5b9e8c3b,Using Topological Statistics to Bias and Accelerate Route Choice: Preliminary Findings in Synthetic and Real-World Road Networks,2016,ATT@IJCAI,11
+,700dc56e56a0ee1d3c7d4a8e87c9890e05a475eb,Network-aware multi-agent reinforcement learning for the vehicle navigation problem,2022,SIGSPATIAL/GIS,10
+,48f354adff60f8c6eb4d1d39a5fd1e5fa1be34d4,A hierarchical deep reinforcement learning method for solving urban route planning problems under large-scale customers and real-time traffic conditions,2024,International Journal of Geographical Information Science,9
+,797ca0b8232bb993b137a98b53ac520161793cac,Navigating the non-compliance effects on system optimal route guidance using reinforcement learning,2024,Transportation Research Part C: Emerging Technologies,9
+,a84bf5b1d9afed44fb4484b4c017e302588a881d,ACP Based Large-Scale Coordinated Route Planning: From Perspective of Cyber-Physical-Social Systems,2022,2022 IEEE 25th International Conference on Intelligent Transportation Systems (ITSC),7
+,f8994fff1c9c5988c18615e6a89cf319d01c6dab,Social implications of coexistence of CAVs and human drivers in the context of route choice,2025,Scientific Reports,6
+,b1cce370e4b64fcc735bc5b02a6a0597cec1937f,Improving Traffic Efficiency in a Road Network by Adopting Decentralised Multi-Agent Reinforcement Learning and Smart Navigation,2023,Promet - Traffic&amp;Transportation,4
+,0d698414d1b527434b5a2d46a1b5603d57fe617c,Carbon emission-focused dynamic eco-route guidance design for urban expressway systems,2025,Transportmetrica B: Transport Dynamics,4
+,53d0cdec73981d4101c474645d8b08cf08361fd8,Robust Route Planning with Distributional Reinforcement Learning in a Stochastic Road Network Environment,2023,2023 20th International Conference on Ubiquitous Robots (UR),3
+,b61204824bab85fb1b37e30d1b7fca1cab708478,Autonomous Vehicle Routing Optimization in a Competitive Environment: A Reinforcement Learning Application,2018,International Conference on Transportation and Development 2018,3
+,c91a6cd98ff4cef799c3de396784cd0c292e9d91,Social impact of CAVs - coexistence of machines and humans in the context of route choice,2024,arXiv.org,2
+,bf24af62e1d7c2819eec71a1a0518bffc7506d0c,Reinforcement learning-based route planning method for connected vehicles considering real-time road traffic information,2024,"Proceedings of the Institution of mechanical engineers. Part D, journal of automobile engineering",1
+,e4f0e8b013870ccf722f7236e6e4ba950389e3b4,Vehicle–Infrastructure Cooperation Framework for Vehicle Navigation and Traffic Signal Control using Deep Reinforcement Learning,2025,Transportation Research Record,0
+,61064accb8fd8bc6c2b92cf9affa81ace2e452af,Preliminary Study on Cooperative Route Planning Reinforcement Learning with a Focus on Avoiding Intersection Congestion,2024,Future Transportation,0
+,591f0370690cb0c0a57b48e213abc2319063f487,Optimization Method of DRL-based Route Planning under Limited Resources,2023,2023 3rd International Conference on Electronic Information Engineering and Computer (EIECT),0
+,4ecf5e29507f1a52ba2d23494a039e602ec76a90,Vehicle-Road Collaborative Path Planning Based on $\mathbf{A}^{\ast}$ -assisted Deep Reinforcement Learning,2022,2022 IEEE 25th International Conference on Intelligent Transportation Systems (ITSC),0

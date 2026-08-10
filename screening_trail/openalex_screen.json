@@ -1,0 +1,36 @@
+{
+  "pool": 518,
+  "recovered_from_corpus": 31,
+  "carried_to_adjudication": 33,
+  "in_scope_missed": 2,
+  "in_scope_later_by_author": 2,
+  "unresolvable_at_abstract": 3,
+  "dropped": {
+    "EV charging navigation": 3,
+    "communication or power network": 11,
+    "driving control or perception": 36,
+    "fleet, delivery, or VRP": 2,
+    "no learning term": 22,
+    "no road or vehicle term": 4,
+    "no routing term": 12,
+    "not a study record": 1,
+    "out-of-scope class": 342,
+    "prediction or estimation only": 16,
+    "robot or multi-platform navigation": 2,
+    "survey or review": 3
+  },
+  "missed_titles": [
+    "A Constraint-Based Routing and Charging Methodology for Battery Electric Vehicles With Deep Reinforcement Learning",
+    "Hierarchical Sarsa Learning Based Route Guidance Algorithm"
+  ],
+  "state_share": {
+    "as_reported": 18.1,
+    "both_missing": 17.7,
+    "both_meeting": 19.8
+  },
+  "boundary_share": {
+    "as_reported": 20.2,
+    "both_missing": 19.8,
+    "both_meeting": 21.9
+  }
+}

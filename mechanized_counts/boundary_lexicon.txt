@@ -1,0 +1,79 @@
+# Sentence-selection lexicon for the mechanized network-boundary count.
+#
+# WHAT THIS FILE IS. The count of studies that describe their network boundary is the review's
+# second headline figure, and it was produced the same way the state count was, by a reader
+# picking a quotation out of each report. This file fixes the input side of that count. Every
+# pattern traces to a sentence of Section IV-A, quoted in the comment above it.
+#
+# The property Section IV-A defines is a statement in the report that identifies what happens at
+# the edge of the modeled area. A study is recorded as addressing the boundary when its text
+# names the periphery, or names vehicles crossing it, in terms that fix the design. Silence is
+# the other value, and Section IV-A says why silence is common: an unstated design, not an
+# oversight.
+#
+# FORMAT. Section headers in brackets, one Python regular expression per line, case-insensitive,
+# blank lines and lines opening with # ignored.
+
+[SELECT_BOUNDARY]
+# "The property is the boundary condition of the network, set by the peripheral links at the edge
+#  of the modeled area." (Sec. IV-A)
+\bboundar(?:y|ies)\b
+\bperipher(?:y|al)\b
+\bperimeter\b
+\b(?:rim|border|fringe)\s+(?:of|links?|nodes?|intersections?|edges?)\b
+\bedge of the (?:network|grid|map|study area|modeled area|region)\b
+\bcorner (?:nodes?|intersections?|links?|cells?)\b
+# "Vehicles then cannot leave the modeled area." / "some peripheral links terminate or lead out of
+#  the modeled area" / "Vehicles that turn onto one leave the network" (Sec. IV-A)
+\b(?:enter|enters|entering|entered|leave|leaves|leaving|left|exit|exits|exiting|depart|departs)\s+(?:from\s+|into\s+|out of\s+)?(?:the\s+)?(?:simulated\s+|controlled\s+|modeled\s+|road\s+|study\s+)*(?:network|grid|area|region|map)\b
+\b(?:in|out)flows?\s+(?:of|into|from|to)?\s*(?:the\s+)?(?:network|area|region|grid)\b
+\boutside (?:the|of the) (?:network|grid|modeled area|study area|region)\b
+\bexits?\b
+# "Simulation-based evaluations ... commonly place destinations at interior zone centroids and
+#  remove a vehicle once its route completes." (Sec. IV-A)
+\bzone centroids?\b
+\bremoved? (?:from|once) the (?:network|simulation)\b
+
+[DROP_SENTENCE]
+# Text hygiene. These carry a selection token in a sense Section IV-A does not use.
+\bdecision boundar\w*
+\bboundar\w* (?:condition|value) problem
+\bupper boundar\w*
+\blower boundar\w*
+\bboundar\w* of the (?:state|action|feasible) (?:space|set|region)\b
+\bClaims? boundar\w*
+authorized licensed use
+downloaded on \d
+restrictions apply
+creative commons
+all rights reserved
+# Sentences reporting another study rather than this one.
+\[\d{1,3}(?:\s*[,-]\s*\d{1,3})*\]
+\bet al\.
+\(\s*[A-Z][A-Za-z'-]+(?:\s+(?:and|&)\s+[A-Z][A-Za-z'-]+|\s+et al\.)?,?\s+\d{4}[a-z]?\s*\)
+
+[ADDRESSED]
+# The rule. A selected sentence settles the study as addressing its boundary when it fixes what
+# the edge of the modeled area does, in one of the three forms Section IV-A names.
+#
+# Form 1, the periphery named as a distinct part of the network:
+#   "set by the peripheral links at the edge of the modeled area" (Sec. IV-A)
+\bperipher(?:y|al)\b
+\bperimeter\b
+\b(?:rim|border|fringe)\s+(?:of|links?|nodes?|intersections?|edges?)\b
+\bedge of the (?:network|grid|map|study area|modeled area|region)\b
+\bcorner (?:nodes?|intersections?|links?|cells?)\b
+\bboundar(?:y|ies) (?:links?|nodes?|edges?|intersections?|cells?|area|of the (?:network|grid|road))\b
+# Form 2, vehicles crossing the edge:
+#   "Vehicles that turn onto one leave the network without reaching their destination" (Sec. IV-A)
+\b(?:vehicles?|traffic|demand|trips?|agents?|cars?)\b[^.]{0,60}\b(?:enter|enters|entering|entered|leave|leaves|leaving|left|exit|exits|exiting|flow(?:ed|s|ing)? (?:in|out))\b[^.]{0,40}\b(?:the\s+)?(?:simulated\s+|controlled\s+|modeled\s+|road\s+|study\s+)*(?:network|grid|area|region)\b
+\b(?:cannot|can not|could not|unable to) (?:move|go|travel|drive|leave)\b[^.]{0,30}\boutside\b
+\boutside (?:the|of the) (?:network|grid|modeled area|study area|region)\b
+\b(?:in|out)flows?\s+(?:of|into|from|to)?\s*(?:the\s+)?(?:network|area|region|grid)\b
+\bexit (?:points?|links?|nodes?|roads?)\b
+\b(?:three|four|five|six|two|several|multiple|\d+) exits?\b
+# Form 3, the edge given an explicit consequence in the design:
+#   "each absorbing a vehicle that turns onto it" (Sec. IV-A)
+\b(?:penalt\w*|reward|terminat\w*|absorb\w*)\b[^.]{0,60}\bboundar\w*
+\bboundar\w*[^.]{0,60}\b(?:penalt\w*|terminat\w*|absorb\w*)\b
+\bzone centroids?\b

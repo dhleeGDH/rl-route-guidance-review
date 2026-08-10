@@ -1,0 +1,21 @@
+corpus_idx,pdf_path
+3,D:\review_paper\drl-rgs-review\data\pdfs\Hierarchical Reinforcement Learning for Dynamic Autonomous Vehicle Navigation at Intelligent Intersections.pdf
+5,D:\review_paper\drl-rgs-review\data\pdfs\Reinforcement_Learning_for_Vehicle_Route_Optimization_in_SUMO__b886b157.pdf
+14,D:\review_paper\drl-rgs-review\data\pdfs\Reinforcement Learning Method with Dynamic Learning Rate for Real-Time Route Guidance Based on SUMO.pdf
+15,D:\review_paper\drl-rgs-review\data\pdfs\Model-Based Deep Reinforcement Learning for Energy Efficient Routing of a Connected and Automated Vehicle.pdf
+21,D:\review_paper\drl-rgs-review\data\pdfs\Modeling of route planning system based on Q value-based dynamic programming with multi-agent reinforcement learning algorithms.pdf
+22,D:\review_paper\drl-rgs-review\data\pdfs\Individual versus Difference Rewards on Reinforcement Learning for Route Choice.pdf
+25,D:\review_paper\drl-rgs-review\data\pdfs\Navigating the non-compliance effects on system optimal route guidance using reinforcement learning.pdf
+36,D:\review_paper\drl-rgs-review\data\pdfs\Providing real-time en-route suggestions to CAVs for congestion mitigation A two-way deep reinforcement learning approach.pdf
+37,D:\review_paper\drl-rgs-review\data\pdfs\Real-time system optimal traffic routing under uncertainties-Can physics models boost reinforcement learning.pdf
+47,D:\review_paper\drl-rgs-review\data\pdfs\Multi-agent deep reinforcement learning based on cloud-edge computing for urban vehicle route guidance.pdf
+49,D:\review_paper\drl-rgs-review\data\pdfs\Sharing diverse information gets driver agents to learn faster an application in en route trip building.pdf
+55,D:\review_paper\drl-rgs-review\data\pdfs\Deep_Reinforcement_Learning_for_Optimizing_Route_Planning_in_Urban_Traffic.pdf
+57,D:\review_paper\drl-rgs-review\data\pdfs_acquired\idx57_VEGA_Electric_Vehicle_Navigation_Agent.pdf
+65,D:\review_paper\drl-rgs-review\data\pdfs\Graph convolutional network based multi-objective meta-deep Q-learning for eco-routing.pdf
+66,D:\review_paper\drl-rgs-review\data\pdfs\SEGAC_ Sample Efficient Generalized Actor Critic for the Stochast.pdf
+82,D:\review_paper\drl-rgs-review\data\pdfs\Work-in-Progress Leveraging the Selfless Driving Model to Reduce Vehicular Network Congestion.pdf
+87,D:\review_paper\drl-rgs-review\data\pdfs\A_Reinforcement_Learning-Based_Path_Recommendation_Strategy_Considering_Broadcast_Disturbance_and_Behavioral_Response.pdf
+91,D:\review_paper\drl-rgs-review\data\pdfs\Cutting-Edge_Travel_Planner_Intelligent_Route_Recommendation_System_using_Enhanced_Learning_Scheme_with_AI_Principles.pdf
+97,D:\review_paper\drl-rgs-review\data\pdfs\HERO_Heterogeneous-agent_rEinforcement_learning-based_Route_Optimization_for_Green_Transportation_in_IoVs.pdf
+99,D:\review_paper\drl-rgs-review\data\pdfs\Reinforcement_Learning-based_Unpredictable_Emergency_Events.pdf

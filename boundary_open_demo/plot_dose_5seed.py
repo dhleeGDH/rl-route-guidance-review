@@ -3,6 +3,7 @@
 other Section V figures (global 15pt) used in the manuscript.
 """
 import numpy as np
+from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -10,8 +11,13 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({"font.size": 15, "axes.titlesize": 15, "axes.labelsize": 15,
                      "xtick.labelsize": 13, "ytick.labelsize": 13, "legend.fontsize": 12.5})
 
-OUT = r"D:\review_paper\drl-rgs-review\05_writing\figures\fig_v_dose_response.png"
-data = np.load("dose_response_5seed.npy")   # rows: [lambda, mean, std]
+# Paths resolve against this file. The originals carried the Windows figure directory and
+# loaded their inputs from the working directory, so the script ran only from inside its
+# own folder on the machine it was written on.
+HERE = Path(__file__).resolve().parent
+FIGDIR = HERE.parents[1] / "manuscript" / "figures"
+OUT = str(FIGDIR / "fig_v_dose_response.png")
+data = np.load(HERE / "dose_response_5seed.npy")   # rows: [lambda, mean, std]
 lam, mean, std = data[:, 0], data[:, 1] * 100.0, data[:, 2] * 100.0
 
 fig, ax = plt.subplots(figsize=(7.0, 4.3))

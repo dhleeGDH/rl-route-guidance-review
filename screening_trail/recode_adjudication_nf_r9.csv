@@ -1,0 +1,4 @@
+corpus_idx,field,original_value,blind_recode_value,adjudicated_value,outcome
+14,action_granularity,unclear,next-link,next-link,corrected
+14,state_representation,unclear,raw-vector,raw-vector,corrected
+37,state_representation,unclear,raw-vector,raw-vector,corrected

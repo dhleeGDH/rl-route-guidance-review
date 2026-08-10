@@ -26,7 +26,13 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-SCREENED = os.path.join(ROOT, "data", "screened")
+# The corpus lives in experiments/corpus/. It sat in data/screened/ on the machine this
+# was written on, and that path does not exist in the released package, so this script
+# raised FileNotFoundError out of the box while Section II-B said any reader can rerun it.
+CORPUS_DIR = os.path.join(HERE, "corpus")
+# The year is not a column of the corpus, so the period series recovers it by matching
+# titles across the screening CSVs. Those live in experiments/screening_trail/.
+SCREENED = os.path.join(HERE, "screening_trail")
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 TITLE_COLS = ("title", "paper_title", "name")

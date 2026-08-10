@@ -3,6 +3,7 @@
 manuscript figures use.
 """
 import numpy as np
+from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -11,8 +12,12 @@ from plot import STYLE, ORDER, load
 plt.rcParams.update({"font.size": 15, "axes.labelsize": 15, "xtick.labelsize": 13,
                      "ytick.labelsize": 13, "legend.fontsize": 12.5})
 
-FIGDIR = r"D:\review_paper\drl-rgs-review\05_writing\figures"
-data = load("results_10seed.npz")
+# Paths resolve against this file. The originals carried the Windows figure directory and
+# loaded their inputs from the working directory, so the script ran only from inside its
+# own folder on the machine it was written on.
+HERE = Path(__file__).resolve().parent
+FIGDIR = HERE.parents[1] / "manuscript" / "figures"
+data = load(str(HERE / "results_10seed.npz"))
 
 # --- Fig. 2 (main): final completion bars ---
 fig, ax = plt.subplots(figsize=(7.2, 4.4))
@@ -29,7 +34,7 @@ ax.set_xticklabels(["closed\ntime-min\n(typical)", "open\ntime-min\n(typical)",
                     "open\naligned\n(control)", "closed\naligned"], fontsize=12)
 ax.set_ylabel("Final OD trip completion rate (%)")
 ax.set_ylim(0, 112); ax.grid(True, axis="y", alpha=0.3)
-fig.tight_layout(); fig.savefig(FIGDIR + r"\fig_v_final_completion.png", dpi=300)
+fig.tight_layout(); fig.savefig(str(FIGDIR / "fig_v_final_completion.png"), dpi=300)
 print("wrote fig_v_final_completion.png")
 
 # --- Fig. S-1 (supplement): training curves ---
@@ -44,5 +49,5 @@ for key in ORDER:
 ax.set_xlabel("Training episodes"); ax.set_ylabel("OD trip completion rate (%)")
 ax.set_ylim(-3, 108); ax.grid(True, alpha=0.3)
 ax.legend(loc="center right", fontsize=11, framealpha=0.9)
-fig.tight_layout(); fig.savefig(FIGDIR + r"\fig_v_completion_curves.png", dpi=300)
+fig.tight_layout(); fig.savefig(str(FIGDIR / "fig_v_completion_curves.png"), dpi=300)
 print("wrote fig_v_completion_curves.png")

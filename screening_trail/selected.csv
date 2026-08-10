@@ -1,0 +1,231 @@
+include,paperId,title,year,venue,citationCount
+1,6ddbf6148defa91ec0475916aa74baa1bccc7078,A Brief Survey of Deep Reinforcement Learning for Intersection Navigation of Autonomous Vehicles,2024,2024 IEEE 13th Data Driven Control and Learning Systems Conference (DDCLS),179
+1,b5f98578b8e5902f18154a49ddf92e4171b95d4b,Real-time deep reinforcement learning based vehicle navigation,2020,Applied Soft Computing,114
+,5f04aa926aebf45776846b4e1f5f7838e7f4865c,A New Algorithm of the Best Path Selection Based on Machine Learning,2019,IEEE Access,95
+,04eea9954071bd33675a32c40d450d8b1d6c77e6,DRL-OR: Deep Reinforcement Learning-based Online Routing for Multi-type Service Requirements,2021,IEEE Conference on Computer Communications,86
+,e69c1dca0665997659c32b845f922161e6c0d199,EMVLight: a Multi-agent Reinforcement Learning Framework for an Emergency Vehicle Decentralized Routing and Traffic Signal Control System,2022,Social Science Research Network,73
+,7acba002ef77744b21395bb137c3278b05dfd673,Where to go Next: Learning a Subgoal Recommendation Policy for Navigation in Dynamic Environments,2021,IEEE Robotics and Automation Letters,72
+0,4e22e8b9ee169468ad2883f15361a8cd239f2b37,Spatio-temporal feature fusion for dynamic taxi route recommendation via deep reinforcement learning,2020,Knowledge-Based Systems,61
+0,654007df0868240bea267a8548c92d614461d929,Traffic Flow Management of Autonomous Vehicles Using Deep Reinforcement Learning and Smart Rerouting,2021,IEEE Access,59
+,7d6e2ee63ac7a8917662207351d762fc11b5d36a,VEHICLE ROUTE SELECTION WITH AN ADAPTIVE NEURO FUZZY INFERENCE SYSTEM IN UNCERTAINTY CONDITIONS,2018,,57
+1,67e213b54c4e2b8d1081cacda8a85b1bed251f26,A reinforcement learning-based routing algorithm for large street networks,2023,International Journal of Geographical Information Science,53
+1,ced94c9f6f32d595c6079db42b22af2c87c7e5b8,Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for dynamic traffic assignment,2020,Transportation Research Part C: Emerging Technologies,52
+,5ef906886bdd0eca6fdc25541686acdd4faf0b94,Multi-agent deep learning for simultaneous optimization for time and energy in distributed routing system,2019,Future generations computer systems,48
+,88432e56c8d56faab6f249fbdc9d02592b1278a2,DeepTraffic: Crowdsourced Hyperparameter Tuning of Deep Reinforcement Learning Systems for Multi-Agent Dense Traffic Navigation,2018,,47
+,e162de9f249c030454bccfc5cf063d628376dc81,Real-Time metadata-driven routing optimization for electric vehicle energy consumption minimization using deep reinforcement learning and Markov chain model,2020,,46
+,2096522c188b28a283baaea677ff38bb67f9d1b2,PARRoT: Predictive Ad-hoc Routing Fueled by Reinforcement Learning and Trajectory Knowledge,2020,IEEE Vehicular Technology Conference,42
+,fe5d0e9bcc62e80c453d5f4bbdbe088b89178fe6,On Deep Reinforcement Learning for Static Routing and Wavelength Assignment,2022,IEEE Journal of Selected Topics in Quantum Electronics,39
+,6f88a211968d926f4319f44b978ff9a0e244851f,Deep Reinforcement Learning-Based Routing and Spectrum Assignment of EONs by Exploiting GCN and RNN for Feature Extraction,2022,Journal of Lightwave Technology,39
+,dca266aef4663e377f730016ba96b42955b5651a,Traffic Engineering in Partially Deployed Segment Routing Over IPv6 Network With Deep Reinforcement Learning,2020,IEEE/ACM Transactions on Networking,39
+,4417daf1c4e0d3edc7ccd66f7402ba7d4a922ca9,Object Detection with Deep Neural Networks for Reinforcement Learning in the Task of Autonomous Vehicles Path Planning at the Intersection,2019,Optical Memory and Neural Networks,37
+,72945bc5bf78c7d5d9cf2596114923562f1805f0,An Improved Dueling Deep Double-Q Network Based on Prioritized Experience Replay for Path Planning of Unmanned Surface Vehicles,2021,Journal of Marine Science and Engineering,36
+,71378491d9266f3bb2298029f3df685faee1c5bd,Research on Path Planning Model Based on Short-Term Traffic Flow Prediction in Intelligent Transportation System,2018,Italian National Conference on Sensors,36
+,a1f2c465aaeff44d18535bb9e15c0c717017cdc4,Significant Sampling for Shortest Path Routing: A Deep Reinforcement Learning Solution,2019,Global Communications Conference,34
+,3369a4343952951949fbfd15e8897685e52f0f59,Adaptive and Robust Routing With Lyapunov-Based Deep RL in MEC Networks Enabled by Blockchains,2021,IEEE Internet of Things Journal,34
+,976a535334212d22e6e00a17fdc346abeef1d926,GDDR: GNN-based Data-Driven Routing,2021,IEEE International Conference on Distributed Computing Systems,34
+,c71db12567018e4fc226d0c259e7344a3e3fd0c5,Generative Adversarial Network-Based Transfer Reinforcement Learning for Routing With Prior Knowledge,2021,IEEE Transactions on Network and Service Management,33
+1,e697db07f3cb2c932dfade11069c5246785264ee,Hierarchical Reinforcement Learning for Dynamic Autonomous Vehicle Navigation at Intelligent Intersections,2023,Knowledge Discovery and Data Mining,32
+,b9afa17e9ceaeb91bf1fcafdc790a0db85c5f2e5,Interterminal Truck Routing Optimization Using Deep Reinforcement Learning,2020,Italian National Conference on Sensors,31
+,8503c67f85dd885f2a3588dfdcb4c3efff6c4202,Deep Q-Network and Traffic Prediction based Routing Optimization in Software Defined Networks,2021,Journal of Network and Computer Applications,31
+0,a6313e537b02325a6cb29ebe6f87f4df400728e4,Urban Traffic Route Guidance Method With High Adaptive Learning Ability Under Diverse Traffic Scenarios,2020,IEEE transactions on intelligent transportation systems (Print),28
+,9f52a3f036ff45bd0841f68252cc7ee2b989628f,A Q-Learning and Fuzzy Logic-Based Hierarchical Routing Scheme in the Intelligent Transportation System for Smart Cities,2022,Mathematics,28
+,ac48703b3f54acaae52d2333e67549420db4db5c,A Constraint-Based Routing and Charging Methodology for Battery Electric Vehicles With Deep Reinforcement Learning,2023,IEEE Transactions on Smart Grid,27
+,15e5a2efd3460d514bf288bdaa0f09cbe1a0a20a,Scalable Deep Reinforcement Learning-Based Online Routing for Multi-Type Service Requirements,2023,IEEE Transactions on Parallel and Distributed Systems,26
+,e1a8e40e250392496d080b5f44527ee143f906fa,Routing in congested baggage handling systems using deep reinforcement learning,2020,Integr. Comput. Aided Eng.,26
+,cb5ebe0b1b2ad0254e3d2c69f1db7d6743f1cbe5,An Iterative Adaptive Dynamic Programming Approach for Macroscopic Fundamental Diagram-Based Perimeter Control and Route Guidance,2024,Transportation Science,25
+,b19bba64d2be654d8d9ef9cc667928fb92c98096,Path Planning for Autonomous Vehicles in Unknown Dynamic Environment Based on Deep Reinforcement Learning,2023,Applied Sciences,25
+,7546e88bfea3bee83f3a52ddd1832103557341b7,Mitigating Routing Update Overhead for Traffic Engineering by Combining Destination-Based Routing With Reinforcement Learning,2022,IEEE Journal on Selected Areas in Communications,24
+,83f4442ef2e9dfbe974bafa1e26377b526f5b8fc,A Multipolicy Deep Reinforcement Learning Approach for Multiobjective Joint Routing and Scheduling in Deterministic Networks,2024,IEEE Internet of Things Journal,23
+,82e8fa4b6cec35289c68011138f15ff0164d5b77,Fair collaborative vehicle routing: A deep multi-agent reinforcement learning approach,2023,Transportation Research Part C: Emerging Technologies,23
+,24c12e3d437ad56384f6b69945f5e3e4e6fed615,Multi-Hop Task Routing in Vehicle-Assisted Collaborative Edge Computing,2024,IEEE Transactions on Vehicular Technology,23
+,e05c7b24979bd1442714ff199099b0381ad27a9c,Q-adaptive: A Multi-Agent Reinforcement Learning Based Routing on Dragonfly Network,2021,IEEE International Symposium on High-Performance Parallel Distributed Computing,23
+,9ae08555170635f7a887247047886c34349cca7b,Refined Path Planning for Emergency Rescue Vehicles on Congested Urban Arterial Roads via Reinforcement Learning Approach,2021,Journal of Advanced Transportation,22
+,74471b15ffedec6992a1dc4c7edc10e0c65e40f4,Space-time routing in dedicated automated vehicle zones,2020,,22
+1,b886b15703d2691e536072757b34e82874024679,Reinforcement Learning for Vehicle Route Optimization in SUMO,2018,2018 IEEE 20th International Conference on High Performance Computing and Communications; IEEE 16th International Conference on Smart City; IEEE 4th International Conference on Data Science and Systems (HPCC/SmartCity/DSS),22
+,0e2bf435c0fe81e5913c62dea1a8c0a7ae6d52ad,Route Optimization via Environment-Aware Deep Network and Reinforcement Learning,2021,ACM Transactions on Intelligent Systems and Technology,21
+,e35b5158f365841736d29063ee77ae64e24cdf37,Routing and Charging Scheduling for EV Battery Swapping Systems: Hypergraph-Based Heterogeneous Multiagent Deep Reinforcement Learning,2024,IEEE Transactions on Smart Grid,20
+,6efcae89bbb72865a0ac3a82847f7735c1602f2c,GRL-PS: Graph Embedding-Based DRL Approach for Adaptive Path Selection,2023,IEEE Transactions on Network and Service Management,20
+,431de18469c85b884a5ed3ad689b0b9474d94caa,Research on Dynamic Path Planning of Multi-AGVs Based on Reinforcement Learning,2022,Applied Sciences,20
+,0bd49352fa2b0c9e52eb60e66b53ccbad9ca8b2a,A Bi-Level Network-Wide Cooperative Driving Approach Including Deep Reinforcement Learning-Based Routing,2024,IEEE Transactions on Intelligent Vehicles,19
+,a22be5e14f67964e371605a60263e0a4b435ada6,Dynamic urban traffic rerouting with fog?cloud reinforcement learning,2023,Comput. Aided Civ. Infrastructure Eng.,19
+,b40e8685ae9fa80b6429e787e37a31eab1dbc4cb,Smart Navigation and Energy Management Framework for Autonomous Electric Vehicles in Complex Environments,2023,IEEE Internet of Things Journal,19
+,3403dc1400e71f8cb511623b3c03f415b310d6db,Solving Scalable Multiagent Routing Problems With Reinforcement Learning,2025,IEEE Transactions on Neural Networks and Learning Systems,19
+,46199b54a4856432fab632fcd34ff9ab996e3f84,Learning to Minimise Regret in Route Choice,2017,Adaptive Agents and Multi-Agent Systems,19
+,cf9f14adc07d511d59a8181a4f0b20a21de9c513,AI-Driven Day-to-Day Route Choice,2024,Transportation Research Part C: Emerging Technologies,19
+,20a7eec2fb601ce031d8c1d5eccbd7ae942675e7,Adaptive Reinforcement Routing in Software Defined Vehicular Networks,2020,International Conference on Wireless Communications and Mobile Computing,18
+,1120be1df6eae372a3e742128ed75915ccecc950,Interterminal Truck Routing Optimization Using Cooperative Multiagent Deep Reinforcement Learning,2021,Processes,17
+,9562aa09199ec7532982592077b58c6efb20d7fc,Deep Reinforcement Learning-Based 2.5D Multi-Objective Path Planning for Ground Vehicles: Considering Distance and Energy Consumption,2023,Electronics,17
+,3e6d4539ba76bbd0793cb0e8ba1f62ab244fbcbe,Energy management strategy of intelligent plug-in split hybrid electric vehicle based on deep reinforcement learning with optimized path planning algorithm,2021,"Proceedings of the Institution of mechanical engineers. Part D, journal of automobile engineering",16
+,5f11da3b1be3ec9af4a7d31e8cdcc1535d9a4960,Q-Function-Based Traffic- and Thermal-Aware Adaptive Routing for 3D Network-on-Chip,2020,Electronics,16
+,ebd1d5a229dec1a18c7303e6f7e573b93fdff371,GAQ-EBkSP: A DRL-based Urban Traffic Dynamic Rerouting Framework using Fog-Cloud Architecture,2021,2021 IEEE International Smart Cities Conference (ISC2),15
+,2c4ddd2a1f3c0e56efa8b1f924c4adac2fb7a59a,Enhancing Autonomous Driving Navigation Using Soft Actor-Critic,2024,Future Internet,15
+,b2dec507a6293930113360d1dd2c3f28dd074c44,Reinforcement learning based interconnection routing for adaptive traffic optimization,2019,ACM/IEEE International Symposium on Networks-on-Chips,15
+,158c7c45ae744b34532394faa689126fdae84a59,DeepCQ+: Robust and Scalable Routing with Multi-Agent Deep Reinforcement Learning for Highly Dynamic Networks,2021,IEEE Military Communications Conference,14
+,7d095ad2163c6bed77f59a58b27c5c7dcd686602,Autonomous Flow Routing for Near Real-Time Quality of Service Assurance,2024,IEEE Transactions on Network and Service Management,14
+,f924843a3d603d5eb1405c8a7e465066be800e33,An Improved Deep Reinforcement Learning Algorithm for Path Planning in Unmanned Driving,2024,IEEE Access,14
+,2e21a97a78fe1dfeaf195fae9aae457958dc1dc7,Toll-based reinforcement learning for efficient equilibria in route choice,2020,Knowledge engineering review (Print),14
+,ad4cf3a838411e0f2a6c8c6a97131da1d828d18a,Energy-efficient deep Q-network: reinforcement learning for efficient routing protocol in wireless internet of things,2024,Indonesian Journal of Electrical Engineering and Computer Science,13
+,00f9ab8c642b47168fc568976a54d48c4dfa90e3,Hybrid optimization for efficient 6G IoT traffic management and multi-routing strategy,2024,Scientific Reports,13
+,e4b04c00ca8da10594a70a6c7d6952f93bc43c82,Real-time system optimal traffic routing under uncertainties - Can physics models boost reinforcement learning?,2024,Transportation Research Part C: Emerging Technologies,13
+,d1125ccc322e1b0ac430e276c02c5f904ecc0166,Multi-Agent Reinforcement Learning for Adaptive Routing: A Hybrid Method using Eligibility Traces,2020,2020 IEEE 16th International Conference on Control & Automation (ICCA),13
+,cd4720cddcb34c959a9ba389be52e3a1d42b2ce6,Time or Reward: Digital-twin Enabled Personalized Vehicle Path Planning,2021,Global Communications Conference,12
+,8d4b93a058418773c9d622702f8f926a1d4f6ea3,Hybrid Value Function Approximation for Solving the Technician Routing Problem with Stochastic Repair Requests,2024,Transportation Science,12
+,ee65d370d14d602266a51237954211ef1eb6c5b6,Deep Reinforcement Learning-Based Joint Caching and Routing in AI-Driven Networks,2025,IEEE Transactions on Mobile Computing,11
+,b11e07f0504c65f330e7ef4d5f72b2a0f8b36287,RNN Deep Reinforcement Learning for Routing Optimization,2018,2018 IEEE 4th International Conference on Computer and Communications (ICCC),11
+,55e8179a5dedfd92c6a2746fe68e8cfa1fa4d09d,Self-Organized Routing for Autonomous Vehicles via Deep Reinforcement Learning,2024,IEEE Transactions on Vehicular Technology,10
+1,81655b3e9a81126f62fb49725d2fe3482108a527,Routing Control Optimization for Autonomous Vehicles in Mixed Traffic Flow Based on Deep Reinforcement Learning,2024,Applied Sciences,10
+,1ee12066c22f06eaf7495fb1c2573c7cd3c39ca4,An Intelligent SDWN Routing Algorithm Based on Network Situational Awareness and Deep Reinforcement Learning,2023,IEEE Access,10
+,ac058da028d7dbc539968a45b4619bf7d80698dc,Routing with Graph Convolutional Networks and Multi-Agent Deep Reinforcement Learning,2022,Conference on Network Function Virtualization and Software Defined Network,10
+1,7eafe1fc7673a002076ffadfb6519b77c9e04350,An Adaptive Route Guidance Model Considering the Effect of Traffic Signals Based on Deep Reinforcement Learning,2024,IEEE Intelligent Transportation Systems Magazine,9
+1,038ed555b38a81b8c673a2530d326c9ae51aef4e,Transfer Learning-Based Deep Reinforcement Learning Approach for Robust Route Guidance in Mixed Traffic Environment,2024,IEEE Access,9
+,c218dbb17c9757f40c66bea7c7a826ac73b5ca04,Stable QoE-Aware Multi-SFCs Cooperative Routing Mechanism Based on Deep Reinforcement Learning,2024,IEEE Transactions on Network and Service Management,9
+,561cae58404170db399bf681c4e0674c814096db,Multi-Agent Reinforcement Learning-Based Joint Caching and Routing in Heterogeneous Networks,2024,IEEE Transactions on Cognitive Communications and Networking,9
+,9277e0e250e004e5c65151db35e2425f32de4e0e,A deep-reinforcement learning approach for optimizing homogeneous droplet routing in digital microfluidic biochips,2023,Nanotechnology and Precision Engineering,9
+,8735d23e0b55e7f508141e974480f3a036da6a7f,Deep reinforcement learning-based collaborative routing algorithm for clustered MANETs,2023,China Communications,9
+,d16c33599d6afd559a877116cedf54284c01c892,GAPPO - A Graph Attention Reinforcement Learning based Robust Routing Algorithm,2023,"IEEE International Symposium on Personal, Indoor and Mobile Radio Communications",9
+,cd82e56c1750197d1d1ecb58c680120e7cf0acc2,Performance characterization of reinforcement learning-enabled evolutionary algorithms for integrated school bus routing and scheduling problem,2021,,9
+,50a7a5c6d139cf048f68177242570562700fc18b,Optimal Routing for Autonomous Taxis using Distributed Reinforcement Learning,2018,2018 IEEE International Conference on Data Mining Workshops (ICDMW),9
+1,1b6ed5885bdc8028bb9adbf77e5982b120a244b8,Development of Reinforcement Learning-based Traffic Predictive Route Guidance Algorithm Under Uncertain Traffic Environment,2022,IEEE Access,8
+,5e6a0250bcfb7b81be469173b9ee057c3ba7a68a,Deep reinforcement learning for integrated vessel path planning with safe anchorage allocation,2025,Brodogradnja,8
+,482aa127129854013aa19327e87f416263d625c9,A New Approach for Solving Location Routing Problems with Deep Reinforcement Learning of Emergency Medical Facility,2023,EM-GIS,8
+,92a88a75af50fe3e6d4f9302b8f095e03e1629a7,A Deep Reinforcement Learning Approach for Adaptive Traffic Routing in Next-Gen Networks,2024,ICC 2024 - IEEE International Conference on Communications,8
+,85b5323b0c558f567b6b64e982a47a8dc9464a23,Trailer allocation and truck routing using bipartite graph assignment and deep reinforcement learning,2023,Trans. GIS,8
+,fbce8cbd04e75dd329f51eb408eeaf5d4520463e,Dispatching and Path Planning of Automated Guided Vehicles based on Petri Nets and Deep Reinforcement Learning,2021,"2021 IEEE International Conference on Networking, Sensing and Control (ICNSC)",8
+,a8f84973e51cf6c5d657096fd64fff4a1d5e44d7,Hierarchical Robot Navigation in Novel Environments using Rough 2-D Maps,2021,Conference on Robot Learning,8
+,4b6b9f83eca768666e85443091f9c3015b14b2b0,Deep reinforcement learning for dynamic vehicle routing with demand and traffic uncertainty,2025,Operations Research Perspectives,8
+,4134f7aff1606bdf08278f0fcd3b0f10282d4ab7,Delay-Aware and Link-Quality-Aware Geographical Routing Protocol for UANET via Dueling Deep Q-Network,2023,Italian National Conference on Sensors,8
+,2615f573e6b831e9a8736af14cad20636d631f04,A Vehicle Path Planning Algorithm Based on Mixed Policy Gradient Actor?Critic Model with Random Escape Term and Filter Optimization,2022,Journal of mathematics,8
+,bda3c4f1b58648a1c89e7eb234501e35376d3938,Adaptive Routing with Guaranteed Delay Bounds using Safe Reinforcement Learning,2020,International Conference on Real-Time and Network Systems,8
+,a01ca2dfea618f7822f77865d593d4707c494981,A Cooperative Multiagent Reinforcement Learning Framework for Droplet Routing in Digital Microfluidic Biochips,2023,IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems,8
+,d3d831c7a8e3c7745b73d223fc5ffbcb88211b9e,Prioritized Sweeping Reinforcement Learning Based Routing for MANETs,2017,,8
+,fec7cab417aba943d60cfe12ab49d313059f8c33,TTQR: A Traffic- and Thermal-Aware Q-Routing for 3D Network-on-Chip,2022,Italian National Conference on Sensors,8
+,9f280278dc377e7bfd3ab655f34422583b78b02c,"AI-Augmented, Ripple-Diamond-Chain Shaped, Rateless Routing in Wireless Mesh Networks With Multibeam Directional Antennas",2018,IEEE Access,8
+,3eb6e28e493209a568dc32a01cc5dc849f1ce011,Significant Sampling for Shortest Path Routing: A Deep Reinforcement Learning Solution,2020,IEEE Journal on Selected Areas in Communications,7
+,6f16a1b3d374b27758a81b08f96941b0a263e335,Book Your Green Wave: Exploiting Navigation Information for Intelligent Traffic Signal Control,2022,IEEE Transactions on Vehicular Technology,7
+,1e3955ca495fad78e86d209cfb35949a8e61d1e5,Optimizing Autonomous Vehicle Navigation with DQN and PPO: A Reinforcement Learning Approach,2024,2024 Asia Pacific Conference on Innovation in Technology (APCIT),7
+,46b1583c820732ae6c600e368cd4f91ca5c6353d,AI-enhanced context-aware optimization of RPL routing protocol for IoT environments,2023,2023 2nd International Conference on Multidisciplinary Engineering and Applied Science (ICMEAS),7
+,d52f0db4b14aac32cbec307c33c9d38d1bbaa1f8,Route selection for a three-dimensional elevator using deep reinforcement learning,2019,Building Services Engineering Research & Technology,6
+,63a53188a4639f7e7e8a32c50c5edaf70a787c15,Deep Reinforcement Learning-Based Navigation Strategy for a Mobile Charging Station in a Dynamic Environment,2023,2023 International Conference on Smart Energy Systems and Technologies (SEST),6
+,b063443653545d758f49b803ae0e21520750b2cb,Partial SRv6 Deployment and Routing Optimization: A Deep Reinforcement Learning Approach,2023,Global Communications Conference,6
+,12915bb0ef8804caac4dd3b52e4f87ee2c698a5d,Hierarchical Sarsa Learning Based Route Guidance Algorithm,2019,Journal of Advanced Transportation,6
+,8abb1e94d3c974c232c1875fabe4c2ce355d2517,Dynamic Routing and Wavelength Assignment with Reinforcement Learning,2023,INFORMS Journal on Optimization,6
+,3cf6300ea6f90876b14dc56242cf57ce0d36d8b5,Cross Layer Routing in Cognitive Radio Networks using Deep Reinforcement Learning,2019,IEEE Wireless Communications and Networking Conference,6
+,b95a9eeb73ef465dfb7e17adf2907e7d7864466c,Deep Reinforcement Learning Based Routing in IP Media Broadcast Networks: Feasibility and Performance,2022,IEEE Access,6
+,e1a8bf47ef1c51298f5bcf957062c6ee63a96bfb,Graph Convolutional Network Based Multi-Objective Meta-Deep Q-Learning for Eco-Routing,2024,IEEE transactions on intelligent transportation systems (Print),6
+,8d5e170e5a86f7947d01212e03855655475eca55,Multi-Objective Path Planning for Unmanned Sweepers Considering Traffic Signals: A Reinforcement Learning-Enhanced NSGA-II Approach,2024,Sustainability,6
+,02371f323bde9d83ba6e0cd16929c804c850f666,Deep Reinforcement Learning-based Multi-objective Path Planning on the Off-road Terrain Environment for Ground Vehicles,2023,arXiv.org,6
+,8e85241bff58c4be99a101ba9f0f922b114a3abb,LARE: A Linear Approximate Reinforcement Learning Based Adaptive Routing for Network-on-Chips,2023,International Symposium on Circuits and Systems,6
+,852fb72db0aca9af754439a20b81a42da5af6c02,RLARA: A TSV-Aware Reinforcement Learning Assisted Fault-Tolerant Routing Algorithm for 3D Network-on-Chip,2023,Electronics,6
+,e1a3ae4333a7e3ac9ea7544e689414dbd2d99f08,Multi-agent reinforcement learning for electric vehicles joint routing and scheduling strategies,2022,2022 IEEE 25th International Conference on Intelligent Transportation Systems (ITSC),6
+,f155dcd1cb7b9e3c61bfa005030730e0b9b5a7c8,DPRoute: Deep Learning Framework for Package Routing,2023,Asia and South Pacific Design Automation Conference,6
+,05c421ce453104f74f353ac0846f42b11ca75e57,Dynamic Passenger Route Guidance in the Multimodal Transit System With Graph Representation and Attention Based Deep Reinforcement Learning,2024,IEEE transactions on intelligent transportation systems (Print),5
+,fef00e91a7684ac6e92ee596781affc44a2df0ca,Adaptive Joint Routing and Caching in Knowledge-Defined Networking: An Actor-Critic Deep Reinforcement Learning Approach,2025,IEEE Transactions on Mobile Computing,5
+,e23790d03816a285cf28014bbf63938c17d8c6f0,Deep Distributional Reinforcement Learning-Based Adaptive Routing With Guaranteed Delay Bounds,2024,IEEE/ACM Transactions on Networking,5
+,e3bf9be142c6c0abf09c2d4fbb87161acba18fc7,A Routing Optimization Policy Using Graph Convolution Deep Reinforcement Learning,2023,2023 IEEE/CIC International Conference on Communications in China (ICCC),5
+1,2d2ca37772b5be6394c38f682c94a6af20503f3c,XRouting: Explainable Vehicle Rerouting for Urban Road Congestion Avoidance using Deep Reinforcement Learning,2022,2022 IEEE International Smart Cities Conference (ISC2),5
+,ab5ddffc8dec99e10d75073649d5392d5c4c02fb,Towards Cognitive Routing based on Deep Reinforcement Learning,2020,arXiv.org,5
+,90da7d25fb40093c85c943e1c8be70376b3e0db9,"Enhancing Airport Traffic Flow: Intelligent System Based on VLC, Rerouting Techniques, and Adaptive Reward Learning",2025,Italian National Conference on Sensors,5
+,54051eb10c40af9f52cbca8147c6fc0c49970e1e,Traffic Management of Autonomous Vehicles using Policy Based Deep Reinforcement Learning and Intelligent Routing,2022,arXiv.org,5
+,f64ca59b51384c97fca0e621e5fdb9756bab9d7d,Framework for Integrating Machine Learning Methods for Path-Aware Source Routing,2024,"SC24-W: Workshops of the International Conference for High Performance Computing, Networking, Storage and Analysis",5
+,a07aad35a156122078f7090f00e2e97013fd9bd1,Advanced Decision Making and Motion Planning Framework for Autonomous Navigation in Unsignalized Intersections,2024,IEEE Access,5
+,a2f8f94cf002887e197101b2374e2a5f6775964b,Hierarchical Deep Reinforcement Learning-Based Path Planning with Underlying High-Order Control Lyapunov Function?Control Barrier Function?Quadratic Programming Collision Avoidance Path Tracking Control of Lane-Changing Maneuvers for Autonomous Vehicles,2025,Electronics,5
+,76bb522f60b6feb2d5c4d3cb5a5f96e2d1379ff2,VeSoNet: Traffic-Aware Content Caching for Vehicular Social Networks based on Path Planning and Deep Reinforcement Learning,2021,arXiv.org,5
+,59eb6e01d20b22c7454cbb9de4d63524d44a70c5,Meta-Deep Q-Learning for Eco-Routing,2019,Connected and Automated Vehicles Symposium,5
+,934455b81e98d9a8fb1c0c1a57bb818e201352fe,A Routing Algorithm Based on Prioritized Replay Double DQN for Private Internet of Things,2023,2023 IEEE/CIC International Conference on Communications in China (ICCC),5
+0,23f6af67a0cf9ef13ecd12cb27f4a5b80bb6bbdd,RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles,2025,SoftwareX,5
+,d691bc19955e89878f3013b4976d0e3c3a909760,Combining Reinforcement Learning With Genetic Algorithm for Many-To-Many Route Optimization of Autonomous Vehicles,2024,IEEE Access,5
+,b52baa34a596c87c44bbefc3c6609dcb2e8e49a2,Efficient Routing and Charging Strategy for Electric Vehicles Considering Battery Life: A Reinforcement Learning Approach,2024,Canadian Conference on Electrical and Computer Engineering,5
+,a87c26d46dd5b3a13b72aa81d71eb618fed64e5d,SOHO-FL: A Fast Reconvergent Intra-Domain Routing Scheme Using Federated Learning,2024,IEEE Network,5
+,e00a11f68f8aa713a2220cfc1765fa586c57b690,Network function parallelism configuration with segment routing over IPv6 based on deep reinforcement learning,2024,ETRI Journal,4
+,35d7fe9b76715e33babbc8cf9af256d236da264c,Routing Algorithm Design Based on Deep Reinforcement Learning and GNN,2024,Conference on Computer Communications Workshops,4
+,b487211e59bd30aa60c8cfbd21baa00c4f64ae93,Intelligent multicast routing method based on multi-agent deep reinforcement learning in SDWN,2023,Mathematical biosciences and engineering : MBE,4
+,6964849ecb94522a4246f5370d676e41d56a0328,An Improvised Location Aided Routing Protocol for Vehicular Ad-hoc Network using Reinforced Learning,2022,"2022 International Conference on Machine Learning, Big Data, Cloud and Parallel Computing (COM-IT-CON)",4
+,e1bd00f07d86378407bf15b2f3b2342ece1c3eb5,Reinforcement Learning for Dynamic Traffic Routing and Optimization,2024,International Congress on Information and Communication Technology,4
+,f084cd5408ad86f4f1d5d1a8c46acf5c6444206d,An Efficient Secure Cryptography Scheme for New ML-based RPL Routing Protocol in Mobile IoT Environment,2022,International Journal of Network Security &amp; Its Applications,4
+,fa66ba0657870eea97ad598c756af4ae2b36dab6,Design and Implementation of the Deep Reinforcement Energy Efficient Routing for the Fog-BAN-Cloud of Things using Smart Health care applications,2024,Journal of Smart Internet of Things,4
+,ddca0d61417cf8daff07e929d836221d1f469e37,Reinforcement Learning-Based E-Scooter Energy Minimization Using Optimized Speed-Route Selection,2024,IEEE Access,4
+,561edfac8bce551db8db844e6c30885b2a409cdf,Traffic Engineering in Dynamic Hybrid Segment Routing Networks,2021,Computers Materials & Continua,4
+,01d0c4be402acc4adff18ee820e1fba335d02722,PQROM: To optimize software defined network QoS-aware routing with proximal policy optimization,2021,Journal of Intelligent & Fuzzy Systems,4
+,2cd62277f3c40adb078d8f013ca561f0db19246d,"Revolutionizing Route Optimization Systems with Artificial Intelligence for a Smarter, Sustainable Logistics Ecosystem",2025,International journal of computer science and mobile computing,4
+,0f40a21698bbf304b27824c511bc9aad941e241a,Dual-Layer Path Planning Model for Autonomous Vehicles in Urban Road Networks Using an Improved Deep Q-Network Algorithm with Proportional?Integral?Derivative Control,2024,Electronics,4
+0,24a80f492a35035586a66d82a17dade99a586f37,Congestion-Aware Path Planning With Vehicle-Road Cooperation in AIoV,2024,IEEE Internet of Things Journal,4
+0,a67d527523cfd7da4cf812bdae5e143cc4fdf778,Reinforcement learning of route choice considering traveler¡¯s preference,2023,Transportation letters,4
+,cfa97613fce2319feba4248cd0cff5b89f6c12c3,Spectrum Adaptive Awareness Routing and Spectrum Allocation Based on Reinforcement Learning,2023,Opto-Electronics and Communications Conference,4
+,a4d31b9bb594c33c4613cc13fa6e0533c6b3cf32,RELAR: A Reinforcement Learning Framework for Adaptive Routing in Network-on-Chips,2021,IEEE International Conference on Cluster Computing,4
+,9fd37bb9cfc2028be41bc7a67610596c96a6aca6,Spatio?temporal dynamic navigation for electric vehicle charging using deep reinforcement learning,2024,IET Intelligent Transport Systems,4
+,d0ea077b904e8eb811d959984272193e9295168c,A Mixed Generative Adversarial Imitation Learning Based Vehicle Path Planning Algorithm,2024,IEEE Access,4
+,85b863854240caff8f3635e1ca389439a0585fe8,Real-Time Conflict-Free Path Planning for Multi-AGVs Based on Deep Reinforcement Learning,2024,2024 IEEE 13th Data Driven Control and Learning Systems Conference (DDCLS),3
+,dd36e9a96e5f00170476b7f86e4706978c1cac49,Grace: Toward Routing in Dynamic Network Environments With Graph Embedding,2025,IEEE Transactions on Networking,3
+,9939ea74cf4696a9d506fc01fdeaaff8d7864aab,Intelligent Security Aware Routing: Using Model-Free Reinforcement Learning,2023,International Conference on Computer Communications and Networks,3
+,81403b0731bdadc55ec1812961353c39e8caaf22,Rough-Terrain Path Planning Based on Deep Reinforcement Learning,2025,Applied Sciences,3
+,fb034d077145fbe30ad40885f12d7997d101703f,Optimization Path Planning Algorithm Based on Deep Reinforcement Learning,2024,"2024 Asia-Pacific Conference on Software Engineering, Social Network Analysis and Intelligent Computing (SSAIC)",3
+1,bae3dd7495c475a3ac9f985103e9465d5bc64e29,Reinforcement Learning Method with Dynamic Learning Rate for Real-Time Route Guidance Based on SUMO,2022,"International Conference on Control, Automation, Robotics and Vision",3
+,ee845d63ba6c6a1e06bf5323910932cc22830de7,A Conflict-Free Routing Method for Automated Guided Vehicles Using Reinforcement Learning,2020,,3
+,95e3e387b74f4dfe3809f4ee615495b1a90950eb,A Deep Reinforcement Learning and Graph Convolution Approach to On-Street Parking Search Navigation,2025,Italian National Conference on Sensors,3
+,2dec085907b084264c6917ad772fe0544a83249b,DGL-Routing: One Routing Optimization Model Based on Deep Graph Learning,2023,2023 IEEE International Conference on Communications Workshops (ICC Workshops),3
+,8849f2e986bb0dfeae62fda3f42a79f511d94107,O-DQR: A Multi-Agent Deep Reinforcement Learning for Multihop Routing in Overlay Networks,2025,IEEE Transactions on Network and Service Management,2
+0,c321d9f900051ee377d1e21c82094772a38502c6,Model-Based Deep Reinforcement Learning for Energy Efficient Routing of a Connected and Automated Vehicle,2025,Sustainability,2
+,d642878317fa01238abd8d16d9d69a01f5b4577b,CGTR: Leveraging Contrastive Learning and Graph Transformer for Deep Reinforcement Learning Based Robust Routing,2024,ICC 2024 - IEEE International Conference on Communications,2
+,11e0825d0211a6d14b3bb16a926568ae6941b7e8,Flowlet-Level Routing Optimization with GNN-Based Multi-Agent Deep Reinforcement Learning,2023,Global Communications Conference,2
+,be8d57fafe307b3ea302d8b3949a2df6d71c3091,MA-CDMR: An Intelligent Cross-domain Multicast Routing Method based on Multiagent Deep Reinforcement Learning in Multi-domain SDWN,2024,arXiv.org,2
+,5d82885426ebd5f83891df7bf3096283dfeb259f,An intelligent routing optimization strategy based on deep reinforcement learning,2021,Journal of Physics: Conference Series,2
+,71efa3d0fe0c1ccfe83f76f21eecf7439ede1c47,Joint Content Caching and Request Routing for User-Centric Many-Objective Metaverse Services,2025,IEEE Transactions on Network Science and Engineering,2
+,f022e10a2076c90bc0b3890c03742a54d26698ea,A Novel Reinforcement Learning Framework for Adaptive Routing in Network-on-Chips,2021,"2021 IEEE 23rd Int Conf on High Performance Computing & Communications; 7th Int Conf on Data Science & Systems; 19th Int Conf on Smart City; 7th Int Conf on Dependability in Sensor, Cloud & Big Data Systems & Application (HPCC/DSS/SmartCity/DependSys)",2
+,4a9b9d5f441c5561e511b8e03f836f405367496e,Integrated mode of transport: a predictive model for route guidance,2020,,2
+0,1de720239860fc775aa806c8a3958c8dd23d54df,Reinforcement Learning-based Sequential Route Recommendation for System-Optimal Traffic Assignment,2025,arXiv.org,2
+0,944324b39827f4274fa25e906dad6332043a0d01,Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized Road Networks using Multi-Agent Deep Reinforcement Learning,2023,arXiv.org,2
+0,46c4652e4fb287531f1a0ac44354ac7de33394df,Dynamic Route Guidance System Based on Real-time Vehicle-Road Collaborations with Deep Reinforcement Learning,2023,IEEE Vehicular Technology Conference,1
+,fcba5967f482b1e785eb6a7acb6f01d7396d12e8,ROAR: Routing Packets in P4 Switches With Multi-Agent Decisions Logic,2024,2024 IEEE International Conference on Machine Learning for Communication and Networking (ICMLCN),1
+,4aaf6aed732bc95309536dbee4908bdca3fbe153,Machine Learning-Enhanced Last-Mile Delivery Optimization: Integrating Deep Reinforcement Learning with Queueing Theory for Dynamic Vehicle Routing,2025,Applied Sciences,1
+,137b9b8051e1ee4da357bf09a77b1d6da4c29699,An Intersection-Based Traffic Awareness Routing Protocol in VANETs Using Deep Reinforcement Learning,2024,Wireless personal communications,1
+0,e205ff2aaaa1040ce1feb7d2ab20d44cfc8128d9,Deep Reinforcement Learning for Vehicle Swarm Navigation and Urban Traffic Optimization,2025,Transactions on Emerging Telecommunications Technologies,1
+,7c4ef6bc40840571a75071e89a3e7dfa7d6b625b,Autonomous Flow Routing Based on Deep Reinforcement Learning,2024,International Conference on Transparent Optical Networks,1
+,9bc36c538c1d87113d00e0e8efb1c018a85b1bf3,When to Reach for the Skies? A DRL-Based Routing Framework for Non-Terrestrial Networks,2025,IEEE Networking Letters,1
+,e613ff5ca2bd26dd960f197a2c105d4300a80d1e,Transformer-Enabled DRL Routing for DCNs with Sequential Flow Features,2024,ICC 2024 - IEEE International Conference on Communications,1
+0,c997b91bc4b985f3bf3ad8dd56b85417f729055a,Integrated Routing and Traffic Signal Control for CAVs via Reinforcement Learning Approach,2024,2024 IEEE 27th International Conference on Intelligent Transportation Systems (ITSC),1
+,635e31aae09aa1ea85bc1d872caba4b3a9ec157d,Jointly Optimal Caching and Routing Using Multi-Agent Reinforcement Learning,2023,ICC 2023 - IEEE International Conference on Communications,1
+,9d83fdf3df28d92b93f39347114aad5d29f859e7,Enhancing Energy Efficiency in Heterogeneous Cyber Security Networks Using Deep Q-Networks Data Routing,2024,Journal of cybersecurity and information management,1
+,59a8c3cb052ae20ef69c164c8ba8f2501ef92383,Safety-Aware Path Planning for Post-Disaster Rescue Vehicles,2024,"2024 4th International Conference on Artificial Intelligence, Virtual Reality and Visualization",1
+,9f2d1c5126c9b88d391f18063497d5ca3d71a8f7,Intelligent path planning technique for autonomous vehicles using improved harmony search optimized fuzzy control,2025,World Journal of Advanced Research and Reviews,1
+,b6d9d5b073e544db48d518af817f9c5d1b15eefa,A Transcoding Task Offloading and Routing Decision-Making Scheme in Live Transmission Architecture Based on Computing Power Network,2023,Journal of networking and network applications,1
+,62a5c562aac11e2d08b9203476ac1ce4734a8b3f,Resilient Packet Forwarding: A Reinforcement Learning Approach to Routing in Gaussian Interconnected Networks with Clustered Faults,2025,arXiv.org,1
+,485c5be3e7c0e24693973a321e6c87d44fc6e500,Reliable Navigation Learning in Stochastic Transportation Networks with Uncertain Topology,2022,2022 3rd International Conference on Pattern Recognition and Machine Learning (PRML),1
+,feed40735e004dc9a194c99dd2a20033475e8467,Latency-Aware Routing and Spectrum Assignment with Deep Reinforcement Learning,2022,International Workshop on the Design of Reliable Communication Networks,1
+,fc1c87d49ee5d8d42271a470225a341ebafde202,Intelligent path selection algorithm for tactical communication networks enhanced by link state awareness,2025,Frontiers Commun. Networks,0
+,6bef8bc69f84f8637ed6ba4c728acf451906360f,A Deep Reinforcement Learning Framework for Real-Time Vehicle Routing with Dynamic Traffic Conditions,2025,2025 IEEE International Conference on Recent Advances in Systems Science and Engineering (RASSE),0
+,00f64549be3615f6e1dd45223fcd5864c4d06a58,A Hybrid Deep Reinforcement Learning Routing Method Under Dynamic and Complex Traffic with Software Defined Networking,2024,International Conference on Advanced Information Networking and Applications,0
+,20ee7e4cb184d70e53fcd4e38fa2b94521b494ca,Stateless and Proactive Routing for Dynamic Multicast With Deep Reinforcement Learning,2025,IEEE Transactions on Networking,0
+,b7e2ec71ea21081227387b86715b19103b282fcc,Research on Dynamic Waste Collection Routing Optimization Based on Deep Learning and Incremental Reinforcement Learning,2025,2025 6th International Conference on Computer Engineering and Intelligent Control (ICCEIC),0
+,49dbed9b8ff4fa098ea01cb5d394b53916870e0d,Dynamic Harris Hawks Optimization and deep reinforcement learning framework for autonomous vehicle path planning,2025,Advances in Production Engineering &amp; Management,0
+,2a7143096a52692589cd4c30d5e73babb00319ad,Energy-Efficient Deep Q-Network for Reinforcement Learning in Wireless IoT Routing Protocols,2024,2024 Asian Conference on Intelligent Technologies (ACOIT),0
+,50efd97f0a5b0fbe96833b89ae005973d7ad94eb,An Adaptive Dynamic Routing Decision-making Method based on Communication-sensing-computing,2025,International Conference on Networking and Network Applications,0
+,e219732e229f567947155597bf14467266fa9412,STPer: Task Scheduling and Traffic Routing with Spatiotemporal Dynamic Perception in Green Computing Power Networks,2025,Global Communications Conference,0
+,361c4a3f513fee82f656dfd595fa8795aa74ed94,Improving Energy Consumption in Software Defined Network by Predicting Optimized Flow Routing Using Deep Learning Method,2024,International Journal of Computer Networks And Applications,0
+,cb2fa31c7e74ab75c1e7600b5e8311fbed3dd984,Intelligent Routing in Connected Autonomous Vehicles using the ADAPT-S Learning Architecture,2025,"International Conference Electronic Systems, Signal Processing and Computing Technologies [ICESC-]",0
+,191f385843a964c5c68a627b1b9d7747f1cd3c74,Hybrid Quantum-Classical Routing for QKD-ON: Leveraging QAOA and QVE for Minimizing Blocking,2025,Conference Information and Communication Technology,0
+,186849bba703b4fcf7a2e77de143730b4d37b941,Real-Time Charging and Routing for Electric Long-Haul Trucks via Reinforcement Learning,2025,European Conference on Cognitive Ergonomics,0
+,42fa372c080c515df884c87043914c9d02a5583b,Research on Dynamic Path Planning for Autonomous Vehicles Based on Reinforcement Learning,2024,2024 6th International Academic Exchange Conference on Science and Technology Innovation (IAECST),0
+0,4ff4fc8c5c6e5c07b2ad4fa980b0c479ef1dfc5c,Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic Multi-Vehicle Route Selection,2024,Electronics,0
+,49c7383a5bd0393f81e7bd4922771f50add3ef92,Deep Q-Learning-based Route Optimization for Traffic Network,2025,International Conference on Artificial Intelligence in Engineering and Technology,0
+,5fa1d3905dd0aa042d03f4accde60f2f93f936e9,An AI-Powered Predictive Traffic Routing Framework for Telecommunications Network Performance Improvement,2023,International Journal of Advanced Multidisciplinary Research and Studies,0
+,fbbafc0e65b91b6b2b8b3749d59b9617c5cff777,Autonomous Vehicle Navigation with Deep Learning: A Comprehensive Review,2025,"International Journal of Research and Review in Applied Science, Humanities, and Technology",0
+,a9416c5aa3e23472b8ff91a8985110588c353537,Deep Q-Learning for Autonomous Vehicle Navigation in Smart Mobility,2025,"International Conference on Circuit, Power and Computing Technologies",0
+,ceeeca845f1cf4723dd69af22ac580d6b6bf5268,Intelligent Routing in MANETs: Bridging AI and Protocol Design for Next-Gen Networks,2025,Journal of Information Systems Engineering & Management,0
+,edb8044ff097683aa1224a75e460fac737a0b063,Reliable Multihop Routing and Congestion Aware Chicken Swarm Optimization in Vehicular Ad-Hoc Network,2025,2025 3rd International Conference on Integrated Circuits and Communication Systems (ICICACS),0
+,4f2c94e01ec97425f7c6d0fc469e81ec190b1845,QLB-IoT: Intelligent and Trust-Aware Routing for IoT-Edge Networks With Blockchain-Assisted Q-Learning,2025,IEEE Internet of Things Journal,0
+,f5d04e9bbbcc5aa5078133aa310ceeddb24bf1b9,Fully Distributed Multi-Agent RL Framework for QoS Routing,2023,2023 IEEE Future Networks World Forum (FNWF),0
+,1ae0bc8360cd141618639b1eb6d30b08a6533445,Hybrid DCGAN-based Framework for Robust and Efficient Vehicle Path Planning in Autonomous Driving,2025,2025 International Conference on NexGen Networks and Cybernetics (IC2NC),0
+,7154be7d8a01a8bc423bffffd0c2bc7c1bd3458e,A Service Customize Routing Method Based on Software Defined Network Using Deep Q-Network,2024,International Conference on Networking and Network Applications,0
+,862427f6e9d137f9ad8ade43df9f7c2ff85c4fd4,Path Planning of Intelligent New Energy Vehicles Based on DQN,2025,"2025 5th International Conference on Electronics, Circuits and Information Engineering (ECIE)",0
+,fea1f4f5807742d470b40ca381d711378c0041f4,Path Planning Strategy Optimization of Autonomous Driving Decision System Based on Reinforcement Learning,2025,"2025 5th International Conference on Electronics, Circuits and Information Engineering (ECIE)",0
+,258afa0747f93f4409f76f2964b59d770bd7a66a,Adaptive vehicle routing for humanitarian aid in conflict-affected regions: a practitioner-informed deep reinforcement learning approach,2025,Frontiers in Future Transportation,0
+,1a49d41b886d930c0dc6c44eb7b92793366494a7,Deep Reinforcement Learning for Large-Scale Efficient Routing of Electric Vehicles,2024,"2024 International Conference on Automation in Manufacturing, Transportation and Logistics (ICaMaL)",0
+,1e97e730890c7a3cc015285997de3a687ea883b3,Reinforcement Learning and Mechanism Design for Routing of Connected and Autonomous Vehicles,2023,Adaptive Agents and Multi-Agent Systems,0
+,a2430ee66d766ee25c597412301b3269c9dae3ad,Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing,2025,arXiv.org,0
+,c2b3cdfe925be05a8fb172b82825c8aa7066f2c2,Adaptive Path Planning for Autonomous Vehicles in Adverse Driving Conditions and Aggressive Scenarios: A TD3-Based Multimodal Approach,2025,2025 International Conference on Advanced Machine Learning and Data Science (AMLDS),0
+,55382f2fc8b0d2769e0e2af37f2e144b23a4448c,Minimising Regret in Route Choice,2017,Adaptive Agents and Multi-Agent Systems,0
+,42a95dc0a19e60b14f853fc4463ae974080ef241,Application of Machine Learning in Routing and Wavelength Assignment: Literature Survey,2021,,0
+,7ead3d6dfb1636c6928ab2d8dceead709b05d0db,Deep Reinforcement Learning for Dynamic Origin-Destination Matrix Estimation in Microscopic Traffic Simulations Considering Credit Assignment,2025,arXiv.org,0
+,f552ca3bbef6ad93257ac8b80bb0b4cc7d5f8c17,PSOA-CRL: A Hybrid Multi-Objective Routing Mechanism Using Particle Swarm Optimization and Actor-Critic Reinforcement Learning For VANETs,2025,Mesopotamian Journal of Big Data,0
+,8558521fff3ed0a56b282dfaa2ff64853cacddb5,A Comparative Study of DRL Algorithms for Path Planning of E-Scooters in AIoT Urban Environments,2025,2025 IEEE Annual Congress on Artificial Intelligence of Things (AIoT),0
+,b9ab6eee49d3494ef3a1d97bb8c3b392aaabda85,Safety?Efficiency Balanced Navigation for Unmanned Tracked Vehicles in Uneven Terrain Using Prior-Based Ensemble Deep Reinforcement Learning,2025,World Electric Vehicle Journal,0

@@ -13,6 +13,7 @@ Drawn at the final placement width (3.3 in, one column) in 8 pt Times, so Word i
 1.0x and the in-figure type matches the 10 pt body.
 """
 import numpy as np
+from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -23,18 +24,25 @@ FS = 8.0              # in-figure type size at 1.0x
 plt.rcParams.update({
     "font.size": FS, "axes.titlesize": FS, "axes.labelsize": FS,
     "xtick.labelsize": FS - 0.5, "ytick.labelsize": FS - 0.5, "legend.fontsize": FS - 0.5,
-    "font.family": "serif", "font.serif": ["Times New Roman", "DejaVu Serif"],
+    # Times New Roman is absent on Linux and its usual substitutes draw a slanted oldstyle
+    # percent. Liberation Serif is metric-compatible and matches the figures made on Windows.
+    "font.family": "serif",
+    "font.serif": ["Times New Roman", "Liberation Serif", "DejaVu Serif"],
     "axes.linewidth": 0.6, "xtick.major.width": 0.6, "ytick.major.width": 0.6,
 })
 
-FIGDIR = r"D:\review_paper\drl-rgs-review\05_writing\figures"
+# Paths resolve against this file. The originals carried the Windows figure directory and
+# loaded their inputs from the working directory, so the script ran only from inside its
+# own folder on the machine it was written on.
+HERE = Path(__file__).resolve().parent
+FIGDIR = HERE.parents[1] / "manuscript" / "figures"
 
 import json
 
-dose = np.load("dose_response_5seed.npy")   # rows: [lambda, mean, std]
+dose = np.load(HERE / "dose_response_5seed.npy")   # rows: [lambda, mean, std]
 lam, dm, ds = dose[:, 0], dose[:, 1] * 100.0, dose[:, 2] * 100.0
 
-ed = json.load(open("exit_density_results.json", encoding="utf-8"))
+ed = json.load(open(HERE / "exit_density_results.json", encoding="utf-8"))
 DENS = [("25%", 25), ("50%", 50), ("100%", 100)]
 x_d = [v for _, v in DENS]
 tt_m = [ed["%s_time_min" % k]["completion_mean"] for k, _ in DENS]
@@ -54,17 +62,21 @@ axA.grid(True, alpha=0.3, linewidth=0.5)
 
 axB.errorbar(x_d, al_m, yerr=al_s, marker="s", markersize=3, linewidth=1.2,
              color="#1f4e79", ecolor="#1f4e79", capsize=2.5, elinewidth=0.6,
-             label="destination-aligned")
+             label="destination-aligned reward")
 axB.errorbar(x_d, tt_m, yerr=tt_s, marker="o", markersize=3, linewidth=1.2,
              color="#c0392b", ecolor="#c0392b", capsize=2.5, elinewidth=0.6,
-             label="travel-time")
+             label="travel-time reward")
 axB.set_xlabel("peripheral nodes with an exit (%)", fontsize=FS)
 axB.set_ylabel("OD trip completion (%)", fontsize=FS)
 axB.set_ylim(-4, 112)
 axB.set_xticks(x_d)
+# The legend box sat at center right, on top of both curves. The clear region of this panel is
+# center left: the aligned curve runs above it and the travel-time curve below it across the
+# whole span. Panel (a) draws one curve and needs no key.
 axB.set_xlim(15, 110)
 axB.grid(True, alpha=0.3, linewidth=0.5)
-axB.legend(loc="center right", frameon=False, fontsize=FS - 1.5, handlelength=1.6)
+axB.legend(loc="center left", frameon=True, framealpha=0.9, edgecolor="0.8",
+           fontsize=FS - 1.5, handlelength=1.6, borderpad=0.35, labelspacing=0.3)
 
 fig.tight_layout(pad=0.4)
 # subcaptions sit under the panel they name
@@ -76,7 +88,7 @@ for ax, label in ((axA, "(a) Varying the reward"),
     bb = ax.get_position()
     fig.text((bb.x0 + bb.x1) / 2.0, bb.y0 - 0.115, label,
              ha="center", va="top", fontsize=FS)
-out = FIGDIR + r"\fig_headline.png"
+out = str(FIGDIR / "fig_headline.png")
 fig.savefig(out, dpi=600, facecolor="white")
 print(f"(a) endpoints: strength 0 -> {dm[0]:.1f}%   strength 1 -> {dm[-1]:.1f}%")
 print("(b) travel-time  25/50/100%%: %s" % [round(v, 1) for v in tt_m])

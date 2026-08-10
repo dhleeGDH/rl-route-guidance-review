@@ -1,0 +1,3 @@
+﻿paperId,title,year,venue,citationCount,doi,query
+4148d26d0f5ef54857a3609809c4b96de713c7d1,Mean-Field Learning for Day-to-Day Departure Time Choice with Mode Switching,2023,IEEE Conference on Decision and Control,1,10.1109/CDC49753.2023.10384044,day-to-day traffic dynamics reinforcement learning
+71afab50cc656050786446e8d919f2753d7b16f7,Message Passing DQN Enhanced Fault Tolerance Traffic Routing for Dynamic 6G Edge Networks,2025,IEEE/IFIP Network Operations and Management Symposium,2,10.1109/NOMS57970.2025.11073584,multi-agent route choice traffic network

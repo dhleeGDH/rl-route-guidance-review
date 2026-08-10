@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Fig. 8: the three road networks the controlled experiment runs on.
 
-Panel (a) is the bespoke 5x5 lattice, panel (b) Sioux Falls, panel (c) Nguyen-Dupuis.
+Panel (a) is the bespoke 5x5 grid, panel (b) Sioux Falls, panel (c) Nguyen-Dupuis.
 
 Both benchmark panels use the schematic layout each network is published in, which is how
 readers of the transportation literature recognize them. Plotting Sioux Falls at its raw
@@ -116,7 +116,7 @@ draw(axes[2], nd_layout(), ND_LINKS, ND_BOUNDARY, labels=True)
 
 # Equal aspect leaves each panel a different height, so a label anchored to its own axes sits
 # at its own baseline. Figure coordinates put all three subcaptions on one line.
-for ax, label in zip(axes, ("(a) Bespoke 5x5 lattice", "(b) Sioux Falls", "(c) Nguyen-Dupuis")):
+for ax, label in zip(axes, ("(a) Bespoke 5x5 grid", "(b) Sioux Falls", "(c) Nguyen-Dupuis")):
     x = (ax.get_position().x0 + ax.get_position().x1) / 2.0
     fig.text(x, 0.115, label, ha="center", va="bottom", fontsize=FS)
 

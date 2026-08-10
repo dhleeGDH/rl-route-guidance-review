@@ -1,0 +1,114 @@
+[
+  {
+    "iter": 1,
+    "reward_mean": -1959.5,
+    "reward_max": -1847.0,
+    "len_mean": 100.0,
+    "ts": 65.4
+  },
+  {
+    "iter": 2,
+    "reward_mean": -1709.6666666666667,
+    "reward_max": -1477.0,
+    "len_mean": 83.33333333333333,
+    "ts": 71.6
+  },
+  {
+    "iter": 3,
+    "reward_mean": -2012.0,
+    "reward_max": -1772.0,
+    "len_mean": 99.5,
+    "ts": 65.4
+  },
+  {
+    "iter": 4,
+    "reward_mean": -1686.0,
+    "reward_max": -1075.0,
+    "len_mean": 79.0,
+    "ts": 69.0
+  },
+  {
+    "iter": 5,
+    "reward_mean": -1995.0,
+    "reward_max": -1075.0,
+    "len_mean": 101.33333333333333,
+    "ts": 66.4
+  },
+  {
+    "iter": 6,
+    "reward_mean": -753.0,
+    "reward_max": -633.0,
+    "len_mean": 36.666666666666664,
+    "ts": 70.6
+  },
+  {
+    "iter": 7,
+    "reward_mean": -4687.0,
+    "reward_max": -4687.0,
+    "len_mean": 227.0,
+    "ts": 62.4
+  },
+  {
+    "iter": 8,
+    "reward_mean": -1115.5,
+    "reward_max": -834.0,
+    "len_mean": 58.0,
+    "ts": 65.9
+  },
+  {
+    "iter": 9,
+    "reward_mean": -3035.5,
+    "reward_max": -1637.0,
+    "len_mean": 151.5,
+    "ts": 70.3
+  },
+  {
+    "iter": 10,
+    "reward_mean": -3069.5,
+    "reward_max": -467.0,
+    "len_mean": 157.5,
+    "ts": 70.5
+  },
+  {
+    "iter": 11,
+    "reward_mean": -2266.5,
+    "reward_max": -1232.0,
+    "len_mean": 108.5,
+    "ts": 77.6
+  },
+  {
+    "iter": 12,
+    "reward_mean": -1162.3333333333333,
+    "reward_max": -632.0,
+    "len_mean": 55.0,
+    "ts": 79.7
+  },
+  {
+    "iter": 13,
+    "reward_mean": -1870.0,
+    "reward_max": -902.0,
+    "len_mean": 94.5,
+    "ts": 73.0
+  },
+  {
+    "iter": 14,
+    "reward_mean": -1927.3333333333333,
+    "reward_max": -948.0,
+    "len_mean": 102.66666666666667,
+    "ts": 68.0
+  },
+  {
+    "iter": 15,
+    "reward_mean": -1162.6666666666667,
+    "reward_max": -768.0,
+    "len_mean": 63.0,
+    "ts": 70.8
+  },
+  {
+    "iter": 16,
+    "reward_mean": -1142.25,
+    "reward_max": -474.0,
+    "len_mean": 57.25,
+    "ts": 74.8
+  }
+]

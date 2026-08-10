@@ -49,7 +49,7 @@ for off, vals, col, lab, hatch in (
            edgecolor="black", linewidth=0.6, capsize=2.5,
            error_kw={"elinewidth": 0.6}, label=lab)
     for xi, mi, si in zip(x + off, m, s):
-        ax.text(xi, mi + si + 2.5, f"{mi:.0f}", ha="center", va="bottom",
+        ax.text(xi, mi + si + 2.5, f"{mi:.1f}", ha="center", va="bottom",
                 fontsize=FS - 0.5, fontweight="bold")
 
 ax.set_xticks(x)

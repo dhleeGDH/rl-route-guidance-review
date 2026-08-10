@@ -1,0 +1,48 @@
+{
+  "n": 94,
+  "state": {
+    "low": 5,
+    "high": 23,
+    "low_pct": 5.3,
+    "high_pct": 24.5
+  },
+  "boundary": {
+    "low": 19,
+    "high": 22,
+    "low_pct": 20.2,
+    "high_pct": 23.4
+  },
+  "both": {
+    "low": 1,
+    "high": 6,
+    "low_pct": 1.1,
+    "high_pct": 6.4
+  },
+  "exposed": {
+    "low": 41,
+    "high": 47,
+    "low_pct": 43.6,
+    "high_pct": 50.0
+  },
+  "claim_gap": {
+    "low": 56,
+    "high": 64,
+    "no_gap": 15,
+    "claim_met": 11,
+    "cells": {
+      "claimed_fc": 11,
+      "claimed_inst": 56,
+      "claimed_unclear": 5,
+      "modest_fc": 2,
+      "modest_inst": 13,
+      "unresolved_fc": 4,
+      "unresolved_inst": 2,
+      "unresolved_unclear": 1
+    }
+  },
+  "minority_everywhere": {
+    "state": true,
+    "boundary": true,
+    "both": true
+  }
+}

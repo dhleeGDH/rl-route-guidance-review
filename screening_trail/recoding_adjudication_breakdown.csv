@@ -1,0 +1,12 @@
+field,disagreements_in_sample,corrected_to_recode,confirmed_original
+predictive_representation,3,3,0
+action_feasibility_constraint,2,2,0
+OD_conditioned,2,2,0
+reward_alignment,1,1,0
+compliance_stated,1,1,0
+reward_temporality,3,2,1
+generalization_mechanism,4,2,2
+trip_completion_reported,0,0,0
+code_release,0,0,0
+boundary_condition,1,1,0
+TOTAL,17,14,3

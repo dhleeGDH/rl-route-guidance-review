@@ -1,0 +1,12 @@
+{
+  "workdir": "C:\\xro",
+  "obs": 46,
+  "ckpt": "D:\\review_paper\\drl-rgs-review\\experiments\\xrouting_mc4\\run_open\\checkpoint_000016\\checkpoint-16",
+  "episodes": 6,
+  "tripinfo_files": 6,
+  "total_rl": 6,
+  "completed": 6,
+  "left_boundary_or_wrong": 0,
+  "unfinished": 0,
+  "completion_rate_pct": 100.0
+}

@@ -82,6 +82,12 @@ NETWORKS = {
 }
 UNAVAIL_COST = 9.0
 
+# A stranded node is charged the rest of its step budget at the minimum traversal cost, the
+# handling described below. Setting this False restores the superseded handling, under which a
+# stranded episode ended at no charge. nd_sink_control.py flips it to measure that difference
+# and nothing else reads it.
+STRANDED_CHARGE = True
+
 
 def build(net):
     adj = {i: [] for i in range(1, net["n_nodes"] + 1)}
@@ -228,7 +234,8 @@ class GraphRouteEnv:
             # charged at the minimum traversal cost, which is what any vehicle that fails
             # to arrive pays on a closed network. The charge is a cost rather than an exit
             # penalty, so it enters both reward functions identically.
-            reward -= float(self.max_steps - self._t)
+            if STRANDED_CHARGE:
+                reward -= float(self.max_steps - self._t)
             self.done = True; self.outcome = "timeout"
         return self._obs(), reward, self.done, {"outcome": self.outcome}
 

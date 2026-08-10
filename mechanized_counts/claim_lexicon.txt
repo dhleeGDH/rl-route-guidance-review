@@ -1,0 +1,73 @@
+# Sentence-selection lexicon for the mechanized capability-claim count.
+#
+# WHAT THIS FILE IS. The claim-design mismatch rests on what a study says its method delivers.
+# In the recorded coding that was a quotation a reader picked out of the full text. This file
+# fixes the rule's INPUT instead: which sentences of a study's full text the rule reads. The
+# classification itself lives in machine_claim_count.py and is stated there once.
+#
+# HOW THE VOCABULARY WAS DERIVED. Every pattern traces to the definition of a navigation-level
+# output given in Section III, an origin-destination route named before departure, and to the
+# optimality vocabulary of the stochastic time-dependent shortest-path problem that definition
+# refers to. No pattern was read off the sentences the rule then classifies, and none encodes a
+# study identifier or a recorded value.
+#
+# WHY AN AGENCY REQUIREMENT. An optimality word alone selects background sentences: a study that
+# opens "many optimization algorithms have been designed to achieve the optimal usage of roadway
+# capacity" is describing the field, not claiming an optimal route for itself. A selected
+# sentence must therefore also carry a marker that its subject is the study's own method or its
+# stated objective.
+#
+# WHY A ROUTE-OBJECT REQUIREMENT. Every Markov decision process has an optimal policy, an optimal
+# value function and an optimal action by definition, and a paper stating so has claimed nothing
+# about routing. The distinction between that definitional optimality and a claim to return an
+# optimal route is the distinction Section III is built on, so the rule has to carry it. An
+# optimality term therefore counts only where it governs a route object within the same clause,
+# in either order. Sentences settling a study on "the optimal policy", "the optimal value" or
+# "the optimal solution of the Bellman equation" no longer select. This requirement and the
+# agency requirement are the two places the rule can differ from a reader, and the agreement
+# reported by the script is the measure of that difference.
+#
+# FORMAT. Section headers in brackets, one Python regular expression per line, case-insensitive,
+# blank lines and lines opening with # ignored.
+
+[SELECT_CLAIM]
+\boptimal\b
+\boptimality\b
+\bshortest[- ]path\b
+\bshortest[- ]route\b
+\bminimum[- ]travel[- ]time\b
+\bminimum[- ]cost\b
+\bleast[- ]cost\b
+\bbest[- ](route|path)\b
+\bglobally optimal\b
+\boptimiz(e|es|ed|ing|ation)\b
+
+[REQUIRE_AGENCY]
+\bwe\b
+\bour\b
+\bthis (paper|study|work|article|research)\b
+\bthe proposed\b
+\bproposed (method|approach|model|algorithm|framework|scheme|system)\b
+\bthe (objective|goal|aim|purpose) (is|of this)\b
+\bthe problem .{0,40}(is|can be) stated\b
+\bthe (agent|policy|model|algorithm|framework|method|approach) (learns|finds|selects|generates|chooses|obtains|produces|returns|computes)\b
+\b(aims|seeks|intends) to\b
+
+[REQUIRE_ROUTE_OBJECT]
+# An optimality term and a route object inside one clause, in either order. The two lines are the
+# same requirement read left to right and right to left; nothing else distinguishes them.
+\b(optimal|optimality|shortest|best|minimum|minimal|lowest|optimiz(e|es|ed|ing|ation)|least[- ](cost|time|travel|delay|distance))\b[^.;]{0,40}\b(route|routes|routing|path|paths|pathway|trajectory|itinerary|trip|journey|navigation)\b
+\b(route|routes|routing|path|paths|pathway|trajectory|itinerary|trip|journey|navigation)\b[^.;]{0,40}\b(optimal|optimality|shortest|best|minimum|minimal|lowest|optimiz(e|es|ed|ing|ation)|least[- ](cost|time|travel|delay|distance))\b
+
+[DROP_SENTENCE]
+# background and related-work sentences: an optimality word here belongs to someone else's method
+\b(previous|prior|existing|traditional|conventional|classical|earlier|other) (work|works|studies|study|methods|method|approaches|approach|algorithms|algorithm|research)\b
+\brelated (work|works|studies|study|literature)\b
+\b(a|brief|short|the) (review|survey|overview) of\b
+\bet al\.
+\bhave been (designed|proposed|developed|studied)\b
+\bhas been (designed|proposed|developed|studied)\b
+# reference-list and figure-caption debris from the PDF extraction
+^\s*\[[0-9]+\]
+\bdoi:
+\bIEEE Trans\.

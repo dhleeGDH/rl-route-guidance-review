@@ -1,0 +1,89 @@
+{
+  "episodes": 8000,
+  "seeds": 3,
+  "cell": "open aligned",
+  "settings": {
+    "default": {
+      "overrides": {},
+      "completion_mean": 2.3333333333333335,
+      "completion_sd": 0.23570226039551584,
+      "per_seed": [
+        2.5,
+        2.5,
+        2.0
+      ]
+    },
+    "ent 0.0": {
+      "overrides": {
+        "ent_coef": 0.0
+      },
+      "completion_mean": 2.6666666666666665,
+      "completion_sd": 0.23570226039551584,
+      "per_seed": [
+        2.5,
+        2.5,
+        3.0
+      ]
+    },
+    "ent 0.05": {
+      "overrides": {
+        "ent_coef": 0.05
+      },
+      "completion_mean": 2.8333333333333335,
+      "completion_sd": 0.4714045207910319,
+      "per_seed": [
+        2.5,
+        2.5,
+        3.5000000000000004
+      ]
+    },
+    "lr 1e-4": {
+      "overrides": {
+        "lr": 0.0001
+      },
+      "completion_mean": 1.8333333333333333,
+      "completion_sd": 0.4714045207910317,
+      "per_seed": [
+        2.5,
+        1.5,
+        1.5
+      ]
+    },
+    "lr 1e-3": {
+      "overrides": {
+        "lr": 0.001
+      },
+      "completion_mean": 3.0,
+      "completion_sd": 0.7071067811865476,
+      "per_seed": [
+        2.5,
+        4.0,
+        2.5
+      ]
+    },
+    "lambda 0.90": {
+      "overrides": {
+        "lam": 0.9
+      },
+      "completion_mean": 2.5,
+      "completion_sd": 0.408248290463863,
+      "per_seed": [
+        2.0,
+        2.5,
+        3.0
+      ]
+    },
+    "lambda 0.99": {
+      "overrides": {
+        "lam": 0.99
+      },
+      "completion_mean": 2.5,
+      "completion_sd": 0.0,
+      "per_seed": [
+        2.5,
+        2.5,
+        2.5
+      ]
+    }
+  }
+}

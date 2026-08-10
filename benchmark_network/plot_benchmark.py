@@ -17,7 +17,11 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 plt.rcParams.update({"font.size": 8.0, "axes.titlesize": 8.0, "axes.labelsize": 8.0,
-                     "font.family": "serif", "font.serif": ["Times New Roman", "DejaVu Serif"],
+                     # Liberation Serif is metric-compatible with Times New Roman and matches its upright percent
+                     # sign and digits; Nimbus Roman and FreeSerif draw an oldstyle slanted percent
+                     # that does not match the other eight figures, which were made on Windows.
+                     "font.family": "serif",
+                     "font.serif": ["Times New Roman", "Liberation Serif", "DejaVu Serif"],
                      "axes.linewidth": 0.6,
                      "xtick.major.width": 0.6, "ytick.major.width": 0.6,
                      "xtick.labelsize": 7.5, "ytick.labelsize": 7.5, "legend.fontsize": 7.5})
@@ -50,15 +54,18 @@ def load():
     # Table IV, which put two measures of the same four cells a page apart.
     _g = json.loads((HERE / ".." / "boundary_open_demo"
                      / "four_cells_boundary_dest.json").read_text(encoding="utf-8"))
-    d["(a) Bespoke"] = {}
+    d["(a) Bespoke grid, 3000 ep"] = {}
     for rw in ("time_min", "aligned"):
         c = np.asarray(_g["closed_%s" % rw]["per_seed"])
         o = np.asarray(_g["open_%s" % rw]["per_seed"])
-        d["(a) Bespoke"][rw] = (c.mean(), _boot_err(c), o.mean(), _boot_err(o))
+        d["(a) Bespoke grid, 3000 ep"][rw] = (c.mean(), _boot_err(c), o.mean(), _boot_err(o))
     try:
         z = np.load(str(HERE / "benchmark_results.npz"))
-        for key, label in [("sioux_falls", "(b) Sioux Falls"),
-                           ("nguyen_dupuis", "(c) Nguyen-Dupuis")]:
+        # A reviewer read the three panels as one comparison and took the grid's lower open
+        # aligned value for a topology effect. The panels run at the budget each network was
+        # trained on, so each identifier now carries it.
+        for key, label in [("sioux_falls", "(b) Sioux Falls, 8000 ep"),
+                           ("nguyen_dupuis", "(c) Nguyen-Dupuis, 3000 ep")]:
             d[label] = {}
             for rw in ("time_min", "aligned"):
                 c = 100 * z[f"{key}_closed_{rw}"]; o = 100 * z[f"{key}_open_{rw}"]
@@ -84,7 +91,10 @@ def annotate_column(ax, x, points):
     dx, ha = (-7, "right") if x == 0 else (7, "left")
     hi, lo = sorted(points, key=lambda p: -p[0])
     gap = hi[0] - lo[0]
-    offs = (0.0, 0.0) if gap > 14 else (6.0, -6.0)
+    # 6 pt each way left the pair 12 pt apart, which is barely more than the 7.5 pt type and
+    # read as one block wherever the two series meet. Panel (c) is the worst case: both
+    # networks complete 100.0% on the closed boundary, so the gap is exactly zero.
+    offs = (0.0, 0.0) if gap > 14 else (9.5, -9.5)
     for (v, sd, color), dy in zip((hi, lo), offs):
         annotate(ax, x, v, sd, color, dx, dy, ha)
 
@@ -126,7 +136,8 @@ def main():
     for ax, net in zip(axes, nets):
         cx = (ax.get_position().x0 + ax.get_position().x1) / 2.0
         fig.text(cx, 0.115, net, ha="center", va="bottom", fontsize=8.0)
-    out = Path(__file__).resolve().parent / "figures"
+    # resolved against this file so the script runs wherever the tree sits
+    out = HERE / ".." / ".." / "manuscript" / "figures" / "fig_benchmark_inversion.png"
     fig.savefig(str(out), dpi=600)
     print("wrote", out.name)
 

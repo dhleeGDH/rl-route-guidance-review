@@ -1,0 +1,30 @@
+corpus_idx,title,year,base_learning_paradigm,stated_algorithm_basis
+2,Multi-agent reinforcement learning for Markov routing games: A new modeling para,2020,value-based (deep),mean-field multi-agent deep Q-learning
+4,Urban Traffic Route Guidance Method With High Adaptive Learning Ability Under Di,2020,value-based (tabular),modular 2-agent tabular Q-learning (MQ)
+11,RouteRL: Multi-agent reinforcement learning framework for urban route choice wit,2025,multiple (framework),"IQL, IPPO, VDN, QMIX, MAPPO via TorchRL"
+17,Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized R,2023,policy-gradient / actor-critic,multi-agent advantage actor-critic (MAA2C)
+20,Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic M,2024,policy-gradient / actor-critic,multi-agent deep deterministic policy gradient
+21,Modeling of route planning system based on Q value-based dynamic programming wit,2014,value-based (tabular),Q-value-based dynamic programming
+22,Individual versus Difference Rewards on Reinforcement Learning for Route Choice,2014,value-based (tabular),independent tabular Q-learning; recoded to MARL at revision on the stated multiagent formulation
+23,Route guidance system using multi-agent reinforcement learning,2011,value-based (tabular),agent-based shortest-path / dynamic programming
+24,Network-aware multi-agent reinforcement learning for the vehicle navigation prob,2022,value-based (deep),DQN-based per-intersection agents
+25,Navigating the non-compliance effects on system optimal route guidance using rei,2024,value-based (deep),centralized DQN with NFSP individual policy networks
+36,Providing real-time en-route suggestions to CAVs for congestion mitigation: A tw,2024,not clearly stated,custom two-way DRL (Markov game + provider MDP)
+38,Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing,2025,value-based (deep),DQN-based intersection agents with A-QMIX mixing
+47,Multi-agent deep reinforcement learning based on cloud-edge computing for urban ,2025,value-based (deep),Dueling Q-routing on cloud-edge
+49,Sharing diverse information gets driver agents to learn faster: an application i,2021,value-based (tabular),tabular Q-learning with C2I augmentation
+50,Regional route guidance with realistic compliance patterns: Application of deep ,2024,value-based (deep),"multi-agent deep Q-learning (CTDE, double Q)"
+51,A multiagent reinforcement learning approach to en-route trip building,2016,value-based (tabular),independent tabular Q-learning per driver
+56,Vehicle-Infrastructure Cooperation Framework for Vehicle Navigation and Traffic ,2025,value-based (deep),improved DQN (double + dueling) vehicle and signal agents
+58,Using Car to Infrastructure Communication to Accelerate Learning in Route Choice,2016,value-based (tabular),tabular Q-learning with C2I plus UE-to-SO biasing
+61,Distributed Learning for Vehicle Routing Decision in Software Defined Internet o,2021,value-based (deep),distributed multi-agent deep Q-learning
+62,Proactive Urban Expressway Guidance: A Hybrid Approach Using Reinforcement Learn,2025,policy-gradient / actor-critic,multi-agent actor-critic (VDAC)
+63,A Bi-Level Network-Wide Cooperative Driving Approach Including Deep Reinforcemen,2024,policy-gradient / actor-critic,modified discrete soft actor-critic (shared policy)
+64,Self-Organized Routing for Autonomous Vehicles via Deep Reinforcement Learning,2024,value-based (deep),self-organized per-vehicle DQN (PER + double + dueling)
+75,Autonomous Vehicles in Smart Cities: a Deep Reinforcement Learning Solution,2022,value-based (deep),distributed deep Q-learning agents
+76,Intelligent Routing in Connected Autonomous Vehicles using the ADAPT-S Learning ,2025,policy-gradient / actor-critic,multi-agent actor-critic with attention
+78,Resilient Multi-Agent Deep Reinforcement Learning for Routing Control via Traffi,2026,policy-gradient / actor-critic,shared-parameter multi-agent PPO
+81,A Communication Resource Enhanced Intelligent Road Traffic Routing Scheme,2021,policy-gradient / actor-critic,multi-agent DDPG (MTSE)
+84,A Dynamic Risk-aware Routing Recommendation Using Deep Reinforcement Learning,2024,value-based (deep),independent multi-agent DQN (IMADQN)
+95,Preliminary Study on Cooperative Route Planning Reinforcement Learning with a Fo,2024,policy-gradient / actor-critic,two per-OD actors sharing one critic
+97,HERO: Heterogeneous-agent rEinforcement learning-based Route Optimization for Gr,2026,policy-gradient / actor-critic,heterogeneous-agent advantage actor-critic (HAA2C)

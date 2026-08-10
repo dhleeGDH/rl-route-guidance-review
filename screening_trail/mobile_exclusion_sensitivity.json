@@ -1,0 +1,8 @@
+{
+  "pool": 6801,
+  "in_domain": 2760,
+  "with_exclusion": 1239,
+  "delta_all_terms": 1521,
+  "delta_mobile_only": 55,
+  "note": "OpenAlex stands in for IEEE Xplore, which refuses automated access (418)"
+}

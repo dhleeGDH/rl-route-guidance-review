@@ -1,0 +1,169 @@
+{
+  "network": "SUMO 7x7 reconstruction of [50]",
+  "seeds": 5,
+  "checkpoints": [
+    1500,
+    4000,
+    8000
+  ],
+  "recon_1500_episode_published": {
+    "closed_time_min": 5.17,
+    "open_time_min": 0.0,
+    "open_aligned": 28.0,
+    "closed_aligned": 100.0
+  },
+  "cells": {
+    "closed_time_min": {
+      "1500": {
+        "mean": 44.9,
+        "sd": 6.367102951892642,
+        "per_seed": [
+          55.0,
+          36.5,
+          41.0,
+          48.5,
+          43.5
+        ],
+        "arriving_episodes_pct_mean": 34.84
+      },
+      "4000": {
+        "mean": 88.4,
+        "sd": 2.2671568097509267,
+        "per_seed": [
+          89.0,
+          87.5,
+          86.0,
+          92.5,
+          87.0
+        ],
+        "arriving_episodes_pct_mean": 70.68
+      },
+      "8000": {
+        "mean": 99.2,
+        "sd": 1.6,
+        "per_seed": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          96.0
+        ],
+        "arriving_episodes_pct_mean": 84.925
+      }
+    },
+    "open_time_min": {
+      "1500": {
+        "mean": 0.0,
+        "sd": 0.0,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "arriving_episodes_pct_mean": 1.48
+      },
+      "4000": {
+        "mean": 0.0,
+        "sd": 0.0,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "arriving_episodes_pct_mean": 1.04
+      },
+      "8000": {
+        "mean": 0.0,
+        "sd": 0.0,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "arriving_episodes_pct_mean": 0.625
+      }
+    },
+    "open_aligned": {
+      "1500": {
+        "mean": 9.5,
+        "sd": 1.449137674618944,
+        "per_seed": [
+          8.5,
+          8.5,
+          11.0,
+          8.0,
+          11.5
+        ],
+        "arriving_episodes_pct_mean": 4.213333333333333
+      },
+      "4000": {
+        "mean": 48.0,
+        "sd": 31.811947441173732,
+        "per_seed": [
+          52.5,
+          8.5,
+          93.0,
+          16.5,
+          69.5
+        ],
+        "arriving_episodes_pct_mean": 13.169999999999998
+      },
+      "8000": {
+        "mean": 96.1,
+        "sd": 6.822023160324215,
+        "per_seed": [
+          99.5,
+          82.5,
+          100.0,
+          98.5,
+          100.0
+        ],
+        "arriving_episodes_pct_mean": 42.4525
+      }
+    },
+    "closed_aligned": {
+      "1500": {
+        "mean": 98.7,
+        "sd": 1.2489995996796797,
+        "per_seed": [
+          100.0,
+          99.0,
+          97.0,
+          97.5,
+          100.0
+        ],
+        "arriving_episodes_pct_mean": 47.239999999999995
+      },
+      "4000": {
+        "mean": 100.0,
+        "sd": 0.0,
+        "per_seed": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          100.0
+        ],
+        "arriving_episodes_pct_mean": 78.915
+      },
+      "8000": {
+        "mean": 100.0,
+        "sd": 0.0,
+        "per_seed": [
+          100.0,
+          100.0,
+          100.0,
+          100.0,
+          100.0
+        ],
+        "arriving_episodes_pct_mean": 89.4575
+      }
+    }
+  }
+}

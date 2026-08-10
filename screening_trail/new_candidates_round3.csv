@@ -1,0 +1,4 @@
+row,paperId,title,year,venue,citationCount,doi,source,filter_note
+1,13ee9e9cc27da3f746c4f28999a3d597651f3a9d,Multi-agent reinforcement learning for route guidance system,2011,,9,,new_candidates_authors.csv,keep
+2,c2180fc60427c9e105ce38ab16d09ee675b35db6,Self-adaptive and multi-agent reinforcement learning in route guidance system,2011,2011 Malaysian Conference in Software Engineering,0,,new_candidates_authors.csv,keep
+3,48e4d0c0a7875cfc759784beab345c5a3655452f,Analyzing Road Network Inefficiency via Simulation: Towards a MARL Evaluation Testbed,2026,IEEE Systems Conference,0,,new_candidates_snowball4.csv,border

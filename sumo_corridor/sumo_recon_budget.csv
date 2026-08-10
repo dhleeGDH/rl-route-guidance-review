@@ -1,0 +1,13 @@
+boundary,reward,episodes,completion_mean,completion_sd,arriving_episodes_pct_mean,recon_1500_published
+closed,time_min,1500,44.90,6.37,34.84,5.17
+closed,time_min,4000,88.40,2.27,70.68,5.17
+closed,time_min,8000,99.20,1.60,84.92,5.17
+open,time_min,1500,0.00,0.00,1.48,0.00
+open,time_min,4000,0.00,0.00,1.04,0.00
+open,time_min,8000,0.00,0.00,0.62,0.00
+open,aligned,1500,9.50,1.45,4.21,28.00
+open,aligned,4000,48.00,31.81,13.17,28.00
+open,aligned,8000,96.10,6.82,42.45,28.00
+closed,aligned,1500,98.70,1.25,47.24,100.00
+closed,aligned,4000,100.00,0.00,78.92,100.00
+closed,aligned,8000,100.00,0.00,89.46,100.00

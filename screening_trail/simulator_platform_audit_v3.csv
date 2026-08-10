@@ -1,0 +1,98 @@
+idx,title,category,platform_names,evidence_source
+0,Real-time deep reinforcement learning based vehicle navigation,named-platform,SUMO;MATSim;VISSIM;Aimsun,fulltext-pdf
+1,A reinforcement learning-based routing algorithm for large street networks,named-platform,OpenAI Gym/Gymnasium,fulltext-pdf
+2,Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for dynamic traffic assignment,named-platform,SUMO,fulltext-pdf
+3,Hierarchical Reinforcement Learning for Dynamic Autonomous Vehicle Navigation at Intelligent Intersections,named-platform,SUMO,fulltext-pdf
+4,Urban Traffic Route Guidance Method With High Adaptive Learning Ability Under Diverse Traffic Scenarios,not-addressed,,fulltext-pdf
+5,Reinforcement Learning for Vehicle Route Optimization in SUMO,named-platform,SUMO,abstract (fulltext file not locatable)
+6,Routing Control Optimization for Autonomous Vehicles in Mixed Traffic Flow Based on Deep Reinforcement Learning,named-platform,SUMO,fulltext-pdf
+7,An Adaptive Route Guidance Model Considering the Effect of Traffic Signals Based on Deep Reinforcement Learning,named-platform,SUMO,fulltext-pdf
+8,Transfer Learning-Based Deep Reinforcement Learning Approach for Robust Route Guidance in Mixed Traffic Environment,named-platform,SUMO,fulltext-pdf
+9,Development of Reinforcement Learning-based Traffic Predictive Route Guidance Algorithm Under Uncertain Traffic Environment,named-platform,SUMO,fulltext-pdf
+10,XRouting: Explainable Vehicle Rerouting for Urban Road Congestion Avoidance using Deep Reinforcement Learning,named-platform,SUMO;OpenAI Gym/Gymnasium,fulltext-pdf
+11,RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles,named-platform,SUMO,fulltext-pdf
+12,Congestion-Aware Path Planning With Vehicle-Road Cooperation in AIoV,not-addressed,,fulltext-pdf
+13,Reinforcement learning of route choice considering traveler's preference,unclear,,abstract
+14,Reinforcement Learning Method with Dynamic Learning Rate for Real-Time Route Guidance Based on SUMO,named-platform,SUMO,fulltext-pdf
+15,Model-Based Deep Reinforcement Learning for Energy Efficient Routing of a Connected and Automated Vehicle,named-platform,SUMO,fulltext-pdf
+16,Reinforcement Learning-based Sequential Route Recommendation for System-Optimal Traffic Assignment,not-addressed,,fulltext-pdf
+17,Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized Road Networks using Multi-Agent Deep Reinforcement Learning,named-platform,SUMO,fulltext-pdf
+18,Dynamic Route Guidance System Based on Real-time Vehicle-Road Collaborations with Deep Reinforcement Learning,named-platform,SUMO,fulltext-pdf
+19,Deep Reinforcement Learning for Vehicle Swarm Navigation and Urban Traffic Optimization,named-platform,SUMO,fulltext-pdf
+20,Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic Multi-Vehicle Route Selection,named-platform,SUMO,fulltext-pdf
+21,Modeling of route planning system based on Q value-based dynamic programming with multi-agent reinforcement learning algorithms,not-addressed,,fulltext-pdf
+22,Individual versus Difference Rewards on Reinforcement Learning for Route Choice,not-addressed,,fulltext-pdf
+23,Route guidance system using multi-agent reinforcement learning,custom-described,MATLAB,fulltext-pdf
+24,Network-aware multi-agent reinforcement learning for the vehicle navigation problem,named-platform,SUMO,fulltext-pdf
+25,Navigating the non-compliance effects on system optimal route guidance using reinforcement learning,named-platform,SUMO,fulltext-pdf
+26,Reinforcement learning-based route planning method for connected vehicles considering real-time road traffic information,unclear,,abstract
+27,Optimization Method of DRL-based Route Planning under Limited Resources,named-platform,SUMO;CARLA,fulltext-pdf
+28,Vehicle-Road Collaborative Path Planning Based on A*-assisted Deep Reinforcement Learning,named-platform,SUMO,fulltext-pdf
+29,A Deep Reinforcement Learning Approach for Route Planning of Autonomous Vehicles*,named-platform,SUMO,fulltext-pdf
+30,Dynamic urban traffic rerouting with fog-cloud reinforcement learning,named-platform,SUMO,fulltext-pdf
+31,A Deep Reinforcement Learning Framework for Real-Time Vehicle Routing with Dynamic Traffic Conditions,named-platform,SUMO,fulltext-pdf
+32,Adaptive Reinforcement Learning Framework for Environmentally Sustainable Route Optimization,not-addressed,,fulltext-pdf
+33,Deep Q-Learning-based Route Optimization for Traffic Network,named-platform,SUMO,fulltext-pdf
+34,Urban Multiple Route Planning Model Using Dynamic Programming in Reinforcement Learning,named-platform,SUMO,fulltext-pdf
+35,GAQ-EBkSP: A DRL-based Urban Traffic Dynamic Rerouting Framework using Fog-Cloud Architecture,named-platform,SUMO,fulltext-pdf
+36,Providing real-time en-route suggestions to CAVs for congestion mitigation: A two-way deep reinforcement learning approach,not-addressed,,fulltext-pdf
+37,Real-time system optimal traffic routing under uncertainties - Can physics models boost reinforcement learning?,custom-described,synthetic road network (unnamed platform),fulltext-pdf
+38,Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing,named-platform,SUMO;CARLA,fulltext-pdf
+39,A Data-Driven Reinforcement Learning Based Multi-Objective Route Recommendation System,not-addressed,,fulltext-pdf
+40,Emergency vehicle rescue route optimization based on deep reinforcement learning in highway network,unclear,,abstract
+41,Autonomous Vehicle Routing Optimization in a Competitive Environment: A Reinforcement Learning Application,not-addressed,,fulltext-pdf
+42,Multi-objective route recommendation method based on Q-learning algorithm,not-addressed,,fulltext-pdf
+43,Agent-Based Route Planning with Deep Q Learning,named-platform,SUMO,fulltext-pdf
+44,Urban traffic dynamic rerouting framework: A DRL-based model with fog-cloud architecture,named-platform,SUMO,fulltext-pdf
+45,Realtime vehicle route optimisation via DQN for sustainable and resilient urban transportation network,named-platform,SUMO;MATSim;VISSIM;Aimsun;OpenAI Gym/Gymnasium,fulltext-pdf
+46,Optimizing Traffic Routes With Enhanced Double Q-Learning,named-platform,SUMO,fulltext-pdf
+47,Multi-agent deep reinforcement learning based on cloud-edge computing for urban vehicle route guidance,named-platform,SUMO,fulltext-pdf
+48,Meta-deep q-learning for eco-routing,named-platform,SUMO,fulltext-pdf
+49,Sharing diverse information gets driver agents to learn faster: an application in en route trip building,named-platform,SUMO,fulltext-pdf
+50,Regional route guidance with realistic compliance patterns: Application of deep reinforcement learning and MPC,custom-described,NMFD macroscopic model (unnamed platform),fulltext-pdf
+51,A multiagent reinforcement learning approach to en-route trip building,custom-described,"OW network, Java implementation (unnamed platform)",fulltext-pdf
+52,Connected vehicles' dynamic route planning based on reinforcement learning,named-platform,SUMO;VISSIM,fulltext-pdf
+53,A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion game,custom-described,MATLAB,fulltext-pdf
+54,Robust Route Planning with Distributional Reinforcement Learning in a Stochastic Road Network Environment,named-platform,CARLA,fulltext-pdf
+55,Deep Reinforcement Learning for Optimizing Route Planning in Urban Traffic,not-addressed,,fulltext-pdf
+56,Vehicle-Infrastructure Cooperation Framework for Vehicle Navigation and Traffic Signal Control using Deep Reinforcement Learning,named-platform,SUMO,fulltext-pdf
+57,VEGA: Electric Vehicle Navigation Agent via Physics-Informed Neural Operator and Proximal Policy Optimization,custom-described,US highway graph environment (unnamed platform),fulltext-pdf
+58,Using Car to Infrastructure Communication to Accelerate Learning in Route Choice,named-platform,SUMO,fulltext-pdf
+59,Applying Markov decision process to adaptive dynamic route selection model,not-addressed,,fulltext-pdf
+60,A Sustainable Multi-Agent Routing Algorithm for Vehicle Platoons in Urban Networks,named-platform,SUMO;MATLAB,fulltext-pdf
+61,Distributed Learning for Vehicle Routing Decision in Software Defined Internet of Vehicles,named-platform,VISSIM,fulltext-pdf
+62,Proactive Urban Expressway Guidance: A Hybrid Approach Using Reinforcement Learning and Traffic Prediction Models,named-platform,SUMO;VISSIM;Aimsun,fulltext-pdf
+63,A Bi-Level Network-Wide Cooperative Driving Approach Including Deep Reinforcement Learning-Based Routing,named-platform,CAVSim,fulltext-pdf
+64,Self-Organized Routing for Autonomous Vehicles via Deep Reinforcement Learning,custom-described,cell-based link model (unnamed platform),fulltext-pdf
+65,Graph Convolutional Network Based Multi-Objective Meta-Deep Q-Learning for Eco-Routing,named-platform,SUMO,fulltext-pdf
+66,SEGAC: Sample Efficient Generalized Actor Critic for the Stochastic On-Time Arrival Problem,custom-described,network graph simulation (unnamed platform),fulltext-pdf
+67,GE-DDRL: Graph Embedding and Deep Distributional Reinforcement Learning for Reliable Shortest Path: A Universal and Scale Free Solution,custom-described,toy network (unnamed platform),fulltext-pdf
+68,Shortest-Time Path Planning Under Carbon Emission Constraints via Reinforcement Learning,custom-described,"Python, explicitly no existing traffic simulation platform",fulltext-pdf
+69,DRL Router: Distributional Reinforcement Learning-Based Router for Reliable Shortest Path Problems,not-addressed,,fulltext-pdf
+70,Optimization Path Planning Algorithm Based on Deep Reinforcement Learning,not-addressed,,fulltext-pdf
+71,Research on Emergency Rescue Path Optimization Method Based on Deep Reinforcement Learning,not-addressed,,fulltext-pdf
+72,Safety-Aware Path Planning for Post-Disaster Rescue Vehicles,not-addressed,,fulltext-pdf
+74,Path Planning in Urban Environment Based on Traffic Condition Perception and Traffic Light Status,named-platform,SUMO,fulltext-pdf
+75,Autonomous Vehicles in Smart Cities: a Deep Reinforcement Learning Solution,named-platform,SUMO;MATLAB,fulltext-pdf
+76,Intelligent Routing in Connected Autonomous Vehicles using the ADAPT-S Learning Architecture,named-platform,SUMO,fulltext-pdf
+77,Situation-aware Path Optimization for Autonomous Systems: A Deep Reinforcement Learning based Approach,not-addressed,,fulltext-pdf
+78,Resilient Multi-Agent Deep Reinforcement Learning for Routing Control via Traffic Cost Fields,custom-described,graph-based simulator (Shenzhen-extracted network),fulltext-pdf
+79,Dynamic Route Optimization using D* Lite and DQN Algorithm,named-platform,SUMO,fulltext-pdf
+81,A Communication Resource Enhanced Intelligent Road Traffic Routing Scheme,not-addressed,,fulltext-pdf
+82,Work-in-Progress: Leveraging the Selfless Driving Model to Reduce Vehicular Network Congestion,named-platform,SUMO,fulltext-pdf
+83,A Deep Q Learning-Model Predictive Control Approach to vehicle routing and control with platoon constraints,named-platform,SUMO;MATLAB,fulltext-pdf
+84,A Dynamic Risk-aware Routing Recommendation Using Deep Reinforcement Learning,custom-described,grid-world (unnamed platform),fulltext-pdf
+85,Path planning for vehicle platoons under routing decisions: a distributed approach combining Deep Reinforcement Learning and Model Predictive Control,custom-described,MATLAB,fulltext-pdf
+86,A Joint Design of Path Planning and Lane Reservation for Emergency Service in ITS,named-platform,SUMO,fulltext-pdf
+87,A Reinforcement Learning-Based Path Recommendation Strategy Considering Broadcast Disturbance and Behavioral Response,not-addressed,,fulltext-pdf
+88,Personalized and Context-aware Route Planning for Edge-assisted Vehicles,named-platform,SUMO;CARLA,fulltext-pdf
+89,Research on Travel Paths Based on Car-Hailing Services Connecting with Rail Transit,named-platform,SUMO,fulltext-pdf
+90,Q-Learning-Based Energy-Aware Route Planning for Electric Vehicles on Real Road Networks with Charging Constraints,custom-described,OpenStreetMap-derived graph environment (unnamed platform),fulltext-pdf
+91,Cutting-Edge Travel Planner: Intelligent Route Recommendation System using Enhanced Learning Scheme with AI Principles,custom-described,purpose-built environment simulator (unnamed platform),fulltext-pdf
+92,Multi-Objective Route Optimization via Dueling DQN for Teleoperated Driving,custom-described,digital-twin urban representation (unnamed platform),fulltext-pdf
+94,Route Planning and Power Management for PHEVs With Reinforce,named-platform,ADVISOR (vehicle powertrain simulator),fulltext-pdf
+95,Preliminary Study on Cooperative Route Planning Reinforcemen,custom-described,"mesoscopic traffic flow simulator, Python (unnamed platform)",fulltext-pdf
+97,HERO: Heterogeneous-agent rEinforcement learning-based Route,named-platform,SUMO,fulltext-pdf
+98,Disaster-Aware Path Planning Based on Reinforcement Learning,custom-described,remote-sensing-derived road network environment (unnamed platform),fulltext-pdf
+99,Reinforcement Learning-based Unpredictable Emergency Events,custom-described,Java grid simulation environment (unnamed platform),fulltext-pdf
+101,Energy Optimal Route Planning Framework for Electric Vehicle,not-addressed,,fulltext-pdf

@@ -1,0 +1,30 @@
+[
+  {
+    "iter": 1,
+    "reward_mean": -1129.4,
+    "reward_max": -756.0,
+    "len_mean": 51.8,
+    "ts": 78.9
+  },
+  {
+    "iter": 2,
+    "reward_mean": -1627.3333333333333,
+    "reward_max": -513.0,
+    "len_mean": 80.33333333333333,
+    "ts": 71.9
+  },
+  {
+    "iter": 3,
+    "reward_mean": -2620.5,
+    "reward_max": -1173.0,
+    "len_mean": 120.0,
+    "ts": 78.9
+  },
+  {
+    "iter": 4,
+    "reward_mean": -1259.6666666666667,
+    "reward_max": -924.0,
+    "len_mean": 62.333333333333336,
+    "ts": 78.0
+  }
+]

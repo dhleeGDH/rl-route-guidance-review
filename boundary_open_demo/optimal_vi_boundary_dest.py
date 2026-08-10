@@ -23,7 +23,13 @@ from env import ACTIONS, N_SIDE, perimeter_links   # noqa: E402
 from train import make_eval_od                      # noqa: E402
 
 N = N_SIDE
-E_COST = 1.0 + 0.6 * 0.5                             # expected in-grid edge cost
+# Expected in-grid edge cost of 1 + 0.6 * U * (0.5 + 0.5 * sin(t/6)) with U uniform on [0, 1],
+# averaged over a full period of the sinusoid: 1 + 0.6 * 0.5 * 0.5. This read 1.0 + 0.6 * 0.5 =
+# 1.3 until 2026-08-09, dropping the factor E[U] and overstating the in-grid cost, which biases a
+# deterministic surrogate toward exiting. optimal_vi.py always used 1.15 and the two disagreed.
+# The correction changes no reported figure: optimal_vi_cost_sensitivity.py sweeps the constant
+# from the minimum edge cost to the maximum and every cell holds at 100.0 / 0.0 / 100.0 / 100.0.
+E_COST = 1.0 + 0.6 * 0.5 * 0.5                       # 1.15
 R_GOAL, R_EXIT, BETA = 10.0, 5.0, 1.0
 NEG = -1e9
 

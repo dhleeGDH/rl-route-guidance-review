@@ -31,6 +31,9 @@ import sys
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
+# The corpus lives in experiments/corpus/. It sat in data/screened/ on the machine this
+# was written on, and that path does not exist in the released package, so this script
+# raised FileNotFoundError out of the box while Section II-B said any reader can rerun it.
 CORPUS = os.path.join(HERE, "corpus", "corpus_v9_coded.csv")
 
 # An identifiable statement about conditions at a future traversal time, a decision-time
@@ -78,7 +81,7 @@ def main():
     a = ap.parse_args()
 
     rows = [r for r in csv.DictReader(io.open(CORPUS, encoding="utf-8"))
-            if (r.get("in_reviewed_corpus") or "yes").strip() == "yes"]
+            if (r["idx"] or "").strip() != "93"]          # the author's own study, not reviewed
 
     settled = agree = 0
     unsettled, differ = [], []

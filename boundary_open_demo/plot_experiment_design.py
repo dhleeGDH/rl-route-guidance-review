@@ -17,12 +17,20 @@ from pathlib import Path
 FS = 8.0
 plt.rcParams.update({
     "font.size": FS, "axes.titlesize": FS,
-    "font.family": "serif", "font.serif": ["Times New Roman", "DejaVu Serif"],
+    # Liberation Serif is metric-compatible with Times New Roman and matches its upright
+    # percent sign and digits. Times New Roman is absent on Linux, and the other serif
+    # substitutes here draw an oldstyle slanted percent that does not match the figures
+    # already made on Windows.
+    "font.family": "serif", "font.serif": ["Times New Roman", "Liberation Serif", "DejaVu Serif"],
 })
 
 N = 5
 STUB = 0.62          # length of a stub link protruding from a boundary node
-OUT = Path(__file__).resolve().parents[2] / "05_writing" / "figures" / "fig_experiment_design.png"
+# The Windows tree held the figures under 05_writing; this package holds them under
+# manuscript. The old path did not exist here and mkdir below created it silently, so the
+# script reported success while writing where nothing reads.
+OUT = (Path(__file__).resolve().parents[2] / "manuscript" / "figures"
+       / "fig_experiment_design.png")
 
 
 def boundary_stubs():
@@ -83,11 +91,12 @@ def draw_panel(ax, open_boundary, title):
     ax.text(O_CELL[0], O_CELL[1] - 0.34, "O", ha="center", va="top",
             fontsize=8, fontweight="bold")
 
-    # destination: the one outgoing boundary link, drawn as a bold stub with a star tip
-    draw_stub(ax, D_NODE, D_DIR, color="black", lw=1.6, tip=False)
-    ax.plot(D_NODE[0] + STUB, D_NODE[1], "*", ms=8.0, mfc="black", mec="black", zorder=6)
-    ax.text(D_NODE[0] + STUB + 0.22, D_NODE[1], "D", ha="left", va="center",
-            fontsize=8, fontweight="bold")
+    # Destination: the one outgoing boundary link. A star at the tip labelled D read as a
+    # destination NODE on first sight, which is the opposite of the point the panel makes, so the
+    # label now names the link and sits along the stub rather than beyond its end.
+    draw_stub(ax, D_NODE, D_DIR, color="black", lw=2.0, tip=True)
+    ax.text(D_NODE[0] + STUB * 0.5, D_NODE[1] + 0.28, "destination link", ha="center",
+            va="bottom", fontsize=FS - 0.5, fontweight="bold")
 
     ax.set_xlim(-0.95, N + 0.45)
     ax.set_ylim(-2.05, N - 0.05)

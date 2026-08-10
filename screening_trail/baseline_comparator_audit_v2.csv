@@ -1,0 +1,104 @@
+idx,title,category,comparators_located,evidence_source
+0,Real-time deep reinforcement learning based vehicle navigation,non-learning-comparator,Dijkstra;A*;ant-colony,fulltext-pdf
+1,A reinforcement learning-based routing algorithm for large street networks,non-learning-comparator,shortest-path-based algorithms,fulltext-pdf
+2,Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for dynamic traffic assignment,non-learning-comparator,traditional iterative assignment method,fulltext-pdf
+3,Hierarchical Reinforcement Learning for Dynamic Autonomous Vehicle Navigation at Intelligent Intersections,learning-only-comparator,DQN/PPO navigation and signal baselines,fulltext-pdf
+4,Urban Traffic Route Guidance Method With High Adaptive Learning Ability Under Diverse Traffic Scenarios,non-learning-comparator,SP;dynamic SP;dynamic-random k-SP,fulltext-pdf
+5,Reinforcement Learning for Vehicle Route Optimization in SUMO,unclear,,abstract
+6,Routing Control Optimization for Autonomous Vehicles in Mixed Traffic Flow Based on Deep Reinforcement Learning,learning-only-comparator,prior learning-based model variants,fulltext-pdf
+7,An Adaptive Route Guidance Model Considering the Effect of Traffic Signals Based on Deep Reinforcement Learning,non-learning-comparator,traditional shortest-path method,fulltext-pdf
+8,Transfer Learning-Based Deep Reinforcement Learning Approach for Robust Route Guidance in Mixed Traffic Environment,learning-only-comparator,own model variants (BM/BTM/ATM),fulltext-pdf
+9,Development of Reinforcement Learning-based Traffic Predictive Route Guidance Algorithm Under Uncertain Traffic Environment,non-learning-comparator,Dijkstra;A*;prior RL variant,fulltext-pdf
+10,XRouting: Explainable Vehicle Rerouting for Urban Road Congestion Avoidance using Deep Reinforcement Learning,non-learning-comparator,Dijkstra,fulltext-pdf
+11,RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles,learning-only-comparator,IQL;IPPO;VDN (MARL algorithms),fulltext-pdf
+12,Congestion-Aware Path Planning With Vehicle-Road Cooperation in AIoV,non-learning-comparator,Dijkstra;ant-colony,fulltext-pdf
+13,Reinforcement learning of route choice considering traveler's preference,unclear,,abstract
+14,Reinforcement Learning Method with Dynamic Learning Rate for Real-Time Route Guidance Based on SUMO,non-learning-comparator,D* (classical planner),fulltext-pdf
+15,Model-Based Deep Reinforcement Learning for Energy Efficient Routing of a Connected and Automated Vehicle,non-learning-comparator,shortest-route simulation baseline,fulltext-pdf
+16,Reinforcement Learning-based Sequential Route Recommendation for System-Optimal Traffic Assignment,non-learning-comparator,theoretical system-optimum solution,fulltext-pdf
+17,Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized Road Networks using Multi-Agent Deep Reinforcement Learning,learning-only-comparator,single-control DRL variants (ablation),fulltext-pdf
+18,Dynamic Route Guidance System Based on Real-time Vehicle-Road Collaborations with Deep Reinforcement Learning,non-learning-comparator,SP;DWkSP,fulltext-pdf
+19,Deep Reinforcement Learning for Vehicle Swarm Navigation and Urban Traffic Optimization,non-learning-comparator,shortest-path algorithms,fulltext-pdf
+20,Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic Multi-Vehicle Route Selection,non-learning-comparator,Dijkstra,fulltext-pdf
+21,Modeling of route planning system based on Q value-based dynamic programming with multi-agent reinforcement learning algorithms,non-learning-comparator,Dijkstra,fulltext-pdf
+22,Individual versus Difference Rewards on Reinforcement Learning for Route Choice,non-learning-comparator,successive averages;incremental assignment;all-or-nothing,fulltext-pdf
+23,Route guidance system using multi-agent reinforcement learning,non-learning-comparator,Dijkstra,fulltext-pdf
+24,Network-aware multi-agent reinforcement learning for the vehicle navigation problem,non-learning-comparator,SPF;SPFWR (Dijkstra-based),fulltext-pdf
+25,Navigating the non-compliance effects on system optimal route guidance using reinforcement learning,non-learning-comparator,iterative assignment method,fulltext-pdf
+26,Reinforcement learning-based route planning method for connected vehicles considering real-time road traffic information,learning-only-comparator,classical Q-learning,abstract
+27,Optimization Method of DRL-based Route Planning under Limited Resources,learning-only-comparator,fully-connected policy-network benchmark,fulltext-pdf
+28,Vehicle-Road Collaborative Path Planning Based on A*-assisted Deep Reinforcement Learning,non-learning-comparator,A*,fulltext-pdf
+29,A Deep Reinforcement Learning Approach for Route Planning of Autonomous Vehicles*,learning-only-comparator,non-modular DRL (ablation),fulltext-pdf
+30,Dynamic urban traffic rerouting with fog-cloud reinforcement learning,non-learning-comparator,rule-based EBkSP (no training),fulltext-pdf
+31,A Deep Reinforcement Learning Framework for Real-Time Vehicle Routing with Dynamic Traffic Conditions,learning-only-comparator,static-data-trained agent (ablation),fulltext-pdf
+32,Adaptive Reinforcement Learning Framework for Environmentally Sustainable Route Optimization,non-learning-comparator,A*;genetic algorithm,fulltext-pdf
+33,Deep Q-Learning-based Route Optimization for Traffic Network,non-learning-comparator,Dijkstra;conventional shortest-path,fulltext-pdf
+34,Urban Multiple Route Planning Model Using Dynamic Programming in Reinforcement Learning,non-learning-comparator,Dijkstra,fulltext-pdf
+35,GAQ-EBkSP: A DRL-based Urban Traffic Dynamic Rerouting Framework using Fog-Cloud Architecture,non-learning-comparator,rule-based rerouting (no training),fulltext-pdf
+36,Providing real-time en-route suggestions to CAVs for congestion mitigation: A two-way deep reinforcement learning approach,non-learning-comparator,user-equilibrium benchmark,fulltext-pdf
+37,Real-time system optimal traffic routing under uncertainties - Can physics models boost reinforcement learning?,non-learning-comparator,no-control;pre-computed DSO,fulltext-pdf
+38,Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing,non-learning-comparator,SPF;SPFWR (Dijkstra-based),fulltext-pdf
+39,A Data-Driven Reinforcement Learning Based Multi-Objective Route Recommendation System,non-learning-comparator,conventional multi-objective optimization methods,fulltext-pdf
+40,Emergency vehicle rescue route optimization based on deep reinforcement learning in highway network,unclear,,abstract
+41,Autonomous Vehicle Routing Optimization in a Competitive Environment: A Reinforcement Learning Application,non-learning-comparator,no-agent scenario,fulltext-pdf
+42,Multi-objective route recommendation method based on Q-learning algorithm,non-learning-comparator,PreGo;MORP (non-RL multi-objective),fulltext-pdf
+43,Agent-Based Route Planning with Deep Q Learning,no-comparison-located,,fulltext-pdf
+44,Urban traffic dynamic rerouting framework: A DRL-based model with fog-cloud architecture,non-learning-comparator,rule-based EBkSP (no training),fulltext-pdf
+45,Realtime vehicle route optimisation via DQN for sustainable and resilient urban transportation network,non-learning-comparator,dynamic-Dijkstra;dynamic-A*,fulltext-pdf
+46,Optimizing Traffic Routes With Enhanced Double Q-Learning,learning-only-comparator,Q-learning;double Q-learning;DQN,fulltext-pdf
+47,Multi-agent deep reinforcement learning based on cloud-edge computing for urban vehicle route guidance,non-learning-comparator,Dijkstra;DUA,fulltext-pdf
+48,Meta-deep q-learning for eco-routing,non-learning-comparator,Dijkstra,fulltext-pdf
+49,Sharing diverse information gets driver agents to learn faster: an application in en route trip building,non-learning-comparator,dynamic user assignment (DUA),fulltext-pdf
+50,Regional route guidance with realistic compliance patterns: Application of deep reinforcement learning and MPC,non-learning-comparator,S-MPC;C-MPC (model predictive control),fulltext-pdf
+51,A multiagent reinforcement learning approach to en-route trip building,non-learning-comparator,incremental assignment;method of successive averages,fulltext-pdf
+52,Connected vehicles' dynamic route planning based on reinforcement learning,non-learning-comparator,ant-colony,fulltext-pdf
+53,A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion game,learning-only-comparator,IQ-learning;DQ-learning,fulltext-pdf
+54,Robust Route Planning with Distributional Reinforcement Learning in a Stochastic Road Network Environment,non-learning-comparator,shortest-path reference;A2C;PPO;DQN;QR-DQN,fulltext-pdf
+55,Deep Reinforcement Learning for Optimizing Route Planning in Urban Traffic,non-learning-comparator,A*;Dijkstra;baseline RL,fulltext-pdf
+56,Vehicle-Infrastructure Cooperation Framework for Vehicle Navigation and Traffic Signal Control using Deep Reinforcement Learning,non-learning-comparator,Dijkstra+fixed-time;Dijkstra+PressLight;RL combinations,fulltext-pdf
+57,VEGA: Electric Vehicle Navigation Agent via Physics-Informed Neural Operator and Proximal Policy Optimization,non-learning-comparator,Energy-aware A*;Tesla Trip Planner,fulltext-pdf
+58,Using Car to Infrastructure Communication to Accelerate Learning in Route Choice,non-learning-comparator,dynamic user assignment (DUA),fulltext-pdf
+59,Applying Markov decision process to adaptive dynamic route selection model,non-learning-comparator,deterministic dynamic programming,fulltext-pdf
+60,A Sustainable Multi-Agent Routing Algorithm for Vehicle Platoons in Urban Networks,non-learning-comparator,Dijkstra,fulltext-pdf
+61,Distributed Learning for Vehicle Routing Decision in Software Defined Internet of Vehicles,non-learning-comparator,reverse Stackelberg (RSG);stage learning (SL);distributed cooperative algorithm,fulltext-pdf
+62,Proactive Urban Expressway Guidance: A Hybrid Approach Using Reinforcement Learning and Traffic Prediction Models,non-learning-comparator,no-control,fulltext-pdf
+63,A Bi-Level Network-Wide Cooperative Driving Approach Including Deep Reinforcement Learning-Based Routing,non-learning-comparator,Dijkstra + MCTS benchmark approach,fulltext-pdf
+64,Self-Organized Routing for Autonomous Vehicles via Deep Reinforcement Learning,non-learning-comparator,random routing;greedy routing,fulltext-pdf
+65,Graph Convolutional Network Based Multi-Objective Meta-Deep Q-Learning for Eco-Routing,non-learning-comparator,Dijkstra shortest path;random exploration,fulltext-pdf
+66,SEGAC: Sample Efficient Generalized Actor Critic for the Stochastic On-Time Arrival Problem,non-learning-comparator,DP/MP-based methods;vanilla actor-critic;PQL;CTD;DRL-Router,fulltext-pdf
+67,GE-DDRL: Graph Embedding and Deep Distributional Reinforcement Learning for Reliable Shortest Path: A Universal and Scale Free Solution,non-learning-comparator,classical RSP planning algorithms,fulltext-pdf
+68,Shortest-Time Path Planning Under Carbon Emission Constraints via Reinforcement Learning,non-learning-comparator,constrained shortest-path algorithms (Dijkstra/A* family),fulltext-pdf
+69,DRL Router: Distributional Reinforcement Learning-Based Router for Reliable Shortest Path Problems,non-learning-comparator,classical RSP planning algorithms,fulltext-pdf
+70,Optimization Path Planning Algorithm Based on Deep Reinforcement Learning,non-learning-comparator,traditional path-planning algorithms,fulltext-pdf
+71,Research on Emergency Rescue Path Optimization Method Based on Deep Reinforcement Learning,non-learning-comparator,Dijkstra;standard DQN,fulltext-pdf
+72,Safety-Aware Path Planning for Post-Disaster Rescue Vehicles,non-learning-comparator,greedy algorithm,fulltext-pdf
+73,A Multi-Agent Deep Reinforcement Learning Framework for Dynamic Path Planning in Autonomous Vehicles,non-learning-comparator,rule-based A*;SA-DQN;IMADQN,fulltext-pdf
+74,Path Planning in Urban Environment Based on Traffic Condition Perception and Traffic Light Status,non-learning-comparator,traditional methods;RPU;DQN,fulltext-pdf
+75,Autonomous Vehicles in Smart Cities: a Deep Reinforcement Learning Solution,no-comparison-located,,fulltext-pdf
+76,Intelligent Routing in Connected Autonomous Vehicles using the ADAPT-S Learning Architecture,non-learning-comparator,ACO-only;DRL-only,fulltext-pdf
+77,Situation-aware Path Optimization for Autonomous Systems: A Deep Reinforcement Learning based Approach,non-learning-comparator,static Dijkstra,fulltext-pdf
+78,Resilient Multi-Agent Deep Reinforcement Learning for Routing Control via Traffic Cost Fields,non-learning-comparator,dynamic shortest-path;heuristic baselines,fulltext-pdf
+79,Dynamic Route Optimization using D* Lite and DQN Algorithm,non-learning-comparator,A*;D* Lite,fulltext-pdf
+80,Reinforcement Learning for Dynamic Traffic Management: A Scalable Approach to Congestion Reduction,non-learning-comparator,predefined shortest-path baseline;traffic assignment models,fulltext-pdf
+81,A Communication Resource Enhanced Intelligent Road Traffic Routing Scheme,non-learning-comparator,Dijkstra scheme;DDPG scheme,fulltext-pdf
+82,Work-in-Progress: Leveraging the Selfless Driving Model to Reduce Vehicular Network Congestion,learning-only-comparator,DNN-architecture variants (ablation),fulltext-pdf
+83,A Deep Q Learning-Model Predictive Control Approach to vehicle routing and control with platoon constraints,no-comparison-located,,fulltext-pdf
+84,A Dynamic Risk-aware Routing Recommendation Using Deep Reinforcement Learning,non-learning-comparator,Dijkstra,fulltext-pdf
+85,Path planning for vehicle platoons under routing decisions: a distributed approach combining Deep Reinforcement Learning and Model Predictive Control,no-comparison-located,,fulltext-pdf
+86,A Joint Design of Path Planning and Lane Reservation for Emergency Service in ITS,non-learning-comparator,A*;PERDQN-PP,fulltext-pdf
+87,A Reinforcement Learning-Based Path Recommendation Strategy Considering Broadcast Disturbance and Behavioral Response,no-comparison-located,parameter-setting self-comparisons only,fulltext-pdf
+88,Personalized and Context-aware Route Planning for Edge-assisted Vehicles,non-learning-comparator,generic route planner;shortest-distance approach,fulltext-pdf
+89,Research on Travel Paths Based on Car-Hailing Services Connecting with Rail Transit,learning-only-comparator,Q-learning (vs Sarsa),fulltext-pdf
+90,Q-Learning-Based Energy-Aware Route Planning for Electric Vehicles on Real Road Networks with Charging Constraints,non-learning-comparator,Dijkstra,fulltext-pdf
+91,Cutting-Edge Travel Planner: Intelligent Route Recommendation System using Enhanced Learning Scheme with AI Principles,no-comparison-located,,fulltext-pdf
+92,Multi-Objective Route Optimization via Dueling DQN for Teleoperated Driving,non-learning-comparator,Shortest Path;Lowest Latency;Highest Bandwidth,fulltext-pdf
+94,Route Planning and Power Management for PHEVs With Reinforce,non-learning-comparator,shortest path algorithm,fulltext-pdf
+95,Preliminary Study on Cooperative Route Planning Reinforcemen,non-learning-comparator,random allocation (paired t-test),fulltext-pdf
+96,A Mixed Generative Adversarial Imitation Learning Based Vehi,learning-only-comparator,BC;DAgger;FEM;GTAL;GAIL;TAIL;MIMIC-MD,fulltext-pdf
+97,HERO: Heterogeneous-agent rEinforcement learning-based Route,non-learning-comparator,DSP;ReFOCUS+;CVRS;MAPPO,fulltext-pdf
+98,Disaster-Aware Path Planning Based on Reinforcement Learning,non-learning-comparator,Dijkstra;ant colony;plain RL,fulltext-pdf
+99,Reinforcement Learning-based Unpredictable Emergency Events,no-comparison-located,,fulltext-pdf
+100,Robust Navigation under Incomplete Localization Using Reinfo,no-comparison-located,,fulltext-pdf
+101,Energy Optimal Route Planning Framework for Electric Vehicle,non-learning-comparator,shortest-path strategy;time-optimal strategy;static energy-aware,fulltext-pdf
+102,GRAND: Graph Laplacian-based Reinforcement Learning for Auto,no-comparison-located,none located in own experiments (cross-paper comparison to published DQN/TTC results only),fulltext-pdf
+103,Target-Driven Mapless Navigation for Self-Driving Car,learning-only-comparator,vanilla PPO;experience-reuse strategy ablations,fulltext-pdf
