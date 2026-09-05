@@ -9,5 +9,5 @@
       "orcid": "0000-0002-3349-636X"
     }
   ],
-  "description": "The environment, the planner, the training code, the screened corpus and the study record behind the manuscript. Every reported value is recomputed from this tree at the pinned linear-algebra thread count."
+  "description": "Reproduction material for the survey \"Study-Area Boundaries in Reinforcement Learning-Based Route Guidance: A Survey of Evaluation Design and Reporting Requirements\" by Donghoun Lee. The archive contains the grid, benchmark and SUMO environments, the planner, the training code, the screened corpus with the recorded fields of each reviewed study, the screening trail and the overlap analysis. Every value reported in the paper is recomputed from this tree at a linear-algebra thread count pinned to one."
 }
