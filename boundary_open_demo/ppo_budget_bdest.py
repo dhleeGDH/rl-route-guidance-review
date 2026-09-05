@@ -2,8 +2,7 @@
 """Does a longer budget recover the policy-gradient learner on the current geometry?
 
 WHY THIS EXISTS. Section V attributes the value-based learner's shortfall on the boundary-open
-aligned cell to training budget: 30.8% at 3000 episodes and 96.7% at 8000. A reviewer observed
-that the attribution rests on that learner alone, since the policy-gradient replication is
+aligned cell to training budget: 30.8% at 3000 episodes and 96.7% at 8000. The attribution rests on that learner alone, since the policy-gradient replication is
 reported only at 3000 episodes, where it reaches 1.8%. If PPO also recovers at the longer budget,
 the budget explanation is general. If it does not, the explanation is specific to the value-based
 learner and the manuscript has to say so.

@@ -3,8 +3,7 @@
 
 WHY THIS EXISTS. The manuscript reports the policy-gradient learner at 2.7% on the boundary-open
 aligned cell at 8000 episodes, against 96.7% for the value-based learner, and concludes that an
-optimal-arrival objective is necessary but not sufficient for a learner. A reviewer observes that
-a collapse this severe could instead be an exploration or step-size artifact of the single
+optimal-arrival objective is necessary but not sufficient for a learner. A collapse this severe could instead be an exploration or step-size artifact of the single
 hyperparameter setting used, in which case the insufficiency claim would rest on one point of a
 sensitive surface. The four-cell protocol deliberately runs untuned defaults; the question is
 whether any ordinary setting of the usual knobs recovers completion.

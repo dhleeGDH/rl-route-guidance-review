@@ -1,0 +1,23 @@
+{
+ "window": [
+  "2018-01-01",
+  "2026-07-05"
+ ],
+ "per_database": {
+  "OpenAlex": 505,
+  "arXiv": 44,
+  "Semantic Scholar": 0,
+  "Scopus": null,
+  "Crossref": null
+ },
+ "errors": {
+  "Semantic Scholar": "HTTP Error 429: ",
+  "Scopus": "requires an institutional API key; not rerunnable from the paper alone",
+  "Crossref": "ranked retrieval only: the public interface does not conjoin phrases, so the three clauses cannot be expressed and no comparable result set is defined"
+ },
+ "records_returned": 549,
+ "records_unique": 512,
+ "corpus": 94,
+ "recovered": 31,
+ "recovery_pct": 33.0
+}

@@ -1,4 +1,4 @@
-# DEPRECATED — not used in the paper
+# DEPRECATED: not used in the paper
 
 The inference-locality principle (Section III) is a definitional necessary condition on the
 state (the dynamic, time-varying state variables must be given in predictive form for

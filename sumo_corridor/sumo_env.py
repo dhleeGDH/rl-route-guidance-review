@@ -247,7 +247,11 @@ class SumoGridEnv:
             self.done = True
             self.outcome = "timeout"
             self._cleanup()
-        return self._obs(), reward, self.done, {"outcome": self.outcome}
+        # 2026-09-05. BOND item 1 asks for the travel time of the completing trips beside the
+        # completion rate. The traversal cost of an in-network move is reported here so an
+        # evaluation loop can accumulate it; the exit branches above return no cost, which is
+        # the convention of Appendix E excluding the arriving move.
+        return self._obs(), reward, self.done, {"outcome": self.outcome, "cost": cost}
 
     def _edge_to_cr(self, edge_id):
         to = self.net.getEdge(edge_id).getToNode().getID()

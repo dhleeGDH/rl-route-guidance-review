@@ -39,22 +39,31 @@ def make_eval_od(n=200, seed=12345, min_sep=3):
     return ods
 
 
-def evaluate(agent, boundary, reward, eval_od, tag):
+def evaluate(agent, boundary, reward, eval_od, tag, return_travel_time=False):
     env = SumoGridEnv(boundary=boundary, reward=reward, seed=777, label="ev" + tag)
     arrived = 0
+    tts = []
     for od in eval_od:
         s = env.reset(od=od)
+        tt = 0.0
         for _ in range(env.max_steps):
             a = agent.act(s, env.available_actions(), eps=0.0)
             s, _, done, info = env.step(a)
+            tt += info.get("cost", 0.0)
             if done:
-                arrived += info["outcome"] == "arrived"
+                if info["outcome"] == "arrived":
+                    arrived += 1
+                    tts.append(tt)
                 break
     env.close()
-    return arrived / len(eval_od)
+    rate = arrived / len(eval_od)
+    if return_travel_time:
+        import numpy as _np
+        return rate, (float(_np.mean(tts)) if tts else float("nan")), len(tts)
+    return rate
 
 
-def train_condition(boundary, reward, seed, episodes, eval_od, tag):
+def train_condition(boundary, reward, seed, episodes, eval_od, tag, return_travel_time=False):
     np.random.seed(seed)
     torch.manual_seed(seed)
     env = SumoGridEnv(boundary=boundary, reward=reward, seed=1000 + seed, label="tr" + tag)
@@ -73,7 +82,8 @@ def train_condition(boundary, reward, seed, episodes, eval_od, tag):
             if done:
                 break
     env.close()
-    return evaluate(agent, boundary, reward, eval_od, tag + "e")
+    return evaluate(agent, boundary, reward, eval_od, tag + "e",
+                    return_travel_time=return_travel_time)
 
 
 def main():

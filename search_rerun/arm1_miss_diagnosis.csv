@@ -1,0 +1,64 @@
+idx,title,indexed_in_openalex,indexed_year,inside_window,best_share,cause
+2,Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for dynamic traffic assig,yes,2022,yes,1.0,query did not select it
+5,Reinforcement Learning for Vehicle Route Optimization in SUMO,yes,2018,yes,1.0,query did not select it
+6,Routing Control Optimization for Autonomous Vehicles in Mixed Traffic Flow Based on Deep Reinforcement Learnin,yes,2024,yes,1.0,query did not select it
+11,RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles,yes,2025,yes,1.0,query did not select it
+12,Congestion-Aware Path Planning With Vehicle-Road Cooperation in AIoV,yes,2024,yes,1.0,query did not select it
+13,Reinforcement learning of route choice considering traveler's preference,no,,,0.0,not found by title in the interface
+15,Model-Based Deep Reinforcement Learning for Energy Efficient Routing of a Connected and Automated Vehicle,yes,2025,yes,1.0,query did not select it
+16,Reinforcement Learning-based Sequential Route Recommendation for System-Optimal Traffic Assignment,yes,2026,yes,1.0,query did not select it
+17,Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized Road Networks using Multi-Agent,no,,,0.0,not found by title in the interface
+19,Deep Reinforcement Learning for Vehicle Swarm Navigation and Urban Traffic Optimization,yes,2025,yes,1.0,query did not select it
+20,Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic Multi-Vehicle Route Selection,yes,2024,yes,1.0,query did not select it
+21,Modeling of route planning system based on Q value-based dynamic programming with multi-agent reinforcement le,no,,,0.0,not found by title in the interface
+22,Individual versus Difference Rewards on Reinforcement Learning for Route Choice,yes,2014,no,1.0,outside the window
+23,Route guidance system using multi-agent reinforcement learning,yes,2011,no,1.0,outside the window
+28,Vehicle-Road Collaborative Path Planning Based on A*-assisted Deep Reinforcement Learning,no,,,0.0,not found by title in the interface
+30,Dynamic urban traffic rerouting with fog-cloud reinforcement learning,yes,2023,yes,1.0,query did not select it
+32,Adaptive Reinforcement Learning Framework for Environmentally Sustainable Route Optimization,yes,2025,yes,1.0,query did not select it
+36,Providing real-time en-route suggestions to CAVs for congestion mitigation: A two-way deep reinforcement learn,no,,,0.0,not found by title in the interface
+37,Real-time system optimal traffic routing under uncertainties - Can physics models boost reinforcement learning,no,,,0.0,not found by title in the interface
+39,A Data-Driven Reinforcement Learning Based Multi-Objective Route Recommendation System,yes,2020,yes,1.0,query did not select it
+41,Autonomous Vehicle Routing Optimization in a Competitive Environment: A Reinforcement Learning Application,yes,2018,yes,1.0,query did not select it
+42,Multi-objective route recommendation method based on Q-learning algorithm,yes,2022,yes,1.0,query did not select it
+43,Agent-Based Route Planning with Deep Q Learning,yes,2021,yes,1.0,query did not select it
+46,Optimizing Traffic Routes With Enhanced Double Q-Learning,yes,2025,yes,1.0,query did not select it
+48,Meta-deep q-learning for eco-routing,yes,2019,yes,1.0,query did not select it
+49,Sharing diverse information gets driver agents to learn faster: an application in en route trip building,yes,2021,yes,1.0,query did not select it
+51,A multiagent reinforcement learning approach to en-route trip building,yes,2016,no,1.0,outside the window
+53,A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion,yes,2019,yes,1.0,query did not select it
+57,VEGA: Electric Vehicle Navigation Agent via Physics-Informed Neural Operator and Proximal Policy Optimization,yes,2025,yes,1.0,query did not select it
+58,Using Car to Infrastructure Communication to Accelerate Learning in Route Choice,yes,2021,yes,1.0,query did not select it
+59,Applying Markov decision process to adaptive dynamic route selection model,yes,2019,yes,1.0,query did not select it
+60,A Sustainable Multi-Agent Routing Algorithm for Vehicle Platoons in Urban Networks,yes,2023,yes,1.0,query did not select it
+61,Distributed Learning for Vehicle Routing Decision in Software Defined Internet of Vehicles,yes,2020,yes,1.0,query did not select it
+63,A Bi-Level Network-Wide Cooperative Driving Approach Including Deep Reinforcement Learning-Based Routing,yes,2023,yes,1.0,query did not select it
+64,Self-Organized Routing for Autonomous Vehicles via Deep Reinforcement Learning,yes,2023,yes,1.0,query did not select it
+65,Graph Convolutional Network Based Multi-Objective Meta-Deep Q-Learning for Eco-Routing,yes,2024,yes,1.0,query did not select it
+66,SEGAC: Sample Efficient Generalized Actor Critic for the Stochastic On-Time Arrival Problem,yes,2024,yes,1.0,query did not select it
+67,GE-DDRL: Graph Embedding and Deep Distributional Reinforcement Learning for Reliable Shortest Path: A Universa,no,,,0.0,not found by title in the interface
+68,Shortest-Time Path Planning Under Carbon Emission Constraints via Reinforcement Learning,yes,2026,yes,1.0,query did not select it
+69,DRL Router: Distributional Reinforcement Learning-Based Router for Reliable Shortest Path Problems,yes,2023,yes,1.0,query did not select it
+70,Optimization Path Planning Algorithm Based on Deep Reinforcement Learning,yes,2024,yes,1.0,query did not select it
+71,Research on Emergency Rescue Path Optimization Method Based on Deep Reinforcement Learning,yes,2025,yes,1.0,query did not select it
+72,Safety-Aware Path Planning for Post-Disaster Rescue Vehicles,yes,2024,yes,1.0,query did not select it
+74,Path Planning in Urban Environment Based on Traffic Condition Perception and Traffic Light Status,yes,2022,yes,1.0,query did not select it
+75,Autonomous Vehicles in Smart Cities: a Deep Reinforcement Learning Solution,yes,2022,yes,1.0,query did not select it
+76,Intelligent Routing in Connected Autonomous Vehicles using the ADAPT-S Learning Architecture,yes,2025,yes,1.0,query did not select it
+77,Situation-aware Path Optimization for Autonomous Systems: A Deep Reinforcement Learning based Approach,yes,2025,yes,1.0,query did not select it
+78,Resilient Multi-Agent Deep Reinforcement Learning for Routing Control via Traffic Cost Fields,yes,2026,yes,1.0,query did not select it
+79,Dynamic Route Optimization using D* Lite and DQN Algorithm,no,,,0.0,not found by title in the interface
+81,A Communication Resource Enhanced Intelligent Road Traffic Routing Scheme,yes,2021,yes,1.0,query did not select it
+82,Work-in-Progress: Leveraging the Selfless Driving Model to Reduce Vehicular Network Congestion,yes,2019,yes,1.0,query did not select it
+83,A Deep Q Learning-Model Predictive Control Approach to vehicle routing and control with platoon constraints,yes,2022,yes,1.0,query did not select it
+84,A Dynamic Risk-aware Routing Recommendation Using Deep Reinforcement Learning,yes,2024,yes,1.0,query did not select it
+85,Path planning for vehicle platoons under routing decisions: a distributed approach combining Deep Reinforcemen,yes,2022,yes,1.0,query did not select it
+86,A Joint Design of Path Planning and Lane Reservation for Emergency Service in ITS,yes,2023,yes,1.0,query did not select it
+87,A Reinforcement Learning-Based Path Recommendation Strategy Considering Broadcast Disturbance and Behavioral R,yes,2025,yes,1.0,query did not select it
+89,Research on Travel Paths Based on Car-Hailing Services Connecting with Rail Transit,yes,2023,yes,1.0,query did not select it
+90,Q-Learning-Based Energy-Aware Route Planning for Electric Vehicles on Real Road Networks with Charging Constra,yes,2025,yes,1.0,query did not select it
+91,Cutting-Edge Travel Planner: Intelligent Route Recommendation System using Enhanced Learning Scheme with AI Pr,yes,2024,yes,1.0,query did not select it
+92,Multi-Objective Route Optimization via Dueling DQN for Teleoperated Driving,yes,2025,yes,1.0,query did not select it
+97,HERO: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs,yes,2026,yes,1.0,query did not select it
+98,Disaster-Aware Path Planning Based on Reinforcement Learning for Postearthquake Emergency Response,yes,2025,yes,1.0,query did not select it
+99,Reinforcement Learning-based Unpredictable Emergency Events,yes,2021,yes,1.0,query did not select it

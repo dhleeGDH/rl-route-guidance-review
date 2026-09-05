@@ -61,8 +61,8 @@ def load():
         d["(a) Bespoke grid, 3000 ep"][rw] = (c.mean(), _boot_err(c), o.mean(), _boot_err(o))
     try:
         z = np.load(str(HERE / "benchmark_results.npz"))
-        # A reviewer read the three panels as one comparison and took the grid's lower open
-        # aligned value for a topology effect. The panels run at the budget each network was
+        # Read as one comparison, the three panels invite the grid's lower open aligned value
+        # to be taken for a topology effect. The panels run at the budget each network was
         # trained on, so each identifier now carries it.
         for key, label in [("sioux_falls", "(b) Sioux Falls, 8000 ep"),
                            ("nguyen_dupuis", "(c) Nguyen-Dupuis, 3000 ep")]:

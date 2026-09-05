@@ -25,7 +25,7 @@ from rl.model_config import ModelConfig
 import traci
 
 TRIP_DIR = os.path.join(XRO, "training_tripinfo", "XRouting_training")
-# clear stale tripinfo so we only parse this run's episodes
+# clear stale tripinfo so that only this run's episodes are parsed
 for f in glob.glob(os.path.join(TRIP_DIR, "tripinfo*.xml")):
     try: os.remove(f)
     except Exception: pass

@@ -4,8 +4,8 @@
 The main experiment defines arrival as leaving on the destination's own outgoing boundary
 link, which makes arrival and a wrong exit the same kind of event and differing only in which
 link is taken. That equality is what isolates the reward as the cause. Real trips, however,
-mostly end inside the network, and a reviewer is right to ask whether the collapse and the
-recovery survive the change.
+mostly end inside the network, so whether the collapse and the recovery survive the change is
+an open question.
 
 This wraps the released environment and moves the destination inside. Arrival is entering a
 designated interior cell, exits keep their meaning on the open boundary, and everything else

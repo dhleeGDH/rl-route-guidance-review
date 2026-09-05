@@ -3,9 +3,9 @@
 
 WHY THIS EXISTS. Section V-B reports the ablation of the aligned reward's three terms on the
 boundary-destination geometry: shaping alone 4.8%, arrival bonus and exit penalty 0.0% each,
-and 29.4% (standard deviation 25.0) for the three together. Those figures were produced on the
-previous machine and only their summary statistics survive. A reviewer asked for the per-seed
-values behind the high-dispersion combined cell, on the precedent S-I.E2 set for the 48.0%
+and 29.4% (standard deviation 25.0) for the three together. Those figures were produced on an earlier
+setup and only their summary statistics survive. The per-seed values behind the high-dispersion
+combined cell are needed, on the precedent S-I.E2 set for the 48.0%
 (31.8) cell. This reruns the four conditions with the four-cell protocol and records every
 seed, so the supplementary material can print the values instead of a mean that hides a
 near-bimodal spread.

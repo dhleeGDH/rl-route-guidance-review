@@ -1,0 +1,25 @@
+{
+ "cap_words": 70,
+ "corpus": 94,
+ "reviews": {
+  "ref43": {
+   "entries": 69,
+   "highest_label": 69,
+   "corpus_hits": [],
+   "fabricated_control_matched": false
+  },
+  "ref46": {
+   "entries": 73,
+   "highest_label": 73,
+   "corpus_hits": [],
+   "fabricated_control_matched": false
+  },
+  "ref47": {
+   "entries": 32,
+   "highest_label": 46,
+   "corpus_hits": [],
+   "fabricated_control_matched": false
+  }
+ },
+ "total_corpus_hits": 0
+}

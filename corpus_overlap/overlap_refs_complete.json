@@ -1,0 +1,54 @@
+{
+ "ref02": {
+  "entries": 166,
+  "highest_label": 158,
+  "hits": []
+ },
+ "ref03": {
+  "entries": 131,
+  "highest_label": 131,
+  "hits": []
+ },
+ "ref04": {
+  "entries": 151,
+  "highest_label": 151,
+  "hits": []
+ },
+ "ref05": {
+  "entries": 158,
+  "highest_label": 30,
+  "hits": []
+ },
+ "ref43": {
+  "entries": 42,
+  "highest_label": 69,
+  "hits": []
+ },
+ "ref44": {
+  "entries": 132,
+  "highest_label": 129,
+  "hits": []
+ },
+ "ref45": {
+  "entries": 180,
+  "highest_label": 30,
+  "hits": []
+ },
+ "ref46": {
+  "entries": 62,
+  "highest_label": 73,
+  "hits": [
+   "70"
+  ]
+ },
+ "ref47": {
+  "entries": 32,
+  "highest_label": 46,
+  "hits": []
+ },
+ "ref70": {
+  "entries": 191,
+  "highest_label": null,
+  "hits": []
+ }
+}

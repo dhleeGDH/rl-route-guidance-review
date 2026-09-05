@@ -1,0 +1,52 @@
+{
+ "ref02": {
+  "labels": 158,
+  "entries_searched": 158,
+  "corpus_hits": [],
+  "hit_entries": []
+ },
+ "ref03": {
+  "labels": 131,
+  "entries_searched": 131,
+  "corpus_hits": [],
+  "hit_entries": []
+ },
+ "ref04": {
+  "labels": 151,
+  "entries_searched": 151,
+  "corpus_hits": [],
+  "hit_entries": []
+ },
+ "ref05": {
+  "labels": 30,
+  "entries_searched": 30,
+  "corpus_hits": [],
+  "hit_entries": []
+ },
+ "ref43": {
+  "labels": 69,
+  "entries_searched": 69,
+  "corpus_hits": [],
+  "hit_entries": []
+ },
+ "ref44": {
+  "labels": 129,
+  "entries_searched": 129,
+  "corpus_hits": [],
+  "hit_entries": []
+ },
+ "ref46": {
+  "labels": 73,
+  "entries_searched": 73,
+  "corpus_hits": [
+   "70"
+  ],
+  "hit_entries": [
+   {
+    "idx": "70",
+    "title": "Optimization Path Planning Algorithm Based on Deep Reinforcement Learning",
+    "entry": "[39] J. Wu, L. Cheng, S. Chu, and Y. Song, “An autonomous coverage path planning algorithm for maritime search and rescue of persons-in-water based on deep reinforcement learning,” Ocean Engineering, "
+   }
+  ]
+ }
+}

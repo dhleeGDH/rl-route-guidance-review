@@ -58,7 +58,7 @@ trainer = PPOTrainer(config=config)
 trainer.restore(CKPT)
 # PPOTrainer builds its own env (num_workers=0 local worker), which seizes the single traci
 # 'default' connection. compute_single_action needs only the policy, so release it before we
-# roll out on our instrumented env.
+# roll out on the instrumented env.
 try:
     traci.close(False)
 except Exception:

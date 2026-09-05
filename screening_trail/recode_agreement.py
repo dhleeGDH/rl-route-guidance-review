@@ -2,8 +2,8 @@
 """Chance-corrected agreement for the 28-study repeat pass.
 
 WHY THIS EXISTS. The supplementary material reports the repeat pass as raw agreement, at 68%, 64%
-and 61% on the three fields turning on a definitional boundary. A reviewer asked for a
-chance-corrected figure alongside, which is a fair request: raw agreement flatters a field whose
+and 61% on the three fields turning on a definitional boundary. A chance-corrected figure belongs
+alongside it: raw agreement flatters a field whose
 values are concentrated in one category, and all three of these are.
 
 The two passes are reconstructed from the released record rather than re-run. Pass one is the

@@ -8,7 +8,7 @@ unmodeled exterior roads and can return at some cost.
 
 This script adds a non-terminal "costly_return" boundary: leaving costs a fixed
 detour penalty return_cost and re-enters the vehicle at the same node, the episode
-continuing. Under the corpus-typical travel-time-minimizing reward we compare:
+continuing. Under the corpus-typical travel-time-minimizing reward the comparison is:
 
     open           (terminal exit)     -> expected ~0%   (main result)
     costly_return  (non-terminal exit) -> expected ~closed rate

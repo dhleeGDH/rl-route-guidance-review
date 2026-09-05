@@ -1,0 +1,75 @@
+{
+ "filter": "title_and_abstract.search:(\"Q-learning\" OR \"SARSA\" OR \"temporal difference learning\" OR \"tabular reinforcement learning\" OR \"policy iteration\") AND (\"route guidance\" OR \"vehicle navigation\" OR \"route planning\") AND (vehicle OR traffic OR road)",
+ "from": "1990-01-01",
+ "to": "2026-07-05",
+ "returned": 103,
+ "pre_2018": 16,
+ "recovered": 5,
+ "outside_after_screen": 9,
+ "adjudicated": [
+  {
+   "title": "Hierarchical Sarsa Learning Based Route Guidance Algorithm",
+   "year": "2019",
+   "venue": "Journal of Advanced Transportation",
+   "outcome": "in-scope",
+   "why": "dynamic route guidance over a digital road network, Sarsa, peer-reviewed journal"
+  },
+  {
+   "title": "Sarsa Learning Based Route Guidance System with Global and Local Parameter Strategy",
+   "year": "2015",
+   "venue": "IEICE Transactions on Fundamentals of Electronics Communications and Computer Sciences",
+   "outcome": "in-scope",
+   "why": "a centrally determined route guidance system guiding individual vehicles with Sarsa on two road networks, peer-reviewed journal, 2015 and therefore outside the database window"
+  },
+  {
+   "title": "Enhancing Emergency Vehicle Navigation in Smart Traffic Squares with Reinforcement Learning and Accurate Traffic Sense Recommendations",
+   "year": "2025",
+   "venue": "International Journal of Intelligent Transportation Systems Research",
+   "outcome": "unresolvable",
+   "why": "no abstract available and the title alone cannot resolve the guidance object"
+  },
+  {
+   "title": "A Q-Learning-Based Approximate Solving Algorithm for Vehicular Route Game",
+   "year": "2022",
+   "venue": "Sustainability",
+   "outcome": "out-of-scope",
+   "why": "solves a route game to an equilibrium over route distributions, an aggregate allocation"
+  },
+  {
+   "title": "On-line selection method of the traffic control and route guidance collaboration mode based on Q-learning algorithm",
+   "year": "2010",
+   "venue": "Journal of Jilin University",
+   "outcome": "out-of-scope",
+   "why": "the decision is which control-and-guidance collaboration MODE to run, not a vehicle's route"
+  },
+  {
+   "title": "Intelligent Path Planning for Off-Road Navigation: A Q Learning Approach with Terrain and Distance Optimization",
+   "year": "2025",
+   "venue": "Communications in computer and information science",
+   "outcome": "out-of-scope",
+   "why": "off-road terrain traversal, no road network and no OD path over links; no abstract available"
+  },
+  {
+   "title": "DYNAMIC ROUTING FOR NAVIGATION IN CHANGING UNKNOWN MAPS USING DEEP REINFORCEMENT LEARNING",
+   "year": "2021",
+   "venue": "ISPRS annals of the photogrammetry, remote sensing and spatial information sciences",
+   "outcome": "out-of-scope",
+   "why": "an agent navigating an unknown map from visual input, with no modeled road network"
+  },
+  {
+   "title": "Multi-modal Mission Route Planning Method for Flying Vehicles Considering Running Distance and Energy Consumption",
+   "year": "2025",
+   "venue": "Journal of Mechanical Engineering",
+   "outcome": "out-of-scope",
+   "why": "flying vehicles over a three-dimensional mission map, an aerial class Section II-A excludes"
+  },
+  {
+   "title": "Intelligent Agents Approach To The On-Line Management And Control Of Transportation Networks",
+   "year": "2006",
+   "venue": "Proceedings of the Joint CIB W78, W102, ICCCBE, ICCC, and DMUCE International Conference on Computing and Decision Making in Civil and Building Engineering, Montreal, Canada, 14-16 June",
+   "outcome": "out-of-scope",
+   "why": "dynamic traffic routing to user equilibrium under a cell transmission model, aggregate flow"
+  }
+ ],
+ "in_scope_missed": 2
+}

@@ -73,7 +73,11 @@ NETWORKS = {
     # published, which is the set drawn in red in Fig. 8. Interior nodes offer no exit.
     "sioux_falls": dict(
         links=SF_LINKS, n_nodes=24, coords=SF_COORD, state_mode="coord",
-        od_mode="dest_boundary", boundary={1, 2, 3, 6, 7, 12, 13, 18, 20, 21, 24},
+                # The outer face of the published drawing, derived by experiments/outer_face_sioux.py
+        # from the rotation system of the coordinates under an Euler check. An earlier default
+        # omitted node 8, which lies on the face: the graph carries no 6-7 link, so a border
+        # without 8 does not close. The cells reported by Section V-D run on this set.
+        od_mode="dest_boundary", boundary={1, 2, 3, 6, 7, 8, 12, 13, 18, 20, 21, 24},
         max_steps=60, min_sep=3, episodes=8000),
     "nguyen_dupuis": dict(
         links=ND_LINKS, n_nodes=13, coords=None, state_mode="onehot",
@@ -155,6 +159,19 @@ class GraphRouteEnv:
             if self.net["od_mode"] == "designated":
                 o = self.net["origins"][self.rng.randint(len(self.net["origins"]))]
                 d = self.net["dests"][self.rng.randint(len(self.net["dests"]))]
+            elif self.net["od_mode"] == "dest_interior":
+                # Interior-destination control: the destination is a node that is NOT on the
+                # perimeter, so arrival and a wrong exit are events at different nodes rather
+                # than the same kind of node. This is the benchmark counterpart of the grid's
+                # interior-destination control in Section V-B.
+                inner = sorted(set(range(1, self.n + 1)) - set(self.bnodes))
+                while True:
+                    o = self.rng.randint(1, self.n + 1)
+                    d = inner[self.rng.randint(len(inner))]
+                    dd = self._phi_cache.get(d) or hop_dist_to(d, self.radj, self.n)
+                    self._phi_cache[d] = dd
+                    if o != d and dd[o] >= self.net["min_sep"] and dd[o] < 1e8:
+                        break
             elif self.net["od_mode"] == "dest_boundary":
                 bnodes = sorted(self.bnodes)
                 while True:
@@ -261,7 +278,7 @@ class Buffer:
         return (self.s[idx], self.a[idx], self.r[idx], self.s2[idx], self.d[idx], self.m2[idx])
 
 
-def train_eval(net, boundary, reward, seed, episodes, eval_od):
+def train_eval(net, boundary, reward, seed, episodes, eval_od, return_travel_time=False):
     env = GraphRouteEnv(net, boundary=boundary, reward=reward, seed=seed)
     torch.manual_seed(seed); np.random.seed(seed)
     q = QNet(env.state_dim, env.n_actions); qt = QNet(env.state_dim, env.n_actions)
@@ -296,16 +313,32 @@ def train_eval(net, boundary, reward, seed, episodes, eval_od):
                 if upd % target_every == 0:
                     qt.load_state_dict(q.state_dict())
 
+    # 2026-09-05. BOND item 1 asks a study to report the completion rate together with the
+    # travel time of the completing trips, and the rate was reported alone on every replication
+    # network. The evaluation below accumulates the in-network
+    # traversal cost of each trip, on the convention of Appendix E: the arriving move is the
+    # exit taken at the destination node and is excluded, as it is from the bespoke-grid
+    # figures. The default return is unchanged, so every existing caller is unaffected.
     arrived = 0
+    tts = []
     for od in eval_od:
         s = env.reset(od=od); mask = env.available_actions()
+        tt = 0.0
         while not env.done:
             with torch.no_grad():
                 qq = q(torch.from_numpy(s).unsqueeze(0)).numpy()[0]
             a = int(np.argmax(np.where(mask, qq, -1e9)))
+            u = env.pos
             s, _, d, info = env.step(a); mask = env.available_actions()
-        arrived += info["outcome"] == "arrived"
-    return arrived / len(eval_od)
+            if a != env.maxdeg:
+                tt += env._cost(u, env.pos)
+        if info["outcome"] == "arrived":
+            arrived += 1
+            tts.append(tt)
+    rate = arrived / len(eval_od)
+    if return_travel_time:
+        return rate, (float(np.mean(tts)) if tts else float("nan")), len(tts)
+    return rate
 
 
 def make_eval_od(net, n=200, seed=999):
@@ -318,10 +351,16 @@ def make_eval_od(net, n=200, seed=999):
     # evaluation destinations inside the network, where no boundary link leaves. The
     # evaluation then measured a different task than the one trained.
     bnodes = sorted(net["boundary"]) if net["od_mode"] == "dest_boundary" else None
+    inner = (sorted(set(range(1, net["n_nodes"] + 1)) - set(net["boundary"]))
+             if net["od_mode"] == "dest_interior" else None)
     while len(ods) < n:
         o = rng.randint(1, net["n_nodes"] + 1)
-        d = (bnodes[rng.randint(len(bnodes))] if bnodes
-             else rng.randint(1, net["n_nodes"] + 1))
+        if bnodes:
+            d = bnodes[rng.randint(len(bnodes))]
+        elif inner:
+            d = inner[rng.randint(len(inner))]
+        else:
+            d = rng.randint(1, net["n_nodes"] + 1)
         dd = hop_dist_to(d, radj, net["n_nodes"])
         if o != d and net["min_sep"] <= dd[o] < 1e8:
             ods.append((o, d))
@@ -335,14 +374,41 @@ if __name__ == "__main__":
     ap.add_argument("--episodes", type=int, default=0, help="override per-net episodes")
     ap.add_argument("--nets", nargs="+", default=list(NETWORKS.keys()))
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--od-mode", default=None,
+                    help="override each network's destination rule, e.g. dest_interior")
+    ap.add_argument("--out", default=None, help="result file; defaults per destination rule")
+    # 2026-08-25: a --smoke run at one seed and 300 episodes overwrote benchmark_results.npz, whose
+    # keys are identical to a published run's. No gate reads that file, so nothing caught it. A
+    # smoke run now writes its own file and can never land on a published name.
+    # The published Sioux Falls border omits one node of the drawing's outer face, and the face
+    # itself is derived by outer_face_sioux.py. This overrides the border set so the two can be
+    # compared through one code path, under the same guard the destination rule carries.
+    ap.add_argument("--boundary-nodes", nargs="+", type=int, default=None,
+                    help="override the network's border set")
     args = ap.parse_args()
-    # merge into any existing results so per-network runs accumulate into one file
-    npz_path = Path(__file__).parent / "benchmark_results.npz"
+    # merge into any existing results so per-network runs accumulate into one file. A run under a
+    # non-default destination rule produces different quantities under the same network name, so it
+    # is given a file of its own: merging it into the published one would silently replace the
+    # boundary-destination cells the manuscript reports, leaving no trace in the array shapes.
+    # A smoke run is a wiring test, not a result. Sending it to a published file name is how
+    # benchmark_results.npz acquired one-seed values on 2026-08-25.
+    smoke_tag = "smoke_" if args.smoke else ""
+    default_out = (smoke_tag + "benchmark_results.npz" if not args.od_mode
+                   else "benchmark_results_%s.npz" % args.od_mode)
+    npz_path = Path(__file__).parent / (args.out or default_out)
+    assert not (args.od_mode and npz_path.name == "benchmark_results.npz"), \
+        "a non-default destination rule must not be written into benchmark_results.npz"
+    assert not (args.boundary_nodes and npz_path.name.startswith("benchmark_results.npz")), \
+        "a non-default border set must not be written into benchmark_results.npz"
     allres = {}
     if npz_path.exists():
         z = np.load(str(npz_path)); allres = {k: z[k] for k in z.files}
     for name in args.nets:
-        net = NETWORKS[name]
+        net = dict(NETWORKS[name])
+        if args.od_mode:
+            net["od_mode"] = args.od_mode
+        if args.boundary_nodes:
+            net["boundary"] = set(args.boundary_nodes)
         seeds = 1 if args.smoke else args.seeds
         episodes = args.episodes or (1500 if args.smoke else net["episodes"])
         print(f"\n=== {name}: {net['n_nodes']} nodes, {len(net['links'])} links, "
@@ -358,4 +424,4 @@ if __name__ == "__main__":
                 print(f"[{boundary:6s} | {reward:8s}] completion {m:5.1f}% "
                       f"(sd {sd:4.1f}) seeds={['%.0f' % (100 * x) for x in rates]}")
         np.savez(str(npz_path), **allres)  # checkpoint after each network
-    print("\nsaved benchmark_results.npz")
+    print("\nsaved %s" % npz_path.name)

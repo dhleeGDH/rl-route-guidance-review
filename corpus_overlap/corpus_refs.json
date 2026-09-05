@@ -1,0 +1,835 @@
+[
+ {
+  "idx": "0",
+  "ref": "61",
+  "surnames": [
+   "Yang"
+  ],
+  "authors": "S. Koh, B. Zhou, H. Fang, P. Yang, Z. Yang, Q. Yang, et al.",
+  "title": "Real-time deep reinforcement learning based vehicle navigation"
+ },
+ {
+  "idx": "1",
+  "ref": "48",
+  "surnames": [
+   "Meyer"
+  ],
+  "authors": "D. Li, Z. Zhang, B. Kharazi, Z. Zhang, N. Duffield, M. A. Meyer, et al.",
+  "title": "A reinforcement learning-based routing algorithm for large street networks"
+ },
+ {
+  "idx": "2",
+  "ref": "23",
+  "surnames": [
+   "Shou"
+  ],
+  "authors": "Z. Shou, C. Xu, Y. Fu, and X. Di",
+  "title": "Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for dynamic traffic assignment"
+ },
+ {
+  "idx": "3",
+  "ref": "22",
+  "surnames": [
+   "Xiong"
+  ],
+  "authors": "S. Qian, L. Zhang, H. Yu, W. Zhang, Y. Mei, and H. Xiong",
+  "title": "Hierarchical Reinforcement Learning for Dynamic Autonomous Vehicle Navigation at Intelligent Intersections"
+ },
+ {
+  "idx": "4",
+  "ref": "27",
+  "surnames": [
+   "Stettler"
+  ],
+  "authors": "C. Tang, W. Hu, S. Hu, and M. Stettler",
+  "title": "Urban Traffic Route Guidance Method With High Adaptive Learning Ability Under Diverse Traffic Scenarios"
+ },
+ {
+  "idx": "5",
+  "ref": "49",
+  "surnames": [
+   "Fang"
+  ],
+  "authors": "K. S. Sang, B. Zhou, P. Yang, Z. Yang, H. Fang, et al.",
+  "title": "Reinforcement Learning for Vehicle Route Optimization in SUMO"
+ },
+ {
+  "idx": "6",
+  "ref": "1110",
+  "surnames": [
+   "Joo"
+  ],
+  "authors": "S. Moon, S. Koo, Y. Lim, and H. Joo",
+  "title": "Routing Control Optimization for Autonomous Vehicles in Mixed Traffic Flow Based on Deep Reinforcement Learning"
+ },
+ {
+  "idx": "7",
+  "ref": "1083",
+  "surnames": [
+   "Chu"
+  ],
+  "authors": "Y. Shi, Z. Gu, X. Yang, Y. Li, and Z. Chu",
+  "title": "An Adaptive Route Guidance Model Considering the Effect of Traffic Signals Based on Deep Reinforcement Learning"
+ },
+ {
+  "idx": "8",
+  "ref": "20",
+  "surnames": [
+   "Lee"
+  ],
+  "authors": "D. Lee",
+  "title": "Transfer Learning-Based Deep Reinforcement Learning Approach for Robust Route Guidance in Mixed Traffic Environment"
+ },
+ {
+  "idx": "9",
+  "ref": "19",
+  "surnames": [
+   "Kim"
+  ],
+  "authors": "D. Lee, S. Tak, and S. Kim",
+  "title": "Development of Reinforcement Learning-based Traffic Predictive Route Guidance Algorithm Under Uncertain Traffic Environment"
+ },
+ {
+  "idx": "10",
+  "ref": "50",
+  "surnames": [
+   "Wang"
+  ],
+  "authors": "Z. Wang and S. Wang",
+  "title": "XRouting: Explainable Vehicle Rerouting for Urban Road Congestion Avoidance using Deep Reinforcement Learning"
+ },
+ {
+  "idx": "11",
+  "ref": "1105",
+  "surnames": [
+   "Kucharski"
+  ],
+  "authors": "A. Akman, A. Psarou, L. Gorczyca, Z. G. Varga, G. Jamroz, and R. Kucharski",
+  "title": "RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles"
+ },
+ {
+  "idx": "12",
+  "ref": "1106",
+  "surnames": [
+   "Wang"
+  ],
+  "authors": "G. Liu, M. Bilal, Q. Wang, and X. Xu",
+  "title": "Congestion-Aware Path Planning With Vehicle-Road Cooperation in AIoV"
+ },
+ {
+  "idx": "13",
+  "ref": "1098",
+  "surnames": [
+   "Qiao"
+  ],
+  "authors": "X. Long, J. Mao, Z. Qiao, P. Li, and W. He",
+  "title": "Reinforcement learning of route choice considering traveler's preference"
+ },
+ {
+  "idx": "14",
+  "ref": "1111",
+  "surnames": [
+   "Luo"
+  ],
+  "authors": "Y. Li, J. Tang, H. Zhao, and R. Luo",
+  "title": "Reinforcement Learning Method with Dynamic Learning Rate for Real-Time Route Guidance Based on SUMO"
+ },
+ {
+  "idx": "15",
+  "ref": "37",
+  "surnames": [
+   "Yoon"
+  ],
+  "authors": "D. R. Leech and H. Yoon",
+  "title": "Model-Based Deep Reinforcement Learning for Energy Efficient Routing of a Connected and Automated Vehicle"
+ },
+ {
+  "idx": "16",
+  "ref": "1084",
+  "surnames": [
+   "Lyu"
+  ],
+  "authors": "L. Wang, P. Duan, C. Lyu, and Z. Ma",
+  "title": "Reinforcement Learning-based Sequential Route Recommendation for System-Optimal Traffic Assignment"
+ },
+ {
+  "idx": "17",
+  "ref": "29",
+  "surnames": [
+   "Zhang"
+  ],
+  "authors": "X. Peng, H. Gao, G. Han, H. Wang, and M. Zhang",
+  "title": "Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized Road Networks using Multi-Agent Deep Reinforcement Learning"
+ },
+ {
+  "idx": "18",
+  "ref": "1100",
+  "surnames": [],
+  "authors": "Z. Su and C. Li",
+  "title": "Dynamic Route Guidance System Based on Real-time Vehicle-Road Collaborations with Deep Reinforcement Learning"
+ },
+ {
+  "idx": "19",
+  "ref": "28",
+  "surnames": [
+   "Miao"
+  ],
+  "authors": "R. Zhang, P. Lin, C. Zhou, and L. Miao",
+  "title": "Deep Reinforcement Learning for Vehicle Swarm Navigation and Urban Traffic Optimization"
+ },
+ {
+  "idx": "20",
+  "ref": "35",
+  "surnames": [
+   "Cai"
+  ],
+  "authors": "L. Yan and Y. Cai",
+  "title": "Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic Multi-Vehicle Route Selection"
+ },
+ {
+  "idx": "21",
+  "ref": "1095",
+  "surnames": [
+   "Afkhami"
+  ],
+  "authors": "M. Z. Arokhlo, A. Selamat, S. Hashim, and H. Afkhami",
+  "title": "Modeling of route planning system based on Q value-based dynamic programming with multi-agent reinforcement learning algorithms"
+ },
+ {
+  "idx": "22",
+  "ref": "1096",
+  "surnames": [
+   "Bazzan"
+  ],
+  "authors": "R. Grunitzki, G. Ramos, and A. Bazzan",
+  "title": "Individual versus Difference Rewards on Reinforcement Learning for Route Choice"
+ },
+ {
+  "idx": "23",
+  "ref": "1139",
+  "surnames": [
+   "Selamat"
+  ],
+  "authors": "M. Z. Arokhlo, A. Selamat, S. Hashim, and M. H. Selamat",
+  "title": "Route guidance system using multi-agent reinforcement learning"
+ },
+ {
+  "idx": "24",
+  "ref": "1085",
+  "surnames": [
+   "Papagelis"
+  ],
+  "authors": "F. Arasteh, S. SheikhGarGar, and M. Papagelis",
+  "title": "Network-aware multi-agent reinforcement learning for the vehicle navigation problem"
+ },
+ {
+  "idx": "25",
+  "ref": "1086",
+  "surnames": [
+   "Kim"
+  ],
+  "authors": "H. Yun, E.-J. Kim, S. W. Ham, and D.-K. Kim",
+  "title": "Navigating the non-compliance effects on system optimal route guidance using reinforcement learning"
+ },
+ {
+  "idx": "26",
+  "ref": "1088",
+  "surnames": [
+   "Tao"
+  ],
+  "authors": "Z. Fu, L. Li, L. Zhu, and F. Tao",
+  "title": "Reinforcement learning-based route planning method for connected vehicles considering real-time road traffic information"
+ },
+ {
+  "idx": "27",
+  "ref": "1112",
+  "surnames": [
+   "Zhang"
+  ],
+  "authors": "C. Jin, X. Zhang, Y. Zhang, and C. Li",
+  "title": "Optimization Method of DRL-based Route Planning under Limited Resources"
+ },
+ {
+  "idx": "28",
+  "ref": "1140",
+  "surnames": [
+   "Jin"
+  ],
+  "authors": "C. Jin, Y. Wu, and C. Li",
+  "title": "Vehicle-Road Collaborative Path Planning Based on A*-assisted Deep Reinforcement Learning"
+ },
+ {
+  "idx": "29",
+  "ref": "1113",
+  "surnames": [
+   "Fanti"
+  ],
+  "authors": "F. Paparella, G. Olivieri, G. Volpe, A. M. Mangini, and M. P. Fanti",
+  "title": "A Deep Reinforcement Learning Approach for Route Planning of Autonomous Vehicles*"
+ },
+ {
+  "idx": "30",
+  "ref": "1107",
+  "surnames": [
+   "Labi"
+  ],
+  "authors": "R. Du, S. Chen, J. Dong, T. Chen, X. Fu, and S. Labi",
+  "title": "Dynamic urban traffic rerouting with fog-cloud reinforcement learning"
+ },
+ {
+  "idx": "31",
+  "ref": "1141",
+  "surnames": [
+   "Fanti"
+  ],
+  "authors": "A. Salcuni, G. Volpe, A. M. Mangini, and M. Fanti",
+  "title": "A Deep Reinforcement Learning Framework for Real-Time Vehicle Routing with Dynamic Traffic Conditions"
+ },
+ {
+  "idx": "32",
+  "ref": "1114",
+  "surnames": [
+   "Cheetu"
+  ],
+  "authors": "G. Singh, R. Walia, K. Cheetu, and V. M.R.M",
+  "title": "Adaptive Reinforcement Learning Framework for Environmentally Sustainable Route Optimization"
+ },
+ {
+  "idx": "33",
+  "ref": "1089",
+  "surnames": [
+   "Teo"
+  ],
+  "authors": "S. N. A. Moharam, M. L. Bansing, K. G. Lim, M. K. Tan, H. S. Chuo, and K. Teo",
+  "title": "Deep Q-Learning-based Route Optimization for Traffic Network"
+ },
+ {
+  "idx": "34",
+  "ref": "1090",
+  "surnames": [
+   "Ren"
+  ],
+  "authors": "N. Peng, Y. Xi, J. Rao, X. Ma, and F. Ren",
+  "title": "Urban Multiple Route Planning Model Using Dynamic Programming in Reinforcement Learning"
+ },
+ {
+  "idx": "36",
+  "ref": "1101",
+  "surnames": [],
+  "authors": "X. Ma and X. He",
+  "title": "Providing real-time en-route suggestions to CAVs for congestion mitigation: A two-way deep reinforcement learning approach"
+ },
+ {
+  "idx": "38",
+  "ref": "36",
+  "surnames": [
+   "Papagelis"
+  ],
+  "authors": "F. Arasteh, A. Haghparast, and M. Papagelis",
+  "title": "Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing"
+ },
+ {
+  "idx": "39",
+  "ref": "1103",
+  "surnames": [
+   "Kowsari"
+  ],
+  "authors": "A. Sarker, H. Shen, and K. Kowsari",
+  "title": "A Data-Driven Reinforcement Learning Based Multi-Objective Route Recommendation System"
+ },
+ {
+  "idx": "40",
+  "ref": "1109",
+  "surnames": [
+   "Gao"
+  ],
+  "authors": "L. Li, Q. He, R. Luo, N. Chen, and P. Gao",
+  "title": "Emergency vehicle rescue route optimization based on deep reinforcement learning in highway network"
+ },
+ {
+  "idx": "41",
+  "ref": "52",
+  "surnames": [
+   "Wang"
+  ],
+  "authors": "A. Mostafizi, M. Siam, and H. Wang",
+  "title": "Autonomous Vehicle Routing Optimization in a Competitive Environment: A Reinforcement Learning Application"
+ },
+ {
+  "idx": "42",
+  "ref": "1104",
+  "surnames": [
+   "Chen"
+  ],
+  "authors": "Q. Yu, Z. Xiao, F. Yang, S. Gong, G. Shi, and C. Chen",
+  "title": "Multi-objective route recommendation method based on Q-learning algorithm"
+ },
+ {
+  "idx": "43",
+  "ref": "1091",
+  "surnames": [
+   "Soylemez"
+  ],
+  "authors": "A. O. K\u00f6ro\u011flu, A. E. Edem, S. N. Akmese, \u00d6. Elmas, I. Tunc, and M. Soylemez",
+  "title": "Agent-Based Route Planning with Deep Q Learning"
+ },
+ {
+  "idx": "46",
+  "ref": "1092",
+  "surnames": [
+   "Midlam-Mohler"
+  ],
+  "authors": "M. Patil, P. Tambolkar, and S. Midlam-Mohler",
+  "title": "Optimizing Traffic Routes With Enhanced Double Q-Learning"
+ },
+ {
+  "idx": "47",
+  "ref": "38",
+  "surnames": [
+   "Tang"
+  ],
+  "authors": "Z. Liao, J. Gao, A. Yi, Y. Zhao, and Y. Tang",
+  "title": "Multi-agent deep reinforcement learning based on cloud-edge computing for urban vehicle route guidance"
+ },
+ {
+  "idx": "48",
+  "ref": "24",
+  "surnames": [
+   "Chigan"
+  ],
+  "authors": "X. Ma, Y. Xie, and C. Chigan",
+  "title": "Meta-deep q-learning for eco-routing"
+ },
+ {
+  "idx": "49",
+  "ref": "33",
+  "surnames": [
+   "Bazzan"
+  ],
+  "authors": "G. D. D. Santos and A. Bazzan",
+  "title": "Sharing diverse information gets driver agents to learn faster: an application in en route trip building"
+ },
+ {
+  "idx": "50",
+  "ref": "1115",
+  "surnames": [
+   "Keyvan-Ekbatani"
+  ],
+  "authors": "S. Jiang, C. Q. Tran, and M. Keyvan-Ekbatani",
+  "title": "Regional route guidance with realistic compliance patterns: Application of deep reinforcement learning and MPC"
+ },
+ {
+  "idx": "51",
+  "ref": "1142",
+  "surnames": [
+   "Grunitzki"
+  ],
+  "authors": "A. Bazzan and R. Grunitzki",
+  "title": "A multiagent reinforcement learning approach to en-route trip building"
+ },
+ {
+  "idx": "52",
+  "ref": "30",
+  "surnames": [
+   "Niu"
+  ],
+  "authors": "K. Ma, S. Liao, and Y. Niu",
+  "title": "Connected vehicles' dynamic route planning based on reinforcement learning"
+ },
+ {
+  "idx": "53",
+  "ref": "1116",
+  "surnames": [
+   "Liu"
+  ],
+  "authors": "B. Zhou, Q. Song, Z. Zhao, and T. Liu",
+  "title": "A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion game"
+ },
+ {
+  "idx": "54",
+  "ref": "55",
+  "surnames": [
+   "Englot"
+  ],
+  "authors": "X. Lin, P. Szenher, J. D. Martin, and B. Englot",
+  "title": "Robust Route Planning with Distributional Reinforcement Learning in a Stochastic Road Network Environment"
+ },
+ {
+  "idx": "55",
+  "ref": "1117",
+  "surnames": [
+   "Reddy"
+  ],
+  "authors": "M. Mittal, A. Sehgal, N. Varshney, S. P. Kumar, N. S. Boob, and R. A. Reddy",
+  "title": "Deep Reinforcement Learning for Optimizing Route Planning in Urban Traffic"
+ },
+ {
+  "idx": "56",
+  "ref": "56",
+  "surnames": [
+   "Yan"
+  ],
+  "authors": "L. Wang, W. Zhang, and Z. Yan",
+  "title": "Vehicle-Infrastructure Cooperation Framework for Vehicle Navigation and Traffic Signal Control using Deep Reinforcement Learning"
+ },
+ {
+  "idx": "57",
+  "ref": "57",
+  "surnames": [
+   "Choi"
+  ],
+  "authors": "H. Lee, M. Im, J. Boyack, J. W. Lee, and J. B. Choi",
+  "title": "VEGA: Electric Vehicle Navigation Agent via Physics-Informed Neural Operator and Proximal Policy Optimization"
+ },
+ {
+  "idx": "58",
+  "ref": "1097",
+  "surnames": [
+   "Baumgardt"
+  ],
+  "authors": "G. D. D. Santos, A. L. C. Bazzan, and A. P. Baumgardt",
+  "title": "Using Car to Infrastructure Communication to Accelerate Learning in Route Choice"
+ },
+ {
+  "idx": "59",
+  "ref": "1099",
+  "surnames": [
+   "Nadi"
+  ],
+  "authors": "A. Edrisi, K. Bagherzadeh, and A. Nadi",
+  "title": "Applying Markov decision process to adaptive dynamic route selection model"
+ },
+ {
+  "idx": "60",
+  "ref": "1118",
+  "surnames": [
+   "Fortino"
+  ],
+  "authors": "F. Giannini, G. Franz\u00e9, F. Pupo, and G. Fortino",
+  "title": "A Sustainable Multi-Agent Routing Algorithm for Vehicle Platoons in Urban Networks"
+ },
+ {
+  "idx": "61",
+  "ref": "1119",
+  "surnames": [
+   "Fortino"
+  ],
+  "authors": "K. Lin, C. Li, Y. Li, C. Savaglio, and G. Fortino",
+  "title": "Distributed Learning for Vehicle Routing Decision in Software Defined Internet of Vehicles"
+ },
+ {
+  "idx": "62",
+  "ref": "31",
+  "surnames": [
+   "Zhu"
+  ],
+  "authors": "L. Wang, Z. Jiang, Z. Qi, Z. Shi, X. Chen, and Z. Zhu",
+  "title": "Proactive Urban Expressway Guidance: A Hybrid Approach Using Reinforcement Learning and Traffic Prediction Models"
+ },
+ {
+  "idx": "63",
+  "ref": "1120",
+  "surnames": [
+   "Zhang"
+  ],
+  "authors": "J. Zhang, J. Ge, S. Li, S. Li, and L. Li",
+  "title": "A Bi-Level Network-Wide Cooperative Driving Approach Including Deep Reinforcement Learning-Based Routing"
+ },
+ {
+  "idx": "64",
+  "ref": "1121",
+  "surnames": [
+   "Zhang"
+  ],
+  "authors": "H. Pei, J. Zhang, Y. Zhang, H. Xu, and L. Li",
+  "title": "Self-Organized Routing for Autonomous Vehicles via Deep Reinforcement Learning"
+ },
+ {
+  "idx": "65",
+  "ref": "1122",
+  "surnames": [
+   "Chigan"
+  ],
+  "authors": "X. Ma, Y. Xie, and C. Chigan",
+  "title": "Graph Convolutional Network Based Multi-Objective Meta-Deep Q-Learning for Eco-Routing"
+ },
+ {
+  "idx": "66",
+  "ref": "1123",
+  "surnames": [
+   "Gao"
+  ],
+  "authors": "H. Guo, Z. He, W. Sheng, Z. Cao, Y. Zhou, and W. Gao",
+  "title": "SEGAC: Sample Efficient Generalized Actor Critic for the Stochastic On-Time Arrival Problem"
+ },
+ {
+  "idx": "67",
+  "ref": "39",
+  "surnames": [
+   "Chen"
+  ],
+  "authors": "H. Guo, W. Sheng, Y. Zhou, and Y. Chen",
+  "title": "GE-DDRL: Graph Embedding and Deep Distributional Reinforcement Learning for Reliable Shortest Path: A Universal and Scale Free Solution"
+ },
+ {
+  "idx": "68",
+  "ref": "1124",
+  "surnames": [
+   "Uchida"
+  ],
+  "authors": "Y. Wang, K. Duan, and K. Uchida",
+  "title": "Shortest-Time Path Planning Under Carbon Emission Constraints via Reinforcement Learning"
+ },
+ {
+  "idx": "69",
+  "ref": "25",
+  "surnames": [
+   "Jin"
+  ],
+  "authors": "H. Guo, W. Sheng, C. Gao, and Y. Jin",
+  "title": "DRL Router: Distributional Reinforcement Learning-Based Router for Reliable Shortest Path Problems"
+ },
+ {
+  "idx": "70",
+  "ref": "1094",
+  "surnames": [
+   "Meng"
+  ],
+  "authors": "Z. Meng",
+  "title": "Optimization Path Planning Algorithm Based on Deep Reinforcement Learning"
+ },
+ {
+  "idx": "71",
+  "ref": "1125",
+  "surnames": [
+   "Zhang"
+  ],
+  "authors": "X. Huang, H. Shi, and L. Zhang",
+  "title": "Research on Emergency Rescue Path Optimization Method Based on Deep Reinforcement Learning"
+ },
+ {
+  "idx": "72",
+  "ref": "1126",
+  "surnames": [
+   "Zhao"
+  ],
+  "authors": "J. Liu, Z. Zhang, Y. Guo, T. Niu, and X. Zhao",
+  "title": "Safety-Aware Path Planning for Post-Disaster Rescue Vehicles"
+ },
+ {
+  "idx": "74",
+  "ref": "1127",
+  "surnames": [
+   "Liu"
+  ],
+  "authors": "B. Song, W. Chen, T. Chen, X. Zhou, and B. Liu",
+  "title": "Path Planning in Urban Environment Based on Traffic Condition Perception and Traffic Light Status"
+ },
+ {
+  "idx": "75",
+  "ref": "1143",
+  "surnames": [
+   "Fortino"
+  ],
+  "authors": "F. Giannini, G. Franz\u00e8, F. Pupo, and G. Fortino",
+  "title": "Autonomous Vehicles in Smart Cities: a Deep Reinforcement Learning Solution"
+ },
+ {
+  "idx": "76",
+  "ref": "1128",
+  "surnames": [
+   "Dinesh"
+  ],
+  "authors": "T. Vaishnavi, M. Y. Al-Safarini, N. Nalini, T. Stalin, J. Krishnaraj, and M. Dinesh",
+  "title": "Intelligent Routing in Connected Autonomous Vehicles using the ADAPT-S Learning Architecture"
+ },
+ {
+  "idx": "77",
+  "ref": "1129",
+  "surnames": [
+   "Guravaiah"
+  ],
+  "authors": "P. S. Ashritha, S. Nandamuri, Y. V. Vijay, P. Raguraman, and K. Guravaiah",
+  "title": "Situation-aware Path Optimization for Autonomous Systems: A Deep Reinforcement Learning based Approach"
+ },
+ {
+  "idx": "78",
+  "ref": "1130",
+  "surnames": [
+   "Zhao"
+  ],
+  "authors": "Y. Dong, H. Tan, X. Zhou, P. Li, and Y. Zhao",
+  "title": "Resilient Multi-Agent Deep Reinforcement Learning for Routing Control via Traffic Cost Fields"
+ },
+ {
+  "idx": "79",
+  "ref": "1093",
+  "surnames": [
+   "Aneesh"
+  ],
+  "authors": "R. Aneesh, S. G. T, and V. R",
+  "title": "Dynamic Route Optimization using D* Lite and DQN Algorithm"
+ },
+ {
+  "idx": "81",
+  "ref": "1131",
+  "surnames": [
+   "Chai"
+  ],
+  "authors": "Z. Cheng, X. Liao, S. Leng, and H. Chai",
+  "title": "A Communication Resource Enhanced Intelligent Road Traffic Routing Scheme"
+ },
+ {
+  "idx": "82",
+  "ref": "1102",
+  "surnames": [
+   "Miikkulainen"
+  ],
+  "authors": "G. Dai, P. K. Paluri, T. Carmichael, A. Cheng, and R. Miikkulainen",
+  "title": "Work-in-Progress: Leveraging the Selfless Driving Model to Reduce Vehicular Network Congestion"
+ },
+ {
+  "idx": "83",
+  "ref": "1132",
+  "surnames": [
+   "Pupo"
+  ],
+  "authors": "F. Giannini, G. Fortino, G. Franz\u00e8, and F. Pupo",
+  "title": "A Deep Q Learning-Model Predictive Control Approach to vehicle routing and control with platoon constraints"
+ },
+ {
+  "idx": "84",
+  "ref": "1133",
+  "surnames": [
+   "Zhou"
+  ],
+  "authors": "D. Zhu, H. Zhou, A. Lin, and B. Zhou",
+  "title": "A Dynamic Risk-aware Routing Recommendation Using Deep Reinforcement Learning"
+ },
+ {
+  "idx": "85",
+  "ref": "1134",
+  "surnames": [
+   "Pupo"
+  ],
+  "authors": "F. Giannini, G. Fortino, G. Franz\u00e8, and F. Pupo",
+  "title": "Path planning for vehicle platoons under routing decisions: a distributed approach combining Deep Reinforcement Learning and Model Predictive Control"
+ },
+ {
+  "idx": "86",
+  "ref": "59",
+  "surnames": [
+   "Han"
+  ],
+  "authors": "Z. Li, B. Liu, E. Wang, J. Wang, and W. Han",
+  "title": "A Joint Design of Path Planning and Lane Reservation for Emergency Service in ITS"
+ },
+ {
+  "idx": "87",
+  "ref": "1135",
+  "surnames": [
+   "Han"
+  ],
+  "authors": "J. Gao, Z. Du, Y. Lin, J. Wu, and G. Han",
+  "title": "A Reinforcement Learning-Based Path Recommendation Strategy Considering Broadcast Disturbance and Behavioral Response"
+ },
+ {
+  "idx": "88",
+  "ref": "1108",
+  "surnames": [
+   "Chiasserini"
+  ],
+  "authors": "D. Selvaraj, F. Dressler, and C. Chiasserini",
+  "title": "Personalized and Context-aware Route Planning for Edge-assisted Vehicles"
+ },
+ {
+  "idx": "89",
+  "ref": "1136",
+  "surnames": [
+   "Wang"
+  ],
+  "authors": "Y. Song, Z. Wang, and R. Wang",
+  "title": "Research on Travel Paths Based on Car-Hailing Services Connecting with Rail Transit"
+ },
+ {
+  "idx": "90",
+  "ref": "1137",
+  "surnames": [
+   "Dikici"
+  ],
+  "authors": "A. Metin and S. Dikici",
+  "title": "Q-Learning-Based Energy-Aware Route Planning for Electric Vehicles on Real Road Networks with Charging Constraints"
+ },
+ {
+  "idx": "91",
+  "ref": "1138",
+  "surnames": [
+   "Kumari"
+  ],
+  "authors": "N. R. G. Merlin, D. Anandakumar, S. Devilavanya, P. K. S. S. Kumari, et al.",
+  "title": "Cutting-Edge Travel Planner: Intelligent Route Recommendation System using Enhanced Learning Scheme with AI Principles"
+ },
+ {
+  "idx": "92",
+  "ref": "60",
+  "surnames": [
+   "Hossain"
+  ],
+  "authors": "I. Zellagui, S.-M. Senouci, I. El Korbi, and S. Hossain",
+  "title": "Multi-Objective Route Optimization via Dueling DQN for Teleoperated Driving"
+ },
+ {
+  "idx": "94",
+  "ref": "63",
+  "surnames": [
+   "Shi"
+  ],
+  "authors": "Q. Zhang, K. Wu, and Y. Shi",
+  "title": "Route Planning and Power Management for PHEVs With Reinforcement Learning"
+ },
+ {
+  "idx": "95",
+  "ref": "1144",
+  "surnames": [
+   "Nishijima"
+  ],
+  "authors": "S. Katagiri, T. Miwa, and K. Nishijima",
+  "title": "Preliminary Study on Cooperative Route Planning Reinforcement Learning with a Focus on Avoiding Intersection Congestion"
+ },
+ {
+  "idx": "97",
+  "ref": "1145",
+  "surnames": [
+   "Yang"
+  ],
+  "authors": "S. Wang, Z. Guo, and H. Yang",
+  "title": "HERO: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs"
+ },
+ {
+  "idx": "98",
+  "ref": "1146",
+  "surnames": [
+   "Zhong"
+  ],
+  "authors": "J. Guo, Y. Wan, A. Ma, and Y. Zhong",
+  "title": "Disaster-Aware Path Planning Based on Reinforcement Learning for Postearthquake Emergency Response"
+ },
+ {
+  "idx": "99",
+  "ref": "1147",
+  "surnames": [
+   "Mestari"
+  ],
+  "authors": "O. Elfahim, E. M. Ben Laoula, M. Youssfi, O. Barakat, and M. Mestari",
+  "title": "Reinforcement Learning-based Unpredictable Emergency Events"
+ },
+ {
+  "idx": "101",
+  "ref": "1148",
+  "surnames": [
+   "Al-Safarini"
+  ],
+  "authors": "M. Y. Al-Safarini et al.",
+  "title": "Energy Optimal Route Planning Framework for Electric Vehicles Using Hybrid Artificial Intelligence Models"
+ }
+]

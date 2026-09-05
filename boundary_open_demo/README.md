@@ -26,13 +26,13 @@ failure to reward design rather than to task difficulty.
 
 ## Files
 
-- `env.py` — `GridRouteEnv`, the grid MDP with the two switches (run `python env.py`
+- `env.py`: `GridRouteEnv`, the grid MDP with the two switches (run `python env.py`
   to execute the environment self-tests).
-- `dqn.py` — a standard MLP Deep Q-Network with a replay buffer, target network,
+- `dqn.py`: a standard MLP Deep Q-Network with a replay buffer, target network,
   epsilon-greedy exploration, and action masking.
-- `train.py` — trains all four conditions across seeds and records the OD trip
+- `train.py`: trains all four conditions across seeds and records the OD trip
   completion rate during training.
-- `plot.py` — produces the two Section V figures from `results.npz`.
+- `plot.py`: produces the two Section V figures from `results.npz`.
 
 ## Reproduce
 

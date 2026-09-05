@@ -1,0 +1,95 @@
+idx,title,recovered,best_share,matched_source,matched_title
+0,Real-time deep reinforcement learning based vehicle navigation,yes,1.0,OpenAlex,Real-time deep reinforcement learning based vehicle navigation
+1,A reinforcement learning-based routing algorithm for large street networks,yes,1.0,OpenAlex,A reinforcement learning-based routing algorithm for large street networks
+2,Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for dynamic traffic assignment,no,0.5,,
+3,Hierarchical Reinforcement Learning for Dynamic Autonomous Vehicle Navigation at Intelligent Intersections,yes,1.0,OpenAlex,Hierarchical Reinforcement Learning for Dynamic Autonomous Vehicle Navigation at Intelligent Intersections
+4,Urban Traffic Route Guidance Method With High Adaptive Learning Ability Under Diverse Traffic Scenarios,yes,1.0,OpenAlex,Urban Traffic Route Guidance Method With High Adaptive Learning Ability Under Diverse Traffic Scenarios
+5,Reinforcement Learning for Vehicle Route Optimization in SUMO,no,0.833,,
+6,Routing Control Optimization for Autonomous Vehicles in Mixed Traffic Flow Based on Deep Reinforcement Learning,no,0.5,,
+7,An Adaptive Route Guidance Model Considering the Effect of Traffic Signals Based on Deep Reinforcement Learning,yes,1.0,OpenAlex,An Adaptive Route Guidance Model Considering the Effect of Traffic Signals Based on Deep Reinforcement Learning
+8,Transfer Learning-Based Deep Reinforcement Learning Approach for Robust Route Guidance in Mixed Traffic Environment,yes,1.0,OpenAlex,Transfer Learning-Based Deep Reinforcement Learning Approach for Robust Route Guidance in Mixed Traffic Environment
+9,Development of Reinforcement Learning-based Traffic Predictive Route Guidance Algorithm Under Uncertain Traffic Environm,yes,1.0,OpenAlex,Development of Reinforcement Learning-Based Traffic Predictive Route Guidance Algorithm Under Uncertain Traffic Environm
+10,XRouting: Explainable Vehicle Rerouting for Urban Road Congestion Avoidance using Deep Reinforcement Learning,yes,1.0,OpenAlex,XRouting: Explainable Vehicle Rerouting for Urban Road Congestion Avoidance using Deep Reinforcement Learning
+11,RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles,no,0.545,,
+12,Congestion-Aware Path Planning With Vehicle-Road Cooperation in AIoV,no,0.5,,
+13,Reinforcement learning of route choice considering traveler's preference,no,0.571,,
+14,Reinforcement Learning Method with Dynamic Learning Rate for Real-Time Route Guidance Based on SUMO,yes,1.0,OpenAlex,Reinforcement Learning Method with Dynamic Learning Rate for Real-Time Route Guidance Based on SUMO
+15,Model-Based Deep Reinforcement Learning for Energy Efficient Routing of a Connected and Automated Vehicle,no,0.545,,
+16,Reinforcement Learning-based Sequential Route Recommendation for System-Optimal Traffic Assignment,no,0.5,,
+17,Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized Road Networks using Multi-Agent Deep Rein,no,0.5,,
+18,Dynamic Route Guidance System Based on Real-time Vehicle-Road Collaborations with Deep Reinforcement Learning,yes,1.0,OpenAlex,Dynamic Route Guidance System Based on Real-time Vehicle-Road Collaborations with Deep Reinforcement Learning
+19,Deep Reinforcement Learning for Vehicle Swarm Navigation and Urban Traffic Optimization,no,0.667,,
+20,Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic Multi-Vehicle Route Selection,no,0.583,,
+21,Modeling of route planning system based on Q value-based dynamic programming with multi-agent reinforcement learning alg,no,0.462,,
+22,Individual versus Difference Rewards on Reinforcement Learning for Route Choice,no,0.375,,
+23,Route guidance system using multi-agent reinforcement learning,no,0.75,,
+24,Network-aware multi-agent reinforcement learning for the vehicle navigation problem,yes,1.0,OpenAlex,Network-aware multi-agent reinforcement learning for the vehicle navigation problem
+25,Navigating the non-compliance effects on system optimal route guidance using reinforcement learning,yes,1.0,OpenAlex,Navigating the non-compliance effects on system optimal route guidance using reinforcement learning
+26,Reinforcement learning-based route planning method for connected vehicles considering real-time road traffic information,yes,1.0,OpenAlex,Reinforcement learning-based route planning method for connected vehicles considering real-time road traffic information
+27,Optimization Method of DRL-based Route Planning under Limited Resources,yes,1.0,OpenAlex,Optimization Method of DRL-based Route Planning under Limited Resources
+28,Vehicle-Road Collaborative Path Planning Based on A*-assisted Deep Reinforcement Learning,no,0.7,,
+29,A Deep Reinforcement Learning Approach for Route Planning of Autonomous Vehicles*,yes,1.0,OpenAlex,A Deep Reinforcement Learning Approach for Route Planning of Autonomous Vehicles*
+30,Dynamic urban traffic rerouting with fog-cloud reinforcement learning,no,0.571,,
+31,A Deep Reinforcement Learning Framework for Real-Time Vehicle Routing with Dynamic Traffic Conditions,yes,1.0,OpenAlex,A Deep Reinforcement Learning Framework for Real-Time Vehicle Routing with Dynamic Traffic Conditions
+32,Adaptive Reinforcement Learning Framework for Environmentally Sustainable Route Optimization,no,0.625,,
+33,Deep Q-Learning-based Route Optimization for Traffic Network,yes,1.0,OpenAlex,Deep Q-Learning-based Route Optimization for Traffic Network
+34,Urban Multiple Route Planning Model Using Dynamic Programming in Reinforcement Learning,yes,1.0,OpenAlex,Urban Multiple Route Planning Model Using Dynamic Programming in Reinforcement Learning
+36,Providing real-time en-route suggestions to CAVs for congestion mitigation: A two-way deep reinforcement learning approa,no,0.5,,
+37,Real-time system optimal traffic routing under uncertainties - Can physics models boost reinforcement learning?,no,0.5,,
+38,Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing,yes,1.0,OpenAlex,Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing
+39,A Data-Driven Reinforcement Learning Based Multi-Objective Route Recommendation System,no,0.6,,
+40,Emergency vehicle rescue route optimization based on deep reinforcement learning in highway network,yes,1.0,OpenAlex,Emergency vehicle rescue route optimization based on deep reinforcement learning in highway network
+41,Autonomous Vehicle Routing Optimization in a Competitive Environment: A Reinforcement Learning Application,no,0.556,,
+42,Multi-objective route recommendation method based on Q-learning algorithm,no,0.625,,
+43,Agent-Based Route Planning with Deep Q Learning,no,0.833,,
+46,Optimizing Traffic Routes With Enhanced Double Q-Learning,no,0.5,,
+47,Multi-agent deep reinforcement learning based on cloud-edge computing for urban vehicle route guidance,yes,1.0,OpenAlex,Multi-agent deep reinforcement learning based on cloud-edge computing for urban vehicle route guidance
+48,Meta-deep q-learning for eco-routing,no,0.75,,
+49,Sharing diverse information gets driver agents to learn faster: an application in en route trip building,no,0.167,,
+50,Regional route guidance with realistic compliance patterns: Application of deep reinforcement learning and MPC,yes,1.0,OpenAlex,Regional route guidance with realistic compliance patterns: Application of deep reinforcement learning and MPC
+51,A multiagent reinforcement learning approach to en-route trip building,no,0.571,,
+52,Connected vehicles' dynamic route planning based on reinforcement learning,yes,1.0,OpenAlex,Connected vehicles’ dynamic route planning based on reinforcement learning
+53,A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion game,no,0.455,,
+54,Robust Route Planning with Distributional Reinforcement Learning in a Stochastic Road Network Environment,yes,1.0,OpenAlex,Robust Route Planning with Distributional Reinforcement Learning in a Stochastic Road Network Environment
+55,Deep Reinforcement Learning for Optimizing Route Planning in Urban Traffic,yes,1.0,OpenAlex,Deep Reinforcement Learning for Optimizing Route Planning in Urban Traffic
+56,Vehicle-Infrastructure Cooperation Framework for Vehicle Navigation and Traffic Signal Control using Deep Reinforcement ,yes,1.0,OpenAlex,Vehicle–Infrastructure Cooperation Framework for Vehicle Navigation and Traffic Signal Control using Deep Reinforcement 
+57,VEGA: Electric Vehicle Navigation Agent via Physics-Informed Neural Operator and Proximal Policy Optimization,no,0.417,,
+58,Using Car to Infrastructure Communication to Accelerate Learning in Route Choice,no,0.429,,
+59,Applying Markov decision process to adaptive dynamic route selection model,no,0.333,,
+60,A Sustainable Multi-Agent Routing Algorithm for Vehicle Platoons in Urban Networks,no,0.444,,
+61,Distributed Learning for Vehicle Routing Decision in Software Defined Internet of Vehicles,no,0.333,,
+62,Proactive Urban Expressway Guidance: A Hybrid Approach Using Reinforcement Learning and Traffic Prediction Models,yes,1.0,OpenAlex,Proactive Urban Expressway Guidance: A Hybrid Approach Using Reinforcement Learning and Traffic Prediction Models
+63,A Bi-Level Network-Wide Cooperative Driving Approach Including Deep Reinforcement Learning-Based Routing,no,0.5,,
+64,Self-Organized Routing for Autonomous Vehicles via Deep Reinforcement Learning,no,0.625,,
+65,Graph Convolutional Network Based Multi-Objective Meta-Deep Q-Learning for Eco-Routing,no,0.6,,
+66,SEGAC: Sample Efficient Generalized Actor Critic for the Stochastic On-Time Arrival Problem,no,0.3,,
+67,GE-DDRL: Graph Embedding and Deep Distributional Reinforcement Learning for Reliable Shortest Path: A Universal and Scal,no,0.286,,
+68,Shortest-Time Path Planning Under Carbon Emission Constraints via Reinforcement Learning,no,0.444,,
+69,DRL Router: Distributional Reinforcement Learning-Based Router for Reliable Shortest Path Problems,no,0.444,,
+70,Optimization Path Planning Algorithm Based on Deep Reinforcement Learning,no,0.75,,
+71,Research on Emergency Rescue Path Optimization Method Based on Deep Reinforcement Learning,no,0.7,,
+72,Safety-Aware Path Planning for Post-Disaster Rescue Vehicles,no,0.5,,
+74,Path Planning in Urban Environment Based on Traffic Condition Perception and Traffic Light Status,no,0.3,,
+75,Autonomous Vehicles in Smart Cities: a Deep Reinforcement Learning Solution,no,0.625,,
+76,Intelligent Routing in Connected Autonomous Vehicles using the ADAPT-S Learning Architecture,no,0.444,,
+77,Situation-aware Path Optimization for Autonomous Systems: A Deep Reinforcement Learning based Approach,no,0.545,,
+78,Resilient Multi-Agent Deep Reinforcement Learning for Routing Control via Traffic Cost Fields,no,0.545,,
+79,Dynamic Route Optimization using D* Lite and DQN Algorithm,no,0.5,,
+81,A Communication Resource Enhanced Intelligent Road Traffic Routing Scheme,no,0.25,,
+82,Work-in-Progress: Leveraging the Selfless Driving Model to Reduce Vehicular Network Congestion,no,0.2,,
+83,A Deep Q Learning-Model Predictive Control Approach to vehicle routing and control with platoon constraints,no,0.5,,
+84,A Dynamic Risk-aware Routing Recommendation Using Deep Reinforcement Learning,no,0.667,,
+85,Path planning for vehicle platoons under routing decisions: a distributed approach combining Deep Reinforcement Learning,no,0.4,,
+86,A Joint Design of Path Planning and Lane Reservation for Emergency Service in ITS,no,0.375,,
+87,A Reinforcement Learning-Based Path Recommendation Strategy Considering Broadcast Disturbance and Behavioral Response,no,0.364,,
+88,Personalized and Context-aware Route Planning for Edge-assisted Vehicles,yes,1.0,OpenAlex,Personalized and Context-aware Route Planning for Edge-assisted Vehicles
+89,Research on Travel Paths Based on Car-Hailing Services Connecting with Rail Transit,no,0.222,,
+90,Q-Learning-Based Energy-Aware Route Planning for Electric Vehicles on Real Road Networks with Charging Constraints,no,0.538,,
+91,Cutting-Edge Travel Planner: Intelligent Route Recommendation System using Enhanced Learning Scheme with AI Principles,no,0.308,,
+92,Multi-Objective Route Optimization via Dueling DQN for Teleoperated Driving,no,0.571,,
+94,Route Planning and Power Management for PHEVs With Reinforcement Learning,yes,1.0,OpenAlex,Route Planning and Power Management for PHEVs With Reinforcement Learning
+95,Preliminary Study on Cooperative Route Planning Reinforcement Learning with a Focus on Avoiding Intersection Congestion,yes,1.0,OpenAlex,Preliminary Study on Cooperative Route Planning Reinforcement Learning with a Focus on Avoiding Intersection Congestion
+97,HERO: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs,no,0.545,,
+98,Disaster-Aware Path Planning Based on Reinforcement Learning for Postearthquake Emergency Response,no,0.5,,
+99,Reinforcement Learning-based Unpredictable Emergency Events,no,0.667,,
+101,Energy Optimal Route Planning Framework for Electric Vehicles Using Hybrid Artificial Intelligence Models,yes,1.0,OpenAlex,Energy Optimal Route Planning Framework for Electric Vehicles Using Hybrid Artificial Intelligence Models

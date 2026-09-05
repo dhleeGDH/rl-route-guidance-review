@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """A small PPO agent for the grid route-guidance demonstration.
 
-The four-cell result is reported for a value-based learner. The reward-side conclusions —
-the size of the recovery, the shape of the dose-response, the ablation — are therefore shown
+The four-cell result is reported for a value-based learner. The reward-side conclusions, namely
+the size of the recovery, the shape of the dose-response and the ablation, are therefore shown
 for one learner, even though the 0% collapse itself is algorithm-free by the bound of
 Section V-C. This provides a policy-gradient learner so the same four cells can be run again
 with the learning rule replaced and nothing else.

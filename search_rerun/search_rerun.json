@@ -1,0 +1,43 @@
+{
+ "window": [
+  "2018-01-01",
+  "2026-07-05"
+ ],
+ "clauses": {
+  "learner": "\"reinforcement learning\"",
+  "task": "(\"route guidance\" OR \"vehicle navigation\" OR \"route planning\")",
+  "domain": "(vehicle OR traffic OR road)"
+ },
+ "rows": [
+  {
+   "database": "OpenAlex",
+   "endpoint": "https://api.openalex.org/works?filter=title_and_abstract.search:%22reinforcement%20learning%22%20AND%20%28%22route%20guidance%22%20OR%20%22vehicle%20navigation%22%20OR%20%22route%20planning%22%29%20AND%20%28vehicle%20OR%20traffic%20OR%20road%29,from_publication_date:2018-01-01,to_publication_date:2026-07-05&per-page=1",
+   "returned": 505,
+   "error": null
+  },
+  {
+   "database": "Crossref",
+   "endpoint": "https://api.crossref.org/works?query.bibliographic=...&filter=from-pub-date:2018-01-01,until-pub-date:2026-07-05",
+   "returned": null,
+   "error": "ranked retrieval only: the public interface does not conjoin phrases, so the three clauses cannot be expressed and no comparable count is defined"
+  },
+  {
+   "database": "arXiv",
+   "endpoint": "http://export.arxiv.org/api/query?search_query=all%3A%22reinforcement%20learning%22%20AND%20%28all%3A%22route%20guidance%22%20OR%20all%3A%22vehicle%20navigation%22%20OR%20all%3A%22route%20planning%22%29&start=0&max_results=1",
+   "returned": 45,
+   "error": null
+  },
+  {
+   "database": "Semantic Scholar",
+   "endpoint": "https://api.semanticscholar.org/graph/v1/paper/search?query=reinforcement%20learning%20route%20guidance%20vehicle%20navigation%20route%20planning&year=2018-2026&limit=1&fields=title",
+   "returned": null,
+   "error": "HTTP Error 429: "
+  },
+  {
+   "database": "Scopus",
+   "endpoint": null,
+   "returned": null,
+   "error": "requires an institutional API key; not rerunnable from the paper alone"
+  }
+ ]
+}
