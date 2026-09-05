@@ -1,0 +1,13 @@
+{
+  "title": "Reproduction code and screened corpus for a survey of evaluation design in reinforcement learning route guidance",
+  "upload_type": "software",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Lee, Donghoun",
+      "affiliation": "Department of Artificial Intelligence and Data Science, Sejong University, Seoul, Republic of Korea",
+      "orcid": "0000-0002-3349-636X"
+    }
+  ],
+  "description": "The environment, the planner, the training code, the screened corpus and the study record behind the manuscript. Every reported value is recomputed from this tree at the pinned linear-algebra thread count."
+}
