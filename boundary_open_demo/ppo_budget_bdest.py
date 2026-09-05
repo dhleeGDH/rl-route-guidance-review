@@ -84,6 +84,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--episodes", type=int, default=8000)
     ap.add_argument("--seeds", type=int, default=5)
+    ap.add_argument("--out", default="ppo_budget_bdest.json",
+                    help="a run at a new seed count must not replace the published file")
     a = ap.parse_args()
 
     od = make_eval_od(n=200, seed=12345)
@@ -99,9 +101,9 @@ def main():
                                         "per_seed": comps}
         print("== %-6s aligned %d ep: completion %5.1f%% (sd %.1f)"
               % (boundary, a.episodes, np.mean(comps), np.std(comps)), flush=True)
-    with io.open(os.path.join(HERE, "ppo_budget_bdest.json"), "w", encoding="utf-8") as f:
+    with io.open(os.path.join(HERE, a.out), "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2)
-    print("wrote ppo_budget_bdest.json")
+    print("wrote %s" % a.out)
 
 
 if __name__ == "__main__":

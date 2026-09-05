@@ -26,6 +26,11 @@ import sys
 import numpy as np
 import torch
 
+# Floating-point addition is not associative, so the thread count of the linear-algebra library
+# changes the order of summation and moves a training trajectory. Supplementary S-I states that
+# the count is pinned to one for every cell of the study; this runner was the one that was not.
+torch.set_num_threads(1)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -63,6 +68,11 @@ class InteriorDestEnv(GridRouteEnv):
                 self.pos, self.goal = (0, 0), (self.n - 2, self.n - 2)
         else:
             self.goal = goal
+        # the base builds _open_links as every perimeter link EXCEPT its own destination link,
+        # which it holds open through _is_dst_link. That predicate is disowned above, so the
+        # link belongs in the set on the open condition and nowhere on the closed one.
+        if self.boundary != "closed" and self._dst_link is not None:
+            self._open_links = set(self._open_links) | {self._dst_link}
         return self._obs()
 
     def _obs(self):
@@ -75,22 +85,29 @@ class InteriorDestEnv(GridRouteEnv):
     def _phi(self, r, c):
         return abs(r - self.goal[0]) + abs(c - self.goal[1])
 
+    def _is_dst_link(self, r, c, a):
+        """No link is the destination here: arrival is entering an interior cell.
+
+        The base class treats its destination link as arrival AND as permanently open, which
+        left one takeable exit on the condition this control calls boundary-closed. Exact value
+        iteration on the shipped construction returns 56.5% completion for the travel-time
+        optimum, against 100.0% once that link closes with the rest of the perimeter: the cell
+        was boundary-open and the 80.2% it reported was an optimum leaving, not a learner
+        falling short. Disowning the link here closes the condition and hands the same link to
+        the open condition as an ordinary exit, charged like every other.
+        """
+        return False
+
     def step(self, action):
-        before = self._phi(*self.pos)
         obs, r, done, info = super().step(action)
-        if done and info["outcome"] == "arrived":
-            # the base class arrived by leaving on the destination link; that event does not
-            # exist here, so it is re-scored as an ordinary exit
-            info["outcome"] = "exited"
-            if self.reward == "aligned":
-                r = r - R_G - (-R_X)
-        if not done and self.pos == self.goal:
+        # The base already applies the aligned shaping through the overridden _phi, so the
+        # subclass adding it again doubled beta on every in-grid move: one step measured
+        # 0.8737 where single shaping gives -0.1263. Arrival keeps its own terminal bonus.
+        if self.pos == self.goal and info["outcome"] != "exited":
             done, self.done = True, True
             info["outcome"] = self.outcome = "arrived"
             if self.reward == "aligned":
                 r = r + R_G
-        elif self.reward == "aligned" and not done:
-            r = r + BETA * (before - self._phi(*self.pos))
         return obs, r, done, info
 
 
@@ -122,11 +139,13 @@ def evaluate(agent, boundary, reward, eval_od, max_steps, seed=777):
     return 100.0 * arrived / len(eval_od)
 
 
-def run_cell(boundary, reward, seed, episodes, eval_od, max_steps=120):
+def run_cell(boundary, reward, seed, episodes, eval_od, max_steps=120, **reward_kw):
+    """reward_kw passes the reward weights through to the environment, so a single-term arm can
+    be run under this construction. Passing none reproduces the published cells exactly."""
     np.random.seed(seed)
     torch.manual_seed(seed)
     env = InteriorDestEnv(boundary=boundary, reward=reward, seed=1000 + seed,
-                          max_steps=max_steps)
+                          max_steps=max_steps, **reward_kw)
     agent = DQNAgent(env.state_dim, env.n_actions, seed=seed)
     eps0, eps1 = 1.0, 0.05
     decay = int(0.6 * episodes)

@@ -92,6 +92,8 @@ def main():
     ap.add_argument("--episodes", type=int, default=8000)
     ap.add_argument("--seeds", type=int, default=3)
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--out", default="ppo_sensitivity.json",
+                    help="a run at a new seed count must not replace the published file")
     a = ap.parse_args()
     if a.smoke:
         a.episodes, a.seeds = 400, 1
@@ -110,9 +112,9 @@ def main():
                                   "per_seed": comps}
         print("== %-12s %d ep: completion %5.1f%% (sd %.1f)"
               % (label, a.episodes, np.mean(comps), np.std(comps)), flush=True)
-    with io.open(os.path.join(HERE, "ppo_sensitivity.json"), "w", encoding="utf-8") as f:
+    with io.open(os.path.join(HERE, a.out), "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2)
-    print("wrote ppo_sensitivity.json")
+    print("wrote %s" % a.out)
 
 
 if __name__ == "__main__":

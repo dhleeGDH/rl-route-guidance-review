@@ -24,6 +24,12 @@ a faithful measure of in-network navigation (no external-shortcut confound).
 import numpy as np
 import torch
 
+
+# The order of summation in the gradient follows the thread count of the linear-algebra
+# library, and floating-point addition is not associative. Section V-A states the count as
+# pinned to one; this runner had been left unpinned, so its cells did not follow the stated
+# protocol and moved between samples.
+torch.set_num_threads(1)
 from env import GridRouteEnv
 from dqn import DQNAgent
 from sweep_extra import make_eval_od, evaluate, train_eval
@@ -33,6 +39,7 @@ def study_costly_return(seeds=5, episodes=3000, return_costs=(1.0, 3.0, 5.0),
                         max_steps=50, out_csv="costly_return_summary.csv"):
     eval_od = make_eval_od(5)
     out = []
+    per_seed = []
 
     # reference: the two main-experiment cells recomputed here for a like-for-like
     # comparison (same seeds, eval set, and budget as the costly_return cells).
@@ -41,6 +48,7 @@ def study_costly_return(seeds=5, episodes=3000, return_costs=(1.0, 3.0, 5.0),
         env_kw = dict(boundary=boundary, reward=reward, n_side=5, max_steps=max_steps)
         comps = [train_eval(env_kw, s, episodes, eval_od) for s in range(seeds)]
         out.append((f"{boundary}_{reward}", np.nan, np.mean(comps), np.std(comps)))
+        per_seed.append((f"{boundary}_{reward}", "--", comps))
         print(f"{boundary:13} {reward:9} return_cost=  --  "
               f"completion={np.mean(comps):.3f} +/- {np.std(comps):.3f}", flush=True)
 
@@ -51,6 +59,7 @@ def study_costly_return(seeds=5, episodes=3000, return_costs=(1.0, 3.0, 5.0),
                       max_steps=max_steps, return_cost=rc)
         comps = [train_eval(env_kw, s, episodes, eval_od) for s in range(seeds)]
         out.append(("costly_return_time_min", rc, np.mean(comps), np.std(comps)))
+        per_seed.append(("costly_return_time_min", rc, comps))
         print(f"{'costly_return':13} {'time_min':9} return_cost={rc:4.1f}  "
               f"completion={np.mean(comps):.3f} +/- {np.std(comps):.3f}", flush=True)
 
@@ -59,15 +68,24 @@ def study_costly_return(seeds=5, episodes=3000, return_costs=(1.0, 3.0, 5.0),
                   max_steps=max_steps, return_cost=1.0)
     comps = [train_eval(env_kw, s, episodes, eval_od) for s in range(seeds)]
     out.append(("costly_return_aligned", 1.0, np.mean(comps), np.std(comps)))
+    per_seed.append(("costly_return_aligned", 1.0, comps))
     print(f"{'costly_return':13} {'aligned':9} return_cost= 1.0  "
           f"completion={np.mean(comps):.3f} +/- {np.std(comps):.3f}", flush=True)
 
-    # persist
+    # persist. The per-seed values go beside the summary so the percentile bootstrap this
+    # manuscript reports elsewhere can be computed for these cells without a rerun.
     with open(out_csv, "w") as f:
         f.write("condition,return_cost,final_completion_mean,final_completion_std\n")
         for cond, rc, m, s in out:
             f.write(f"{cond},{'' if rc!=rc else rc},{m:.4f},{s:.4f}\n")
-    print("\nwrote costly_return_summary.csv")
+    import json as _json
+    _seed_path = out_csv.rsplit(".", 1)[0] + "_per_seed.json"
+    _json.dump({"seeds": seeds, "episodes": episodes, "max_steps": max_steps,
+                "cells": {("%s@%s" % (c, r)): [round(100 * float(x), 1) for x in v]
+                          for (c, r, v) in per_seed}},
+               open(_seed_path, "w"), indent=1)
+    print("wrote %s" % _seed_path)
+    print("\nwrote %s" % out_csv)
 
 
 if __name__ == "__main__":
@@ -76,8 +94,9 @@ if __name__ == "__main__":
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--max_steps", type=int, default=50)
     ap.add_argument("--out", default="costly_return_summary.csv")
+    ap.add_argument("--seeds", type=int, default=5)
     args = ap.parse_args()
     if args.smoke:
         study_costly_return(seeds=1, episodes=400, return_costs=(1.0,))
     else:
-        study_costly_return(max_steps=args.max_steps, out_csv=args.out)
+        study_costly_return(seeds=args.seeds, max_steps=args.max_steps, out_csv=args.out)

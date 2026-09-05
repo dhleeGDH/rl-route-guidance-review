@@ -9,13 +9,15 @@ shows the Section V collapse is a property of the reward-and-boundary configurat
 of the bespoke grid.
 """
 import json
+import sys
+
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-HERE = Path(__file__).parent
+HERE = Path(__file__).resolve().parent
 plt.rcParams.update({"font.size": 8.0, "axes.titlesize": 8.0, "axes.labelsize": 8.0,
                      # Liberation Serif is metric-compatible with Times New Roman and matches its upright percent
                      # sign and digits; Nimbus Roman and FreeSerif draw an oldstyle slanted percent
@@ -30,22 +32,27 @@ TT = "#c0392b"    # travel-time reward (collapses)
 AL = "#1f6fb4"    # destination-aligned reward (holds)
 
 
-def _boot_err(x, b=10000, seed=20260719):
-    """Half-widths of the 95% percentile bootstrap interval, as (lower, upper) for errorbar."""
-    x = np.asarray(x, float)
-    rng = np.random.RandomState(seed)
-    means = np.mean(rng.choice(x, size=(b, len(x)), replace=True), axis=1)
-    lo, hi = np.percentile(means, [2.5, 97.5])
-    return (max(0.0, x.mean() - lo), max(0.0, hi - x.mean()))
+sys.path.insert(0, str(HERE.parent))
+from table6_rows import ci, cell_key            # noqa: E402
+
+
+def _boot_err(x, key):
+    """Half-widths of the 95% percentile bootstrap interval, as (lower, upper) for errorbar.
+
+    The interval comes from the same function Table VI is derived through, keyed on the same cell
+    identity, so a bar in this figure and a bracket in that table can never disagree for one cell.
+    A local copy of the bootstrap drew "31 +/- 18%" beside the table's own "30.8 [19.9-42.8]".
+    """
+    m, lo, hi = ci(x, key)
+    return (max(0.0, m - lo), max(0.0, hi - m))
 
 
 def load():
     """Return dict net -> {reward: (closed_mean, closed_err, open_mean, open_err)}.
 
-    The dispersion follows Table IV cell for cell: a 95% percentile bootstrap interval on the
-    10-seed lattice and one standard deviation on the 5-seed benchmark networks. Plotting a
-    standard deviation for the lattice put "31 +/- 18%" beside Table IV's "30.8 [19.9-42.6]"
-    for the same cell, which reads as two different results.
+    Every panel rests on ten seeds and one dispersion convention, the 95% percentile bootstrap
+    interval Table VI reports. A standard deviation on the benchmark panels against an interval on
+    the lattice panel put two conventions inside one figure.
     """
     d = {}
     # bespoke grid: read the 10 seed-level evaluation completions, the quantity Table IV
@@ -54,24 +61,43 @@ def load():
     # Table IV, which put two measures of the same four cells a page apart.
     _g = json.loads((HERE / ".." / "boundary_open_demo"
                      / "four_cells_boundary_dest.json").read_text(encoding="utf-8"))
-    d["(a) Bespoke grid, 3000 ep"] = {}
+    _m8k = {}
+    for _c in ("closed_time_min", "open_time_min", "closed_aligned", "open_aligned"):
+        _f = HERE / ".." / "boundary_open_demo" / ("matched_%s.json" % _c)
+        if not _f.exists():
+            _f = HERE / ".." / "boundary_open_demo" / "matched_budget_grid.json"
+        _m8k.update(json.loads(_f.read_text(encoding="utf-8"))["cells"])
+    # All three panels run at 8000 episodes. Three panels at three budgets invited exactly the
+    # cross-panel comparison the text disclaims, so the budget is matched and the shorter-budget
+    # cells are reported in the supplement instead.
+    # The episode budget is stated once in the caption. Repeating it in all three identifiers
+    # ran the third one off the figure and printed it over the second.
+    lab_a = "(a) Bespoke grid, 150 OD pairs"
+    d[lab_a] = {}
     for rw in ("time_min", "aligned"):
-        c = np.asarray(_g["closed_%s" % rw]["per_seed"])
-        o = np.asarray(_g["open_%s" % rw]["per_seed"])
-        d["(a) Bespoke grid, 3000 ep"][rw] = (c.mean(), _boot_err(c), o.mean(), _boot_err(o))
-    try:
-        z = np.load(str(HERE / "benchmark_results.npz"))
-        # Read as one comparison, the three panels invite the grid's lower open aligned value
-        # to be taken for a topology effect. The panels run at the budget each network was
-        # trained on, so each identifier now carries it.
-        for key, label in [("sioux_falls", "(b) Sioux Falls, 8000 ep"),
-                           ("nguyen_dupuis", "(c) Nguyen-Dupuis, 3000 ep")]:
-            d[label] = {}
-            for rw in ("time_min", "aligned"):
-                c = 100 * z[f"{key}_closed_{rw}"]; o = 100 * z[f"{key}_open_{rw}"]
-                d[label][rw] = (c.mean(), c.std(), o.mean(), o.std())
-    except FileNotFoundError:
-        pass
+        c = np.asarray(_m8k["closed_%s" % rw]["per_seed"])
+        o = np.asarray(_m8k["open_%s" % rw]["per_seed"])
+        d[lab_a][rw] = (c.mean(), _boot_err(c, cell_key("grid", rw, 8000, "closed")),
+                        o.mean(), _boot_err(o, cell_key("grid", rw, 8000, "open")))
+    # Read as one comparison, the three panels invite the grid's lower open aligned value
+    # to be taken for a topology effect. The panels run at the budget each network was
+    # trained on, so each identifier now carries it. Each benchmark reads its own ten-seed
+    # file: one shared file was overwritten key for key by whichever network wrote last.
+    # Nguyen-Dupuis carried a third panel of equal prominence on 4 distinct OD pairs against 150
+    # and 114. Narrowing the axis and shading the field stated that difference weakly, and the
+    # panel read as a third replication regardless. Its cells are reported in the supplement.
+    for key, fname, eps, label in [
+            ("sioux_falls", "benchmark_results_10seed.npz", 8000,
+             "(b) Sioux Falls, 114 OD pairs")]:
+        f = HERE / fname
+        if not f.exists():
+            continue
+        z = np.load(str(f))
+        d[label] = {}
+        for rw in ("time_min", "aligned"):
+            c = 100 * z[f"{key}_closed_{rw}"]; o = 100 * z[f"{key}_open_{rw}"]
+            d[label][rw] = (c.mean(), _boot_err(c, cell_key(key, rw, eps, "closed")),
+                            o.mean(), _boot_err(o, cell_key(key, rw, eps, "open")))
     return d
 
 
@@ -102,30 +128,63 @@ def annotate_column(ax, x, points):
 def main():
     data = load()
     nets = list(data.keys())
-    fig, axes = plt.subplots(1, len(nets), figsize=(6.9, 2.3), sharey=True)
+    fig, axes = plt.subplots(1, len(nets), figsize=(4.8, 2.3), sharey=True,
+                             gridspec_kw={"width_ratios": [1.0, 1.0][:len(nets)]})
     if len(nets) == 1:
         axes = [axes]
     x = [0, 1]
+    BW = 0.34          # grouped-bar width; the pair spans 0.68 of the unit spacing
     for ax, net in zip(axes, nets):
-        closed, opened = [], []
-        for rw, color, lbl in [("time_min", TT, "Travel-time reward"),
-                               ("aligned", AL, "Destination-aligned reward")]:
+        tops = {}
+        # A line drawn between two categorical levels reads as an interpolation, and no state
+        # lies between a closed and an open boundary. Grouped bars carry the same four values
+        # without implying a path from one condition to the other. Colour alone vanishes in a
+        # greyscale print, so a hatch separates the two series as well.
+        for i, (rw, color, lbl, hatch) in enumerate(
+                [("time_min", TT, "Travel-time reward", ""),
+                 ("aligned", AL, "Destination-aligned reward", "///")]):
             cm, cs, om, os = data[net][rw]
             # cs/os are a standard deviation on the benchmark panels and a (lower, upper)
             # bootstrap half-width on the lattice panel, so the bars are built per shape.
             if isinstance(cs, tuple):
                 yerr = np.array([[cs[0], os[0]], [cs[1], os[1]]])
+                upper = [cs[1], os[1]]
             else:
                 yerr = np.array([cs, os], float)
-            ax.errorbar(x, [cm, om], yerr=yerr, color=color, marker="o", ms=4,
-                        lw=1.3, capsize=2.5, label=lbl, zorder=3)
-            closed.append((cm, cs, color)); opened.append((om, os, color))
-        annotate_column(ax, 0, closed)
-        annotate_column(ax, 1, opened)
+                upper = [cs, os]
+            xs = [p + (i - 0.5) * BW for p in x]
+            ax.bar(xs, [cm, om], width=BW, color=color, hatch=hatch, edgecolor="white",
+                   linewidth=0.6, label=lbl, zorder=3)
+            ax.errorbar(xs, [cm, om], yerr=yerr, fmt="none", ecolor="0.25",
+                        elinewidth=0.9, capsize=2.5, zorder=4)
+            # the label states the value and is POSITIONED above the error bar: passing the
+            # sum as the y would print value + error, which is a different number
+            for gi, (xp, v, e) in enumerate(zip(xs, [cm, om], upper)):
+                # keyed by the GROUP, not by the bar: keying on the bar x put every label in a
+                # bucket of its own and the collision rule below could never fire
+                tops.setdefault(gi, []).append((xp, v, v + e, color))
+        # Two bars of a group whose tops are close would print their labels side by side and
+        # collide, since a group is narrower than one label. The lower label is raised over
+        # the higher one instead, which keeps each label centred on its own bar.
+        for gi in sorted(tops):
+            grp = tops[gi]
+            for j, (xp, v_, top_, color_) in enumerate(grp):
+                # the second label of a group is lifted clear only where the OTHER bar of that
+                # same group is close enough to collide with it. Comparing against the group
+                # ceiling instead lifted the open-boundary label, whose partner bar is at zero.
+                other = [q[2] for k, q in enumerate(grp) if k != j]
+                dy = 15 if (j and other and abs(other[0] - top_) < 12) else 6
+                ax.annotate("%.1f%%" % v_, (xp, top_), textcoords="offset points",
+                            xytext=(0, dy), ha="center", va="center",
+                            fontsize=7.0, fontweight="bold", color=color_)
         ax.set_xticks(x); ax.set_xticklabels(["Boundary\nclosed", "Boundary\nopen"])
-        ax.set_xlim(-0.62, 1.62); ax.set_ylim(-6, 112)
+        ax.set_xlim(-0.62, 1.62); ax.set_ylim(0, 118)
         ax.grid(axis="y", ls=":", alpha=0.5)
         ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+        # Panel (c) rests on 4 distinct OD pairs against 150 and 114. A narrower axis stated that
+        # difference weakly, and a shaded field states it at a glance.
+        if net.startswith("(c)"):
+            ax.set_facecolor("#f0f0f0")
     axes[0].set_ylabel("OD trip completion (%)")
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="lower center", ncol=2, frameon=False,
@@ -135,7 +194,7 @@ def main():
     # identifiers: sharing one line puts the centre legend straight through panel (b)'s label
     for ax, net in zip(axes, nets):
         cx = (ax.get_position().x0 + ax.get_position().x1) / 2.0
-        fig.text(cx, 0.115, net, ha="center", va="bottom", fontsize=8.0)
+        fig.text(cx, 0.115, net, ha="center", va="bottom", fontsize=7.5)
     # resolved against this file so the script runs wherever the tree sits
     out = HERE / ".." / ".." / "manuscript" / "figures" / "fig_benchmark_inversion.png"
     fig.savefig(str(out), dpi=600)
