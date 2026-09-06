@@ -10,7 +10,7 @@ released single-agent env for a few episodes, then parse the per-episode tripinf
 Env/reward/model are the released ones; only batch/workers/chunking differed in training."""
 import sys, os, json, glob
 import xml.etree.ElementTree as ET
-XRO = os.environ.get("XR_WORKDIR", r"C:\xro")
+XRO = os.environ.get("XR_WORKDIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "xro"))
 OBS = int(os.environ.get("XR_OBS", "46"))
 CKPT = os.environ["XR_CKPT"]
 EPISODES = int(os.environ.get("XR_EVAL_EPISODES", "8"))

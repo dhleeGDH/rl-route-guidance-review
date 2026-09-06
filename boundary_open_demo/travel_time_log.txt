@@ -1,3 +1,4 @@
+# The interpreter path in one warning line below was masked to C:\Users\<user>\; nothing else in this log was altered.
   closed time_min  seed 0: completion  82.0%  travel time   7.12  detour 1.454
   closed time_min  seed 1: completion  78.5%  travel time   7.85  detour 1.571
   closed time_min  seed 2: completion  87.0%  travel time   7.08  detour 1.499
@@ -32,7 +33,7 @@
   open   time_min  seed 9: completion   0.0%  travel time    nan  detour nan
 D:\review_paper\drl-rgs-review\experiments\boundary_open_demo\travel_time_cost.py:138: RuntimeWarning: Mean of empty slice
   "travel_time_mean": float(np.nanmean(tts)),
-C:\Users\DHLEE\AppData\Local\Programs\Python\Python39\lib\site-packages\numpy\lib\nanfunctions.py:1879: RuntimeWarning: Degrees of freedom <= 0 for slice.
+C:\Users\<user>\AppData\Local\Programs\Python\Python39\lib\site-packages\numpy\lib\nanfunctions.py:1879: RuntimeWarning: Degrees of freedom <= 0 for slice.
   var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
 D:\review_paper\drl-rgs-review\experiments\boundary_open_demo\travel_time_cost.py:140: RuntimeWarning: Mean of empty slice
   "detour_mean": float(np.nanmean(rats)),

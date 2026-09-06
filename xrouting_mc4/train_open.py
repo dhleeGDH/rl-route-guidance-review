@@ -8,7 +8,7 @@ XR_ITERS is reached. Only the reward/model-independent knobs (batch, workers, ch
 differ from rl/model_config.XRouting_config. Checkpoints -> experiments/xrouting_mc4/ckpt_open.
 Exit 42 = all iters done; 0 = chunk done, relaunch; other = failure."""
 import sys, os, time, json
-XRO = os.environ.get("XR_WORKDIR", r"C:\xro")
+XRO = os.environ.get("XR_WORKDIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "xro"))
 OBS = int(os.environ.get("XR_OBS", "46"))
 sys.path.insert(0, XRO); os.chdir(XRO)
 import ray
@@ -18,7 +18,7 @@ from utils.registry import create_env
 from ray.tune.registry import register_env
 from rl.model_config import ModelConfig
 
-OUT = os.environ.get("XR_OUT", r"D:\review_paper\drl-rgs-review\experiments\xrouting_mc4\ckpt_open")
+OUT = os.environ.get("XR_OUT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "ckpt_open"))
 os.makedirs(OUT, exist_ok=True)
 STATE = os.path.join(OUT, "state.json")
 LOG = os.path.join(OUT, "train_log.json")

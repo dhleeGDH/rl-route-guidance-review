@@ -19,7 +19,7 @@ import csv, io, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXP = os.path.dirname(HERE)
-SURVEYS = "/home/dhlee/review_paper/pdfs/surveys"
+SURVEYS = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "pdfs", "surveys"))
 CSV = os.path.join(EXP, "corpus", "corpus_v9_coded.csv")
 
 REFMAP = {"ref02": "[2]", "ref03": "[3]", "ref04": "[4]", "ref05": "[5]", "ref43": "[43]",

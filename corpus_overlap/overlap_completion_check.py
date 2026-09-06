@@ -23,7 +23,7 @@ import re
 import subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SURV = "/home/dhlee/review_paper/pdfs/surveys"
+SURV = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "pdfs", "surveys"))
 CSV = os.path.join(os.path.dirname(HERE), "corpus", "corpus_v9_coded.csv")
 SHORT = ("ref43", "ref46", "ref47")
 CAP = 70

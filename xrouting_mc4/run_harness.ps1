@@ -9,8 +9,8 @@ param(
 # process HUNG (ray/TF cleanup deadlock) instead of exiting, so every launch is bounded by a
 # hard timeout: past it the process tree is killed and the chunk is retried from the last
 # checkpoint. Stray SUMO/python are reaped before every launch so leaked handles never pile up.
-$py = "C:\xrv\Scripts\python.exe"
-$script = "D:\review_paper\drl-rgs-review\experiments\xrouting_mc4\train_open.py"
+$py = if ($env:XR_PYTHON) { $env:XR_PYTHON } else { "python" }
+$script = if ($env:XR_TRAIN_SCRIPT) { $env:XR_TRAIN_SCRIPT } else { Join-Path $PSScriptRoot "train_open.py" }
 New-Item -ItemType Directory -Force -Path $Out | Out-Null
 $env:XR_WORKDIR = $WorkDir; $env:XR_OBS = "$Obs"; $env:XR_OUT = $Out
 $env:XR_ITERS = "$Iters"; $env:XR_CHUNK = "1"; $env:XR_BATCH = "$Batch"; $env:XR_SEED = "$Seed"

@@ -18,7 +18,7 @@ are adjudicated from the citation context of the review in Supplementary S-V.
 import csv, glob, io, json, os, re, subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SURV = "/home/dhlee/review_paper/pdfs/surveys"
+SURV = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "pdfs", "surveys"))
 CSV = os.path.join(os.path.dirname(HERE), "corpus", "corpus_v9_coded.csv")
 THRESH = 0.85
 STOP = set("a an the of in on for to and or with from by using based via toward towards".split())

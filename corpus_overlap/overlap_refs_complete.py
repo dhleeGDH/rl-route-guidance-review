@@ -18,7 +18,7 @@ import csv, glob, io, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CSV = os.path.join(os.path.dirname(HERE), "corpus", "corpus_v9_coded.csv")
-SURV = "/home/dhlee/review_paper/pdfs/surveys"
+SURV = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "pdfs", "surveys"))
 THRESH = 0.85
 STOP = set("a an the of in on for to and or with from by using based via toward towards".split())
 
