@@ -1,0 +1,98 @@
+{
+ "ref02": {
+  "boundary": 0,
+  "boundary_detail": {},
+  "boundary_lexical": 0,
+  "completion": 0,
+  "completion_detail": {},
+  "completion_lexical": 0,
+  "words": 16895
+ },
+ "ref03": {
+  "boundary": 0,
+  "boundary_detail": {},
+  "boundary_lexical": 0,
+  "completion": 0,
+  "completion_detail": {},
+  "completion_lexical": 0,
+  "words": 15657
+ },
+ "ref04": {
+  "boundary": 0,
+  "boundary_detail": {},
+  "boundary_lexical": 0,
+  "completion": 0,
+  "completion_detail": {},
+  "completion_lexical": 0,
+  "words": 15045
+ },
+ "ref05": {
+  "boundary": 0,
+  "boundary_detail": {},
+  "boundary_lexical": 0,
+  "completion": 0,
+  "completion_detail": {},
+  "completion_lexical": 0,
+  "words": 13960
+ },
+ "ref43": {
+  "boundary": 0,
+  "boundary_detail": {},
+  "boundary_lexical": 0,
+  "completion": 0,
+  "completion_detail": {},
+  "completion_lexical": 0,
+  "words": 6129
+ },
+ "ref44": {
+  "boundary": 0,
+  "boundary_detail": {},
+  "boundary_lexical": 0,
+  "completion": 0,
+  "completion_detail": {},
+  "completion_lexical": 0,
+  "words": 11617
+ },
+ "ref45": {
+  "boundary": 0,
+  "boundary_detail": {},
+  "boundary_lexical": 0,
+  "completion": 0,
+  "completion_detail": {},
+  "completion_lexical": 0,
+  "words": 16472
+ },
+ "ref46": {
+  "boundary": 0,
+  "boundary_detail": {},
+  "boundary_lexical": 0,
+  "completion": 1,
+  "completion_detail": {
+   "success rate": 1
+  },
+  "completion_lexical": 1,
+  "words": 6813
+ },
+ "ref47": {
+  "boundary": 0,
+  "boundary_detail": {
+   "boundar": 2
+  },
+  "boundary_lexical": 2,
+  "completion": 0,
+  "completion_detail": {},
+  "completion_lexical": 0,
+  "words": 5136
+ },
+ "ref70": {
+  "boundary": 0,
+  "boundary_detail": {},
+  "boundary_lexical": 0,
+  "completion": 1,
+  "completion_detail": {
+   "arrival rate": 1
+  },
+  "completion_lexical": 1,
+  "words": 19582
+ }
+}
