@@ -1,0 +1,95 @@
+ref,title,gamma,sentence
+[19],Development of Reinforcement Learning-based Traffic Predictive Route Guidance Algorithm Under Uncertain Traffic Environment,unc,
+[20],Transfer Learning-Based Deep Reinforcement Learning Approach for Robust Route Guidance in Mixed Traffic Environment,unc,
+[22],Hierarchical Reinforcement Learning for Dynamic Autonomous Vehicle Navigation at Intelligent Intersections,unc,
+[23],Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for dynamic traffic assignment,unc,
+[24],Meta-deep q-learning for eco-routing,0.99,"pply. facilitates meta-learning. We apply the same technique to our learning rate = 10-3, discount factor ߛ = 0.99 (refer to DQL-based meta-learning. Furthermore, compared to policy Algorithm 1). The deep"
+[25],DRL Router: Distributional Reinforcement Learning-Based Router for Reliable Shortest Path Problems,unc,
+[27],Urban Traffic Route Guidance Method With High Adaptive Learning Ability Under Diverse Traffic Scenarios,unc,
+[28],Deep Reinforcement Learning for Vehicle Swarm Navigation and Urban Traffic Optimization,0.1,ochastic gradient descent (SGD) is sampled from this number of the most recent states (V) Gamma 0.1 The discount rate used in Equation (10) Target network update frequency 2 The frequency w
+[29],Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized Road Networks using Multi-Agent Deep Reinforcement Learning,unc,
+[30],Connected vehicles' dynamic route planning based on reinforcement learning,unc,
+[31],Proactive Urban Expressway Guidance: A Hybrid Approach Using Reinforcement Learning and Traffic Prediction Models,unc,
+[33],Sharing diverse information gets driver agents to learn faster: an application in en route trip building,0.9,"As for the discount factor γ, we have performed extensive tests and found that a value of γ = 0.9 performs best. For the epsilon-greedy action selection, empirical analysis pointed to usi"
+[35],Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic Multi-Vehicle Route Selection,0.95,sformation step boundary 2. 3125 ε2 Exploration probability of agents’ choice of actions. 0.1 γ Attenuation factor. 0.95 lr1 Learning rate (actors). 0.0001 lr2 Learning rate (critics).
+[36],Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing,0.99,tch-norm False gradient-clipping-norm 5 buffer-size 10000 num-new-exp-to-learn 1 tau 0.01 discount rate 0.99 epsilon-decay-rate- stop-exploration- num episodes/100 num-eps-10 denom episode linear-hi
+[37],Model-Based Deep Reinforcement Learning for Energy Efficient Routing of a Connected and Automated Vehicle,unc,
+[38],Multi-agent deep reinforcement learning based on cloud-edge computing for urban vehicle route guidance,0.99,"hidden layer with 128 neurons. The congestion and smoother vehicle movement. In addition, discount factor is configured as 0.99, the learning rate for the Average Distance Traveled (Avtd) indicates the optimi- agents"
+[39],GE-DDRL: Graph Embedding and Deep Distributional Reinforcement Learning for Reliable Shortest Path: A Universal and Scale Free Solution,unc,
+[48],A reinforcement learning-based routing algorithm for large street networks,unc,
+[49],Reinforcement Learning for Vehicle Route Optimization in SUMO,0.1,"arget - the vehicle on the left finds his way to destination or stuck in q_predict) where discount factor is 0.1, q_target is the reward the congestion. The vehicle starts from edge “gneE0”, aim to or p"
+[50],XRouting: Explainable Vehicle Rerouting for Urban Road Congestion Avoidance using Deep Reinforcement Learning,0.99,"arameter ϵ is set to 150 vehicles in total with the help of SUMO randomTrips.py, 0.3. The discount factor γ is set to 0.99. The learning rate is and the vehicle load rate is one vehicle per second. At each set to"
+[52],Autonomous Vehicle Routing Optimization in a Competitive Environment: A Reinforcement Learning Application,unc,
+[55],Robust Route Planning with Distributional Reinforcement Learning in a Stochastic Road Network Environment,0.99,"l reward of reaching a crosswalk state range 1000 steps. The curves of discounted return (γ = 0.99) over from −2rbase to 0. the trajectories executed during evaluation, shown in Figure 4,"
+[56],Vehicle-Infrastructure Cooperation Framework for Vehicle Navigation and Traffic Signal Control using Deep Reinforcement Learning,unc,
+[57],VEGA: Electric Vehicle Navigation Agent via Physics-Informed Neural Operator and Proximal Policy Optimization,0.99,"ata collection. CUDA 12.4. PPO hyperparameters: learning rate 3×10−4 (annealed), discount γ=0.99, GAE λ=0.95, clip ratio ϵ=0.2, batch size 2048 (increased during curriculum). The PINO es"
+[59],A Joint Design of Path Planning and Lane Reservation for Emergency Service in ITS,unc,
+[60],Multi-Objective Route Optimization via Dueling DQN for Teleoperated Driving,0.99,"ay buffer (20,000 transitions), batch size (128), target network updates every 100 steps, discount factor =0.99, -greedy exploration (1.0→0.01, decay 0.9991), Adam optimizer (1e-4), and Huber loss. Thi"
+[61],Real-time deep reinforcement learning based vehicle navigation,0.99,"1 to 0.05. The target network parameters will be replaced every 3000 learning steps. The discount factor for the reward is 0.99. The total replay memory size for storing the transactions is 10000, and the mini-batch f"
+[63],Route Planning and Power Management for PHEVs With Reinforcement Learning,unc,
+[1083],An Adaptive Route Guidance Model Considering the Effect of Traffic Signals Based on Deep Reinforcement Learning,0.99,"rate 0.003 Network Edge Background Traffic Flow Exploration rate 0.015 Labeling Algorithm Discount factor 0.99 Modified Net Agent Vehicle Replay memory size 10,000 Minibatch size 32 Adaptive Route Gui"
+[1084],Reinforcement Learning-based Sequential Route Recommendation for System-Optimal Traffic Assignment,0.95,"avel Time (min) (UE−x)/UE (x-SO)/SO Hidden Layers (Units) 2 (512, 256) UE-MSA 57052.1 – – Discount Factor (γ) 0.95 SO-MSA 54809.8 3.93% – Mini-Batch Size 128 MSA-guided RL 55000 3.60% 0.35% Learning Rate"
+[1085],Network-aware multi-agent reinforcement learning for the vehicle navigation problem,unc,
+[1086],Navigating the non-compliance effects on system optimal route guidance using reinforcement learning,0.99,eting rewards in the distant future relative to those in the immediate future. A value of γ = 0.99 was selected in this study to ensure convergence of the learning algorithm. 4.2. Reinforc
+[1087],Real-time system optimal traffic routing under uncertainties - Can physics models boost reinforcement learning?,0.99,"The episode will be forced to episode length terminate once it exceeds the maximum steps. Gamma {0.99, 1.00} 1.00 Reward discount factor. Alpha [0.1, 1.0] 0.2 Entropy regularization coefficie"
+[1088],Reinforcement learning-based route planning method for connected vehicles considering real-time road traffic information,unc,
+[1089],Deep Q-Learning-based Route Optimization for Traffic Network,0.95,ctivation Function ReLU Convergence Threshold ±5% Q-Value variation Learning Rate (α) 0.1 Discount Factor (γ) 0.95 Exploration (ϵ) 0→1 (b) Cumulative Fuel Consumption Exploration decay 0.98 Target Update
+[1090],Urban Multiple Route Planning Model Using Dynamic Programming in Reinforcement Learning,unc,
+[1091],Agent-Based Route Planning with Deep Q Learning,unc,
+[1092],Optimizing Traffic Routes With Enhanced Double Q-Learning,0.95,le Learning rate (𝛼) 0.5 curves that show its inefficacy in high dimensional state spaces Discount factor (𝛾) 0.95 as it does not converge within the range of observed episodes. Initial epsilon (𝜖initial
+[1093],Dynamic Route Optimization using D* Lite and DQN Algorithm,unc,
+[1094],Optimization Path Planning Algorithm Based on Deep Reinforcement Learning,unc,
+[1095],Modeling of route planning system based on Q value-based dynamic programming with multi-agent reinforcement learning algorithms,0,"0%. We tested the two policies in different learning rates, by considering 100 α¼ 0.5 and γ¼ 0, resulting in a time gap of 20.40% (Table 6). 50 Case 5: As depicted in Section 5.5, the RTN graph of Case 5 had 31 routes"
+[1096],Individual versus Difference Rewards on Reinforcement Learning for Route Choice,unc,
+[1097],Using Car to Infrastructure Communication to Accelerate Learning in Route Choice,0.9,"As for the discount factor γ, we have performed extensive tests and found that a value of γ = 0.9 performs best. For the epsilon-greedy action selection, empirical analysis led using a fi"
+[1098],Reinforcement learning of route choice considering traveler's preference,unc,
+[1099],Applying Markov decision process to adaptive dynamic route selection model,unc,
+[1100],Dynamic Route Guidance System Based on Real-time Vehicle-Road Collaborations with Deep Reinforcement Learning,0.99,0 20 30 40 50 60 70 80 90 100 Target network update per learning step 100 Episode Episode Discount factor 0.99 (a) Map1 (b) Map2 Mini-batch for update 32 TABLE II Fig. 4: Average travel time of vehicl
+[1101],Providing real-time en-route suggestions to CAVs for congestion mitigation: A two-way deep reinforcement learning approach,unc,
+[1102],Work-in-Progress: Leveraging the Selfless Driving Model to Reduce Vehicular Network Congestion,unc,
+[1103],A Data-Driven Reinforcement Learning Based Multi-Objective Route Recommendation System,0.7,"le was also possible edges. Speciﬁcally, it ﬁnds different adjacent nodes updated. We set γ = 0.7 and α = 0.6. from the current node, and retrieves the Q-values of these • PreGo [13]. Pre"
+[1104],Multi-objective route recommendation method based on Q-learning algorithm,unc,
+[1105],RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles,unc,
+[1106],Congestion-Aware Path Planning With Vehicle-Road Cooperation in AIoV,unc,
+[1107],Dynamic urban traffic rerouting with fog-cloud reinforcement learning,unc,
+[1108],Personalized and Context-aware Route Planning for Edge-assisted Vehicles,unc,
+[1109],Emergency vehicle rescue route optimization based on deep reinforcement learning in highway network,unc,
+[1110],Routing Control Optimization for Autonomous Vehicles in Mixed Traffic Flow Based on Deep Reinforcement Learning,0.99,"ue Number of episodes 500 Batch size 32 Learning rate 0.001 Replay memory size (D) 10,000 Discount factor of long-term reward (γ) 0.99 Exploration (ϵ) 1 → 0.01 To evaluate the performance of the Proposed method, we leveraged"
+[1111],Reinforcement Learning Method with Dynamic Learning Rate for Real-Time Route Guidance Based on SUMO,1,"shown in Figure 2: We initialize all Q-values in the Q-table to 0, dynamic learning rate, discount factor (γ = 1) and greed policy rate (ϵ = 0.6). The Conventional method set the learning rate to 0.6. The following steps are repeated"
+[1112],Optimization Method of DRL-based Route Planning under Limited Resources,0.99,"work update frequency 5 overestimation errors, but also saves empirical storage space and Discount factor 0.99 avoids storing unnecessary information. Our algorithm for Mini-batch for update 8 trainin"
+[1113],A Deep Reinforcement Learning Approach for Route Planning of Autonomous Vehicles*,unc,
+[1114],Adaptive Reinforcement Learning Framework for Environmentally Sustainable Route Optimization,unc,
+[1115],Regional route guidance with realistic compliance patterns: Application of deep reinforcement learning and MPC,unc,
+[1116],A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion game,unc,"pect to Fit , we obtain that    . t .        /. .  0 E Wit+1 Fit = . pi − p∗i .2 + 2γit pti − p∗i T E ti Fit + γit 2 E .ti .2 Fit . (16) 10 B. Zhou, Q. Song and Z. Zhao et"
+[1117],Deep Reinforcement Learning for Optimizing Route Planning in Urban Traffic,unc,
+[1118],A Sustainable Multi-Agent Routing Algorithm for Vehicle Platoons in Urban Networks,unc,
+[1119],Distributed Learning for Vehicle Routing Decision in Software Defined Internet of Vehicles,0.9,"ion function ReLU. The output is a vector of length Na , representing Na Q value results. γ and α are all set to 0.9. The initial value of  in the  − gr eed y strategy is 0.5, and it decreases by 0.01 for"
+[1120],A Bi-Level Network-Wide Cooperative Driving Approach Including Deep Reinforcement Learning-Based Routing,0.5,"ize for network-wide cooperative driving approach, we conduct numer- training is 128. The discount factor for DRL agent learning is 0.5. ical experiments from several aspects. Section V-A describes The interpolation factor in"
+[1121],Self-Organized Routing for Autonomous Vehicles via Deep Reinforcement Learning,unc,
+[1122],Graph Convolutional Network Based Multi-Objective Meta-Deep Q-Learning for Eco-Routing,unc,
+[1123],SEGAC: Sample Efficient Generalized Actor Critic for the Stochastic On-Time Arrival Problem,unc,
+[1124],Shortest-Time Path Planning Under Carbon Emission Constraints via Reinforcement Learning,unc,
+[1125],Research on Emergency Rescue Path Optimization Method Based on Deep Reinforcement Learning,unc,
+[1126],Safety-Aware Path Planning for Post-Disaster Rescue Vehicles,0.99,"is to maximize total perform the operation is the specified latest completion rewards, a discount factor γ=0.99 is chosen to be as small as time of the vehicle routing. possible. To ensure sufficient e"
+[1127],Path Planning in Urban Environment Based on Traffic Condition Perception and Traffic Light Status,unc,
+[1128],Intelligent Routing in Connected Autonomous Vehicles using the ADAPT-S Learning Architecture,unc,
+[1129],Situation-aware Path Optimization for Autonomous Systems: A Deep Reinforcement Learning based Approach,0.99,"0−3 , exploration rate ϵ = 1.0, During validation,some inconsistencies were found: Night- discount factor γ = 0.99 time counts (12-3 am) were unrealistically high, while morning 7: while not converged do"
+[1130],Resilient Multi-Agent Deep Reinforcement Learning for Routing Control via Traffic Cost Fields,0.99,del using Proximal lr 2 × 10−4 Policy Optimization (PPO) under the periodic decision pro- γ 0.99 λ 0.95 tocol [17]. Parameter sharing is applied across all controllable ϵ 0.2 agents to i
+[1131],A Communication Resource Enhanced Intelligent Road Traffic Routing Scheme,unc,
+[1132],A Deep Q Learning-Model Predictive Control Approach to vehicle routing and control with platoon constraints,unc,
+[1133],A Dynamic Risk-aware Routing Recommendation Using Deep Reinforcement Learning,unc,
+[1134],Path planning for vehicle platoons under routing decisions: a distributed approach combining Deep Reinforcement Learning and Model Predictive Control,unc,
+[1135],A Reinforcement Learning-Based Path Recommendation Strategy Considering Broadcast Disturbance and Behavioral Response,0.99,"ning rate lr = 0.0003, This result reflects the cumulative effect of traffic disturbances γ = 0.99, λ = 0.95, ε = 0.2, and epoch = 200. The reward in peak conditions. In terms of behaviora"
+[1136],Research on Travel Paths Based on Car-Hailing Services Connecting with Rail Transit,0.9,"ime. The experimental conditions were set as follows: Figure 8. Latterer-Taxi Travel path discount factor γ=0.9, p=0.9, learning rate α=0.07, maximum 3. Sarsa algorithm recommends taking a car-hailing"
+[1137],Q-Learning-Based Energy-Aware Route Planning for Electric Vehicles on Real Road Networks with Charging Constraints,unc,
+[1138],Cutting-Edge Travel Planner: Intelligent Route Recommendation System using Enhanced Learning Scheme with AI Principles,unc,
+[1139],Route guidance system using multi-agent reinforcement learning,unc,
+[1140],Vehicle-Road Collaborative Path Planning Based on A*-assisted Deep Reinforcement Learning,0.99,"eturn calculation, therefore the that the proposed method outperforms other algorithms in discount factor is set to 0.99. all of the traffic conditions. Compared with A* algorithm, TABLE I our proposed method r"
+[1141],A Deep Reinforcement Learning Framework for Real-Time Vehicle Routing with Dynamic Traffic Conditions,unc,
+[1142],A multiagent reinforcement learning approach to en-route trip building,unc,
+[1143],Autonomous Vehicles in Smart Cities: a Deep Reinforcement Learning Solution,unc,
+[1144],Preliminary Study on Cooperative Route Planning Reinforcement Learning with a Focus on Avoiding Intersection Congestion,0.99,"vehicle is given by the overall reward (U), as follows: Rz = U, z = zmax (6) R z −1 = Rz ·γdtz−1,z , 2 < z < zmax where γ(=0.99) is the discount factor, and dtz−1,z is the time interval between the (z − 1)th and zth v"
+[1145],HERO: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs,0.99,"f vehicles. For Weight decay 0 the network with 107 intersections, the number of vehicles Discount factor γ 0.99 ranges from 900 to 1700, whereas for the network with GAE lambda λ 0.9 148 intersections,"
+[1146],Disaster-Aware Path Planning Based on Reinforcement Learning for Postearthquake Emergency Response,0.95,"03, which followed a polynomial decay pattern ϵ ranged from 0.5 to 0, with a decay factor γ of 0.95. The throughout training, decreasing according to the formula one batch size for sampling"
+[1147],Reinforcement Learning-based Unpredictable Emergency Events,0.9,026 at 14:04:35 UTC from IEEE Xplore. Restrictions apply. • α = 0.1 -The learning rate. • γ = 0.9 -The discount factor. • decay rate = 0.005 -Exponential decay rate for explo- ration prob
+[1148],Energy Optimal Route Planning Framework for Electric Vehicles Using Hybrid Artificial Intelligence Models,unc,
