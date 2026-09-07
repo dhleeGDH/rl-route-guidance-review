@@ -20,7 +20,7 @@ import re
 import subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SURV = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "pdfs", "surveys"))
+SURV = os.environ.get("SURVEY_PDF_DIR", os.path.join(HERE, "pdfs", "surveys"))
 # "traffic" is absent from the two vehicle-routing reviews, so the control uses words no English
 # survey of this literature can lack.
 # 2026-08-31 (M3): the control was "reinforcement", "learning", "the", "algorithm", every one of
