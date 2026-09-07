@@ -19,11 +19,17 @@ import csv
 import io
 import json
 import os
+import sys
 import re
 import subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SURV = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "pdfs", "surveys"))
+SURV = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "pdfs", "surveys"))
+if not os.path.isdir(SURV):
+    sys.exit("survey full texts not found in %s.\n"
+             "The ten review PDFs are copyrighted and are not redistributed here; "
+             "set SURVEY_PDF_DIR to a directory holding them." % SURV)
+
 CSV = os.path.join(os.path.dirname(HERE), "corpus", "corpus_v9_coded.csv")
 SHORT = ("ref43", "ref46", "ref47")
 CAP = 70

@@ -29,21 +29,27 @@ import sys
 import difflib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(os.path.dirname(HERE))
+ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.dirname(HERE))
 
 import recode_state_field as recorded_rule   # noqa: E402  the published classification rule
 
-# The corpus lives in experiments/corpus/. It sat in data/screened/ on the machine this
-# was written on, and that path does not exist in the released package, so this script
-# raised FileNotFoundError out of the box while Section II-B said any reader can rerun it.
-CORPUS = os.path.join(ROOT, "experiments", "corpus", "corpus_v9_coded.csv")
-PDF_DIRS = [os.path.join(ROOT, "data", "pdfs"),
-            os.path.join(ROOT, "data", "pdfs_unlocked"),
-            os.path.join(ROOT, "data", "pdfs_acquired")]
+# The corpus lives in corpus/ of this repository. The full texts are copyrighted and are not
+# redistributed; point PDF_DIR at a directory holding them, or let the script fall back to the
+# extracted text shipped in _text_cache.
+CORPUS = os.path.join(ROOT, "corpus", "corpus_v9_coded.csv")
+PDF_BASE = os.environ.get("PDF_DIR", os.path.join(ROOT, "pdfs"))
+PDF_DIRS = [PDF_BASE,
+            os.path.join(PDF_BASE, "pdfs"),
+            os.path.join(PDF_BASE, "pdfs_unlocked"),
+            os.path.join(PDF_BASE, "pdfs_acquired")]
 LEXICON = os.path.join(HERE, "state_lexicon.txt")
 CACHE = os.path.join(HERE, "_text_cache")
 OUT = os.path.join(HERE, "machine_state_counts.csv")
+MISSING = ("the reviewed full texts are not present: PDF_DIR names no directory of PDFs and "
+           "%s is absent.\n"
+           "The full texts are copyrighted and are not redistributed here; set PDF_DIR to a "
+           "directory holding them to rebuild this count." % CACHE)
 
 AUTHOR_ROW = "93"                 # the author's own study, outside the reviewed corpus
 MATCH_FLOOR = 0.80                # title similarity below which no PDF is claimed
@@ -191,6 +197,8 @@ def main():
     lex = load_lexicon(a.lexicon)
     print("Lexicon                              %s\n" % os.path.basename(a.lexicon))
     index = build_pdf_index()
+    if not index:
+        sys.exit(MISSING)
     keys = list(index.keys())
     rows = [r for r in csv.DictReader(io.open(CORPUS, encoding="utf-8"))
             if (r["idx"] or "").strip() != AUTHOR_ROW]

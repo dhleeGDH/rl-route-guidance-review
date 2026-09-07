@@ -19,7 +19,12 @@ import csv, io, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXP = os.path.dirname(HERE)
-SURVEYS = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "pdfs", "surveys"))
+SURVEYS = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "pdfs", "surveys"))
+if not os.path.isdir(SURVEYS):
+    sys.exit("survey full texts not found in %s.\n"
+             "The ten review PDFs are copyrighted and are not redistributed here; "
+             "set SURVEY_PDF_DIR to a directory holding them." % SURVEYS)
+
 CSV = os.path.join(EXP, "corpus", "corpus_v9_coded.csv")
 
 REFMAP = {"ref02": "[2]", "ref03": "[3]", "ref04": "[4]", "ref05": "[5]", "ref43": "[43]",

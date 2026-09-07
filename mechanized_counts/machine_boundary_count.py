@@ -20,7 +20,7 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(os.path.dirname(HERE))
+ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.dirname(HERE))
 
@@ -29,7 +29,7 @@ import machine_state_count as pipeline   # noqa: E402  shared extraction and mat
 # The corpus lives in experiments/corpus/. It sat in data/screened/ on the machine this
 # was written on, and that path does not exist in the released package, so this script
 # raised FileNotFoundError out of the box while Section II-B said any reader can rerun it.
-CORPUS = os.path.join(ROOT, "experiments", "corpus", "corpus_v9_coded.csv")
+CORPUS = os.path.join(ROOT, "corpus", "corpus_v9_coded.csv")
 LEXICON = os.path.join(HERE, "boundary_lexicon.txt")
 OUT = os.path.join(HERE, "machine_boundary_counts.csv")
 
@@ -62,6 +62,8 @@ def main():
 
     lex = pipeline.load_lexicon(LEXICON)
     index = pipeline.build_pdf_index()
+    if not index:
+        sys.exit(pipeline.MISSING)
     keys = list(index.keys())
     rows = [r for r in csv.DictReader(io.open(CORPUS, encoding="utf-8"))
             if (r["idx"] or "").strip() != AUTHOR_ROW]

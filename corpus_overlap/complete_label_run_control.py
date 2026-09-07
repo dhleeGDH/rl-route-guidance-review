@@ -15,10 +15,15 @@ them, at the published threshold of 0.85.
 The third list retains no complete run and is not reconstructable here; its 14 unrecovered entries
 are adjudicated from the citation context of the review in Supplementary S-V.
 """
-import csv, glob, io, json, os, re, subprocess
+import csv, glob, io, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SURV = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "pdfs", "surveys"))
+SURV = os.environ.get("SURVEY_PDF_DIR", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "pdfs", "surveys"))
+if not os.path.isdir(SURV):
+    sys.exit("survey full texts not found in %s.\n"
+             "The ten review PDFs are copyrighted and are not redistributed here; "
+             "set SURVEY_PDF_DIR to a directory holding them." % SURV)
+
 CSV = os.path.join(os.path.dirname(HERE), "corpus", "corpus_v9_coded.csv")
 THRESH = 0.85
 STOP = set("a an the of in on for to and or with from by using based via toward towards".split())

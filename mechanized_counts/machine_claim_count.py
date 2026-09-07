@@ -38,8 +38,8 @@ import sys
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(os.path.dirname(HERE))          # handoff/
-CHART = os.path.join(ROOT, "experiments", "corpus", "claim_charting.csv")
+ROOT = os.path.dirname(HERE)          # the repository root
+CHART = os.path.join(ROOT, "corpus", "claim_charting.csv")
 CACHE = os.path.join(HERE, "_text_cache")
 LEXICON = os.path.join(HERE, "claim_lexicon.txt")
 OUT = os.path.join(HERE, "machine_claim_counts.csv")
@@ -87,6 +87,10 @@ def main():
     lex = load_lexicon(LEXICON)
     rows = list(csv.DictReader(open(CHART, encoding="utf-8")))
     idx_key = [c for c in rows[0] if c.endswith("idx")][0]
+    if not os.path.isdir(CACHE):
+        sys.exit("the extracted text of the reviewed full texts is absent: %s.\n"
+                 "The full texts are copyrighted and are not redistributed here; run "
+                 "machine_state_count.py with PDF_DIR set to build the cache." % CACHE)
     files = os.listdir(CACHE)
     keys = [norm(f) for f in files]
 

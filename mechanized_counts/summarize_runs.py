@@ -12,14 +12,14 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(os.path.dirname(HERE))
+ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.dirname(HERE))
 import recode_state_field as recorded_rule   # noqa: E402
 
 # The corpus lives in experiments/corpus/. It sat in data/screened/ on the machine this
 # was written on, and that path does not exist in the released package, so this script
 # raised FileNotFoundError out of the box while Section II-B said any reader can rerun it.
-CORPUS = os.path.join(ROOT, "experiments", "corpus", "corpus_v9_coded.csv")
+CORPUS = os.path.join(ROOT, "corpus", "corpus_v9_coded.csv")
 RUNS = [("positive clause only", "machine_state_counts.csv"),
         ("all three clauses", "machine_state_counts_v2.csv")]
 
@@ -51,6 +51,10 @@ for label, fn in RUNS:
                   if r["recorded"] == "forecast" and r not in comp
                   and r["machine_w0"] not in ("forecast", "instantaneous"))
     total = mach + carried
+    if not comp:
+        sys.exit("%s carries no study the machine rule could classify.\n"
+                 "Rebuild it with machine_state_count.py and PDF_DIR set to the full texts."
+                 % fn)
     print("%-24s %8d %8d %10d %8.1f%% %8.1f%%"
           % (label, len(comp), mach, total, 100.0 * total / n_all, 100.0 * agree / len(comp)))
 
