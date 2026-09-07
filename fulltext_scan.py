@@ -9,7 +9,7 @@ row per study; the body counts are tallies of those columns.
 """
 import argparse, csv, difflib, glob, json, os, re, subprocess, sys, statistics
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.abspath(__file__))
 CORPUS = os.path.join(ROOT, "corpus", "corpus_v9_coded.csv")
 # The full texts are copyrighted and are not redistributed with this repository.
 # Point PDF_DIR at a directory holding them to reproduce the scan.
@@ -43,7 +43,7 @@ NODECOUNT = r"([0-9][0-9,]{0,6})\s+(?:nodes|intersections)\b"
 
 RULES = """
 RULES AS APPLIED
-  denominator        the 91 studies recorded as full-text in repo_v11/corpus/corpus_v9_coded.csv
+  denominator        the 91 studies recorded as full-text in corpus/corpus_v9_coded.csv
   text               pdftotext -layout, first 40 pages
   measure region     from the first heading matching RESULT|EXPERIMENT|EVALUATION|CASE STUDY|
                      NUMERICAL|SIMULATION to the end of the text
