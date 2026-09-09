@@ -1,0 +1,1431 @@
+Transportation Research Part C 165 (2024) 104721
+
+Contents lists available at ScienceDirect
+
+Transportation Research Part C
+journal homepage: www.elsevier.com/locate/trc
+
+Navigating the non-compliance effects on system optimal route
+guidance using reinforcement learning
+Hyunsoo Yun a , Eui-jin Kim b , Seung Woo Ham a , Dong-Kyu Kim a, c, *
+a
+b
+c
+
+Department of Civil and Environmental Engineering, Seoul National University, Seoul 08826, Republic of Korea
+Department of Transportation Systems Engineering, Ajou University, Suwon 16499, Republic of Korea
+Institute of Construction and Environmental Engineering, Seoul National University, Seoul 08826, Republic of Korea
+
+A R T I C L E I N F O
+
+A B S T R A C T
+
+Keywords:
+Dynamic traffic assignment
+System optimal assignment
+Autonomous vehicles
+Reinforcement learning
+Multi-agent reinforcement learning
+
+We consider a scenario where the transportation management center (TMC) guides future
+autonomous vehicles (AVs) toward optimal routes, aiming to bring the network in line with the
+system optimal (SO) principle. However, achieving this requires a joint decision-making process,
+while users may be non-compliant with the TMC’s route guidance for personal gain. This paper
+models a future transportation network with a microscopic simulation, to introduce a novel
+concept of mixed equilibrium. In this framework, AVs follow the TMC’s SO route guidance, while
+users can dynamically choose to either comply or manually override this autonomy based on their
+own judgment. We initially model a fully compliant scenario, where the centralized Q-network,
+analogous to a TMC, is trained using reinforcement learning (RL) to minimize total system travel
+time (TSTT), providing optimal routes to users. Subsequently, we extend the problem setting to a
+multi-agent reinforcement learning (MARL) scenario, where users can comply or deviate from the
+TMC’s guidance based on their own decision-making. Through neural fictitious self-play (NFSP),
+we employ a modulating hyperparameter to investigate the impact of varying degrees of noncompliance on the overall system. Results indicate that our RL approach holds significant po­
+tential for addressing the dynamic system optimal assignment problem. Remarkably, the TMC’s
+route guidance retains the essence of SO while integrating some level of non-compliance. How­
+ever, we also demonstrate that dominant user-centric decision-making may lead to system in­
+efficiencies while creating disparities among users. Our framework serves as an innovative tool in
+an AV-dominant future, offering a realistic perspective on network performance that aids in
+formulating effective traffic management strategies.
+
+1. Introduction
+As the technological frontier expands, so does our capacity to reimagine and reshape our transportation systems. Among the many
+strides forward, the rapid development of autonomous vehicles (AVs) and advanced traveler information systems (ATIS) opens up new
+opportunities to improve traffic management and enhance the efficiency of transportation networks. Some opportunities include
+increasing the safety of road environments, promoting eco-driving practices to reduce carbon emissions, and reducing stop-and-go
+traffic by speed harmonization (Fagnant and Kockelman, 2015; Fakhrmoosavi et al., 2020; Tympakianaki et al., 2022). Beyond
+
+* Corresponding author at: Department of Civil and Environmental Engineering, Seoul National University, Seoul 08826, Republic of Korea.
+E-mail address: dongkyukim@snu.ac.kr (D.-K. Kim).
+https://doi.org/10.1016/j.trc.2024.104721
+Received 24 September 2023; Received in revised form 3 April 2024; Accepted 12 June 2024
+Available online 4 July 2024
+0968-090X/© 2024 The Authors.
+Published by Elsevier Ltd.
+This is an open access article under the CC BY-NC-ND license
+(http://creativecommons.org/licenses/by-nc-nd/4.0/).
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+these microscopic traffic operations, they also bring a potential change in how macroscopic traffic assignments are conducted, an area
+of substantial interest in the transportation field.
+Building on these innovations, a growing body of research suggests a new paradigm of traffic management where vehicles equipped
+with AV technologies and ATIS could operate under an integrated transportation management center (TMC) (Kashmiri and Lo, 2022;
+Mansourianfar et al., 2021). In this emerging vision, the TMC, acting as a pivotal hub of information flow and mobility regulation,
+could guide vehicles toward optimal routes, reducing congestion and maximizing system-wide efficiency. These developments
+intersect with the fundamental principles of traffic assignment, which involves the allocation of traffic demand to a set of routes
+between origins and destinations (ODs) in transportation networks. Traffic assignment harks back from the seminal work of Wardrop,
+which outlines two primary principles, system optimal (SO) and user equilibrium (UE).
+While the SO principle aims to minimize total system travel time (TSTT) across the entire network, achieving this relies on a joint
+decision-making process by all travelers. Consequently, the SO principle is unlikely to be maintained without the support of proactive
+traffic management (Levy and Ben-Elia, 2016). As such, the goal of traditional macroscopic traffic management has been to potentially
+steer the network towards a state as close as possible to the SO principle (Eikenbroek et al., 2022). Traditionally, the ideal of promoting
+SO was pursued by imposing variable tolls on congested routes or links in the network, equating to the difference between the marginal
+cost and the travel time of trip making. Despite the theoretical appeal, practical challenges such as infrastructure requirements and
+political considerations often rendered this strategy infeasible (Levy and Ben-Elia, 2016; Samaranayake et al., 2018). Therefore, the
+tolls are generally imposed on a specific area (e.g., a central business district in a city) or a specific roadway (e.g., an urban highway or
+tunnel), resulting in limited promotion of SO.
+With the advent of AVs and ATIS, the feasibility of implementing strategies aligning closer to SO principles is undergoing a fresh
+examination. The potential control exercised by an integrated TMC over AVs could guide users towards routes that minimize systemwide travel times, bringing us closer to realizing the SO principle. In tandem, the real-time data exchange enabled by ATIS offers the
+possibility of adaptive routing and en-route trip building. These technologies provide us with new avenues for more dynamic and
+responsive traffic assignment strategies, redefining the way we approach the complex task of optimizing our transportation networks.
+In envisioning an AV-dominated future, we assume AVs, by default, follow the route guidance proposed by the TMC to work to­
+wards SO conditions. However, amidst these transformative changes, it is essential to remember the other cornerstone of traffic
+assignment, UE. This principle asserts that users distribute themselves in networks so that no user can decrease their own travel time by
+changing routes. Therefore, despite the potential to achieve SO conditions in an AV-dominated future, it is highly likely that some users
+will deviate from the route guidance proposed by the TMC, striving to minimize their individual travel times. In AV settings, users who
+generally delegate driving to the vehicle’s autonomous systems may, at times, manually override this autonomy to route themselves by
+their own judgment. This expected deviation arises from the necessity of ensuring that the benefits of the SO principle do not infringe
+upon the individual freedoms encapsulated by the UE principle. Moreover, this deviation can manifest dynamically, as users, relying
+on their own experiences, may at times perceive the TMC’s guidance as less favorable for their individual commute despite its systemwide advantages.
+In line with this, we propose a novel understanding of mixed equilibrium, extending beyond the traditional notion of a simple
+mixture of user behaviors leaning towards either complete SO or complete UE. We, instead, conceive a scenario where each user
+possesses the capacity to dynamically consider both the system’s suggested route guidance and their individual decision-making
+simultaneously, navigating a balance between them based on their experiences and the prevailing traffic conditions. To investigate
+this interplay, we integrate multi-agent reinforcement learning (MARL) and neural fictitious self-play (NFSP) on a microscopic traffic
+simulation. Here, a centralized Q-network, functioning similarly to a TMC, is trained to provide global route guidance to minimize the
+TSTT, reflecting the SO principle. Initially, we demonstrate that the centralized Q-network’s route guidance can solve the dynamic
+system optimal (DSO) assignment problem as it dynamically optimizes vehicle flows based on the temporal evolution of traffic con­
+ditions to reduce the aggregate travel time of the network. Simultaneously, individual users, via NFSP, have the ability to dynamically
+comply or deviate from this SO route guidance based on their own experiences and local conditions. The core contribution of our study
+lies in developing a user-centric traffic scenario by allowing each user to dynamically follow or deviate from the SO route guidance
+provided by the TMC. This approach allows us to investigate how users learn and adapt to the system under a mix of personal pref­
+erences and systemic recommendations. By leveraging reinforcement learning (RL), we aim to reveal insights into the dynamics of user
+interactions with TMC and other users, which can inform strategies for analyzing and influencing traffic flow patterns, contributing
+toward enhancing system-wide efficiencies.
+We demonstrate that our approach encapsulates the dynamic interplay between the desire for network-wide efficiency and the
+natural predilection of users to minimize their own travel times, which can provide a new perspective for understanding and managing
+traffic assignments in the expected future. Moreover, we modulate the degree to which users follow system optimal routing versus
+individual decision-making with a single hyperparameter to investigate how varying degrees of non-compliant behaviors impact
+overall system efficiency. We examine how much cooperation is needed from users for the system to realize notable benefits, and
+inversely, how much non-compliant behavior the system can absorb without significantly compromising its overall performance.
+The remainder of this paper is structured as follows. The next section presents an overview of previous studies related to our
+research. We then provide a detailed description of our problem formulation and the methodologies to solve our problem. Following
+this, we present a discussion of the results of the experiments. The final section summarizes the results and conclusions of this study and
+provides suggestions for future research.
+
+2
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+2. Literature review
+As the introduction of our paper has highlighted, the evolution of technologies has changed how we manage traffic systems. AVs
+and ATIS are two representatives that are creating transformative technologies in the transportation domain. ATIS can offer real-time
+updates on traffic conditions to help road users make informed decisions about their route choice (Ben-Elia et al., 2008; Chorus et al.,
+2006). Furthermore, by providing timely information about the current condition of the road network, ATIS enables operators to
+assign vehicles to optimal and efficient routes based on up-to-date traffic data. As a pertinent example, a study by Klein & Eran Ben-Elia
+demonstrates that ATIS can encourage implicit cooperation among users, moving the system closer to the SO state (Klein and Ben-Elia,
+2018).
+The concept of guiding the routes of AVs builds upon the foundational ideas present in dynamic traffic assignment (DTA), which has
+been an integral part of traffic management studies. Numerous approaches for DTA have emerged since Merchant and Nemhauser’s
+(1978) formulation of the DTA problem as a discrete-time nonlinear programming. Merchant and Nemhauser’s formulation describe
+the traffic flow dynamics by using a link exit function and the travel cost with a static link performance function. Following their lead,
+numerous studies have formulated the SO-DTA as an optimal control or mathematical programming problem, where users are guided
+by a central controller, under the assumption that the guidance is accepted. Some extended analytical approaches to the DTA problem
+include work from Ziliaskopoulos (2000), which suggests linear programming formulation for a single destination SO-DTA based on
+the cell transmission model (Daganzo, 1994), under a time-discretized framework. Ghali and Smith (1995) proposed a deterministic
+queueing assignment model to a multiple OD network aiming to reduce the total travel delays in a road traffic network by routing
+drivers according to the marginal cost of each link. Long and Szeto (2019) further contributed to the field by developing a link-based
+SO assignment model for urban networks with multiple origins and destinations. Recent advancements in SO-DTA include notable
+contributions such as the work of Zhang and Qian (2020), who challenge the traditional assumption of TSTT’s differentiability in SODTA problems, proposing subgradient-based algorithms that enhance both solution accuracy and computational efficiency. Mehra­
+bipour and Hajbabaie (2022) introduce a distributed gradient-based approach, using cell transmission model as the network loading
+function. Their method decentralizes the SO-DTA problem into manageable sub-problems at the intersection level, addressing scal­
+ability challenges due to increased number of decision variables and constraints introduced by detailed network loading models.
+Additionally, Nguyen et al., (2022) present a novel integration of the DSO problem with traffic flow-speed advisory systems in a bilevel formulation. Their approach strategically positions the DSO problem at the upper level and implements speed control for in­
+dividual vehicles at the lower level, effectively bridging macroscopic traffic flow objectives with microscopic vehicle control strategies.
+Although analytical approaches have shown many advantages, they have faced limitations of incorporating unrealistic assump­
+tions, such as ignoring the first-in, first-out (FIFO) principle or overly simplifying traffic flow dynamics. These limitations led to the
+suggestion of heuristic and simulation-based approaches, as the use of a traffic simulator can overcome the challenges related to
+accurately representing real-world traffic conditions that are often encountered in analytical formulations. Mahmassani and Peeta
+(1993) and Peeta and Mahmassani (1995), began to employ mesoscopic traffic simulators in the DTA framework to find SO solutions.
+Yang and Jayakrishnan (2012) presented a simulation-based DTA model using a microscopic traffic simulation and presented a
+gradient projection method showing convergence for both UE and SO conditions. Simulation based DTA approaches often presuppose
+complete knowledge of origin–destination demands throughout the planning period assuming the availability of information through
+ATIS. They are solved with iterative approaches, which heuristically approximate either UE or SO conditions embedded with a
+simulator as a descriptive mode of traffic flow. A comprehensive overview of the seminal efforts in DTA is available in the work of Peeta
+and Ziliaskopoulos (2001), which provides valuable insights into how this concept has evolved to become a fundamental element in
+understanding and improving traffic networks.
+Alternative demand side strategies have also been employed to mitigate traffic congestion and approximate SO conditions. Re­
+searchers have historically investigated mechanisms such as tolling and incentives to induce users to adopt routes that improve systemwide efficiency. For instance, researchers have extensively explored congestion pricing as a potential for influencing user behavior to
+be more in line with SO conditions (Chow, 2009; Satsukawa et al., 2022). Additionally, incentive schemes, which could involve re­
+wards or penalties, have been applied to prompt users toward decisions that contribute positively to network efficiency (Zhao and
+Leclercq, 2018).
+The strategic distribution of AVs can be seen as a modern extension of DTA principles, empowered by advancements in autonomous
+vehicles and information systems. AVs, when integrated with ATIS, have the potential to be strategically assigned across the trans­
+portation network in a manner that optimizes the allocation of vehicles to routes, with the objective of minimizing the aggregate travel
+time for all vehicles in the system (Kashmiri and Lo, 2022). Several researchers have delved into this area, developing various
+frameworks to address the traffic assignment problem, explicitly considering the integration of AV technologies (Angelelli et al., 2020;
+Wang et al., 2019). Meanwhile, the concept of mixed equilibrium is being revitalized in the context of these technological advance­
+ments, focusing on examining the equilibrium criteria emerging from the interactions between AVs and human-driven vehicles (HDVs)
+operating concurrently on networks. Historically, mixed equilibrium addresses the heterogeneous class of travelers, such as a com­
+bination of users adhering to UE and SO behavioral principles. Harker (1988) was among the first to articulate the mixed equilibrium
+principle as a variational inequality problem. Bennett (1993) further explored this domain, investigating the existence of equivalent
+mathematical programming of mixed equilibrium within static models. Moreover, Yang (1998) examined scenarios where users, based
+on their access to ATIS, exhibit mixed behavior in route choice. Users equipped with ATIS adhere to the UE principle, while those
+without ATIS navigate in a stochastic manner due to incomplete information.
+Recent literature in the context of mixed equilibrium encompasses a range of scenarios with exclusively AVs and a mixture of AVs
+and HDVs. Hoang et al. (2023) consider a scenario consisting of two distinct user classes, incorporating an information model: selfish
+3
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+users, who are typically HDVs aiming to minimize their individual travel times, and cooperative users, who could correspond to
+autonomous vehicles AVs that cooperate to minimize the total travel time for their class. Kashmiri and Lo (2022) present a novel
+approach of traffic assignment involving TMC, which provides routing instructions for AVs to achieve system optimality. They model a
+scenario where users are offered the choice to follow the TMC’s route guidance or not. Those who opt not to subscribe minimize their
+own travel costs by adhering to UE paths. To counterbalance this behavior, the model imposes a penalty or toll on non-subscribers,
+calculated based on their value of time distribution and the travel time difference between subscribers and non-subscribers.
+One of the main concerns highlighted in both these recent studies and the early explorations of optimal route control is users’
+compliance with the route guidance, especially given the potential disparity in travel times among the assigned routes (Jahn et al.,
+2005). Specifically, achieving SO may necessitate that some travelers follow longer routes while others are assigned shorter ones,
+giving rise to concerns regarding the equitable distribution of travel times across users. Recognizing these challenges, some studies
+propose controlling a portion of vehicles in the network to approximate SO (Chen et al., 2020; Samaranayake et al., 2018; Sharon et al.,
+2018). For example, Samaranayake et al. (Samaranayake et al., 2018) formulate the SO-DTA problem as a multi-commodity finite
+horizon optimal control problem, where they optimally control the routes of a subset of vehicles within the network to minimize TSTT.
+While their study did not explicitly model the response of non-controlled vehicles, subsequent researchers have expanded on this
+concept, considering the responses of non-controlled or non-compliant vehicles (Krichene et al., 2018; Lazar et al., 2021). These
+approaches can also be framed within the context of the Stackelberg routing game, focusing on determining the likely responses of
+users who choose not to follow the route guidance and optimizing vehicle routing based on these insights (Yang et al., 2007).
+Existing literature presents a vast array of studies exploring scenarios with AVs or mixed equilibrium conditions where AVs and
+human-driven vehicles coexist within networks. Building on the insights from these studies, our research proposes a novel approach to
+understanding mixed equilibrium conditions of AVs under a TMC. In contrast to prior approaches to mixed equilibrium, which often
+employ static, predetermined proportions of UE and SO users or model HDVs and non-controlled vehicles with fixed, pre-defined
+routes, our adaptive framework allows for dynamic interactions between users and the TMC’s SO route guidance system. In our
+approach, users initially comply with TMC guidance but are dynamically given the option to deviate from the TMC’s route guidance
+based on individual experiences and decision-making priorities. To implement such a scenario, RL is leveraged in our modeling
+framework. RL’s application in the transportation domain has covered a broad spectrum of challenges, including matching problems,
+incentive design, pricing problems, and signal control (Li et al., 2021; Pandey et al., 2020; Parvez Farazi et al., 2021; Qin et al., 2021;
+Yun et al., 2022). Our work employs RL in two main capacities.
+Initially, the TMC operates as a single RL agent aiming to minimize the total system travel time aiming to minimize the TSTT in
+accordance with the SO principle. This application aligns with conventional control-theoretic approaches where a central agent seeks
+to achieve a global optimization objective. The framework progresses to a MARL scenario, where individual users, considered as
+atomic agents, are guided yet not bound by the SO route advisories provided from the TMC. Here, RL is utilized to model of sequential
+decision-making process inherent in users’ route choices, signifying a shift from centralized to distributed decision-making dynamics.
+This approach enables us to observe how the system evolves in response to user behavior towards the TMC’s route guidance, providing
+fresh insights into the operation of traffic management systems in the context of evolving intelligent transportation technologies.
+3. Problem statement
+3.1. Main concept
+We first begin with explaining the fundamental concept of the proposed approach, how TMC can control the AVs to potentially shift
+the routing paradigm to system-optimal route choices. Fig. 1 illustrates the theoretical concept of inducing the route choice patterns
+from UE to SO. The blue line indicates the travel demand function (TDF), representing the relationship between travel demand and link
+
+Fig. 1. Conceptual framework of the TMC’s potential role in shifting the routing paradigm to the SO principle.
+4
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+travel time (C). As the link traffic volume (q) increases, the link travel time exponentially increase due to the congestion, and the
+discrepancy between UE (qUE ) and SO link volume (qSO ) results in the external congestion cost (Ccong ). In a system-wide view, this
+external congestion cost is termed the price of anarchy (PoA), which is the ratio of TSTT at UE to that at SO (Koutsoupias and
+Papadimitriou, 2009; Levy et al., 2018). In theory, SO can be achieved by identifying the TDF and imposing each link’s optimal toll
+price (Ctoll ). However, practical application is limited due to infrastructural and political considerations. As a workaround, the
+transportation practitioners have partially imposed the toll pricing on freeways (Shen and Zhang, 2009) or regions (Genser and
+Kouvelas, 2022) based on estimated TDFs.
+With the advent of AVs, ATIS, and TMC, there is a growing potential to optimize network efficiency, as the routes of the AVs
+controlled by the TMC can shift the network towards the SO principle. As Fig. 1 illustrates, a TMC could manage the link volume to qSO
+without the need for TDF identification by directly allocating AVs to appropriate road links. One potential advantage of TMC’s route
+guidance is its direct control of travel demand. This contrasts with the more approximate results of congestion pricing, given that the
+latter is generally applied broadly to highways or corridors. Nevertheless, this represents an ideal scenario, while in reality, users may
+diverge from the TMC’s route guidance to outmaneuver the system or gain an advantage over other compliant users.
+In the subsequent sections, we show how we incorporate reinforcement learning (RL) to solve the DSO problem. This approach is
+done in a single-agent manner, as the TMC, acting as the sole agent, makes system-optimal (SO) routing decisions for users. Following
+this, we incorporate the multi-agent framework, where each user in the system becomes an agent in their own right, following or
+deviating from the TMC’s SO guidance.
+3.2. Problem formulation
+3.2.1. Notations
+Sets
+T: Set of all discrete time intervals considered in the analysis, t ∈ T
+L: Set of links in the network, l ∈ L
+Ldown,l : Set of all downstream links given link l
+Ω: Set of all OD pairs in the network, OD pair ω ∈ Ω
+Pω : Set of all paths in OD pair ω, p ∈ Pω
+Variables
+flm : Function of travel time for vehicles moving on link l
+flq : Function of travel time for vehicles queuing on link l due to downstream congestion
+vm
+l (t): Number of vehicles moving on link l at t
+vql (t): Number of vehicles queuing on link l at t due to downstream congestion
+vm
+p (t) : Number of vehicles moving on path p at t
+
+vqp (t) : Number of vehicles queuing on path p at t
+xm
+l (t): Accumulated number of vehicles moving on link l at t
+xql (t): Accumulated number of vehicles queuing on link l at t due to downstream congestion
+glm (t): Number of moving vehicles that exits link l at t
+glq (t): Number of queuing vehicles that exits link l at t
+Cl : Capacity of link l
+αl,ld : Spillback coefficient representing the reduction in effective capacity on link l due to queuing vehicles on its downstream link ld
+Dω (t): Demand for OD pair ω at t (number of vehicles)
+δl,p : Binary indicator 1 if link l is on path p, 0 otherwise.
+The DSO assignment problem can be mathematically represented as Eq. (1), which aims to minimize the TSTT across the network
+over a finite time horizon, considering time dynamics. Link travel time is used as the cost variable, where a microscopic traffic
+simulation model is used as a descriptive mode of traffic flow.
+[
+]
+∫ Δxq (t)
+∑ ∑ ∫ Δxml (t)
+l
+minimize Z =
+(1)
+flm (τ)dτ +
+flq (τ)dτ
+t∈T
+
+l∈L
+
+0
+
+0
+
+where:
+m
+m
+Δxm
+l (t) = xl (t) − xl (t − 1), ∀l ∈ L, ∀t ∈ T
+
+(1.2)
+
+Δxql (t) = xql (t) − xql (t − 1), ∀l ∈ L, ∀t ∈ T
+
+(1.3)
+
+Subject to:
+m
+m
+m
+xm
+l (t + 1) = xl (t) + vl (t) − gl (t), ∀l ∈ L, ∀t ∈ T
+
+(1.4)
+
+5
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+xql (t + 1) = xql (t) + vql (t) − glq (t) +
+
+∑
+ld ∈Ldown,l
+
+vqld (t)
+
+(1.5)
+
+q
+vm
+l (t) ≥ 0, vl (t) ≥ 0, ∀l ∈ L, ∀t ∈ T
+
+vm
+l (t) +
+
+∑
+ld ∈Ldown,l
+
+vqld (t) ≤ Cl −
+
+xm
+l (t) =
+
+∑ ∑
+
+xql (t) =
+
+∑ ∑
+
+∑
+p∈Pω
+
+ω∈Ω p∈Pω
+
+ω∈Ω p∈Pω
+
+∑
+ld ∈Ldown,l
+
+(1.6)
+
+αl,ld × vqld (t), ∀l ∈ L, ∀t ∈ T
+
+(1.7)
+
+δl,p ⋅ vm
+p (t), ∀l ∈ L, ∀t ∈ T
+δl,p ⋅ vqp (t) +
+
+∑
+ld ∈Ldown,l
+
+(1.8)
+
+vqld (t), ∀l ∈ L, ∀t ∈ T
+
+(1.9)
+
+q
+(vm
+p (t) + vp (t)) = Dω (t), ∀ω, ∀t ∈ T
+
+(1.10)
+
+In the presented DSO assignment problem, the objective function delineated in Eq. (1) captures traffic flow dynamics over time and
+seeks to optimize routing decisions to minimize the TSTT within the network. Discretizing these integrals over sufficiently small time
+intervals Δt, the objective function can be understood as Riemann sums, approximating the continuous accumulation as the number of
+vehicles changes within the small time interval Δt. On the set of constraints, Eqs. (1.4) and (1.5) correspond to the time-dependent
+dynamics of moving and queuing vehicles, modeled using a microscopic simulation, simulation of urban mobility (SUMO). Notably,
+the queuing dynamics represent downstream congestion effects, indicating that queues predominantly form due to the inability of
+downstream links or intersections to accommodate additional vehicles. Eqs. (1.6) and (1.7) ensure the non-negativity of flows and
+capacity constraints, respectively. The spillback coefficient αl,ld in constraint (1.7) is derived from car-following models within the
+microscopic simulation. Such models capture the interactions of individual vehicles, including turning movements and en-route de­
+cisions, ensuring that the macroscopic flow dynamics represented in this formulation are consistent with the underlying microscopic
+behaviors observed in the simulations. Eqs. (1.8) and (1.9) define the relationship between the vehicle counts for the moving and
+queuing vehicles on link l for OD pair ω at time t, and the flows associated with all paths for that OD pair. This relationship ensures that
+the vehicle counts on link l equate to the sum of the flows for all paths including link l in the OD pair. Eq. (1.10) ensures the con­
+servation of flow for an OD pair ω at time t, implying that the total flow across all paths for the OD pair adheres to the demand Dω (t).
+Additionally, given that the modeling foundation is based on microscopic simulation, other fundamental traffic flow principles are also
+incorporated such as First-In-First-Out and traffic flow causality.
+4. Methods
+4.1. Formulating the DSO assignment problem as a Markov decision process
+The problem formulation above is approached by redefining the problem as a Markov Decision Process (MDP). The MDP is typically
+represented by the tuple (S, A, T, R, γ), which consists of a collection of states, available actions, transition probabilities, immediate
+rewards, and a discount factor. Below, we further describe how the DSO assignment problem can be reformulated as an MDP, where
+the state and actions are considered at the level of individual links.
+4.1.1. State
+The state space, denoted by S, encompasses all possible states. Each state s ∈ S consists of two parts: the node encoded as a onedimensional vector, and the global state includes the travel time and density of all links, waiting vehicles at each node, total
+vehicle count, and time. Formally, s = (n,Xt ), where n is the node information, and Xt represents the global state at time t. We employ a
+one-hot vector representation to encode each unique node n. The global state Xt can be thought of as the network information that is
+collected, exchanged, and provided through the ATIS.
+4.1.2. Action
+The action set, denoted by A, includes all possible actions. An action a ∈ A represents the choice of an outbound link from the
+current node. Each action corresponds to a specific link that a TMC can assign from the node. In our DSO framework, actions are chosen
+by the TMC to guide users through the network, based on traffic conditions and the goal of minimizing TSTT.
+4.1.3. State transition probability
+The state transition probability P, describes the probability of transitioning to a new state sʹ, given the current state s and action a.
+Since this problem is being simulated in a microscopic traffic simulation, the transitions between states are influenced by the traffic
+dynamics in the simulation. Formally, it can be represented as P(sʹ|s, a). In our MDP framework, state transitions and actions do not
+
+necessarily occur at uniform intervals. Here, actions are taken whenever a vehicle arrives at a node which can occur at varied time
+intervals. To capture these asynchronous transitions effectively, we denote the transition from one state to another using prime no
+6
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+tations, e.g., s and sʹ.
+4.1.4. Reward
+The reward function, R(s, a), defines the reward received after taking action a in state s. In the context of DSO, it is defined as the
+negative of the travel time experienced by vehicles. Defining Φ as a mapping function that maps an action a to a corresponding link l,
+we can define the reward function as R(s, a) = − TTΦ(a) , where TTΦ(a) is the travel time on the link associated with action a.
+4.1.5. Discount factor
+The discount factor, γ, ranged between 0 and 1, determines how much the TMC is targeting rewards in the distant future relative to
+those in the immediate future. A value of γ = 0.99 was selected in this study to ensure convergence of the learning algorithm.
+4.2. Reinforcement learning approach for the DSO assignment problem
+In our approach with RL, the TMC acts as a centralized agent within the RL framework. Here, an agent refers to an entity that can
+observe its environment, take actions within it, and learn from the results to minimize the TSTT. Over time, the TMC learns an optimal
+strategy, or policy, that maximizes the expected cumulative reward. The TMC’s objective is to maximize the expected return, which is
+the cumulative discounted reward, G, defined below in Eq. (2).
+∑∞
+G=
+γ k Rk+1
+(2)
+k=0
+Now, consider the objective function in Eq. (1) and the expected return in Eq. (2), where the reward function R(s, a) is defined as
+∑∞
+k
+the negative of the travel time experienced by vehicles. Substituting R(s, a) = − TTΦ(a) in G =
+k=0 γ Rk+1 , we get, G =
+q
+m
+∫
+∫
+∑∞
+Δxl (t)
+Δxl (t)
+q
+k
+m
+fl (τ)dτ and 0
+fl (τ)dτ, which represent
+k=0 γ (− TTΦ(ak ) ). The DSO objective function incorporates integral components, 0
+the accumulated travel time experienced by vehicles as they navigate the links for a specific OD pair. When discretizing these integrals
+over time intervals Δt, they are transformed into summations. Given a sufficiently small Δt (commonly less than 1 s in microscopic
+q
+simulation), this summation is analogous to the sum in our expected return, G. By associating the decisions Δxm
+l (t) and Δxl (t) with
+actions taken by the TMC in the RL framework, the TMC’s objective is to choose actions that minimize the travel time across all OD
+pairs.
+By maximizing the expected return G, the TMC effectively minimizes the negative sum of travel times (equivalent to minimizing the
+total travel time) and thus aligns with the DSO objective function. Through reinforcement learning, the TMC learns to distribute the
+flow of vehicles across the network in a manner that seeks to minimize the TSTT, the central objective of DSO. To maximize the
+expected return in Eq. (2), we introduce concepts incorporated in RL, such as policy, Q-function, and Q-learning, which we explain
+below.
+4.2.1. Policy
+A policy π is a mapping from states to actions, signifying which action the TMC should take under different traffic conditions. For
+instance, the TMC may decide to divert traffic through a particular route during congestion. An adaptive policy is essential as it will
+enable the TMC to make optimal decisions responsive to real-time traffic dynamics.
+4.2.2. Value function
+The value function represents the expected future rewards from a given state s under policy π. In traffic management, this can be
+seen as the negative of the expected travel time of a user when the TMC follows a specific policy from a given traffic condition. The
+value function of a state s under a policy π , denoted V π (s), is the expected return starting from state s, and following policy π thereafter,
+expressed as Eq. (3). The Q-function extends the concept of the value function by considering both the state and action. It indicates the
+expected return after taking an action a in state s while adhering to policy π, depicted in Eq. (4).
+[
+]
+∞
+∑
+π
+k
+V (s) = Eπ [G|s0 = s] = E
+γ ⋅ Rk+1 |s0 = s
+(3)
+k=0
+
+[
+Q (s, a) = Eπ R(s, a) + γ
+π
+
+∑
+sʹ∈S
+
+]
+P(sʹ|s, a)V π (sʹ)
+
+(4)
+
+4.3. Bellman equation to deep Q-learning
+To efficiently compute the Q-function, we can decompose it into two parts: the immediate reward received after taking the action
+and the discounted expected return from the next state onwards. This decomposition is known as the Bellman equation, which is
+essential as it connects the Q-value of the current state and action with the Q-values of subsequent states and actions. For a policy π, the
+temporal difference form of the Q-function is:
+7
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+Qπ (s, a) = R(s, a) + γ
+
+∑
+sʹ ∈S
+
+P(sʹ|s, a)V π (sʹ)
+
+(5)
+
+where, R(s, a) is the immediate reward received after taking action a in state s. The goal is to find an optimal policy π* that maximizes
+the expected return, i.e., minimizing the TSTT. This optimal policy corresponds to a Q-function, denoted as Q* (s,a), which adheres to
+the Bellman optimality equation:
+∑
+Q* (s, a) = R(s, a) + γ
+P(sʹ|s, a)max Q* (sʹ, aʹ)
+(6)
+aʹ
+
+sʹ
+
+Q-learning employs the principle of temporal difference, where it iteratively refines Q-values to better approximate the optimal Qvalues, Q* , using the Bellman optimality equation. Every refinement or update is based on the temporal difference, which signifies the
+difference between the estimated Q-value and the newly observed value. This update mechanism is depicted as Eq. (7):
+]
+[
+Q(s, a)←Q(s, a) + α R(s, a) + γmax Q(sʹ, aʹ) − Q(s, a)
+(7)
+aʹ
+
+where α ∈ (0, 1] is the learning rate. This update rule allows TMC to learn the optimal policy over time by interacting with the traffic
+network and continuously updating the Q-values. During the Q-value update process, the Q-values of all the outbound links are masked
+using a mask vector, as shown in Eq. (8). Although the action set A represents all possible actions in the network, only a subset of
+actions from A is available at each node n, depending on the network topology. Consequently, the updating of Q-values is confined
+solely to these feasible actions for each node. The masking process involves creating a mask vector, M(n), for each node n in the traffic
+network. The mask vector is a binary vector where each element corresponds to an outbound link from the node. A value of 1 in the
+mask vector signifies that the corresponding outbound link is accessible from the node n, while a value of − ∞ inaccessibility. For a
+given node n and link l the masking function M can be defined as below.
+{
+1, if link l is accessible from node n
+M(n, l) =
+(8)
+− ∞, otherwise
+We apply element-wise multiplication of the Q-values, Q(s, a), with the mask vector M(n) for the current node n. The Q-values for
+inaccessible links are multiplied by − ∞, effectively removing them from consideration. This approach can also be extended to prevent
+actions that may be impractical for real-world implementation, ensuring a more feasible set of actions is considered during the learning
+process.
+Traditional Q-learning relies on a Q-table to keep track of Q-values; however, in complex environments like traffic networks, the
+state-action space can be enormous or continuous, making it infeasible to use a Q-table. Deep Q-Networks (DQN) (Mnih et al., 2015)
+extend this idea by using deep neural networks to approximate the Q-function, while the Q-network is trained to minimize the
+following loss function, expressed as Eq. (9):
+[(
+)2 ]
+( Q)
+(
+)
+Qʹ
+Q
+ʹ
+ʹ
+Loss θ = E R(s, a) + γmax Q(s , a ; θ ) − Q(s, a; θ )
+(9)
+aʹ
+
+where θQ are the parameters of the Q-network, and θQʹ are the parameters of a target network that is updated periodically. In DQN, two
+Q-networks are incorporated: The Q-network and the target Q-network. The Q-network is the one that is updated at each time step, and
+the target Q-network is used to compute the target Q-value for the update. The idea is to stabilize the training process by keeping the
+target Q-value fixed for a number of steps before updating it. The weights of the target Q-network are updated by copying the weights
+from the Q-network every C steps, where C is a hyperparameter.
+Fig. 2 provides a comprehensive description of the TMC’s operation within the DQN framework. An essential component of DQN is
+the concept of experience replay, which, in the context of our problem, could be viewed as a transportation data center. The TMC
+collects experiences from all users in the traffic network, with each experience being a tuple that includes the current state, the action
+taken, the immediate reward, and the subsequent state. These experiences encapsulate comprehensive real-time information about the
+traffic conditions, the routes taken by AVs, and the corresponding travel time associated with the route assignments. Each experience is
+thus a snapshot of the traffic network at a given time. These experiences are stored in a replay buffer, while the TMC samples a batch of
+experiences from this buffer and updates the Q-network based on this batch. This approach has two main benefits. First, by sampling
+experiences from the replay buffer, we break the correlation between consecutive experiences, thereby stabilizing the training process.
+Second, each experience can be reused in multiple updates, significantly improving learning efficiency. We use this experience replay
+to train the Q-network of the TMC, which we denote as the centralized Q-network, to minimize the loss function described in Eq. (9)
+using the Adam optimizer.
+The proposed RL-approach for the DSO assignment problem using DQN is shown in Algorithm 1. To summarize, the Q-value in this
+framework represents the expected for choosing a particular action (choosing a particular outbound link) in a given state (at a
+particular node and global state). Therefore, the Q-value can be viewed as a guidance value that the TMC provides to users at each
+node, suggesting the outbound link that promises to result in the least cumulative future travel time. During the training phase, the
+epsilon-greedy method guides the action selection. With a probability ∊, actions are randomly chosen from the action set A, fostering
+8
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+Fig. 2. Description of the TMC’s operation within the DQN framework.
+
+exploration of diverse actions. As ∊ gradually decreases over time, the focus shifts to exploiting learned knowledge, which is achieved
+by deterministically selecting the action associated with the highest Q-value, with a probability of 1-∊. In the proposed RL framework,
+the TMC learns this Q-value through interactions with the traffic environment. It suggests outbound links to users, observes the
+resultant states and adjusts the Q-values accordingly. As such, the TMC is trained to provide a generalized policy for users to minimize
+TSTT. For a comprehensive understanding of DQN implementation, we recommend delving into the study conducted by Mnih et al.
+(Mnih et al., 2015).
+Algorithm 1: DQN approach for the DSO assignment problem
+1: Set buffer size B, target network update period ν, initial exploration rate ε
+2: Initialize Q-network Q(s, a; θQ ) with random weights θ
+(
+)
+3: Initialize target Q-network Q s, a; θQʹ with weights θQʹ = θQ
+4: Initialize replay buffer D with capacity B
+5: for episode = 1 to T do
+6: while episode is not terminal do
+7:
+Observe current state s = (n, Xt )
+8:
+Choose action a according to ε-greedy policy based on current s
+9:
+Apply action a, observe reward R(s, a) and new state sʹ = (nʹ, X ʹ )
+10:
+11:
+12:
+
+13:
+14:
+15:
+16:
+17:
+18:
+19:
+
+Store experience (s, a, R(s, a), sʹ) in D
+Sample a random minibatch of experiences from D
+for each experience (s, a, R(s, a), sʹ) in minibatch do
+
+t
+
+if sʹ is terminal then
+y = R(s, a)
+Else
+
+y = R(s, a) + γmax Q(sʹ, aʹ; θQʹ)
+
+end if
+
+aʹ
+
+(
+)2
+Perform a gradient descent step on y − Q(s, a; θQ )
+end for
+Update target network weights: θQʹ = θQ every ν steps
+
+20:
+21: end while
+22: Update ε = max(ε ⋅ decay, εmin )
+23: end for
+24: Output optimal policy π*
+
+9
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+4.4. Multi-agent reinforcement learning and neural fictitious self-play
+The TMC’s SO route guidance, designed to minimize TSTT, functions on the premise of a coordinated route decision by all users.
+However, it is important to recognize that individual users retain the potential to change their routes in alignment with their personal
+preferences unilaterally. The essence of NFSP in this research is to simulate such individual decision making in a multi-agent
+framework, where each user in the system becomes an agent in their own right, following or deviating from the TMC’s SO route
+guidance. This balance is captured by implementing an additional neural network called the individual policy network. Provided for
+each user, the individual policy network continually updates its routing strategy based on historical interactions with the TMC’s
+system-optimal routing guidance. Specifically, the individual policy network represents an accumulated knowledge base of a user’s
+experiences, which may sometimes align with the system-wide guidance, and at other times deviate from it, to better meet the user’s
+specific needs.
+The implementation of NFSP in this research is a conceptual inspiration from Heinrich et al. (2015), which discusses the integration
+of multiple decision-making processes into a unified strategy. Heinrich et al. (2015) introduce the concept of forming an adaptive
+policy by adjusting the contributions of multiple constituent policies through a convex combination as demonstrated in Eqs. (10) and
+(11). While their method primarily focuses on game-theoretic frameworks and realization-equivalent strategies in normal and
+extensive-form games, we adapt this principle to model the routing behavior of each user.
+
+πi ≡ (1 − η) ⋅ πSO + η ⋅ πind,
+πSO (s, a) = ∑
+
+(10)
+
+i
+
+exp(Q(s, a))
+exp(Q(s, aʹ))
+
+(11)
+
+aʹ∈A
+
+where, πi is the mixture policy for user i, πSO is the policy derived from the TMC’s centralized Q-network, where action probabilities are
+determined through a softmax function applied to the Q-values., πind, i is the individual policy of each user i. η is the parameter that
+determines the extent to which each user’s final policy relies on the TMC’s suggestions versus the individual policy. When η is close to
+0, the final policy closely follows the TMC’s suggestions, while when η is close to 1, it is more influenced by the individual policy, which
+incorporates more of its own experiences.
+The individual policy network, denoted as πind, i (s, a), is a neural network that outputs a probability distribution over the possible
+
+actions given a traffic state s, based on its parameter θind . To train this network, we employ the Categorical Cross-Entropy Loss function
+as expressed in Eq. (12).
+(
+)
+[
+]
+Loss θind = E − log π ind, i (s, a; θind )
+(12)
+
+This loss function quantifies the expected value of the negative logarithm of the probability assigned by the individual policy network
+
+πind, i (s,a), to the action a taken by the user in state s. Through minimizing the loss function in Eq. (12), each individual policy network
+
+is designed to approximate actions that users are more likely to choose, enabling it to generate predictions that mirror each user
+behaviors.
+The training process of each individual policy network utilizes two distinct buffers to capture diverse user actions: one buffer
+records samples during exploration, while the other records samples aligned with following the mixture policy, πi , as outlined in Eq.
+(10). Similar to the training process of the centralized Q-network, users initially select actions randomly with a probability of ∊,
+modeling the exploration of actions that may decrease individual travel times. As the ∊ progressively decreases, action selection shifts
+towards exploitation, where actions are deterministically chosen based on the highest probability outcomes from the mixture policy πi .
+The criterion for selecting experiences to train the individual policy network is based on whether an exploratory action at a specific
+node leads to a higher reward compared to following the mixture policy (i.e., mixing route guidance and user’s past experience).
+Therefore, when users make decisions based on their individual policy, they aim to optimize their own travel time under the TMC’s
+route guidance, potentially gaining an advantage over other users and the system-wide recommendations. It is important to note that
+this selection process for training experiences focuses on comparing rewards from the two buffers based on actions at specific nodes,
+irrespective of the prevailing network conditions at those instances. This approach is designed to depict a realistic aspect of human
+decision-making in route choice, as users may disregard ATIS information when perceived as unreliable, relying instead on personal
+intuition or explorations rather than comprehensive analysis of the current traffic conditions (Klein et al., 2018). However, when these
+selected experiences are used for training the individual policy networks, the complete network state is incorporated as part of the
+input to the neural network, modeling the process of users recalling successful experiences and the corresponding network state at
+those moments.
+The individual policy network of each user is continuously updated based on their interactions with the environment and the
+outcomes of their decisions, capturing their learned behaviors that yield either confirmatory or divergent outcomes relative to the
+TMC’s SO route guidance. Algorithm 2 shows our implementation of NFSP under the TMC’s route guidance. Note that our approach is
+slightly varies from the original algorithm in (Heinrich and Silver, 2016), particularly in how we integrate the TMC’s SO route
+
+10
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+guidance and modify the training procedure for the individual policy network.
+Algorithm 2: Application of modified NFSP under TMC’s route guidance
+1: Set reservoir buffer size B, mixture policy parameter η, initial exploration rate ε
+2: Copy weights from TMC’s Q-network, i.e., πSO to each user i
+
+3: Initialize individual policy network πind, i (s, a) with random weights θind for each user i
+4: Initialize two replay buffers Di and Fi with capacity B for each user i
+5: for episode = 1 to T do
+6: while episode is not terminal do
+7:
+for each user i taking a turn do
+8:
+Observe current state si = (ni , Xt )
+9:
+with probability ε:
+10:
+Randomly select an allowable action ai
+(
+)
+11:
+Store s , a , R (s , a ), sʹ in D
+12:
+13:
+
+14:
+15:
+16:
+17:
+
+i
+
+i
+
+rand
+
+i
+
+i
+
+i
+
+i
+
+else:
+Choose action ai according to πi ≡ (1 − η) ⋅ πSO + η ⋅ πind, i
+)
+(
+Store si , ai , Rπi (si , ai ), sʹi in Fi
+end for
+Let ΔR = {Rrand (si , ai ) − Rπi (si , ai )| Rrand (si , ai ) ∈ Di , Rπi (si , ai ) ∈ Fi }
+Sample experiences using Di and Fi where ΔR ≥ 0
+
+18:
+Perform a gradient descent step on − log πind, i (s, a; θind )
+19: end while
+20: Update ε = max(ε ⋅ decay, εmin )
+21: end for
+22: Output individual policy networks πind, i for each user i
+
+Fig. 3 presents the architectural layout of both the centralized Q-network and the individual policy network. The Q-values, repre­
+senting the expected reward for choosing a specific action in a given state, are produced with a linear activation function. Conversely,
+the individual policy network employs a softmax activation function to generate a distribution over the possible actions. Initially, the
+output from each network takes the form of a k-dimensional vector, where k is the maximum number of connected edges. This vector
+holds the Q-values or the output probabilities corresponding to each action, which are the outbound edges at each node. When nodes
+possess fewer than k actions, we apply a masking operation in Eq. (8) to the output vector to disregard infeasible actions.
+Fig. 4 presents the extension of our problem setting into a multi-agent framework, demonstrating the application of NFSP, where
+
+Fig. 3. Neural network architecture of the centralized-Q network and the individual policy network.
+11
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+Fig. 4. Multi-agent framework for the DSO assignment problem incorporating NFSP.
+
+each user operates as an individual agent. As shown in Eq. (11), we transfer the weights from the centralized Q-network of the TMC to
+each agent, calculate the softmax over the Q-values, and then combine it in a convex combination with the individual policy, weighted
+by η. In essence, the mixture policy leverages both the system-level perspective offered by the TMC and each user’s decision-making
+priorities.
+5. Results
+In this section, we present the results obtained from employing RL to address the DSO problem. We also investigate the effects of
+applying the multi-agent framework and NFSP when integrated with the trained TMC policies. The experiment is conducted by
+implementing a medium-sized network, the Nguyen-Dupuis network (Zhou et al., 2020), on a microscopic simulation, SUMO. NguyenDupuis network consists of 13 nodes, 19 links, 25 routes, and 4 OD pairs, as shown in Fig. 5. There are four OD pairs in our experiment,
+1–2, 1–3,4–2,4–3, as we generate a total of 600 vehicles, 150 for each OD pair. The free-flow speed of a vehicle is about 50 km/h. The
+simulation is continued until all vehicles have reached their destination.
+
+Fig. 5. Nguyen-Dupuis network.
+
+12
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+5.1. Convergence evaluation
+To evaluate the performance and validity of our RL approach, we compare the assignment results against the solution obtained
+through an iterative algorithm, which we refer to as DSO-Iterative. The DSO-Iterative method involves (1) applying the Dijkstra’s
+algorithm to compute a set of alternative routes, (2) Randomly assigning a proportion of demands to paths (3) Adjusting the proportion
+of vehicles assigned to each path to iteratively improve the solution, using the Method of Successive Averages (Florian et al., 2008;
+Sbayti et al., 2007). By replacing the path travel times with the path marginal travel times, we guide the DSO-Iterative procedure
+toward minimizing the TSTT, thereby approximating the DSO solution (Mansourianfar et al., 2021). The relative standard deviation
+gap (RSG) is used as the convergence criteria to measure the variability in the average travel times over iterations, defined as Eqs. (13)
+and (14).
+∑i
+TTiʹ
+i
+iʹ=(i− n)+1
+TTn =
+(13)
+n
+
+RSGin =
+
+√̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅
+(
+)̅
+i
+∑
+i 2
+1
+TTiʹ − TT n
+n
+iʹ=(i− n)+1
+
+(14)
+
+i
+
+TT n
+
+i
+
+where, TT n is the average travel time of all vehicles over n iterations, TTiʹ represents the average travel time experienced by vehicles in
+the iʹ th iteration, and RSDi is the relative standard deviation of the average travel time, calculated using a sliding window of the last n
+n
+
+iterations up to the i th iteration. RSG serves as a measure of the variability in the average travel times, where low values of RSGin
+indicate that the average travel time is not varying significantly over successive iterations, suggesting convergence.
+Fig. 6 shows the convergence of the two algorithms, RL approach and DSO-Iterative, where n and the convergence criteria, RSG was
+set as 5 and 0.005, respectively. We observe that our RL approach successfully converges to a DSO condition similar to the DSOIterative algorithm, where each RSG converges below 0.005. The TSTT of each algorithm after convergence is calculated as 68,108
+and 68,057 s for the RL approach and DSO-Iterative, respectively. As such, the proposed RL approach to the DSO assignment problem is
+shown to be capable of minimizing the TSTT, effectively capturing the system-optimal configuration.
+5.2. Robustness of the proposed SO route guidance under demand uncertainty
+We further compare the RL approach and DSO-Iterative in the context of demand uncertainty. While AV technologies and ATIS may
+provide close access to real-time traffic data, this does not imply perfect foresight of demand. Demand fluctuations, which can be
+caused by various factors, prevent the assumption of absolute certainty in the OD matrix for future time intervals, while most classical
+assignment models (e.g., DSO-Iterative) rely on fixed and given OD matrices. Therefore, a major weakness of such approaches becomes
+evident when the forecasted demand is not realized.
+The main distinction between the DSO-Iterative approach and the RL approach arises from their fundamental treatment of the OD
+matrix. The Iterative approach operates on the premise of a fixed, predefined OD demand, remaining unaltered throughout the
+solution-seeking process, without accounting for uncertainties that may occur in real-time traffic conditions. In contrast, our RL
+approach, although also trained using the fixed OD demand, is not bound by the fixed OD matrix during its deployment. It inherently
+possesses the flexibility to accommodate fluctuating demand attributed from its function approximation capabilities, allowing it to
+generalize to unseen conditions. In other words, the TMC (agent) learns a policy that can approximate the value of different routing
+
+Fig. 6. Convergence patterns of RSG; (a) RL approach and (b) DSO-Iterative.
+13
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+Fig. 7. Comparison of TSTT between DSO-Iterative and RL approach across varying levels of demand uncertainty (α).
+
+decisions across a wide range of traffic states that were not explicitly present during learning.
+In this experiment, we assume the demand used in the previous experiment (150 vehicles for each OD pair) are expected, baseline
+demand equivalent to the minimum possible demand. Each OD pair is assumed to have stochastic uncertain demand following a
+uniform distribution within the range of [0,α× 50], where α is a parameter controlling the level of demand fluctuation. Experiments
+are conducted across four levels of α: 0.25, 0.50, 0.75, and 1.00, each representing an incremental increase in the range of demand
+fluctuation, with 10 independent simulation runs under different random seeds to measure the effects on TSTT. Vehicles subject to
+uncertain demand that are not pre-assigned in the DSO-Iterative are assigned to the time-dependent shortest path. Consequently, the
+Iterative method’s adherence to the SO principle is compromised under uncertain demands, as these additional demands are not
+optimally integrated into the system’s assignment strategy. The RL approach, however, assigns all vehicles, including those emerging
+from uncertain demand, according to the SO principle learned from the traffic dynamics within the simulation, thus considering every
+vehicle in the context of the entire system’s efficiency. The results, summarized in Fig. 7, show the mean and standard deviation of
+TSTT across the different levels of α.
+For the DSO-Iterative, the results display a progressive increase in TSTT as α levels ascended, with the mean TSTT ranging from
+70,312.2 at α = 0.25 to 76,893.8 at α = 1.00. The standard deviation also expanded, indicating a growing dispersion in travel times as
+demand uncertainty intensified. In contrast, the RL strategy yielded a lower mean TSTT across all α levels, with a most notable
+improvement observed at α = 1.00, where the mean TSTT was 75,512.5 compared to the iterative method’s 76,893.8. Despite a similar
+pattern of increased standard deviation in the RL approach, we observe that it consistently maintains a narrower range between the
+mean and minimum TSTT values, particularly at elevated α levels. This suggests that the RL method not only sustains a lower mean
+TSTT but also exhibits a more consistent performance, indicative of its ability to perform SO route guidance amidst rising demand
+uncertainties effectively. Such adaptability contributes to real-time traffic management and reduces the overall uncertainty regarding
+network performance, as perceived by both users and planners (Waller et al., 2001).
+5.3. Application of NFSP
+After evaluating the reliability of our RL approach, we then extend to a multi-agent framework with NFSP, experimenting with
+different η to represent different extents of travelers’ reliance on the TMC. Fig. 8 (a) presents the progression of TSTT across multiple
+iterations for different values of η, though for visibility we only display η values in units of 0.25. Here, η = 0 indicates the single agent
+RL approach, where all users strictly follow the SO policy provided by the TMC. We observe that irrespective of the η value, the TSTT
+converges around 200 to 250 iterations. The results of the NFSP implementation are then compared with those from a DSO-Iterative
+assignment and a Dynamic User Equilibrium (DUE) assignment. The DUE assignment was performed analogous to the DSO-Iterative
+assignment, as previously outlined. A range of metrics are used for comparison, including total travel time, total distance, as well as
+mean travel time and mean distance calculated at the system-wide level. The summarized results of these analyses are presented in
+Table 1.
+As we increase the value of η, suggesting a greater reliance on individual policy networks, system performance changes become
+noticeable. The TSTTs under different values of η are shown in Fig. 8 (b). As η is increased from 0 to 0.25, a slight increase in TSTT and
+mean travel time is observed, and at η = 0.5, the TSTT further increases to 72,087 s, and the mean travel time also slightly increases to
+120.15 s. This suggests that as the reliance on the individual policy network increases, there exists a trade-off in system performance.
+When η is set as 0.625 or 0.75, there is a significant increase in both TSTT and mean travel time. This indicates that when individual
+decision-making priorities start to dominate the routing decisions, the overall system performance can be significantly compromised.
+14
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+Fig. 8. (a) Evolutions of TSTT across iterations for different η values (b) TSTT versus..η
+Table 1
+Statistics for each assignment method.
+Total Travel
+
+Mean Travel
+
+η
+
+Time (seconds)
+
+Distance (meters)
+
+Time (seconds)
+
+Distance (meters)
+
+0
+0.125
+0.25
+0.375
+0.5
+0.625
+0.75
+DSO
+DUE
+
+68,108
+68,986
+69,114
+70,849
+72,087
+76,026
+77,921
+68,057
+73,273
+
+694,850.39
+692,478.28
+690,764.57
+690,683.47
+690,263.01
+691,429.82
+730,195.88
+698,974.60
+687,859.20
+
+113.51
+114.98
+115.19
+118.08
+120.15
+126.71
+129.87
+113.43
+122.12
+
+1158.08
+1154.13
+1151.27
+1151.14
+1150.44
+1152.38
+1216.99
+1164.96
+1146.43
+
+* Notes: η= 0 indicates the single agent RL approach, where all users strictly adhere to SO policy as prescribed by the TMC.
+
+A notable observation arises from the performance when η = 0.125 and 0.25. The results indicate that even with a slight
+consideration of the users’ preferences (i.e., when η is set to 0.125 or 0.25), the system performance remains competitive, with total
+and mean travel times being only marginally higher than the fully compliant SO scenario (η = 0). It suggests that incorporating a
+degree of user preferences into the routing decisions does not necessarily lead to a substantial compromise in system efficiency. This
+observation is consistent with findings from previous studies, which have demonstrated a zone of tolerance within which user pref­
+erences can be accommodated without significantly impacting the overall performance of the transportation system (Mansourianfar
+et al., 2021). The results point towards the existence of a “sweet spot” in the value of η, which allows for a balance between user
+satisfaction through personalized routing and the maintenance of high system-level efficiency.
+As we gradually increase the value of η from 0 to 0.5, which denotes a growing consideration of users’ own decision-making
+priorities, an upward trend is visible in total and mean travel times. At the same time, we observe a decrease in the distance trav­
+eled. This pattern aligns with the SO traffic assignment paradigm, as the SO route guidance might require some travelers to take longer
+routes to optimize the overall system. Although SO guidance aims to minimize total system travel time, it may require some users to
+take longer routes to optimize the overall system. The reduction in distance traveled could be attributed to some users potentially
+deviating from TMC’s guidance, favoring their preferred or shorter paths. Importantly, as we increase individual preferences, the
+system moves away from the SO objective. This results in longer overall travel times, despite a decrease in total distance, due to the
+shift from global system optimization towards individualized routing preferences. These observations link to the concept of the PoA,
+which explores the degradation in the network’s performance caused by the non-compliant behaviors of users.
+However, when η reaches 0.625, the trend seems to falter, suggesting that an excessive emphasis on individual preferences can lead
+to a certain degree of system disorder. In a future setting where the TMC guides the AVs, we may be able to afford a certain degree of
+deviation from the optimal route to accommodate user preferences, as shown in the results of η values from 0 to 0.5. However, if user
+preferences start to dominate the TMC’s guidance overly, we may confront a situation far from the ideal, with road conditions
+deteriorating beyond our current understanding. In contrast, consider the results from the DUE assignment in Table 1, where users
+independently choose their route to minimize their travel time. For the DUE assignment, the TSTT was observed at 73,273 s with a
+mean travel time of 122.12 s. In contrast, with an η value of 0.625, the TSTT increased to 76,026 s, with the mean travel time of 126.71
+s. This demonstrates the risk of system performance degradation when individual route choices overly dominate without an optimal
+balance with system-wide considerations.
+It is worth noting that while the user’s individual policy embodies individual experiences and learned strategies, it is not fully
+15
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+synonymous with the UE principle. Considering that the individual policy is built to minimize individual travel time, it may sometimes
+coincide with UE principles. However, it aligns more with the user’s behavior of adapting and trying to outsmart the system or other
+compliant users. Since our approach emphasizes the learning and adaptation process of individuals in response to the system rec­
+ommendations, without explicitly considering the network conditions, the fundamental assumptions of UE, i.e., information, ratio­
+nality, and homogeneity among users, does not directly apply. This deviation from the UE principle is primarily because the individual
+policy network is designed to prioritize routes based on higher reward outcomes from specific instances, rather than assigning vehicles
+to meet the UE conditions. Furthermore, the individual policy and the TMC’s SO policy may not be mutually exclusive or consistently
+divergent. There could be instances where the best strategy for an individual user, as determined by its individual policy network,
+aligns with the recommendations from the TMC.
+Moreover, it is important to clarify the rationale behind using the same η parameter across all users. Employing a uniform η for the
+whole population is a modeling decision that allows us to systematically analyze the effects of varying integration of the TMC’s
+guidance. This approach serves as a controlled experiment to understand the aggregate behavior of a population under different
+degrees of centralized influence. Also, a uniform η does not imply that all users exhibit identical behaviors or strategies. The η
+parameter controls the extent to which each user considers centralized guidance of the TMC, while still allowing each user to develop
+unique strategies through continuous learning based on individual experiences, interactions with other users, and responses to
+network conditions. The physical interpretation of a uniform η can be viewed as representing a scenario where the population has a
+consistent level of trust or reliance on centralized guidance.
+5.4. Impact of user compliance on system efficiency
+Identifying and operationalizing the optimal balance between users compliant with SO route guidance and non-compliant users is
+critical for the development of traffic management systems that are both efficient and well-received. In practical terms, our finding
+suggests that it is possible to integrate some level of user-driven decision-making without significantly deviating from the objectives of
+system-optimized routing. This allows for a more user-centric approach, where travelers have some degree of flexibility and
+personalization in their routing choices. Such an approach could lead to higher user satisfaction and compliance with traffic man­
+agement systems, as it can be perceived as less authoritarian and more accommodating of individual preferences. However, our
+research also assesses the inherent trade-offs in this approach. While a higher degree of user-centric decision-making can lead to
+increased satisfaction for some, it can also lead to a system where overall efficiency is compromised, essentially, the PoA. Balancing
+these contrasting dynamics is crucial in traffic management system design. We revolve around this context by calculating disparity
+ratios and Gini coefficients as in Eqs. (15) and (16).
+DisparityRatioTT =
+Gini =
+
+∑N
+
+i=1
+
+P80,TT
+P20,TT
+
+(15)
+
+(2i − N − 1)TTi
+∑
+N Ni=1 TTi
+
+(16)
+
+where, P80,TT is 80th percentile of the travel time of vehicles, and P20,TT is the 20th percentile of the travel time of vehicles. N is the total
+number of vehicles in the system, TTi represents the sorted travel times for i = 1, 2, ..., N, where i is the index for each vehicle after
+sorting them based on their travel times.
+These indexes provide an understanding of the dispersion and equality of travel times across different η parameters. As shown in
+Fig. 9, we examine an increasing trend in both disparity ratio and Gini coefficient values with the rise of the η parameter, corresponding
+to an increasing proportion of users deviating from the TMC’s guidance. This observation aligns well with the intuition that as more
+
+Fig. 9. Gini coefficient and disparity ratio as a function of time for different η values.
+16
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+users prioritize their personal interests over the system’s overall efficiency, the TSTT increases. Notably, the increase in TSTT is not
+distributed evenly among all users. Compliant users adhering to the TMC guidance tend to bear the brunt of this shift, suffering from
+longer travel times. In comparison, some non-compliant users who deviate from the system guidance could manage to achieve shorter
+travel times. This phenomenon is captured in the rising Gini coefficient, illustrating an increase in the inequality of travel times among
+users.
+To better understand this trend, we analyze the kernel density plot of the travel times of each OD pair for four representatives η
+values (0, 0.25, 0.5 and 0.75), as shown in Fig. 10. These plots further demonstrate that as η increases, there is a more significant
+dispersion of travel times. This is corroborated by the higher Gini coefficient and disparity ratio values, which indicate an increase in
+the inequality and spread of travel times. Additionally, the plots reveal that with higher η, some users manage to secure shorter travel
+times at the expense of others. Therefore, as more users prioritize their individual interests, the overall system efficiency decreases, and
+the travel time distribution becomes more skewed, thereby creating winners and losers among the users. On the one hand, they
+highlight the need for maintaining a certain level of system-optimized routing to ensure overall efficiency and fairness. On the other
+hand, they also expose the necessity of accommodating individual preferences to a certain degree to prevent massive deviation from
+system guidance and ensure that traffic management systems are not overly authoritarian and are well-received by users.
+5.5. Extension to large-scale networks
+In this section, we delve into the complexities and challenges associated with adapting our framework to large-scale networks, and
+discuss the approach undertaken to ensure scalability and applicability. In larger networks, the issue of scalability arises due to the
+exponential increase in the number of links, nodes, and potential OD pairs, compounded by the necessity to model interactions among
+numerous agents, each with its own decision-making process. To address these computational challenges, our approach comprises two
+key strategies. First, we implement a k-path algorithm (Yen, 1971) as shown in Algorithm 3, to precompute 5 paths for each OD pair,
+generating five alternative paths to offer users a variety of routing choices. Second, we the masking vector in Eq. (8) was refined to
+filter the actions space available at each node, based on the precomputed k-shortest paths. This masking process ensures that only
+practical and relevant actions, those that correspond to precomputed paths, are considered. Moreover, impractical actions or endless
+loops in the users’ paths, which could arise from the vast array of possible decisions in a large network, are effectively eliminated from
+consideration. This precomputation narrows down the feasible path choices for each vehicle, reducing the decision space, lowering the
+
+Fig. 10. Travel time distribution across different OD Pairs for various η values.
+17
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+computational complexity.
+Algorithm 3: K-shortest paths algorithm
+Input:
+Network G = (N, L) with nodes N and links L.
+Weight function w : L→R, representing the cost (travel time or distance)
+Origin node O and destination node D for each OD pair.
+Number of paths K to find
+1: for each OD pair (O, D) in the network do
+2: Find the shortest path A[0] from O to D using Dijkstra’s algorithm, applying the weight function w, and add it to list A.
+3: Initialize an empty set B for alternative paths
+4: for k = 1 to K − 1:
+5:
+for each node ni in the shortest path A[k − 1] except the last node:
+6:
+Temporarily remove link (ni− 1 , ni ) from G.
+7:
+Find the shortest path P from O to D in the modified network using Dijkstra’s algorithm, applying the weight function w
+8:
+Add P to B if P is unique
+9:
+Restore the removed link (ni− 1 , ni )
+10:
+end for
+11:
+if B is empty, then
+12:
+break
+13:
+end if
+14:
+Select the shortest path Pmin from B based on the total weight calculated using w, move Pmin from B to A.
+15: end for
+16: Output list A containing up to K shortest paths for the OD pair
+17: end for
+
+We applied our RL framework to the Siheung network, a large-scale network in South Korea, which consists of 87 nodes and 206 edges,
+as shown in Fig. 11. There are six OD pairs in our experiment, O1 -D1 , O1 -D2 , O2 -D1 , O2 -D2 , O3 -D1 , and O3 -D2 , with a simulation input
+of 120 vehicles for each pair. as we insert 120 vehicles for each OD pair, while the simulation proceeds until all vehicles have reached
+their destination. To benchmark the performance of our RL-based approach, we also implemented the DSO-Iterative algorithm for
+comparative analysis. Fig. 12 shows the convergence of the two algorithms, the convergence patterns of both the RL approach and the
+DSO-Iterative algorithm. Upon reaching convergence, the TSTT of each algorithm is calculated as 119,350 s for the RL approach for
+DSO (i.e., η = 0) and 118,834 s for the DSO-Iterative. Despite the network’s increased scale and complexity, our RL approach suc­
+cessfully assigns vehicles to minimize the TSTT to levels comparable with traditional DSO-Iterative algorithms (i.e., 0.43 % increases in
+TSTT). As such, with the integration adaptation of k-path precomputation and action masking insists that our proposed methodology is
+capable of handling the scalability challenges of large-scale networks.
+Subsequently, we evaluated our multi-agent framework with η = 0.25, by transferring the weights from the centralized Q-network
+to each agent. Fig. 13 presents the TSTT across iterations for η = 0 and η = 0.25, where η = 0 indicates the single agent RL approach,
+representing a scenario where all users strictly follow the TMC. As users accumulate experiences through interaction with both the
+
+Fig. 11. Siheung network.
+18
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+Fig. 12. Convergence patterns of RSG for Siheung Network; (a) RL approach and (b) DSO-Iterative.
+
+Fig. 13. Evolutions of TSTT across iterations; η=0 andη = 0.25.
+
+TMC and the environment, we observed a convergence of TSTT to 123,336, with a modest increase under the η = 0.25 setting,
+indicating users’ shift towards prioritizing individual travel times. Despite this increase, SO route guidance maintains its effectiveness
+even when considering user preferences, demonstrating its resilience to user noncompliance. When applying the Iterative algorithm
+according to the DUE principle, the solution yields a TSTT of 125,346, meaning that the SO route guidance with user noncompliance
+potentially offers an efficient traffic management solution compared to our current understanding of the traffic network, the DUE.
+However, it’s important to note that the observed increase in TSTT for the η = 0.25 setting on the Siheung network was more pro­
+nounced than in experiments conducted on the Nguyen-Dupuis network. This suggests that the impact of user noncompliance may vary
+across different network structures. Consequently, traffic authorities and planners must conduct thorough analyses for their specific
+traffic network to ascertain an acceptable level of non-compliance for the practical deployment of SO routing strategies to ensure
+effectiveness.
+6. Conclusions
+With AVs and ATIS emerging as transformative technologies, we envisioned a TMC capable of optimizing routes, reducing
+congestion, and maximizing network efficiency. Through a centralized Q-network analogous to a TMC, we efficiently guided vehicles
+in alignment with the SO principle. The experiments and analysis undertaken in this study demonstrated that our RL-based approach
+can effectively solve the DSO problem and minimize the TSTT. Our RL approach demonstrates that with AVs and ATIS technologies, we
+can facilitate a paradigm shift from traditional traffic management strategies, potentially transcending the limitations of area or routespecific tolling.
+In conjunction, including NFSP enables individual users to learn and adapt their strategies to follow or deviate from the TMC’s SO
+guidance for personal gain. We ascertained that our approach of NFSP demonstrates a transition between SO and accommodating
+individual decision-making priorities by adjusting the parameter η. Notably, even with a slight consideration of individual preferences,
+the TMC’s route guidance system retained the essence of SO. On the other hand, as users begin to rely more on their individual routing
+decisions, we noticed that the inequality of travel time, measured by the Gini Coefficient and disparity ratios, experiences a moderate
+19
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+increase. Kernel density of travel times further substantiates these findings, showing a wider dispersion of travel times as more users
+prioritize personal interests.
+Our framework provides insights into practical applications, as it acknowledges the diversity of users’ compliance with the route
+guidance. In practice, our study offers an insightful tool for policymakers by modeling varying degrees of user compliance and de­
+viations from the guided routes. Our approach bridges the gap between an idealized SO scenario and the anticipated real-world
+scenario accommodating individual decision-making. By understanding these behavioral dynamics of users, our approach offers a
+realistic perspective on the expected network performance, thereby contributing to the development of more effective traffic man­
+agement strategies.
+While the adaptability and insights offered by our model are promising, there are limitations to the scope of the current study and
+opportunities for further research. For example, different users may exhibit varying levels of preferences, making it plausible to have a
+heterogeneous distribution of η values across the population. Some users might be more receptive to TMC’s route guidance, repre­
+sented by lower η values, while others might be less compliant, represented by higher η values. However, in this study, we applied a
+homogeneous η value across all users as a starting point to encapsulate the overall behavior of the population. While this decision
+provides a foundation for understanding the general impact of user compliance, future studies could explore the influence of het­
+erogeneity to capture a more realistic representation of user behaviors.
+Furthermore, our current experiments are tailored to η values up to 0.75, as our framework inherently requires a mix of the SO route
+guidance and individual routing decisions. With higher η values, the complexity of achieving a stable learning process in a multi-agent
+environment significantly increases as users heavily base their routing decisions on personal experience, disregarding route guidance.
+Therefore, strategies that could stabilize the learning process are a natural direction for future work. Another topic that deserves
+further investigation is modeling a fully competitive scenario of users without the TMC’s route guidance (i.e., η=1.0) in a MARL
+framework. Exploring a fully competitive scenario alongside the TMC’s SO route guidance enables comparison with classical mixed
+equilibrium settings, where a portion of users consistently follow SO guidance while the rest opt for UE strategies. This approach can
+enhance the modeling flexibility and pave the way for further extended research on network modeling.
+Finally, in our multi-agent scenario, the TMC’s route guidance is designed offline to simulate a real-world application where
+strategic route guidance, once established, tends to remain static for a certain period. However, this approach may face challenges such
+as distribution shifts in traffic patterns over time, potentially reducing the effectiveness of pre-determined strategies as the traffic
+dynamics evolve. Conversely, the online adaptation of individual policies, while more adaptive, might lead to frequent changes in
+route guidance, potentially causing confusion or inefficiencies, which necessitates addressing these trade-offs in future studies.
+CRediT authorship contribution statement
+Hyunsoo Yun: Writing – review & editing, Writing – original draft, Software, Methodology, Formal analysis, Conceptualization.
+Eui-jin Kim: Writing – review & editing, Supervision, Methodology, Formal analysis, Conceptualization. Seung Woo Ham: Writing –
+review & editing, Methodology, Formal analysis. Dong-Kyu Kim: Writing – review & editing, Supervision, Funding acquisition,
+Formal analysis, Conceptualization.
+Declaration of competing interest
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to
+influence the work reported in this paper.
+Data availability
+Data will be made available on request.
+Acknowledgments
+This research was supported by Korea Ministry of Land, Infrastructure and Transport (MOLIT) as [Innovative Talent Education
+Program for Smart City], and in part by the National Research Foundation of Korea (NRF) grant funded by the Korea Government
+(MSIT) (No.2022R1A2C2012835). This work was also supported by Korea Institute of Police Technology (KIPoT) grant funded by the
+Korea Government (KNPA) (No.092021C28S02000).
+References
+Angelelli, E., Morandi, V., Speranza, M.G., 2020. Minimizing the total travel time with limited unfairness in traffic networks. Comput. Oper. Res. 123, 105016 https://
+doi.org/10.1016/j.cor.2020.105016.
+Ben-Elia, E., Erev, I., Shiftan, Y., 2008. The combined effect of information and experience on drivers’ route-choice behavior. Transportation (amst). 35, 165–177.
+https://doi.org/10.1007/s11116-007-9143-7.
+Bennett, L.D., 1993. The existence of equivalent mathematical programs for certain mixed equilibrium traffic assignment problems. Eur. J. Oper. Res. 71, 177–187.
+https://doi.org/10.1016/0377-2217(93)90047-Q.
+Chen, Z., Lin, X., Yin, Y., Li, M., 2020. Path controlling of automated vehicles for system optimum on transportation networks with heterogeneous traffic stream.
+Transp. Res. Part C Emerg. Technol. 110, 312–329. https://doi.org/10.1016/j.trc.2019.11.017.
+
+20
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+Chorus, C.G., Molin, E.J.E., Van Wee, B., 2006. Use and effects of Advanced Traveller Information Services (ATIS): A review of the literature. Transp. Rev. 26,
+127–149. https://doi.org/10.1080/01441640500333677.
+Chow, A.H.F., 2009. Dynamic system optimal traffic assignment - a state-dependent control theoretic approach. Transportmetrica 5, 85–106. https://doi.org/
+10.1080/18128600902717483.
+Daganzo, C.F., 1994. The cell transmission model: A dynamic representation of highway traffic consistent with the hydrodynamic theory. Transp. Res. Part B 28,
+269–287. https://doi.org/10.1016/0191-2615(94)90002-7.
+Eikenbroek, O.A.L., Still, G.J., van Berkum, E.C., 2022. Improving the performance of a traffic system by fair rerouting of travelers. Eur. J. Oper. Res. 299, 195–207.
+https://doi.org/10.1016/j.ejor.2021.06.036.
+Fagnant, D.J., Kockelman, K., 2015. Preparing a nation for autonomous vehicles: Opportunities, barriers and policy recommendations. Transp. Res. Part A Policy
+Pract. 77, 167–181. https://doi.org/10.1016/j.tra.2015.04.003.
+Fakhrmoosavi, F., Saedi, R., Zockaie, A., Talebpour, A., 2020. Impacts of Connected and Autonomous Vehicles on Traffic Flow with Heterogeneous Drivers Spatially
+Distributed over Large-Scale Networks. Transp. Res. Rec. 2674, 817–830. https://doi.org/10.1177/0361198120940997.
+Florian, M., Mahut, M., Tremblay, N., 2008. Application of a simulation-based dynamic traffic assignment model. Eur. J. Oper. Res. 189, 1381–1392. https://doi.org/
+10.1016/j.ejor.2006.07.054.
+Genser, A., Kouvelas, A., 2022. Dynamic optimal congestion pricing in multi-region urban networks by application of a Multi-Layer-Neural network. Transp. Res. Part
+C Emerg. Technol. 134, 103485 https://doi.org/10.1016/j.trc.2021.103485.
+Ghali, M.O., Smith, M.J., 1995. A model for the dynamic system optimum traffic assignment problem. Transp. Res. Part B 29, 155–170. https://doi.org/10.1016/
+0191-2615(94)00024-T.
+Harker, P.T., 1988. Multiple equilibrium behaviors in networks. Transportation. Transp. S 22, 39–46.
+Heinrich, J., Silver, D., 2016. Deep Reinforcement Learning from Self-Play in Imperfect-Information Games. arXiv [cs]. arXiv:1603.01121.
+Heinrich, J., Lanctot, M., Silver, D., 2015. Fictitious self-play in extensive-form games. 32nd Int. Conf. Mach. Learn. ICML 2015 1, 805–813.
+Hoang, N.H., Panda, M., Vu, H.L., Ngoduy, D., Lo, H.K., 2023. A new framework for mixed-user dynamic traffic assignment considering delay and accessibility to
+information. Transp. Res. Part C Emerg. Technol. 146, 103977 https://doi.org/10.1016/j.trc.2022.103977.
+Jahn, O., Möhring, R.H., Schulz, A.S., Stier-Moses, N.E., 2005. System-optimal routing of traffic flows with user constraints in networks with congestion. Oper. Res.
+53, 600–616. https://doi.org/10.1287/opre.1040.0197.
+Kashmiri, F.A., Lo, H.K., 2022. Routing of autonomous vehicles for system optimal flows and average travel time equilibrium over time. Transp. Res. Part C 143,
+103818. https://doi.org/10.1016/j.trc.2022.103818.
+Klein, I., Ben-Elia, E., 2018. Emergence of cooperative route-choice: A model and experiment of compliance with system-optimal ATIS. Transp. Res. Part F Traffic
+Psychol. Behav. 59, 348–364. https://doi.org/10.1016/j.trf.2018.09.007.
+Klein, I., Levy, N., Ben-Elia, E., 2018. An agent-based model of the emergence of cooperation and a fair and stable system optimum using ATIS on a simple road
+network. Transp. Res. Part C Emerg. Technol. 86, 183–201. https://doi.org/10.1016/j.trc.2017.11.007.
+Koutsoupias, E., Papadimitriou, C., 2009. Worst-Case Equilibria. Comput. Sci. Rev. 3, 65–69. https://doi.org/10.1016/j.cosrev.2009.04.003.
+Krichene, W., Castillo, M.S., Bayen, A., 2018. On Social Optimal Routing under Selfish Learning. IEEE Trans. Control Netw. Syst. 5, 479–488. https://doi.org/
+10.1109/TCNS.2016.2619910.
+Lazar, D.A., Bıyık, E., Sadigh, D., Pedarsani, R., 2021. Learning how to dynamically route autonomous vehicles on shared roads. Transp. Res. Part C Emerg. Technol.
+130, 103258 https://doi.org/10.1016/j.trc.2021.103258.
+Levy, N., Ben-Elia, E., 2016. Emergence of System Optimum: A Fair and Altruistic Agent-based Route-choice Model. Procedia Comput. Sci. 83, 928–933. https://doi.
+org/10.1016/j.procs.2016.04.187.
+Levy, N., Klein, I., Ben-Elia, E., 2018. Emergence of cooperation and a fair system optimum in road networks: A game-theoretic and agent-based modelling approach.
+Res. Transp. Econ. 68, 46–55. https://doi.org/10.1016/j.retrec.2017.09.010.
+Li, Z., Yu, H., Zhang, G., Dong, S., Xu, C.Z., 2021. Network-wide traffic signal control optimization using a multi-agent deep reinforcement learning. Transp. Res. Part
+C Emerg. Technol. 125, 103059 https://doi.org/10.1016/j.trc.2021.103059.
+Long, J., Szeto, W.Y., 2019. Link-based system optimum dynamic traffic assignment problems in general networks. Oper. Res. 67, 167–182. https://doi.org/10.1287/
+opre.2018.1775.
+Mahmassani, H., Peeta, S., 1993. Network performance under system optimal and user equilibrium dynamic assignments: implications for advanced traveler
+information systems. Transp. Res. Rec. 1408, 83.
+Mansourianfar, M.H., Gu, Z., Waller, S.T., Saberi, M., 2021. Joint routing and pricing control in congested mixed autonomy networks. Transp. Res. Part C Emerg.
+Technol. 131, 103338 https://doi.org/10.1016/j.trc.2021.103338.
+Mehrabipour, M., Hajbabaie, A., 2022. A Distributed Gradient Approach for System Optimal Dynamic Traffic Assignment. IEEE Trans. Intell. Transp. Syst. 23,
+17410–17424. https://doi.org/10.1109/TITS.2022.3163369.
+Merchant, D.K., Nemhauser, G.L., 1978. A model and an algorithm for the dynamic traffic assignment problems. Transp. Sci. 12, 183–199. https://doi.org/http://dx.
+doi.org/10.1287/trsc.12.3.183.
+Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A.A., Veness, J., Bellemare, M.G., Graves, A., Riedmiller, M., Fidjeland, A.K., Ostrovski, G., Petersen, S., Beattie, C.,
+Sadik, A., Antonoglou, I., King, H., Kumaran, D., Wierstra, D., Legg, S., Hassabis, D., 2015. Human-level control through deep reinforcement learning. Nature 518,
+529–533. https://doi.org/10.1038/nature14236.
+Nguyen, C.H.P., Hoang, N.H., Lee, S., Vu, H.L., 2022. A System Optimal Speed Advisory Framework for a Network of Connected and Autonomous Vehicles. IEEE
+Trans. Intell. Transp. Syst. 23, 5727–5739. https://doi.org/10.1109/TITS.2021.3056696.
+Pandey, V., Wang, E., Boyles, S.D., 2020. Deep reinforcement learning algorithm for dynamic pricing of express lanes with multiple access locations. Transp. Res. Part
+C Emerg. Technol. 119, 102715 https://doi.org/10.1016/j.trc.2020.102715.
+Parvez Farazi, N., Zou, B., Ahamed, T., Barua, L., 2021. Deep reinforcement learning in transportation research: A review. Transp. Res. Interdiscip. Perspect. 11,
+100425 https://doi.org/10.1016/j.trip.2021.100425.
+Peeta, S., Mahmassani, H.S., 1995. System optimal and user equilibrium time-dependent traffic assignment in congested networks. Ann. Oper. Res. 60, 81–113.
+https://doi.org/10.1007/BF02031941.
+Peeta, S., Ziliaskopoulos, A., 2001. Foundations of Dynamic Traffic Assignment: The Past, the Present and the Future. Networks Spat. Econ. 1, 233–265. https://doi.
+org/10.1023/A:1012827724856.
+Qin, G., Luo, Q., Yin, Y., Sun, J., Ye, J., 2021. Optimizing matching time intervals for ride-hailing services using reinforcement learning. Transp. Res. Part C Emerg.
+Technol. 129, 103239 https://doi.org/10.1016/j.trc.2021.103239.
+Samaranayake, S., Krichene, W., Reilly, J., Monache, M. L. D., Goatin, P., & Bayen, A. Discrete-time system optimal dynamic traffic assignment (SO-DTA) with partial
+control for physical queuing networks. Transp. Sci, 52, 739-1034. Doi: 10.1287/trsc.2017.0800.
+Satsukawa, K., Wada, K., Watling, D., 2022. Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transp. Res. Part B Methodol.
+155, 188–209. https://doi.org/10.1016/j.trb.2021.11.001.
+Sbayti, H., Lu, C.C., Mahmassani, H.S., 2007. Efficient implementation of method of successive averages in simulation-based dynamic traffic assignment models for
+large-scale network applications. Transp. Res. Rec. 22–30 https://doi.org/10.3141/2029-03.
+Sharon, G., Albert, M., Rambha, T., Boyles, S., Stone, P., 2018. Traffic optimization for a mixture of self-interested and compliant agents. 32nd AAAI Conf. Artif. Intell.
+AAAI 2018, 1202–1209. https://doi.org/10.1609/aaai.v32i1.11444.
+Shen, W., Zhang, H.M., 2009. On the morning commute problem in a corridor network with multiple bottlenecks: Its system-optimal traffic flow patterns and the
+realizing tolling scheme. Transp. Res. Part B Methodol. 43, 267–284. https://doi.org/10.1016/j.trb.2008.07.004.
+Tympakianaki, A., Nogues, L., Casas, J., Brackstone, M., Oikonomou, M.G., Vlahogianni, E.I., Djukic, T., Yannis, G., 2022. Autonomous Vehicles in Urban Networks: A
+Simulation-Based Assessment. Transp. Res. Rec. 2676, 540–552. https://doi.org/10.1177/03611981221090507.
+
+21
+
+Transportation Research Part C 165 (2024) 104721
+
+H. Yun et al.
+
+Waller, S.T., Schofer, J.L., Ziliaskopoulos, A.K., 2001. Evaluation with traffic assignment under demand uncertainty. Transp. Res. Rec. 69–74 https://doi.org/
+10.3141/1771-09.
+Wang, J., Peeta, S., He, X., 2019. Multiclass traffic assignment model for mixed traffic flow of human-driven vehicles and connected and autonomous vehicles. Transp.
+Res. Part B Methodol. 126, 139–168. https://doi.org/10.1016/j.trb.2019.05.022.
+Yang, H., 1998. Multiple equilibrium behaviors and advanced traveler information systems with endogenous market penetration. Transp. Res. Part B Methodol. 32,
+205–218. https://doi.org/10.1016/S0191-2615(97)00025-8.
+Yang, I., Jayakrishnan, R., 2012. Gradient projection method for simulation-based dynamic traffic assignment. Transp. Res. Rec. 70–80 https://doi.org/10.3141/
+2284-09.
+Yang, H., Zhang, X., Meng, Q., 2007. Stackelberg games and multiple equilibrium behaviors on networks. Transp. Res. Part B Methodol. 41, 841–861. https://doi.org/
+10.1016/j.trb.2007.03.002.
+Yen, J.Y., 1971. Finding the K Shortest Loopless Paths in a Network. Manage. Sci. 17, 712–716. https://doi.org/10.1287/mnsc.17.11.712.
+Yun, H., Kim, E.J., Ham, S.W., Kim, D.K., 2022. Price incentive strategy for the E-scooter sharing service using deep reinforcement learning. J. Intell. Transp. Syst.
+Technol. Planning, Oper. 1–15. https://doi.org/10.1080/15472450.2022.2135437.
+Zhang, P., Qian, S., 2020. Path-based system optimal dynamic traffic assignment: A subgradient approach. Transp. Res. Part B Methodol. 134, 41–63. https://doi.org/
+10.1016/j.trb.2020.02.004.
+Zhao, C.L., Leclercq, L., 2018. Graphical solution for system optimum dynamic traffic assignment with day-based incentive routing strategies. Transp. Res. Part B
+Methodol. 117, 87–100. https://doi.org/10.1016/j.trb.2018.08.018.
+Zhou, B., Song, Q., Zhao, Z., Liu, T., 2020. A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion game.
+Appl. Math. Comput. 371 https://doi.org/10.1016/j.amc.2019.124895.
+Ziliaskopoulos, A.K., 2000. A linear programming model for the single destination system optimum dynamic traffic assignment problem. Transp. Sci. 36–49.
+
+22
+
+

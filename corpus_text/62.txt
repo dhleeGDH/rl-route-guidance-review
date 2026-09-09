@@ -1,0 +1,1425 @@
+37590
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 12, NO. 18, 15 SEPTEMBER 2025
+
+Proactive Urban Expressway Guidance: A Hybrid
+Approach Using Reinforcement Learning and
+Traffic Prediction Models
+Linghao Wang , Zheyuan Jiang , Ziyue Qi, Ziyi Shi, Xiqun Chen , Senior Member, IEEE, and Zheng Zhu
+
+Abstract—Addressing traffic congestion is significant in
+enhancing urban mobility. Traditional navigation systems use
+real-time traffic status to push the temporally shortest path to
+drivers, forming selfish-routing, which guide traffic flow to the
+same roadway, thereby causing imbalance traffic flow distribution
+and navigation-induced congestion. Besides, navigation based on
+real-time detected traffic metrics may cause the congestion oscillation during periods with high travel demand variations. This
+article proposes the traffic prediction and reinforcement learningbased navigation guidance (TP-RLNG) approach for active
+control of traffic flow on urban expressways. The TP-RLNG
+introduces a differentiated guidance approach with multiple
+origin-destination (OD) pairs, replacing the conventional all-ornothing route guidance strategies. To enhance the stability, the
+TP-RLNG integrates traffic prediction and reinforcement learning (RL)-based dynamic optimization to prospectively harmonize
+traffic supply and demand overall the expressway system. In
+contrast to the RL navigation guidance (RLNG) (no prediction)
+approach, the integration of traffic prediction model in TP-RLNG
+enhances the anticipation of critical nodes and enables proactive
+traffic management. We use SUMO-based traffic simulation to
+examine the efficacy of TP-RLNG and alternative approaches in
+controlling traffic flow within the Hangzhou Liushi Expressway
+network under varying demand patterns. The results underscore
+the ability of TP-RLNG to enhance road network efficiency
+and mitigate urban expressway congestion. The findings indicate
+that, relative to RLNG approaches, our methodology achieves a
+reduction in average travel time of 9.3%.
+Index Terms—Intelligent transportation systems, microscopic
+traffic modeling, reinforcement learning (RL), traffic management, traffic prediction.
+
+I. I NTRODUCTION
+
+T
+
+RAFFIC congestion, a multifaceted issue, detrimentally
+impacts the environment, economy, and society [1].
+
+Received 15 December 2024; revised 12 March 2025, 30 March 2025, and
+31 May 2025; accepted 23 June 2025. Date of publication 27 June 2025;
+date of current version 8 September 2025. This work was supported in
+part by the Natural Science Foundation of Zhejiang pvovince, China, under
+Grant LZ25E080007; in part by the Natural Science Foundation of China
+under Grant 72401255 and Grant 72350710798; and in part by the Smart
+Urban Future (SURF) Laboratory, Zhejiang Province. (Corresponding author:
+Zheng Zhu.)
+Linghao Wang, Ziyi Shi, Xiqun Chen, and Zheng Zhu are with the
+College of Civil Engineering and Architecture, Zhejiang University, Hangzhou
+310058, China (e-mail: linghaowang@zju.edu.cn; 22212300@zju.edu.cn;
+chenxiqun@zju.edu.cn; zhuzheng89@zju.edu.cn;).
+Zheyuan Jiang and Ziyue Qi are with the Polytechnic Institute, Zhejiang
+University, Hangzhou 310058, China (e-mail: jiangzheyuan@zju.edu.cn;
+22260190@zju.edu.cn).
+Digital Object Identifier 10.1109/JIOT.2025.3583833
+
+The genesis of traffic congestion is complex, transcending
+simplistic explanations of excessive demand or inadequate
+supply. En-route travel decisions made by drivers can be a
+core factor for causing congestions. That is, once numerous
+drivers access the network simultaneously, and each opts for
+their personally optimal route, the collective outcome can be
+suboptimal, exacerbating congestion [2].
+To mitigate congestion, various traffic management strategies have been developed, such as variable message signs
+(VMSs). VMSs adapt their content to the evolving conditions on the road, thereby aiding drivers in making more
+informed decisions. Empirical studies have validated the efficacy of VMSs in alleviating congestion [3]. However, several
+limitations of VMSs have been identified. VMSs typically
+dispense uniform information to all drivers; this one-sizefits-all approach often reduces the overall network efficiency.
+The evolution of navigation apps (such as Google Maps and
+Amap), which become indispensable tools for drivers, marks
+a significant departure from VMSs. Chief among these is
+the provision of routes with real-time shortest travel time
+or distance to users [4]. This leads to selfish-routing, where
+drivers departing from the same origin-destination (OD) pair
+during the same time period are offered the identical shortest
+path [2]. Selfish-routing has been criticized for its inherent
+limitations, such as its inability to divert traffic flow, resulting
+in navigation-induced bottlenecks and congestion. This can
+result in “congestion oscillations,” which means congestion
+shifts between alternative routes as each becomes periodically
+overloaded [5].
+To mitigate these issues, a myriad of route guidance
+approaches have been developed. This approach has seen various innovative applications, including a reinforcement learning
+(RL)-based navigation system [6], and a distributed ant colony
+optimization algorithm for pathfinding [7]. Nevertheless, the
+principal constraint of it lies in its inability to guide varied
+routes for vehicles within a singular time slot. This approach
+has implemented an all-or-nothing approach to guidance traffic. To achieve a more balanced traffic flow distribution, it
+is critical to provide differentiated paths for users from the
+same OD pair within the same time period. In addition, current
+route guidance computes route diversion strategies based
+on detected/user uploaded real-time and temporally traffic
+conditions. However, these methods often have the drawback
+of potentially causing new congestion in other areas due to its
+myopic view of traffic conditions. Therefore, it is essential to
+
+c 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artificial intelligence
+2327-4662 
+and similar technologies. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+WANG et al.: PROACTIVE URBAN EXPRESSWAY GUIDANCE: A HYBRID APPROACH
+
+anticipate near-future traffic conditions for differentiated route
+guidance. This approach can help avoid potential congestion
+and achieve an optimal global traffic state.
+To overcome the limitations of current route guidance
+systems, this article introduces a traffic prediction and reinforcement learning-based navigation guidance (TP-RLNG)
+approach. To solve the problem that previous navigation systems can only perform all-or-nothing guidance, the
+proposed approach attempts to achieve proactive congestion
+management by providing drivers departing from the same
+OD pair with differentiated routes. The previous navigation
+system’s reliance on real-time traffic data leads to instability
+in its guidance strategies. We integrate traffic prediction
+and RL-based dynamic optimization. The TP-RLNG consists
+of four components: 1) an expressway system (incorporating user-side navigation and road-side detection); 2) a
+traffic prediction module; 3) a route diversion decisionmaking module; and 4) a Markov decision process (MDP).
+To adeptly navigate the complexities inherent in dynamic
+optimization with multiple agents (each agent controls the
+traffic flow of one OD pair), the value-decomposition actor–
+critics (VDAC) Deep RL (DRL) algorithm is utilized to
+solve the MDP model. The performance of TP-RLNG is
+evaluated using the SUMO microscopic simulation, focusing
+on Hangzhou’s Liushi Expressway system under various travel
+demand scenarios. Comparative analysis under various traffic
+flow conditions reveals that TP-RLNG outperforms original
+RL navigation guidance (RLNG) (without traffic prediction)
+approach, particularly in scenarios characterized by high traffic
+flow concentration. Although this approach may sacrifice the
+interests of some users, it has a great promoting effect on
+the overall interests, ensuring that the optimal route for the
+majority is prioritized for enhanced systemic efficiency.
+The key contributions of this article are as follows.
+1) This study introduces a differentiated route guidance method tailored for multiple OD pairs. This
+approach supersedes the conventional all-or-nothing
+guidance strategy, effectively redistributing traffic flow
+and enhancing the overall efficiency of the road network.
+2) To bolster the stability of the guidance system,
+the proposed TP-RLNG approach integrates traffic
+prediction with RL. This integration enhances the
+system’s anticipation of congestion-prone key nodes.
+3) Through numerical analyses, we elucidate the superiority of TP-RLNG over conventional route guidance
+methods in relevant scenarios and performance metrics.
+While RLNG approach offers post hoc mitigation of traffic congestion, TP-RLNG proactively forecasts potential
+traffic bottlenecks and avoid navigation-induced congestion.
+The structure of this article is organized as follows.
+Section II reviews pertinent literature related to route guidance,
+traffic prediction, and the application of RL in transportation.
+Section III elaborates on the TP-RLNG approach’s framework,
+including the integration between traffic prediction and route
+navigation, the construction of the MDP model, and the RLbased algorithm. Section IV details the experimental setup
+and performance analysis. Finally, Section V consolidates the
+
+37591
+
+primary findings and outlines potential avenues for future
+research.
+II. L ITERATURE R EVIEW
+The literature review encompasses a comprehensive survey
+across several pivotal domains: studies in route guidance,
+traffic prediction methods, and the applications of RL within
+the realm of dynamic transportation/traffic control problems.
+This review culminates in a synthesized conclusion, integrating
+insights drawn from these diverse areas to forge a cohesive
+understanding of the current research.
+A. Route Guidance Studies
+Route guidance strategies generally fall into three categories: 1) iterative strategies; 2) feedback strategies; and
+3) predictive strategies. These strategies are predominantly
+implemented through VMSs.
+Iterative strategies optimize routing decisions by running the
+traffic network model repeatedly and accounting for various
+factors over a future time horizon [8]. Feedback strategies
+guide traffic flow by responding to observed network conditions [9]. These strategies are grounded in the feedback
+concept and adapt to real-time traffic conditions, with the
+objective of guiding the system toward a predefined state
+characterized by metrics, such as flows, densities, or travel
+times [10]. Predictive strategies leverage the strengths of both
+aforementioned strategy types while mitigating their respective
+drawbacks [11]. This novel strategy involves running a mathematical model once during each time step and making routing
+decisions based on anticipated traffic conditions. Liang and
+Wakahara [12] introduced an urban traffic prediction model
+into a route guidance system, and experimental results indicate
+that proactive route guidance yields superior performance
+compared to feedback-based strategy. Due to the advancements
+in satellite navigation systems, the implementation of guidance
+strategies can now be facilitated through navigation apps.
+Angelelli et al. [13] propose a proactive route guidance
+approach based on the Global Positioning System (GPS),
+which allocates paths to users to minimize congestion while
+avoiding significant increases in their travel inconvenience.
+Route guidance strategies relying on VMS are constrained
+by device limitations, allowing only the broadcasting of
+identical guidance information for users of a single roadway.
+Currently, navigation software typically recommends routes
+that simply bypass uncongested roadways, without concerning
+the potential bottlenecks induced by such all-or-nothing guidance and the negative impacts on the overall traffic network.
+To address this, we need to shift our focus toward optimizing
+the global transportation network as a whole.
+B. Traffic Prediction and Applications
+Traffic prediction can be categorized into two main
+approaches: 1) data-driven and 2) model-driven. Data-driven
+models predict future traffic conditions by learning from
+historical time series traffic data. Statistical learning models,
+such as Kalman filter model [14], and Bayesian network
+(BN) model [15] have been used to predict the near future
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+37592
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 12, NO. 18, 15 SEPTEMBER 2025
+
+traffic flow. With the explosive growth of available data,
+artificial intelligence (AI) models have gained prominence due
+to their exceptional data processing and learning capabilities. These models include long short-term memory network
+(LSTM) [16], evolutionary computation approaches[17], graph
+network (GN) [18] and Gaussian Process [19], [20]. Chen
+proposed an urban road network traffic flow prediction framework based on deep learning (DL), which combines feature
+engineering and spectral clustering methods to extract and
+compress data features. Subsequently, they constructed a
+hybrid prediction model that integrates LSTM networks and
+sparse autoencoders [21].
+Model-driven prediction relies on physical traffic flow laws
+and computer technologies to establish mathematical models.
+To capture the fundamental characteristics of traffic flow,
+scholars have introduced numerous traffic flow models, such
+as cellular automata model [22] and car-following model [23].
+These models are incorporated into traffic simulation software,
+which employs simulation to predict future traffic congestion.
+Simulation tools like VISSIM [24] and SUMO [25] are widely
+employed in real-time traffic state prediction.
+As traffic prediction methods advance, scholars are increasingly applying traffic prediction models to route guidance
+scheme, thus forming proactive traffic management strategies.
+Zhang [26] utilized an LSTM neural network to predict
+urban traffic data and integrated a double-tracking Dijkstra
+algorithm to propose a prediction-based path guidance scheme.
+Neiman [27] developed an algorithm that predicts vehicle
+arrival times using SUMO simulation platform and dynamically guides a portion of vehicles along less congested
+routes, thereby reducing traffic delays. Within the literature on
+traffic management, only a minority of papers utilize traffic
+prediction models, indicating an underutilization of these models in traffic management. Incorporating traffic flow prediction
+into traffic control systems can enhance their effectiveness to
+a certain degree.
+
+optimized for an individual OD pair do not necessarily
+translate to optimal network-wide solutions.
+To overcome the aforementioned limitations, various
+multiagent RL (MARL) algorithms have been proposed. Pan
+and Liu [34] outlined a new MARL design addressing dynamic
+uncertainties in vehicle routes. Qi et al. [35] integrated a RL
+formulation in a navigation system to balance vehicle travel
+time and environmental benefits.
+Most existing RL approaches for en-route traffic guidance
+focus on the diversion of individual vehicles [36], [37], [38].
+These methods typically guide vehicles through a series of
+local paths, defining the action space as the next path selection.
+Consequently, the state variables in the MDP are also dynamic
+until the destination is reached. This characteristic limits
+their utility in real-world navigation systems. In addition, the
+integration of traffic prediction and RL in traffic guidance
+is an emerging area of research that is garnering increased
+interest [33], [39]. Our proposed approach offers several
+advancements over previous methodologies. First, while earlier
+methods primarily targeted optimization at the OD level, our
+approach enhances the efficiency of the entire road network
+through a multi-OD joint optimization strategy. Second, prior
+researches typically address traffic management post-incident,
+aiming to mitigate congestion resulting from unforeseen accidents. In contrast, our approach leverages predictive analytics
+to identify potential congestion preemptively and proactively
+manages traffic flow to alleviate congestion before it occurs,
+thereby enhancing overall network efficiency.
+
+C. Applications of RL in Transportation
+RL is a paradigm of learning the optimal control/management strategies through interaction between one
+or multiple agents and an environment. Recently, RL has
+achieved remarkable advancements in various domains. It
+has been effectively applied in areas, such as traffic signal
+control [28], ebike/bike rebalancing [29], online ride hailing
+subsidy [30], transportation route choice [31] among others. Additionally, RL has been instrumental in addressing
+challenges in route guidance systems. In the initial stages
+of RL-based route guidance studies, several single-agent
+approaches were explored, in which the RL focuses predominantly on controlling the traffic of a singular OD pair within
+a road network. Mao and Shen [32] proposed a Q-learning
+method for a single agent, enhancing the decision-making
+process by incorporating global state information. Lee [33]
+implemented transfer learning within DRL frameworks to
+enhance the robustness and interoperability of route guidance
+algorithms. However, such an approach exhibits limitations
+when extended to the broader road network, as strategies
+
+D. Summary from Literature
+The theoretical studies on route guidance systems have been
+expended to a OD level guidance with real-time traffic conditions. However, the current systems could not anticipate future
+congestions (induced by high demand or navigation) or propose underlying strategies to mitigate/avoid such congestions
+in advance. Given modern traffic flow sensing and prediction
+technologies, the integration of RL-based differential route
+guidance and network-level traffic prediction would become a
+promising approach for achieving proactive congestion control
+of transportation systems.
+To fulfill the research gap, this article proposes a novel
+TP-RLNG approach, which contains the following distinguished features. First, instead of “all-or-nothing” guidance,
+the proposed approach utilizes the diversion ratio of routes
+as the route guidance action/decision. This set allows for the
+realization of diversion effects of traffic flow of the same OD
+pairs within identical time periods. Second, the TP-RLNG
+offers the diversion ratios for each predefined OD pair within
+the path set, as opposed to generating a sequence of en
+route, locally optimized routing paths. The model’s state space
+encompasses variables representing the entire road network,
+while disregarding dynamic state variations. Consequently,
+this approach can be efficiently integrated into real-world
+traffic guidance systems. In the end, conventional routing
+methods like Dijkstra’s or A* algorithm use real-time traffic
+data from technologies, such as induction loop detectors to
+compute optimal routes. However, these methods lack the
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+WANG et al.: PROACTIVE URBAN EXPRESSWAY GUIDANCE: A HYBRID APPROACH
+
+Fig. 1.
+
+Four constituent modules and interaction process.
+
+ability to predict future traffic changes, leading to potentially
+suboptimal rerouting decisions. Integrating prediction with RL
+aims to address this by focusing on future traffic states for
+proactive traffic management, using traffic flow predictions
+to anticipate patterns and enable more effective preemptive
+guidance strategies.
+III. M ETHODOLOGY
+The TP-RLNG approach is conceived for application on
+actual expressway systems, including expressways and their
+parallel roads. This approach includes four components: 1) an
+expressway system (incorporating user-side navigation and
+road-side detection); 2) a traffic prediction module; 3) a
+route diversion decision-making module; and 4) a MDP that
+integrates the former three modules. Within this framework,
+TP-RLNG assumes a pivotal role in managing a set of primary
+OD pairs on expressways system, aiming to optimize the travel
+efficiency of vehicles over an operational horizon (e.g., the
+morning/afternoon peak period).
+Before the real-world implementation, this article engages
+in theoretical exploration, as the expressway system equipped
+with road detectors and user-side navigation apps is substituted by a microscopic traffic simulation model. Moreover,
+employing RL in practical scenarios proves to be uneasy
+due to the scarcity of observed transitions and computational
+inefficiency. Consequently, the system is simulated repetitively
+in theoretical research to ascertain the upper boundary of route
+guidance performance. Section III-A describes the proposed
+framework in details and Section III-B provides the modeling
+and learning flowchart.
+A. TP-RLNG Framework
+The TP-RLNG integrates four interdependent modules,
+i.e., the expressway system (simulation) module, the traffic
+prediction module, an MDP, and a route diversion decision
+module (controlled by DRL) (see Fig. 1).
+The expressway system delineated in this study is characterized by a singular expressway, its multiple parallel roads,
+and drivers from a set of primary OD pairs and background
+(other) OD pairs. The system is equipped to detect and
+record real-time positioning and trajectories of vehicles (via
+
+37593
+
+mobile navigation apps) and the traffic status of roadways (via
+road detectors), subsequently relaying on this information to
+the prediction/decision module. For theoretical and numerical
+analysis, the system is developed on the SUMO platform,
+which also serves as the traffic prediction module. When
+using SUMO in the system module, it serves a dual purpose: first, to provide the prediction module with the current
+traffic conditions (demand and route choice proportions);
+second, to evaluate the performance of route guidance strategies/decisions. It operates by implementing route guidance
+strategies received from the MDP and evaluates their effectiveness. Subsequently, the system module calculates and delivers
+the reward back to the MDP. For the traffic prediction module,
+a twin SUMO model of the system is adopted to acquire realtime OD demand and current traffic status from the system
+module, based on which it forecasts future traffic conditions.
+These predictions are then fed into the MDP model for state
+processing. The route diversion decision module primarily
+acquires transmission experience from MDP and coordinates
+the dispatch of trained route guidance decisions back to MDP.
+The optimal route guidance strategy is trained utilizing the
+VDAC algorithm.
+An MDP is a standardized dynamic programming framework, in which one or multiple agents try to optimize
+the decision-making policies to maximize the total reward
+in a dynamic system. In many engineering problems, an
+MDP is generally solved by the DRL, which has specific
+design for learning polices via the interactions between the
+system and the agents’ actions (decisions). The proposed
+MDP segments the entire control duration into multiple discrete time steps and formulates the route guidance control
+as a dynamic optimization problem. That is, following the
+predicted/observed traffic condition, the agents (one agent
+controls the route diverting ratio of vehicles from one primary
+OD pair) rely on the decision module (the specifically designed
+DRL) to seek the optimal route division strategies of primary
+OD pairs that leads to the best system-wide traffic efficiency
+across the horizon. Moreover, the MDP is responsible of
+summarizing the system states (both observed and predicted)
+from simulation and prediction, generating actions based on
+states and policies and feeding to the system, receiving rewards
+from the system, and transfer states, actions, rewards to the
+DRL-based decision module for policy updating. This iterative
+process is continuously employed to refine and optimize the
+system.
+In the proposed framework, real-time traffic data acquisition
+is pivotal for the effective implementation of the system. The
+technologies integral to this process include loop detectors,
+microwave sensors, video surveillance systems, floating car
+data (FCD), and GPS-equipped data acquisition devices. For
+the input of the state space in an MDP, it can be obtained
+either through partial road detection data combined with a
+DL prediction model, or through partial user navigation OD
+data coupled with microscopic traffic simulation predictions.
+Considering the physical implementations in the real world,
+the former requires existing road detection devices, while the
+latter necessitates devices, such as cell phones, in-vehicle navigation systems, or Cooperative Intelligent Transport System
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+37594
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 12, NO. 18, 15 SEPTEMBER 2025
+
+(C-ITS) devices. For the operationalization of the optimal
+routing strategy, a centralized decision-maker plays a crucial
+role, diverging from traditional navigation systems. This entity
+is responsible for both the training and decision-making
+processes, leveraging both online and offline data integration.
+In the offline phase, substantial traffic datasets and simulations
+are amassed to facilitate the training of RL algorithms, culminating in the creation of a comprehensive policy table that
+maps various states to their corresponding traffic management
+strategies. In online deployment, future traffic conditions,
+based on traffic detection and DL or real-time user navigation
+OD data with simulation prediction, are utilized to query the
+policy table. This enables the retrieval and dissemination of
+the current optimal strategy. This information is subsequently
+relayed to end-users through navigation systems or C-ITS
+devices. The adaptability of this approach is ensured by
+periodic updates—potentially on a weekly basis or at different
+intervals—which allow for the continual refinement of the RL
+policy based on evolving traffic patterns and conditions.
+1) Expressway System Module: We develop an expressway
+system simulation that leverages mobile navigation app and
+real-time road network monitoring. Essential to this system is
+the selection of appropriate traffic simulation software, which
+must exhibit certain key characteristics. First, it is imperative
+to facilitate real-time monitoring of the road network status.
+Second, the system must cater to the travel demand of individual users, necessitating a understanding of microscopic user
+behavior and preferences. Third, the traffic simulation software
+must be capable of conducting real-time interactions with
+MDP and DRL algorithms. Considering these requirements,
+this study utilize SUMO, which is an open-source, robust,
+versatile, and highly scalable microscopic traffic simulation
+software [40]. SUMO has a Traffic Control Interface (TraCI)
+module to facilitate adaptive interaction between the simulation environment and advanced traffic control approaches [41].
+This interface allows for the retrieval and manipulation of
+simulation object attributes, enabling dynamic interaction
+through the Python programming language. While SUMO
+offers significant cost and accessibility advantages but exhibits
+limitations in detailed micro-simulations and complex urban
+environment handling compared to proprietary software like
+Vissim and Aimsun. Notably, while capable of managing large
+traffic networks, SUMO’s performance tends to degrade with
+increased network size and complexity, potentially affecting
+the frame rates during simulations [42].
+The primary inputs for this module include road data (road
+network files), demand information (routing files), and traffic
+guidance strategies. This study utilizes high-resolution satellite
+imagery from OpenStreetMap to extract road network data,
+focusing on nodes (intersections) and roadways (distinguished
+by one-way or two-way traffic). This study constructs and
+simulates the traffic dynamics during specific time periods of
+the day using data to refine the simulation. Route guidance
+strategies are received from the MDP, which control route
+diversions of primary OD pairs via the SUMO TraCI interface.
+In other words, TraCI would modify the routes of corresponding drivers in the routing file to mimic the functionality of
+real-world navigation systems. In each simulation time step,
+
+the model updates key parameters, such as vehicle position
+and operational status, and also responds to traffic guidance
+interventions. This allows for the dynamic representation of
+road network conditions throughout the simulation period.
+The module primarily generates two key outputs. The first
+is a comprehensive simulation result file containing detailed
+temporal traffic metrics on all the roadways in the system.
+The second output involves feeding the current system traffic
+metrics (i.e., travel demand, network flow, and route choice
+proportion generated by route guidance strategies) into the
+traffic prediction module, which predicts near-future system
+condition as the state of the MDP. The information presented
+in the second output exhibits a higher level of detail regarding
+traffic data, specifically including the precise locations of
+individual vehicles.
+In summary, at any time step, the simulation receives
+route guidance actions from the MDP, simulate the current
+network-wide traffic condition within this time step. Then it
+generates the reward metrics for this time step (to MDP)
+and the supply and demand information for next time step
+prediction (to the prediction module). The latter ensures that
+the traffic prediction module has access to real-time traffic
+conditions, thereby significantly improving the route guidance
+performance.
+2) Traffic Prediction Module: The traffic prediction module
+utilized herein accepts two primary inputs: the detailed travel
+demands of the users (real-time location, destination, and
+trajectory) and the current (real-time) or historical traffic
+conditions encompassing the road network. As mentioned
+previously, the former information is accessible through navigation apps and the latter comes from road-side detectors.
+Based on the input data stream, our traffic prediction could
+follow a dual-driven paradigm, wherein DL models (current and near future traffic conditions as input and output,
+respectively) and simulation model (traffic condition and user
+demand are input for simulating traffic dynamics) are fused to
+provide reliable outcomes. The output generated by the traffic
+prediction module is a detailed account of key traffic metrics of
+the next time step (or next several time steps) on expressways
+and their parallel sections. The predictions are then integrated
+into the MDP as part of the agent state, facilitating a more
+nuanced understanding and management of traffic dynamics.
+In this article, the SUMO is employed to forecast imminent
+traffic congestion. That is, a twin SUMO model is created
+to make near-future traffic predictions. Employing microsimulation principles, the SUMO-based prediction module aims
+to meticulously record the prevailing conditions of the road
+network, ensuring continuous updates to near future travel
+distribution patterns. As mentioned in Section III-A1 real-time
+data acquisition is facilitated through the expressway system
+simulation module. The prediction length in this article can
+be set as 5, 10, or 15 min (a 4-min prediction is adopted in
+this article), during which period the route choices/diversions
+would remain constant with the current condition and the traffic is predicted via microsimulation principles. The outcome
+of this simulation is the acquisition of real-time traffic data.
+3) Markov Decision Processes Module: In the context of
+the expressway system, the optimization of the differentiated
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+WANG et al.: PROACTIVE URBAN EXPRESSWAY GUIDANCE: A HYBRID APPROACH
+
+Fig. 2.
+
+MDP module.
+
+route guidance plans primarily hinges upon the effective
+control of the primary OD pairs over a horizon of T time
+steps. Before seeking the optimal route guidance plans under
+various travel demand patterns, it is necessary to develop an
+MDP module that encodes/decodes the system traffic conditions and route guidance plans between the decision module,
+the simulation module, and prediction module. The MDP
+amalgamates the system transformations of states, actions, and
+rewards, synthesizes information among the decision module,
+simulation module, and prediction module. This time-step
+based feedback loop facilitates the continued learning and
+adaptation of the route guidance decisions, enhancing its
+effectiveness and robustness in active congestion mitigation.
+Fig. 2 shows the specific definition of MDP. The definitions
+of agent, state, action, reward are as follows.
+Agent: An agent in the MDP is conceptualized as the route
+division controller for a singular primary OD pair. The total
+count of agents corresponds to the number of primary OD
+pairs. Notably, these agents adhere to fixed initial policies,
+while the routes they traverse dynamically evolve based on
+the decision module (i.e., DRL). In other words, each agent
+selects actions contingent upon the state and the policy derived
+from the DRL algorithm. Agents begins with a heightened rate
+of exploration (throughout the solution space), enabling the
+DRL algorithm to assess the impact of varying guidance rates;
+this exploratory phase is governed by a decay rate, designed
+to gradually stabilize the strategy as training progresses. To
+optimize the overall traffic conditions on the network, a fully
+cooperative framework is employed, wherein each agent aims
+to strategically manage traffic across their respective OD pairs,
+fostering a collaborative environment that enhances overall
+system performance.
+State: Aiming at proactive traffic control, agents in the
+proposed TP-RLNG regards predicted traffic condition (given
+by the prediction module) as their states. Specifically, we set
+the traffic flow prediction periods (intervals) as t, and the
+road network is represented by M edges. For the predicted
+road network at time step t + t, we consider three critical
+parameters for each road segment m: the vehicle count bt+t,m ,
+the average speed of vehicles vt+t,m and the mean length
+lt+t,m . Consequently, the state at time period t is defined as
+
+st = bt+t,1 , . . . , bt+t,M
+
+(1)
+vt+t,1 , . . . ,t+t,M , lt+t,1 , . . . , lt+t,M .
+
+37595
+
+Action: In order to achieve the diversion of primary OD
+pairs, the action of an agent is defined as the route division/distribution of vehicles among the feasible paths of the
+corresponding primary OD, in which the path set is predetermined. Specifically, the action is defined as an N-dimensional
+vector, where N corresponds to the total number of paths from
+the controllable primary OD pair. The proportion of traffic
+allocated to each path, denoted as pt,n for a given path n at
+time t, is a continuous variable. Specifically, the output action
+is the initial diversion strategy of the controlled vehicle, which,
+once determined, must adhere to the chosen route without any
+en-route diversion
+
+
+(2)
+at = pt,1 , pt,2 , . . . , pt,n .
+Reward: In the context of fully cooperation, the cumulative
+reward for each agent is denoted as Ri , and is uniform across
+all agents, expressed as
+R1 = R2 = · · · = R =
+
+T
+
+
+rt
+
+(3)
+
+t=1
+
+where rt denotes the reward garnered by an agent at time step
+t, and it is a function of action at and state st
+rt (at , st ) = −
+
+M
+
+
+TTt,m
+
+(4)
+
+m=1
+
+where TTt,m represents the total travel time for road segment.
+The aggregation of TTt,m for all segments yields the total
+travel time for the entire road network. Due to the potential
+convergence issues arising from delayed rewards, we employ
+the API in SUMO to approximate vehicular travel times. This
+estimation, while not reflecting the precise travel durations,
+serves as an indicator of the overall congestion levels within
+the road network.
+4) Route Diversion Decision Module: In this study, we
+employ a MARL approach, i.e., the VDAC algorithm, to seek
+the optimal dynamic route guidance strategies of the MDP
+module. This implementation marks the inaugural application
+of VDAC algorithms within the realm of transportation,
+offering a novel perspective in this field.
+The VDAC algorithm, introduced by Su et al. [43], represents an evolution of the multiagent Actor–Critic (A2C)
+framework. The primary objective of VDAC is to strike a balance between operational efficiency and performance efficacy.
+Empirical evidence presented by Su et al. [43] substantiates
+the superiority of the VDAC algorithm over other actor–critic
+methodologies.
+Central to VDAC’s methodology is the reliance on agentlocal observations, denoted as V i , which represent the local
+state value for agent i. The algorithm utilizes Vtot , to signify the
+global state value based on the actual state of the environment.
+A distinctive feature of VDAC is the incorporation of local
+critics. These local critics are capable of sharing a network
+with other actors while estimating local state values V i .
+Concurrently, the central critic is tasked with learning the
+global state value Vtot .
+In scenarios where ec is defined as the episode count, the
+initial hidden state of agent i, denoted by hio , serves a purpose
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+37596
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 12, NO. 18, 15 SEPTEMBER 2025
+
+Algorithm 1 VDAC Algorithm
+Input: Initialize hypernetwork θ c and actor network θ
+for each training episode e do
+Empty Buffer
+for ec =1 to BatchSize
+n
+t= 0, hoi for each agent i
+while t = 1, 2...T do
+t =t+1
+for each agent a do
+hit , πti , Vti =actor(sit , hit−1 , uit−1 .i; θ )
+Sample action uit from πti
+Sample action uit from πti
+end for
+Get reward rt and next state st+1
+end while
+add experience to buffer
+end for
+Collate episodes in buffer into single batch
+for t = 1 to T do
+Batch unroll RNN using states, actions and reward
+Calculate yt and at using θ
+Accumulate gradient wrt:θv ← θv + ∇θ (yt −
+Vtot (V1 , V2 , ..., Vn ))2
+end for
+for t = 1 to T do
+t+1
+t
+− Vtot
+At = rt+1 + λVtot
+Accumulate gradient wrt θ :θπ ← θπ +
+∇θ logπθ (uat | sat )At
+end for
+Update actor weights θ = θ + απ θπ − αv θv
+end for
+
+of critical importance. This hidden state, notably, undergoes
+an update at a particular time step t, functioning essentially
+as a mnemonic device that stores the preceding experiences
+and states of the agent. The policy function, in this context, is
+represented by πθ . Furthermore, the expected return, typified
+by yt , is defined as the cumulative reward that starts from the
+time step t and extends until the task concludes or reaches
+a certain truncation point. The function of yt is primarily to
+work in coordination with At to facilitate adjustments to the
+parameters of the agent’s policy. The systematic application of
+such processes, when well-executed, can help to optimize the
+overall performance of the agent, providing it with a robust
+capability to respond effectively based on its accumulated
+experiences and rewards.
+B. Modeling and Learning Flowchart of TP-RLNG
+The TP-RLNG aims to provide a novel approach to control
+expressway systems. Each of its modules plays a distinctive yet
+cohesive role to form a synergistic network that can emulate,
+project, and strategize based upon prevailing traffic realities.
+The system module emulates present traffic scenarios, aiding
+decision-making regarding immediate navigational course of
+actions. The prediction module, on the other hand, anticipates
+forthcoming traffic scenarios to allow proactive strategizing.
+
+Fig. 3.
+
+Detailed modeling and learning flowchart.
+
+Finally, the DRL decision module designs guidance strategies
+based on the feedback from the simulation and prediction
+modules. The information, states, rewards, actions of the aforementioned three modules are transferred and communicated
+via the MDP. Given the system module, prediction module,
+and MDP, the decision module is tasked with undergoing
+training over a predefined number of epochs. Fig. 3 illustrates
+the detailed modeling and learning flowchart within each
+epoch, which employs a color-coded to differentiate between
+various operational phases and their interactions over time.
+The blue line signifies both the initiation and termination of
+the approach. The orange line denotes the cyclic transmission
+of information within each time step t, encapsulating the
+temporal evolution of the process. The red line is indicative of
+the information exchange within the route diversion decision
+module.
+Within each epoch, the approach engages in system simulation and route guidance activities across T time steps.
+Preliminary setup involves the system module initialization
+(warming up demand and traffic state), and the route diversion
+decision module establishes a random initial policy. After
+initialization, time t incrementally progresses from 0 to T.
+The sequence of operations for each time slot unfolds as
+follows: The MDP module uses a forecasted traffic status
+from the traffic prediction module. Subsequently, it retrieves
+the current policy from the decision module. An action is
+derived according to the policy and state, and is passed from
+the MDP to the system module. Following this, the system
+module assimilates the current traffic demand pertinent to
+the ongoing time, and modulates the traffic diversion ratio
+as influenced by vehicle movements, in accordance with the
+actions relayed. The simulated results within time step t from
+the system module is summarized as the reward and transferred
+to MDP. Meanwhile, a twin SUMO simulation leveraging
+the current traffic conditions and the latest division action
+as reported by the traffic simulation module is conducted,
+and its near future results until t + t are regarded as the
+anticipated states, which is forwarded to MDP. This iterative
+adjustment ensures the continual alignment of the traffic
+prediction module with the real-time dynamics observed in
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+WANG et al.: PROACTIVE URBAN EXPRESSWAY GUIDANCE: A HYBRID APPROACH
+
+Fig. 4.
+
+OD pairs and their alternate routes.
+TABLE I
+OD PAIRS AND T HEIR A LTERNATIVE ROUTES
+
+the traffic simulation environment, thereby refining the overall
+predictive accuracy of the system. After the execution of T
+time steps, the cumulative rewards are computed, representing
+the performance of the differentiated route guidance decision.
+IV. C ASE S TUDY
+To assess the efficacy of the TP-RLNG approach, a
+SUMO-based system simulation model that reflects real-world
+conditions is established. The simulation replicates the Liushi
+Expressway in Hangzhou, China, accompanied by parallel
+arterial roads. Section IV-A encompasses the development
+and calibration of the system module and the prediction
+module, the determination of MDP hyperparameters, and the
+hyperparameters of DRL algorithm. Section IV-B presents a
+detailed analysis of the experimental results, offering insights
+into the practical implications and effectiveness of the TPRLNG approach under different travel demand conditions.
+A. Setting of Key Modules
+The specific road network of the case study includes the
+Liushi Expressway, Shixiang Road, and adjacent bypasses in
+Hangzhou, China. We focus on four primary OD pairs of
+controlled vehicles. The OD pairs for these groups, along with
+their potential routing options, including expressway ramps
+and side road selections, are shown in Fig. 4. Table I delineates the specificities of the primary OD pairs, encompassing
+the demand and three to four main alternative routes. The road
+network spans approximately 7.8 km in the east-west direction,
+
+37597
+
+featuring three entrance ramps and four exit ramps. Vehicles
+can freely travel between the two roads via these ramps. The
+Liushi Expressway has no traffic lights, with the number of
+lanes varying between two and four. In contrast, Shixiang Road
+is equipped with traffic lights and primarily consists of two
+lanes, with only a few sections expanded to three or four lanes.
+According to the local traffic rules, the speed limits are set
+as 90 km/h on the Liushi Expressway, 70 km/h on Shixiang
+Road, and 60 km/h on other secondary roads. The simulation
+model consists of a total number of 4568 links and 2279 nodes.
+There are six traffic lights in the parallel arterial and 17 traffic
+lights in the secondary road.
+In this study, we employ an enhanced Krauss model as
+our car-following model, which emphasizes maintaining a
+safe following distance. This model assumes that drivers
+aim to keep a safe buffer from the vehicle ahead, enabling
+sufficient reaction time should the leading vehicle decelerate
+abruptly, thereby preventing collisions. The lane-changing
+model incorporated in our analysis is structured to first identify
+lanes with strategic importance. It then determines velocity
+requirements that account for safety and the dynamics of
+lane changing, generates lane change requests, and computes
+desired speeds for lane changing [44].
+To accurately depict the capacities of the road network,
+we calculate the capacities of road segments using theoretical
+formulas outlined in the SUMO documentation. Specifically,
+the capacity for the expressway is calculated at 5538 veh/h,
+for parallel arterial at 5194 veh/h, and for Huzhou Road, a
+typical secondary road, at 2880 veh/h. It is crucial to note that
+theoretical traffic capacities under ideal conditions differ from
+actual capacities in simulations due to variable vehicle speeds
+and random decelerations influenced by vehicle interaction
+models.
+Two distinct vehicle types are included in the numerical
+study: 1) background traffic and 2) controlled vehicles from
+primary OD pairs. Vehicles from the latter category are subject
+to routing decisions made by the decision module. This
+comprehensive approach allows for a nuanced understanding
+of traffic dynamics under the influence of the TP-RLNG
+approach.
+To verify the robustness of TP-RLNG, this article sets
+up scenarios with different travel demand patterns. Here, we
+take the concentration level of primary OD pairs as a key
+variable. The concentration level is defined as the ratio of
+vehicles entering the road network within a narrow time
+interval to the total number of vehicles allocated to a specific
+OD pair. In other words, we set a constant total vehicular
+volume for each OD pair, while focusing on the variation in
+temporal distribution, referred to as the concentration level.
+Four scenarios with concentration levels of 0%, 25%, 50%,
+and 100% are analyzed. A concentration level of zero denotes
+a scenario where vehicles are distributed evenly across the
+time continuum, entering the road network at a uniform rate;
+the 100% concentration level denotes the scenario wherein
+all vehicles within this OD pair enter the road network
+within a comparatively brief timeframe. It is imperative to
+acknowledge that in practical scenarios, traffic flow will not
+exhibit 100% concentration. The situation described represents
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+37598
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 12, NO. 18, 15 SEPTEMBER 2025
+
+TABLE II
+K EY PARAMETERS IN THE TP-RLNG A PPROACH
+
+a hypothetical model that demonstrates potential extreme
+congestion under highly specific and severe conditions.
+The hyperparameters of the MDP model and the DRL
+algorithm, are meticulously chosen and are comprehensively
+detailed in Table II. The DRL control algorithms are implemented using Python 3.8, a programming language widely
+recognized for its efficacy in scientific computing and data
+analysis.
+
+TABLE III
+C OMPARISON OF AVERAGE T RAVEL T IMES FOR
+D IFFERENT S CENARIOS ( MIN )
+
+TABLE IV
+P-VALUE C OMPARED TO THE N O -C ONTROL M ETHOD
+
+B. Result Analysis
+In the subsequent sections, we conduct a series of numerical
+analyses, including a performance gap analysis, to evaluate
+the effectiveness of various routing methods. This analysis
+specifically contrasts the performance of existing routing
+algorithms, RL algorithms, and our proposed TP-RLNG in
+diverse traffic scenarios. Initially, we investigate the influence
+of the average travel time. Subsequently, we examine the
+impact of the routing methods on different segments of the
+road network, focusing on the Liushi Expressway, Shixiang
+Road, and adjacent road sections. Last, we select a specific
+scenario to analyze the guidance strategies of different routing
+methods.
+1) Route Guidance Approaches in Comparison: To demonstrate the efficacy of the approach presented in this study, we
+compare it against a range of existing algorithms as outlined
+below.
+No-Control: This baseline approach entails no intervention
+in the original road network. The outcomes here reflect the
+results of the traffic calibration previously executed.
+Selfish-Routing: It replicates the guidance algorithm of current navigation systems. This approach calculates the shortest
+travel time route based on real-time detected traffic metrics and
+conduct all-or-nothing route guidance for vehicles departing
+from the same OD pair during the same time step (no
+differentiated guidance).
+Preselfish-Routing: In this method, akin to selfish-routing,
+we employ predicted future road conditions to determine the
+shortest path. It provides traffic prediction based all-or-nothing
+route guidance.
+HIT2FLS: This approach presents an Adaptive Hierarchical
+Interval Type-2 Fuzzy Knowledge Representation system,
+enhanced by particle swarm optimization (PSO), for travel
+route guidance [45]. This method demonstrates a robust
+capability in optimizing traffic flow and minimizing congestion
+on a global scale, thereby contributing to the improvement of
+urban mobility.
+
+RLNG: The key distinction of this method from the TPRLNG approach lies in its input for the MDP state. Instead
+of incorporating predicted traffic flow metrics, it utilizes the
+current metrics of the road network for training. This is a
+differentiated route guidance method, offering different routes
+to vehicles departing from the same OD pair during the same
+time step.
+These methods will be systematically evaluated to ascertain
+the relative performance and impact of the TP-RLNG approach
+in optimizing traffic flow and reducing overall travel time in
+complex road networks.
+This part assesses the effectiveness of different guidance
+methods designed to enhance road network efficiency. It does
+so by examining two key metrics: 1) the average travel time of
+all vehicles traversing the network and 2) the average speed on
+specific road segments, namely, Liushi Expressway, Shixiang
+Road, and secondary roads.
+Table III presents the average travel time and variance under
+different travel demand scenarios, alongside the comparative
+enhancement values (in brackets) relative to a baseline nocontrol approach.
+To evaluate the differences in average travel time across various guidance approaches, an analysis of variance (ANOVA)
+is performed. The p-values obtained for all approaches,
+when compared to the no-control scenario, are presented in
+Table IV. In each paired comparison model, the p-values are
+consistently well below 0.01. This indicates robust statistical
+evidence supporting the conclusion that all tested navigation
+guidance approaches result in significant reductions in average
+travel time relative to the no-control baseline.
+In no-control, a positive correlation between traffic flow
+concentration and travel time is observed. This correlation
+is attributed to a controlled constant number of OD pairs
+in the road network simulation, where increased commuter
+concentration exacerbates congestion.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+WANG et al.: PROACTIVE URBAN EXPRESSWAY GUIDANCE: A HYBRID APPROACH
+
+37599
+
+Fig. 5. Average velocity of Liushi Expressway, Shixiang Road, and Huzhou Road. (a) 0% concentration. (b) 25% concentration. (c) 50% concentration.
+(d) 100% concentration.
+
+The performance of selfish-routing is also scrutinized.
+The approach demonstrate moderate improvement in demand
+concentrations 0%, 25%, and 50%, suggesting their efficiency in mildly fluctuating traffic conditions. However, as
+the unpredictability of road network conditions escalates, the
+effectiveness of this approach diminishes, particularly in the
+high traffic concentration level of 100%. Under stable traffic
+conditions, the performance of preselfish-routing is comparable to that of selfish-routing. However, preselfish-routing
+significantly outperforms selfish-routing under congestion
+oscillation. This improvement can be attributed to the incorporation of traffic flow prediction, which enables the anticipation
+of future traffic congestion and the proactive diversion of
+vehicles.
+HIT2FLS demonstrates a notable degree of optimization
+across all four scenarios. It induces a positive enhancement of
+the road network condition in scenario 1, 2, 3, and 4.
+Regarding the RLNG, it outperforms TP-RLNG under
+concentrations 0% and 25%, which are characterized by relatively stable traffic conditions. Conversely, in scenarios with
+significant road network changes, the RLNG’s performance is
+eclipsed by TP-RLNG.
+TP-RLNG demonstrates a narrower performance gap with
+RLNG under smooth traffic conditions, while exhibiting superior performance in more complex scenarios. This is likely due
+to the integration of a novel traffic prediction module, which
+enables more accurate anticipation of future traffic fluctuations
+and timely strategy adjustments.
+The analysis of average speeds within the road network
+focuses on three key road: 1) Liushi Expressway; 2) Shixiang
+
+Road; and 3) Huzhou Road. These roads are selected to
+represent the impact of different guidance algorithms on
+expressways, parallel arterial roads, and secondary roads,
+respectively. The specific results are shown in Fig. 5.
+No-Control: Congestion levels are consistently highest on
+expressways across all demand scenarios except for scenario4.
+Interestingly, secondary roads exhibit a lower level of congestion.
+Selfish-Routing: Compared with no-control, selfish-routing
+demonstrates a capacity to alleviate congestion on expressways, particularly in scenarios with low concentrations.
+However, its effectiveness turns counterproductive under
+concentration 100%, adversely affecting expressway traffic
+efficiency.
+Preselfish-Routing: When traffic flow is relatively stable, the efficiency optimization of road networks through
+preselfish-routing is inferior to that of selfish-routing under
+concentration 0%. However, under conditions of high traffic
+flow instability, preselfish-routing demonstrates significantly
+better optimization compared to selfish-routing.
+HIT2FLS: In all four scenarios, this method enhances road
+network efficiency; however, the overall improvement in road
+network efficiency remains relatively modest.
+RLNG: It shows a marked improvement in expressway
+traffic efficiency across all demand scenarios. The degree
+of improvement is more pronounced in low concentration
+scenarios than in high concentration scenarios.
+TP-RLNG: This approach yields significant optimization for
+expressway traffic in all scenarios. However, it tends to have
+a negative impact on the traffic flow of secondary roads.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+37600
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 12, NO. 18, 15 SEPTEMBER 2025
+
+Fig. 6. Time-space velocity diagram of Liushi Expressway. (a) No-control. (b) Selfish-routing. (c) Preselfish-routing. (d) HIT2FLS. (e) RLNG. (f) TP-RLNG.
+
+The findings suggest that while a low concentration of
+navigation approaches can enhance traffic efficiency, a high
+concentration may prove detrimental. The proposed TP-RLNG
+approach stands out for its consistent performance across various travel demand scenarios, offering substantial optimization
+for expressways. Nonetheless, it is important to note the
+tradeoff, as this optimization comes at the expense of reduced
+benefits for secondary road users. This comprehensive analysis
+underscores the need for a balanced approach in the implementation of traffic guidance algorithms, considering their varied
+impacts on different road types and traffic scenarios.
+2) Strategic Analysis: To enhance the comparative analysis
+of TP-RLNG against other traffic navigation approaches,
+particularly in terms of impact on road network status and
+controlled OD queues, this section delves deeper into the
+approach’s effects. Building upon the findings discussed in
+the preceding section, it is evident that the TP-RLNG’s
+superiority over RL becomes increasingly pronounced under
+scenarios of high traffic concentration level. Consequently,
+we have selected scenario concentration 50% for an in-depth
+examination.
+The analysis of the impact of various guidance methods
+on expressway traffic reveals significant disparities, as shown
+in Fig. 6. By comparing different methods, we find that both
+selfish-routing and preselfish-routing can reduce the severity and extent of congestion under the no-control scenario,
+but the effects are not particularly pronounced. In contrast,
+HIT2FLS has little to no impact on mitigating congestion on
+expressways. RLNG can alleviate expressway congestion to
+a considerable extent, while TP-RLNG is capable of completely eliminating congestion on expressways. This enhanced
+performance of TP-RLNG is attributed to its ability to predict
+and proactively alleviate upcoming congestion in future traffic
+sections, a significant advancement over RLNG’s reactive
+guidance strategy.
+In Fig. 7, the N-curve analysis shows that all traffic management strategies tested improve vehicle distribution over a
+
+Fig. 7.
+
+N-curve of different approaches.
+
+Fig. 8.
+
+Average travel time under different methods for four OD pairs.
+
+no-control baseline, with TP-RLNG being the most effective
+in facilitating earlier arrivals. This strategy is followed in
+effectiveness by RLNG, preselfish-routing, selfish-routing, and
+HIT2FLS. The analysis reveals that the impact of these
+methods on traffic flow does not manifest as abrupt shifts but
+rather as a consistent acceleration in vehicle arrivals.
+In order to elucidate the strategic efficacy of different
+approaches, a comprehensive analysis is conducted focusing
+on the travel time across various OD pairs under different
+guidance strategies. The average travel times for different OD
+pairs are shown in Fig. 8.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+WANG et al.: PROACTIVE URBAN EXPRESSWAY GUIDANCE: A HYBRID APPROACH
+
+TABLE V
+C OMPARISON OF G INI C OEFFICIENTS FOR D IFFERENT OD PAIRS
+
+It can be observed that most methods demonstrate a
+certain level of effectiveness in optimizing the travel time
+of controllable OD pairs. For OD2, most methods are
+able to significantly reduce travel time, whereas the degree
+of optimization for other OD pairs is relatively small.
+Additionally, we note that, in OD4, the proposed TP-RLNG
+approach actually increases the travel time for individual users
+to some extent. This phenomenon indicates that, during the
+process of global optimization, TP-RLNG occasionally prioritizes overall system performance, achieving improvements in
+global objectives at the expense of certain users’ interests.
+Table V presents the Gini coefficients of travel times for
+different OD pairs. It can be observed that the Gini coefficients
+of TP-RLNG are higher than those of other methods for OD1,
+OD3, and OD4. This also validates the view that TP-RLNG
+optimizes overall system performance at the expense of some
+users’ interests.
+In our approach, the compliance rate of drivers and the
+prediction accuracy of traffic flow are critical factors influencing the overall effectiveness of the results. When compliance
+rates are low or prediction accuracy is poor, the outcomes
+may become suboptimal. To evaluate the robustness under
+such conditions, we conduct a sensitivity analysis. Specifically,
+scenarios with compliance rates 80% and 90% are simulated,
+and noise levels of 10% and 20% are introduced into the
+prediction module as inaccurate predicted states. The detailed
+results are presented in Table VI. The analysis reveals that
+reduced compliance and increased prediction noise both negatively impact performance. For instance, an 80% compliance
+rate results in a 5.6% decline compared to full compliance,
+while 20% noise leads to an 10.3% decrease relative to
+noise-free predictions. Nevertheless, even under the worst-case
+scenario, our approach consistently outperforms the RLNG
+without traffic flow prediction, underscoring its robustness and
+effectiveness.
+V. C ONCLUSION
+The objective of this study is to overcome the limitations
+inherent in conventional navigation systems, which are primarily characterized by two significant shortcomings: 1) the
+prevalent use of “all-or-nothing” traffic guidance often results
+in navigation-induced congestion, and 2) existing guidance
+methods lack predictive capabilities, leading to congestion
+oscillation. To mitigate navigation-induced congestion, we
+propose the implementation of multi OD differentiated guidance. Additionally, to avoid the congestion oscillation, we
+introduce traffic flow prediction mechanisms. To this end,
+we introduce an expressway guidance approach leveraging
+
+37601
+
+TABLE VI
+S ENSITIVITY A NALYSIS OF S YSTEM T RAVEL T IME ( MIN )
+
+traffic flow prediction and RL. This approach integrates traffic
+flow predictions into a MDP model, representing a significant
+advancement over existing approaches.
+The TP-RLNG approach employs an VDAC method to
+identify optimal solutions. We validate the approach’s efficacy through microsimulation in the SUMO traffic simulation
+environment, focusing on the Liushi Expressway and adjacent roads in Hangzhou, China. Comparative analyses are
+conducted between TP-RLNG and existing routing algorithms
+under a variety of traffic demand scenarios. Our findings reveal
+that while TP-RLNG demonstrates comparable performance
+to the RLNG under low traffic concentrations, it significantly
+outperforms them in high traffic concentration scenarios.
+Although widely used navigation algorithms can enhance road
+network efficiency in certain cases, they may also exacerbate
+congestion in others. Incorporating traffic flow predictions
+into navigation systems can significantly enhance their reliability. The TP-RLNG approach shows robust performance
+across diverse scenarios, though it occasionally prioritizes
+global optimization at the expense of individual user benefits.
+Experimental results indicate that the differentiated guidance
+of multiple OD pairs can globally optimize transportation
+systems and mitigate navigation congestion. However, this
+approach does not address the reliability issues of guidance
+systems. While integrating traffic flow prediction into guidance
+systems enhances their stability, it falls short of achieving
+global optimization. The optimal solution emerges from combining traffic flow prediction with differentiated guidance,
+effectively balancing system-wide efficiency and reliability.
+Looking forward, we identify several avenues for enhancing
+this approach. First, incorporating fairness into the reward
+function of the MDP is crucial, as the current algorithm
+does not consider the individual impact of suggested routes.
+Additionally, integrating DL-based traffic prediction models
+with traffic flow data could enrich the MDP state space,
+offering more nuanced guidance. Lastly, synergizing the guidance algorithm with traffic management strategies like ramp
+control and variable speed limits could further optimize road
+network efficiency. In the application of this approach within
+real-world traffic systems, emphasis should be placed on
+obtaining the data required for route guidance optimization
+and establishing the communication channels for transmitting
+guidance strategies. For traffic data collection, existing road
+detection equipment can be utilized, including loop detectors, microwave sensors, video surveillance systems, FCD,
+and various data collection terminals equipped with GPS.
+Regarding the dissemination of guided routes, personalized
+route recommendations can be provided through navigation
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+37602
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 12, NO. 18, 15 SEPTEMBER 2025
+
+software, which can be implemented via mobile phones,
+in-vehicle navigation systems, or C-ITS and other terminal
+devices. This hardware support infrastructure can effectively
+meet the needs of real-time traffic information collection and
+route guidance, providing the necessary technical foundation
+for the practical application of the method.
+In summary, this research marks a significant step toward
+more proactive and adaptive traffic management, with the
+potential to substantially improve congestion and overall road
+network performance.
+
+[22] G. H. Bham and R. F. Benekohal, “A high fidelity traffic simulation
+model based on cellular automata and car-following concepts,” Transp.
+Res. C, Emerg. Technol., vol. 12, no. 1, pp. 1–32, 2004.
+[23] G. F. Newell, “A simplified car-following theory: A lower order model,”
+Transp. Res. B, Methodol., vol. 36, no. 3, pp. 195–205, 2002.
+[24] M. Fellendorf and P. Vortisch, “Microscopic traffic flow simulator
+VISSIM,” in Fundamentals of Traffic Simulation, J. Barceló, Ed. New
+York, NY, USA: Springer, 2010, pp. 63–93.
+[25] D. Krajzewicz, G. Hertkorn, C. Feld, and P. Wagner, “SUMO (simulation
+of urban mobility); an open-source traffic simulation,” in Proc. 4th
+Middle East Symp. Simul. Modelling (MESM), 2002, pp. 183–187.
+[26] Z. Zhang, C. Fang, J. Zhang, J. Qian, and Q. Su, “Traffic guidance based
+on LSTM neural network and dual tracking Dijkstra algorithm,” in Proc.
+IEEE 3rd Int. Conf. Inf. Syst. Comput. Aided Educ. (ICISCAE), 2020,
+pp. 497–503.
+[27] D. Neiman, Z. Rubinstein, and S. Smith, “Dynamic route guidance in
+vehicle networks by simulating future traffic patterns,” in Proc. Int.
+FLAIRS Conf., vol. 36, 2023, pp. 1–7.
+[28] Y. Wu, H. Tan, L. Qin, and B. Ran, “Differential variable speed limits
+control for freeway recurrent bottlenecks via deep actor-critic algorithm,”
+Transp. Res. C, Emerg. Technol., vol. 117, Aug. 2020, Art. no. 102649.
+[29] Z. Shi, M. Xu, Y. Song, and Z. Zhu, “Multi-platform dynamic game
+and operation of hybrid bike-sharing systems based on reinforcement
+learning,” Transp. Res. E, Logist. Transp. Rev., vol. 181, Jan. 2024,
+Art. no. 103374.
+[30] Z. Zhu, J. Ke, and H. Wang, “A mean-field Markov decision process
+model for spatial-temporal subsidies in ride-sourcing markets,” Transp.
+Res. B, Methodol., vol. 150, pp. 540–565, Aug. 2021.
+[31] L. Wang et al., “Comparing AI and human decision-making mechanisms
+in daily collaborative experiments,” iScience, vol. 28, no. 6, 2025,
+Art. no. 112711.
+[32] C. Mao and Z. Shen, “A reinforcement learning framework for the
+adaptive routing problem in stochastic time-dependent network,” Transp.
+Res. C, Emerg. Technol., vol. 93, pp. 179–197, Aug. 2018.
+[33] D. Lee, “Transfer learning-based deep reinforcement learning approach
+for robust route guidance in mixed traffic environment,” IEEE Access,
+vol. 12, pp. 61667–61680, 2024.
+[34] W. Pan and S. Q. Liu, “Deep reinforcement learning for the dynamic
+and uncertain vehicle routing problem,” Appl. Intell., vol. 53, no. 1,
+pp. 405–422, 2023.
+[35] Z. Qi, L. Wang, Z. Jiang, Z. Zhu, and D.-H. Lee, “Carbon emissionfocused dynamic eco-route guidance design for urban expressway
+systems,” Transportmetrica B, Transp. Dyn., vol. 13, no. 1, 2025,
+Art. no. 2491673.
+[36] R. Basso, B. Kulcsár, I. Sanchez-Diaz, and X. Qu, “Dynamic stochastic
+electric vehicle routing with safe reinforcement learning,” Transp. Res.
+E, Logist. Transp. Rev., vol. 157, Jan. 2022, At. no. 102496.
+[37] J. Zhao, M. Mao, X. Zhao, and J. Zou, “A hybrid of deep reinforcement learning and local search for the vehicle routing problems,”
+IEEE Trans. Intell. Transp. Syst., vol. 22, no. 11, pp. 7208–7218,
+Nov. 2021.
+[38] R. Qi, J. Qing Li, J. Wang, H. Jin, and Y. Yan Han, “QMOEA: A
+Q-learning-based multiobjective evolutionary algorithm for solving timedependent green vehicle routing problems with time windows,” Inf. Sci.,
+vol. 608, pp. 178–201, Aug. 2022.
+[39] D. Lee, S. Tak, and S. Kim, “Development of reinforcement learningbased traffic predictive route guidance algorithm under uncertain traffic
+environment,” IEEE Access, vol. 10, pp. 58623–58634, 2022.
+[40] P. A. Lopez et al., “Microscopic traffic simulation using SUMO,” in
+Proc. 21st Int. Conf. Intell. Transp. Syst. (ITSC), 2018, pp. 2575–2582.
+[41] A. Wegener, M. Piórkowski, M. Raya, H. Hellbrück, S. Fischer,
+and J.-P. Hubaux, “TraCI: An interface for coupling road traffic and
+network simulators,” in Proc. 11th Commun. Netw. Simul. Symp., 2008,
+pp. 155–163.
+[42] P. M. Ejercito, K. G. E. Nebrija, R. P. Feria, and L. L. Lara-Figueroa,
+“Traffic simulation software review,” in Proc. 8th Int. Conf. Inf., Intell.,
+Syst. Appl. (IISA), 2017, pp. 1–4.
+[43] J. Su, S. Adams, and P. Beling, “Value-decomposition multi-agent
+actor-critics,” in Proc. AAAI Conf. Artif. Intell., vol. 35, 2021,
+pp. 11352–11360.
+[44] J. Erdmann, “SUMO’s lane-changing model,” in Modeling Mobility
+with Open Data. Cham, Switzerland: Springer, 2015, pp. 105–123.
+[Online]. Available: https://link.springer.com/chapter/10.1007/978-3319-15024-6_7
+[45] M. Zouari, N. Baklouti, J. Sanchez-Medina, H. M. Kammoun,
+M. B. Ayed, and A. M. Alimi, “PSO-based adaptive hierarchical interval
+type-2 fuzzy knowledge representation system (PSO-AHIT2FKRS) for
+travel route guidance,” IEEE Trans. Intell. Transp. Syst., vol. 23, no. 2,
+pp. 804–818, Feb. 2022.
+
+R EFERENCES
+[1] C. Higgins, M. Sweet, and P. Kanaroglou, “All minutes are not equal:
+Travel time and the effects of congestion on commute satisfaction in
+Canadian cities,” Transportation, vol. 45, pp. 1249–1268, Sep. 2018.
+[2] T. Roughgarden and E. Tardos, “How bad is selfish routing?” in Proc.
+41st Annu. Symp. Found.Comput. Sci., 2000, pp. 93–102.
+[3] M. Wardman, P. W. Bonsall, and J. D. Shires, “Driver response to
+variable message signs: A stated preference investigation,” Transp. Res.
+C, Emerg. Technol., vol. 5, no. 6, pp. 389–405, 1997.
+[4] D. Large, G. Burnett, S. Benford, and K. Oliver, “Crowdsourcing
+good landmarks for in-vehicle navigation systems,” Behav. Inf. Technol.,
+vol. 35, no. 10, pp. 1–10, 2016.
+[5] T. Fukuda, K. Takefuji, Y. Ikemoto, and Y. Hasegawa, “Dynamical
+route-planning for vehicles based on global traffic information and
+communication,” in Proc. IEEE ITS Conf., 2002, pp. 538–543.
+[6] S. Koh et al., “Real-time deep reinforcement learning based vehicle
+navigation,” Appl. Soft Comput., vol. 96, Nov. 2020, Art. no. 106694.
+[7] J. J. Kponyo, Y. Kuang, and Z. Li, “Real time status collection and
+dynamic vehicular traffic control using ant colony optimization,” in Proc.
+Int. Conf. Comput. Problem-Solving (ICCP), 2012, pp. 69–72.
+[8] Y. Liu, G.-L. Chang, and J. Yu, “An integrated control model for freeway
+corridor under nonrecurrent congestion,” IEEE Trans. Veh. Technol.,
+vol. 60, no. 4, pp. 1404–1418, May 2011.
+[9] Y.-C. Chiu and N. Huynh, “Location configuration design for dynamic
+message signs under stochastic incident and ATIS scenarios,” Transp.
+Res. C, Emerg. Technol., vol. 15, no. 1, pp. 33–50, 2007.
+[10] Y. Wang, M. Papageorgiou, and A. Messmer, “Feedback and iterative
+routing strategies for freeway networks,” in Proc. IEEE Int. Conf.
+Control Appl. (CCA), 2001, pp. 1162–1167.
+[11] Y. Wang, M. Papageorgiou, and A. Messmer, “A predictive feedback
+routing control strategy for freeway network traffic,” in Proc. Amer.
+Control Conf., vol. 5, 2002, pp. 3606–3611.
+[12] Z. Liang and Y. Wakahara, “Real-time urban traffic amount prediction
+models for dynamic route guidance systems,” EURASIP J. Wireless
+Commun. Netw., vol. 2014, no. 1, p. 85, May 2014.
+[13] E. Angelelli, I. Arsik, V. Morandi, M. Savelsbergh, and M. G. Speranza,
+“Proactive route guidance to avoid congestion,” Transp. Res. B,
+Methodol., vol. 94, pp. 1–21, Dec. 2016.
+[14] C. van Hinsbergen, J. van Lint, and F. Sanders, “Short term traffic
+prediction models,” in Proc. 14th World Congr. Intell. Transp. Syst.,
+2007, pp. 1–18.
+[15] Z. Zhu, B. Peng, C. Xiong, and L. Zhang, “Short-term traffic flow
+prediction with linear conditional Gaussian Bayesian network,” J. Adv.
+Transp., vol. 50, no. 6, pp. 1111–1123, 2016.
+[16] G. Guo and T. Zhang, “A residual spatio-temporal architecture for travel
+demand forecasting,” Transp. Res. C, Emerg. Technol., vol. 115, Jun.
+2020, Art. no. 102639.
+[17] X. He, Y. Hu, W. Chen, Y. Qin, C. Wu, and W. Lu, “Short-term traffic
+flow prediction via weight optimization of composite models,” Transp.
+Lett., vol. 17, no. 3, pp. 395–405, 2025.
+[18] M. Xu, Y. Di, H. Ding, Z. Zhu, X. Chen, and H. Yang, “AGNP: Networkwide short-term probabilistic traffic speed prediction and imputation,”
+Commun. Transp. Res., vol. 3, Dec. 2023, Art. no. 100099.
+[19] Z. Zhu, M. Xu, J. Ke, H. Yang, and X. M. Chen, “A Bayesian clustering ensemble Gaussian process model for network-wide traffic flow
+clustering and prediction,” Transp. Res. C, Emerg. Technol., vol. 148,
+Mar. 2023, Art. no. 104032.
+[20] Bharti, B. Naheliya, and K. Kumar, “Short-term traffic flow prediction
+in heterogeneous traffic conditions using Gaussian process regression,” Int. J. Inf. Technol., to be published. [Online]. Available:
+https://link.springer.com/article/10.1007/s41870-024-01902-1
+[21] C. Chen, Z. Liu, S. Wan, J. Luan, and Q. Pei, “Traffic flow prediction
+based on deep learning in Internet of Vehicles,” IEEE Trans. Intell.
+Transp. Syst., vol. 22, no. 6, pp. 3776–3789, Jun. 2021.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+WANG et al.: PROACTIVE URBAN EXPRESSWAY GUIDANCE: A HYBRID APPROACH
+
+Linghao Wang received the B.S. degree from
+the College of Civil Engineering and Architecture,
+Zhejiang University, Hangzhou, China, in 2024,
+where he is currently pursuing the Ph.D. degree with
+the Institute of Intelligent Transportation Systems,
+College of Civil Engineering and Architecture.
+His research interests include reinforcement
+learning in traffic guidance system.
+
+Zheyuan Jiang received the B.E. degree in
+intelligent transportation engineering from Beijing
+Jiaotong University, Beijing, China, in 2022. He is
+currently pursuing the M.S. degree with the Institute
+of Intelligent Transportation Systems, Polytechnic
+Institute, Zhejiang University, Hangzhou, China.
+His research interests include traffic control in
+urban expressways, traffic guidance system, and
+reinforcement learning.
+
+Ziyue Qi received the B.E. degree in traffic engineering from Beijing Jiaotong University, Beijing,
+China, in 2022. She is currently pursuing the the
+master’s degree with the Polytechnic Institute and
+the Institute of Intelligent Transportation Systems,
+Zhejiang University, Hangzhou, China.
+Her research interests include eco-routing in traffic guidance system and transportation network
+modeling.
+
+37603
+
+Ziyi Shi received the B.E. degree in traffic
+engineering from Beijing Jiaotong University,
+Beijing, China, in 2022. He is currently pursuing the M.S. degree with the Institute of
+Intelligent Transportation Systems, College of Civil
+Engineering and Architecture, Zhejiang University,
+Hangzhou, China.
+His research interests include multimodal
+transportation and reinforcement learning.
+
+Xiqun Chen (Senior Member, IEEE) received the
+B.E. and Ph.D. degrees from the Department of Civil
+Engineering, Tsinghua University, Beijing, China, in
+2008 and 2013, respectively.
+He is currently a tenured Professor with Zhejiang
+University, Hangzhou, China, the Director of the
+Institute of Intelligent Transportation Systems, and
+the Vice Dean of Zhejiang University—University
+of Illinois Urbana–Champaign Institute, Champaign,
+IL, USA. He has published over 100 peer-reviewed
+journal articles and over 70 conference papers. His
+research interests include intelligent transportation systems, shared mobility on
+demand, simulation-based optimization, and transportation big data analytics.
+Dr. Chen received the National Excellent Young Scholars Award of the
+National Natural Science Foundation of China, the Science and Technology
+Innovation Youth Award of the China Communications and Transportation
+Association, the Science and Technology Award of the China Intelligent
+Transportation Systems Association, the 2013 IEEE Intelligent Transportation
+Systems Society Best Ph.D. Dissertation Award, and the best paper awards at
+six international conferences.
+
+Zheng Zhu received the B.E. degree from
+the Department of Civil Engineering, Tsinghua
+University, Beijing, China, in 2008, the first
+M.S. degree from the Department of Civil and
+Environmental Engineering, University of Maryland,
+College Park, MD, USA, in 2014, the second
+M.S. degree from the Department of Mathematics,
+University of Maryland, College Park, MD, USA, in
+2017, and the Ph.D. degree from the Department of
+Civil and Environmental Engineering, University of
+Maryland, College Park, MD, USA, in 2018.
+He is a Hundred Talents Program Professor, an Assistant Department
+Head with the College of Civil Engineering and Architecture, Zhejiang
+University, Hangzhou, China. He has been studying and working with
+Tsinghua University, Beijing, China; University of Maryland, College Park,
+MD, USA; Maryland National Transportation Center, Baltimore, MD; Hong
+Kong University of Science and Technology, Hong Kong; HKUST-DiDi
+Joint Research Laboratory. He has published over 60 SCI papers in top
+transportation journals, the H-index on Google scholar is 24.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:03:58 UTC from IEEE Xplore. Restrictions apply.
+
+

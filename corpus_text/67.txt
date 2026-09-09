@@ -1,0 +1,2230 @@
+12196
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+GE-DDRL: Graph Embedding and Deep
+Distributional Reinforcement Learning for
+Reliable Shortest Path: A Universal
+and Scale Free Solution
+Hongliang Guo , Member, IEEE, Wenda Sheng , Yingjie Zhou , Member, IEEE,
+and Yunping Chen , Member, IEEE
+
+Abstract— This paper studies the reliable shortest path (RSP)
+problem in stochastic transportation networks. State-of-the-art
+RSP solutions usually target one specific RSP problem; moreover,
+the corresponding algorithm’s computational complexity scales
+at least linearly with the size of the underlying transportation
+network. While in this paper, we propose a graph embedding and
+deep distributional reinforcement learning (GE-DDRL) method,
+which serves as a universal and scale-free solution to the RSP
+problem. GE-DDRL uses deep distributional reinforcement learning (DDRL) to estimate the full travel-time distribution of a
+given routing policy, and improves the given routing policy with
+the generalized policy iteration (GPI) scheme. Further, in order
+to achieve the generalization ability to new destination nodes,
+we employ one of the canonical graph embedding techniques
+(Skip-Gram) to compress the nodes’ representation into
+d-dimensional real-valued vectors. With the properly compressed
+node features, GE-DDRL is able to generalize its estimation of the
+routing policy’s travel-time distribution to untrained destination
+nodes, and hence achieve the ‘all-to-all’ navigation functionality.
+To the best of our knowledge, GE-DDRL serves as the first
+RSP planner, which applies simultaneously to almost all RSP
+objectives and in the meanwhile, is scale free with the size
+of the transportation network in terms of the online decisionmaking time and memory complexity. Experimental results and
+comparisons with state of the arts show the efficacy and efficiency
+of GE-DDRL in a range of transportation networks.
+Index Terms— Reliable shortest path (RSP), distributional
+reinforcement learning (DRL), universal and scale free solution,
+graph embedding and deep distributional reinforcement learning
+(GE-DDRL), skip-gram.
+
+N
+
+I. I NTRODUCTION
+AVIGATING reliably in stochastic transportation networks serves as one of the prevalent research topics
+
+Manuscript received 16 July 2022; revised 5 February 2023 and 7 May
+2023; accepted 8 June 2023. Date of publication 22 June 2023; date of current
+version 1 November 2023. This work was supported in part by the 111 Project
+under Grant B21044 and in part by the Sichuan Science and Technology
+Program under Grant 2023NSFSC1965. The Associate Editor for this article
+was F. Chu. (Hongliang Guo and Wenda Sheng contributed equally to this
+work.) (Corresponding author: Yingjie Zhou.)
+Hongliang Guo and Yingjie Zhou are with the College of Computer
+Science, Sichuan University, Chengdu, Sichuan 610017, China (e-mail:
+scott0793@gmail.com; yjzhou09@gmail.com).
+Wenda Sheng and Yunping Chen are with the School of Automation
+Engineering, University of Electronic Science and Technology of China,
+Chengdu 611731, China (e-mail: ningenpre@gmail.com).
+Digital Object Identifier 10.1109/TITS.2023.3285770
+
+among intelligent transportation system (ITS) applications, and
+has been attracting increasing attentions from both academic
+researchers and industrial entrepreneurs over the past several
+decades, see [1], [2], [3], [4], and [5] as examples. The
+reliability metric in the navigation task has various definitions
+in the literature, and in this paper, we roughly divide them
+into three categories, namely (1) maximal stochastic on-time
+arrival (SOTA) probability, (2) minimal travel time with high
+percentile confidence (α-reliable shortest path), and (3) minimal linear combination of mean and standard deviation (meanstd shortest path).
+While a range of methodologies have been proposed to
+solve the reliable navigation problem, i.e., finding the reliable
+shortest path (RSP), and a brief literature review will be
+provided in the next section. Here, we wish to articulate that,
+to the best of our knowledge, almost all existing RSP planning
+algorithms are specifically devised to solve one particular
+reliable navigation objective, e.g., SOTA, α-reliable, meanstd, and it is very difficult, if not impossible, to directly apply
+one algorithm’s solution to another RSP objective. However,
+in reality, a traveller might decide his/her travel objective at
+will, and might even switch the path planning objective during
+navigation. For example, imagine that a traveller is going to
+the office, and his/her original objective is to minimize the
+mean-std of total travel time. During navigation, his/her boss
+calls and says that there is an urgent meeting scheduled half
+an hour later, and he/she must attend the meeting in person.
+In this case, his/her navigation objective is switched to SOTA,
+which finds a routing policy with the maximal probability of
+on-time arrival before the meeting begins. Another example
+is when a traveller tries to catch a flight, and his/her original
+objective is to arrive at the airport on time, i.e., the SOTA
+objective. However, during navigation, he/she finds that due
+to weather conditions, the flight is delayed by several hours,
+and the traveller might switch to other RSP objectives, such
+as minimal mean-std, or α-reliable.
+Therefore, it is better to have one unified RSP solution, which caters to almost all RSP objectives, including
+but not limited to SOTA, mean-std, and α-reliable, and in
+the meanwhile reacts fast to the changing user needs or
+the emerging new objectives, e.g., minimal expected delay,
+
+1558-0016 © 2023 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: GE-DDRL FOR RELIABLE SHORTEST PATH: A UNIVERSAL AND SCALE FREE SOLUTION
+
+constrained and/or multi-objective RSP. Moreover, consider
+the use case of navigating the ego vehicle to a completely
+new destination, which hasn’t been trained as the destination
+node before. It is very difficult, if not impossible, for other
+RSP planners to plan a path connecting the origin node with
+the completely new destination node. While the proposed
+algorithm, namely GE-DDRL, possesses the characteristic of
+offering the generalized travel-time distribution estimation and
+thereby is able to navigate the ego vehicle to the unforeseen
+destination node with up-to-standard performance.
+This paper develops a graph embedding and deep distributional reinforcement learning (GE-DDRL) methodology as
+a universal and scale-free solution to the reliable navigation
+problem. GE-DDRL has two phases, namely the offline training phase and the online decision making phase. For the
+offline training phase, GE-DDRL employs deep distributional
+reinforcement learning (DDRL) to estimate the full traveltime distribution of a given routing policy and improves it
+through the generalized policy iteration (GPI) scheme. Further,
+in order to achieve the generalization ability to new destination
+nodes, GE-DDRL uses one of the canonical graph embedding
+techniques, i.e., Skip-Gram, to compress the node representation into a d-dimensional real-valued vector. With properly
+compressed node feature vector, the DDRL module within GEDDRL is able to generalize its estimation of the routing policy’s travel-time distribution to unforeseen destination nodes,
+and thereby yield ‘up-to-standard’ routing services. For the
+online decision-making phase, we simply calculate different
+action values with respect to the reliability metric with the
+pre-trained GE-DDRL model, and let the ego vehicle select
+the best action to execute.
+When compared with state-of-the-art solutions to the RSP
+problem, GE-DDRL has the following characteristics (which
+constitute the paper’s contributions, as well): (1) universal,
+in that GE-DDRL applies to all the three aforementioned
+RSP objectives; (2) scale-free in the online decision-making
+phase, which makes GE-DDRL applicable to arbitrarily large
+scale transportation networks, barring the possibly large offline
+training time; (3) model-free, which means that GE-DDRL
+takes samples of edges’ travel times as inputs instead of any
+form of the travel-time distribution models; and (4) generalizable across different destination nodes for both training and
+deployment phases, i.e., GE-DDRL is able to generalize its
+distributional modeling functionality and hence is still able to
+make good routing decisions, for unforeseen destination nodes,
+as long as those nodes have been compressed properly in the
+graph embedding process.
+The remainder of the paper is organized as follows. We provide a brief literature review of the reliable shortest path
+problem along the taxonomies of its objectives, travel-time
+assumptions and methodologies in Section II, followed by the
+mathematical problem formulations for all RSP problems and
+related background knowledge in Section III. The GE-DDRL
+methodology is presented in Section IV, and we compare and
+analyze the performance of GE-DDRL with state of the arts
+in a range of transportation networks in Section V. The paper
+ends with conclusion and future work in Section VI.
+
+12197
+
+II. L ITERATURE R EVIEW
+In this section, we first deliver a brief literature review of
+reliable shortest path along the taxonomies of its (1) objectives,
+(2) assumptions and (3) methodologies. After that, we present
+the techniques of graph embedding (GE) and distributional
+reinforcement learning (DRL) as they serve as the main
+ingredients of the GE-DDRL framework.
+A. Reliable Shortest Path
+1) RSP Planning Objectives: Various definitions of the term
+‘reliability’ have been proposed in the RSP literature, and
+in this paper, we roughly divide them into three categories,
+namely, (1) SOTA, (2) α-reliable and (3) mean-std.1 The SOTA
+RSP, first proposed in [10], aims at finding a reliable shortest
+path with the maximal on-time arrival probability within a
+predefined travel-time budget. The α-reliable shortest path,
+coined by Chen and Ji in [11], defines a path with the minimal
+high percentile travel time, as the most reliable one. The
+mean-std shortest path, first proposed in [12], incorporates
+the standard deviation of a path’s travel time directly into
+problem formulation, either as a constraint [13] or as an
+additional term in the objective function [6], [7], [14], [15].
+The most prevailing mean-std shortest path objective among
+other definitions, is to find a path with the minimal linear
+combination of mean and standard deviation, see [7], [16],
+[17], and [18] as examples.
+2) Travel-Time Assumptions: Different spatial temporal
+distribution modelings of the underlying transportation networks will lead to different RSP planning perspectives. For
+travel time’s spatial distribution, some researchers presume a
+stochastic transportation network with independent travel time
+distributions over different edges, see [7], [8], [15], [19], and
+[20] as examples, while others consider a spatially correlated
+travel time distribution [6], [9], [17], [18], [21]. For temporal
+distribution, most of the researchers presume a stationary
+travel-time distribution, which does not change during the path
+planning and execution phase [18], [22], while there are a
+few researchers who are specifically targeting the dynamic,
+i.e., time-varying travel time distribution, and propose corresponding RSP planning algorithms, see [23], [24], [25], and
+[26] as examples. Here, we wish to point out that GE-DDRL
+presumes that the underlying transportation network has a
+stationary and independent travel time distribution. However,
+it does not need the explicit modelling of the travel time
+distribution as inputs, instead, the randomly drawn samples
+are used to update the parameters of GE-DDRL, which makes
+it a ‘model-free’ solution.
+3) RSP Methodologies: Although different RSP objectives
+require different algorithms as specific solutions, we can
+still broadly summarize the prevailing RSP planning algorithms into three groups, namely (1) dynamic programming
+(DP) based methodology, (2) mathematical programming (MP)
+based methodology and (3) genetic programming (GP) based
+methodology.
+1 Note that the three-category RSP objective summarization originates in [6],
+and later has also been adopted in [7], [8], and [9].
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+12198
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+DP-based methods establish the recursive relationship
+between the current node and its neighbors, and apply dynamic
+programming (DP) or its variants to iteratively approximate
+the node’s value [23], [25], [27], [28], [29], [30], [31], [32].
+Thereafter, labelling and/or pruning techniques can be applied
+to improve the computational efficiency. For example, Fan et
+al. propose a successive approximation (SA) algorithm to
+iteratively approximate the node’s maximal on-time arrival
+probability within a given budget [28]; later they prove SA’s
+convergence [33], and further improve SA’s algorithm to converge within a finite number of steps for discrete distribution
+models [34].
+MP-based methods usually formulate the RSP problem into
+a monolithic mathematical optimization problem, and invoke
+related mathematical programming (MP) techniques to reach
+the optimal solution, see [26], [35], [36], [37] as examples.
+For example, Cao et al. formulate the SOTA RSP problem
+into an integer linear programming problem, and invoke the
+off-the-shelf solver, i.e., CPLEX, to calculate the optimal
+solution [37]. One disadvantage of using commercial solvers
+to solve the monolithic optimization problem, is that the
+computational complexity is high, which makes the algorithm
+inapplicable to large-scale metropolitan cities. Recently, there
+is a growing trend of using the (partial) Lagrangian method
+to convert some of the constraints into the objective function,
+and thereafter decompose the monolithic problem into several
+easy-to-solve sub-problems. In this way, the computational
+efficiency is greatly improved, and related algorithms are
+easily applied to large scale transportation networks, see [16],
+[17], [26], [36], and [38] as examples.
+GP-based methods target the RSP problem from the genetic
+programming (GP) perspective [11], [21], [39], [40]. Within
+the GP framework, the RSP objective is defined as the fitness
+value, and mutation and crossover operations are employed
+to generate new RSP paths as seeds and offspring for GP’s
+fitness evaluation. GP’s computational and evaluation process is derivative-free, and thus the computational complexity depends solely on the number of seeds and offspring
+layers per generation. For example, Chen et al. propose a
+moment matching based hybrid genetic algorithm (MHGA)
+to solve the α-reliable shortest path problem. MHGA starts
+with a random set of feasible paths connecting the origin
+node with the destination node, and gradually improves the
+fitness values as the evolutionary procedure continues, until
+the algorithm converges or the predefined computation time
+limit is reached [41].
+To the best of our knowledge, almost all RSP methodologies
+can be deemed as ‘specific’ algorithms, in that they are
+devised to solve one specific RSP objective, e.g., SOTA,
+α-reliable shortest path, mean-std shortest path. It is generally
+very difficult, if not impossible, to adapt the RSP algorithm
+to be applicable to two or more RSP objectives. On the
+other hand, GE-DDRL estimates the full distribution of a
+given policy’s travel time, and thereafter makes generalized
+policy iteration with respect to the specific RSP objective.
+Therefore, GE-DDRL is naturally applicable to all the three
+aforementioned RSP objectives, and potentially to other path
+planning objectives that may not have been included. We term
+
+this characteristic of GE-DDRL as ‘universal’, in that it applies
+‘universally’ to almost all the RSP objectives.
+B. Graph Embedding
+Graph has been deemed as one of the most important data
+representation schemes, which appear in a wide range of
+application scenarios, e.g., biology, social science, linguistics.
+Effective graph analytics provide researchers with a deeper
+understanding of what is behind the data, and thus can benefit
+a lot of useful applications, see [42] and [43] as application
+examples for seismic-related applications. Graph embedding,
+as one of the most important graph analytic tools, offers
+an effective way of representing the underlying structural
+information of a given graph [44]. It compresses the graphrelated entities, i.e., nodes, edge and sub-graphs into lowdimensional vectors, and in the meanwhile, preserves the
+underlying structural information to the end user.
+In graph embedding, the proximity between nodes is the
+most important concept. Proximity gauges the relationship
+between two nodes. First-order proximity refers to nodes
+which are connected directly by an edge, and the weight,
+e.g., cost, of the edge is the first-order proximity value
+between the two nodes. Higher-order proximity is defined
+recursively. For example, k th -order proximity refers to two
+nodes that are connected to each other with k edges. Graph
+embedding techniques are, therefore, to embed nodes into lowdimensional vectors, while preserving the proximity between
+nodes [45].
+The technologies for graph embedding can be broadly
+categorized into three groups, namely, matrix factorization,
+random walk, and deep learning methods. matrix factorization
+(MF) represents the attributes of a graph with a matrix, and
+employ the factorization techniques to obtain low-dimensional
+node embedding [46], [47], [48], [49]. While the random walk
+technology will generate the node sequences with random
+walk, and use word2vec technique in the natural language
+processing (NLP) domain to compress the node sequence
+into d-dimensional vectors [50]. Recently, there is a growing
+trend of employing deep learning techniques for graph embedding. For example, graph convolutional network (GCN) [51]
+defines the convolution operators on the graph and iteratively
+aggregates the neighborhood embeddings of the nodes. Later
+developments improve the GCN encoder to consider higherorder proximity between nodes, see [52] and [53] as examples.
+C. Distributional Reinforcement Learning
+Different from canonical reinforcement learning, which
+estimates and thereby optimizes the expected value of a given
+policy’s return, distributional reinforcement learning targets
+the full distribution of a policy’s return, i.e., the policy’s value
+distribution. With the estimated value distribution, one can
+perform policy optimization with respect to a much more generalized set of objectives. DRL is mostly useful for risk-averse
+applications, where the user cares more the policy’s value-atrisk (VaR) performance than the average performance of a
+policy. Bellemare et al. propose the first DRL method, named
+as C51, which advances the traditional Bellman equation to
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: GE-DDRL FOR RELIABLE SHORTEST PATH: A UNIVERSAL AND SCALE FREE SOLUTION
+
+its distributional counterpart, and uses a fixed number of bins
+to approximate the full value distribution [54].
+Later, Dabney et al. propose a quantile regression method,
+named as QR-DQN, to automatically adjust the location of
+bins and employ the quantile regression for better distribution
+approximation [55]. QR-DQN improves C51 both empirically
+and theoretically, however, the quantile points are still subject
+to pre-selection. The authors continue to improve QR-DQN
+by automatically adjusting quantile locations with deep neural
+networks, and jointly optimize the location of the quantile
+points and the quantile distribution values [56]. In this way,
+the approximated distribution can be infinitely close to the
+true distribution as long as a large enough number of samples
+are provided. However, in reality, the data samples cannot be
+infinite. Yang et al. propose the FPN-QVN method, which
+parameterizes the value distribution with quantile proposal
+points and regressed quantile values [57]. In FPN-QVN, the
+quantiles and their corresponding values are parameterized, the
+quantiles is adjusted following the characteristics of different
+distribution, and the values of the quantiles are obtained
+through quantile regression.
+
+12199
+
+TABLE I
+L IST OF M AJOR N OTATIONS U SED IN THE PAPER
+
+III. P ROBLEM F ORMULATION AND BACKGROUNDS
+In this section, we first introduce the major notations
+used throughout the paper, and then present the mathematical
+problem formulations for all the three aforementioned RSP
+problems. Lastly, since GE-DDRL employs graph embedding
+and deep distributional reinforcement learning as its main
+functional modules, we lay down the related background
+knowledge of DDRL and GE towards the end of this section.
+Here, we wish to note that since GE-DDRL essentially
+formulates the path planning problem within the Markov
+decision process (MDP) framework, it naturally requires that
+the underlying transportation network’s travel-time distribution is independent and stationary. We put the extension of
+GE-DDRL’s application to the use case of spatially correlated
+and/or time-varying transportation networks as one of the
+future work directions.
+A. Notations
+The transportation network is represented by a directed
+and
+
+connected graph G = (N , E ), where
+N
+|N
+|
+=
+n
+refers
+to
+
+the set of nodes and E |E | = m refers to the set of edges.
+Assume that travel time ci j of edge i j ∈ E , is a parameter,
+which is depicted with mean µi j > 0 and standard deviation
+σi j . Let (õ, d̃) be a user-specified origin-destination (OD) pair,
+and a path is represented by an incidence vector x ∈ {0, 1}m ,
+with ones corresponding to the edges contained in the path,
+and zeros otherwise. Path x’s travel time is denoted as c x ,
+with its mean and standard deviation values represented as
+µ x and σ x , respectively. The complete set of feasible paths
+connecting õ to d̃ is denoted as Pod . Table I summarizes a
+list of major notations used in the paper, where the first set of
+notations is the transportation network related, the second set
+is RSP related, the third set is DDRL related and the last set
+of nations is graph embedding related. Note that we will also
+briefly describe the related notations when they are introduced
+for the first time in the main contents of the paper.
+
+B. Mathematical Problem Formulations for RSP
+Since GE-DDRL serves as a universal solution for all
+the three aforementioned RSP planning problems, we deliver
+the corresponding mathematical problem formulations in the
+following paragraphs.
+1) The SOTA RSP Problem: The SOTA RSP’s objective is
+to find a path which maximizes the probability of on-time
+arrival at the destination within a predefined path planning
+budget T . The mathematical problem can be formulated as:
+maximize
+
+P(c x ≤ T )
+
+subject to
+
+x ∈ Pod ,
+
+x
+
+(1)
+
+where T is the user-specified path planning budget and c x
+represents the total travel time of Path x.
+2) The α-Reliable Shortest Path Problem: The objective is
+to find a path with the minimal travel time (t) subject to a
+certain confidence level α, which is formulated as:
+maximize
+x,t
+
+t
+P(c x ≤ t) ≥ α
+
+subject to
+
+x ∈ Pod ,
+
+(2)
+
+where α is the user-specified confidence level.
+3) The Mean-Std Shortest Path Problem: The objective is
+to find a path with the minimal linear combination of mean
+and standard deviation, which is formulated:
+maximize µ x + ζ σ x
+x
+
+subject to
+
+x ∈ Pod ,
+
+where ζ is the predefined reliability coefficient.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+(3)
+
+12200
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+C. Distributional Reinforcement Learning
+Distributional reinforcement learning, first proposed in [54],
+targets estimating the value distribution, i.e., the full distribution of a policy’s return, instead of the return’s expectation.
+In DRL, the underlying dynamics is also modeled as a
+Markov decision process (MDP) with the five-element tuple,
+′
+(X , A , R, Pss,a , γ ), where X and A represent the state and
+action spaces, respectively; R is the scalar reward function;
+′
+Pss,a is the state transition kernel, and γ ∈ (0, 1] is the discount
+factor. For a given policy π , the value distribution of π for
+state-action pair (s, a), denoted as Z π (s, a), is recursively
+estimated with the following distributional Bellman equation:
+Z π (s, a) := r (s, a) + γ Z π (s ′ , a ′ ).
+
+(4)
+
+Note that the equal sign in Eq. (4) means that the two
+distributions are ‘equivalent’. The pioneering work in [54]
+approximates Z π (s, a) with a fixed number (51 in the paper)
+of bins. Since then, various extensions have been proposed.
+In GE-DDRL, we adopt the FPN-QVN framework [57] to
+represent the full distribution of π ’s return, where the node
+in the transportation network, which is the state in the DDRL
+domain, is represented by a fixed d-dimensional real-valued
+vector. In this way, Z π (s, a) is approximated by a quantile
+value network (QVN), and the evaluated quantile points are
+proposed by a fraction proposal network (FPN). Details will
+be presented in Section IV-E.
+D. Graph Embedding: Skip-Gram
+In order to reach a scale-free RSP solution, we need to
+compress the distinct node representation of a transportation
+network into a fixed d-dimensional real-valued vector through
+the graph embedding technique. Hence, in this subsection,
+we introduce the basics of graph embedding. Graph embedding
+transforms the property graphs into a vector or a set of vectors. The embedding process should capture the graph topology, node-to-node relationship, and other relevant information
+about the graph. GE-DDRL employs one of the prevalent
+graph embedding techniques, namely, skip-gram, to encode
+the nodes in a graph into real-valued vectors.
+Skip-gram is an unsupervised learning technique to find the
+most relevant words for a given word, and is traditionally a natural language processing (NLP) technique which transforms
+words into real-valued vectors, namely, word2vec. It aims at
+maximizing the co-occurrence probability of words that appear
+together in a sentence.
+Let φ : V → Rd represent the mapping function from a
+collection of words to d-dimensional feature vectors; µ ∈ V
+is a word in a sentence, and N (µ) represent the collection
+of neighboring words of µ. The goal of skip-gram is to find
+the mapping function φ, which maximizes the probability
+of co-occurrence of the words in the sentences, and can be
+expressed as:
+X
+
+max
+log P φ(N (µ))|φ(µ) ,
+(5)
+φ
+
+µ∈V
+
+
+where P φ(N (µ))|φ(µ) is the probabilistic function capturing the co-occurrence probability of a set of words.
+
+TABLE II
+T RANSPORTATION - TO -DRL T ERMINOLOGY T RANSLATION
+
+For details about how to represent the probability relationship
+between words and how to optimize Eq. (5), one may refer to
+Section II-B or the seminal work for skip-gram in [50].
+IV. G RAPH E MBEDDING AND D EEP D ISTRIBUTIONAL
+R EINFORCEMENT L EARNING (GE-DDRL)
+This section presents the GE-DDRL framework as a universal and scale-free solution to the RSP problem. We first
+transform the RSP’s mathematical problem formulation to
+the distributional reinforcement learning (DRL) perspective,
+and then present the bird’s-eye view of GE-DDRL’s overall
+framework and its pseudo code in an abstract form. After that,
+we deliver the tabular DRL solution to the RSP problem as
+the simplest version of GE-DDRL; introduce the skip-gram
+scheme to encode nodes into real-valued vectors, and finally
+extend the tabular DRL solver to the FPN-QVN paradigm,
+which, together with skip-gram, functions as a full-fledged
+GE-DDRL methodology.
+A. RSP’s Problem Re-Formulation From the DRL Perspective
+In the last section, we have presented the mathematical problem formulation of RSP problems. However, in
+GE-DDRL, we treat the RSP problem as a sequential decision
+making problem within the MDP framework. The key of the
+problem re-formulation process is to properly map the MDPrelated elements, i.e., X , A , R, P, γ into the path planning
+related variables, and express the corresponding RSP objectives with MDP terminologies.
+The mapping process, which is also depicted in Table II, is
+as follows: (1) the state of the ego vehicle (s) is the vehicle’s
+located node, e.g., Node i, the absorbing state2 is Node d̃;
+(2) the action of the vehicle (a) is the edge that the vehicle
+executes, e.g., Edge i j; (3) the immediate reward r is the
+sampled travel time of Edge i j, i.e., ci j ; (4) the state transition
+function P is a deterministic function, which transports the
+vehicle to the end node of the current executing link, e.g.,
+s ′ = j where j ∈ N ; (5) the discount factor γ = 1 in RSP
+planning, and will be omitted most of the time. A routing
+policy π determines the next-executing edge (a) of the vehicle
+given its current state (s), e.g., a = π(s). The return of policy
+π starting at (s, a), i.e., Z π (s, a), is the total travel time
+distribution of policy π starting at (s, a). Similarly, Z π (s)
+refers to the value distribution of policy π when the vehicle
+2 The absorbing state, s , in RL refers to the state that ends the episode,
+o
+and it corresponds to the destination node (Node d̃) in the RSP domain.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: GE-DDRL FOR RELIABLE SHORTEST PATH: A UNIVERSAL AND SCALE FREE SOLUTION
+
+12201
+
+Fig. 1. The GE-DDRL Framework: (1) the graph embedding module (Skip-Gram) takes the node sequences as inputs and outputs the embedded feature
+vector; (2) The DDRL module (FPN-QVN) takes the embedded state features as inputs, and outputs the estimated full travel-time distribution of the routing
+policy; (3) the policy improvement module takes the estimated distribution as inputs and outputs the improved routing policy. Green bordered parts are module
+inputs, and blue bordered contents are module outputs.
+
+starts at s and follows policy π for action selections. Note that
+from this point on, we will use the terms ‘state’ and ‘node’
+interchangeably, e.g., si refers to a state as well as a node, and
+the terms ‘action’ and ‘edge’ interchangeably, e.g., ai refers
+to an action as well as the executing edge.
+Depending on the specific RSP objectives, different optimal
+routing policy with respect to Z π (s) can be defined. For
+example, for SOTA RSP, the objective is to:
+max P[Z π (s) ≤ T ],
+π
+
+(6)
+
+for α-reliable shortest path, the objective is to:
+min
+
+t
+
+s. t.
+
+P[Z π (s) ≤ t] ≥ α,
+
+π,t
+
+(7)
+
+and for the mean-std shortest path problem, the objective
+is to:
+min E[Z π (s)] + ζ σ (Z π (s)).
+π
+
+(8)
+
+B. Bird’s-Eye View of GE-DDRL
+Before presenting each functional component of GE-DDRL,
+we deliver a bird’s-eye view of GE-DDRL’s overall framework
+in Fig. 1. In the figure, we can see that with a set of
+trajectories, the skip-gram scheme is used to encode nodes
+into d-dimensional real-valued vectors, which together with
+the experience tuples, are fed into the DDRL framework.
+Then, DDRL employs the fraction proposal network (FPN)
+and the quantile value network (QVN) to jointly estimate the
+full distribution of a given policy’s return. With the generalized
+policy iteration module, DDRL updates the policy towards the
+optimal one. The updated policy will generate new batches of
+
+trajectories, which will also be fed into the skip-gram scheme
+for updated node feature vectors. In the following several
+subsections, we will introduce all the functional modules
+within the GE-DDRL framework in detail.
+Algorithm 1 GE-DDRL
+Input: (1) transportation network: G(N , E ); (2)
+origin-destination pair: õ, d̃; (3) RSP
+objective-related parameter: T /α/ζ ; (4) number
+of quantiles: N ; (5) max number of training
+episodes of GE-DDRL: Epimax .
+Output: optimal RSP routing policy: π ∗ .
+Init: (1) initialize FPN and QVN parameters; (2)
+initialize skip-gram related parameters; (3)
+initialize a collection of trajectories with random
+walk: 0; (4) epi ←
+− 0.
+1 while epi ≤ Epimax do
+2
+φ←
+− skip-gram(0, d, αe ) // see Alg. 3;
+3
+π←
+− FPN-QVN(G, õ, d̃, T /α/ζ, φ) // see Alg. 4;
+4
+generate trajectories based on π ;
+5
+add the newly generated trajectories to 0;
+6
+epi ←
+− epi + 1;
+7
+8
+
+π∗ ←
+− π;
+return π ∗ ;
+
+The overall algorithm flow process of GE-DDRL is presented in Algorithm 1. Note that Algorithm 1 presents GEDDRL in a highly abstract form, one may refer to Algorithm 3
+and Algorithm 4 for the detailed computational processes of
+skip-gram and FPN-QVN, respectively.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+12202
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+C. Tabular DRL as a Universal Solution to the RSP Problem
+This subsection presents the tabular DRL solution to the
+RSP problem as the simplest version of GE-DDRL. Treating
+each node in the transportation network as a distinct state
+and each edge as a distinct action in the MDP framework,
+we approximate the full distribution of policy π ’s return with
+a fixed number of bins, i.e., Z π (s, a) is represented by a
+categorical distribution with a fixed number of basis (N ) and
+fixed window size per basis (δw). Recall the distributional
+Bellman equation in Eq. (4), and suppose that we get a specific
+transition sample as (s, a, r, s ′ , a ′ ), we can update Z π (s, a) as
+follows:
+Z π (s, a) ←
+− r + Z π (s ′ , a ′ ).
+
+(9)
+
+Note that the right hand side of Eq. (9) serves as the update
+target of Z π (s, a). However, different from traditional learning
+algorithms, which perform updates towards a scalar value,
+Eq. (9) is effectively updating a probabilistic distribution.
+In this case, we need to define a scalar objective, and use
+the gradient descent method to update Z π (s, a). In tabular
+DRL, we use the Wasserstein distance [58] between Z π (s, a)
+and r + Z π (s ′ , a ′ ) as the scalar objective, which is the same
+as the one used in [54]. Computing the gradient with respect
+to the Wasserstein distance, Z π (s, a) can be updated as:
+
+Z π (s, a) = Z π (s, a) + αt T (r + Z π (s ′ , a ′ )) − Z π (s, a) ,
+(10)
+where 0 ≤ αt ≤ 1 is the learning rate, and T (r + Z π (s ′ , a ′ ))
+is a function, which transforms the discrete distribution representation of (r + Z π (s ′ , a ′ )) to fit the distribution basis of
+Z π (s, a), and hence makes the summation of two distributions
+valid. We will present a simple example in Section V-A to
+illustrate the distribution basis transformation process. Note
+that, Eq. (10) is essentially calculating the summation of two
+vectors, and thus the ‘+’ symbol in Eq. (10) refers to the
+element-wise summation between two vectors.
+With Eq. (10), one is able to estimate the full distribution
+of a given routing policy’s return. In the following, we will
+provide a simple yet effective online generalized policy iteration scheme which fits with any user-defined RSP objective.
+We first transform Z π (s, a) into a scalar objective value, i.e.,
+obj(s, a), based on the user-defined RSP objective, and then
+adopt an ϵ-greedy action selection strategy based on the
+calculated obj values.
+For the SOTA RSP problem, obj(s, a) = P[Z π (s, a) ≥ T ];
+note that obj(s, a) for the SOTA RSP problem refers to
+the estimated delay probability of Z π (s, a) instead of the
+actual on-time-arrival probability. For the α-reliable shortest
+path problem, obj(s, a) = min t, such that P[Z π (s, a) ≤
+t] ≥ α. For the mean-std shortest path problem, obj(s, a) =
+E[Z π (s, a)] + ζ σ (Z π (s, a)). With the calculated obj(s, a)
+values, one can design an online adaptive strategy as: a =
+argmin aobj(s, a) with probability 1 − ϵ, and any available
+action with probability ϵ/N (s), where N (s) refers to the total
+number of available actions at state s. Here, we wish to note
+that with the return’s full distribution, i.e., Z π (s, a), estimated
+with either the tabular DRL method or the deep DRL method
+
+in the following subsection, evaluating the corresponding
+probabilistic items, e.g., on-time arrival probability, α-quantile
+value, mean and standard deviation (std), is straightforward.
+One may just perform numerical calculations based on the
+cumulative distribution function, and obtain the values of
+related probabilistic items.
+So far, we have introduced the tabular DRL methodology as
+the universal solution to the RSP problem, and the corresponding pseudo code is shown in Algorithm 2. In Algorithm 2,
+we can see that the tabular DRL method essentially loops from
+the policy evaluation step (Eq. (10)) and the action selection
+step (ϵ-greedy with respect to the obj values).
+Algorithm 2 Tabular DRL for RSP
+Input: (1) transportation network: G(N , E ); (2)
+origin-destination pair: õ, d̃; (3) RSP
+objective-related parameter: T /α/ζ ; (4) max
+training episodes: Epimax ; (5) learning rate of
+DRL: αt ; (6) number of basis: N ; (7) window
+size per basis: δw.
+Output: optimal policy’s return distribution: Z ∗ (s, a).
+Init: (1) Z (s, a) = (1/(N δw),1/(N δw),. . .,1/(N δw))⊤;
+(2) epi ←
+− 0.
+1 while epi < Epimax do
+2
+s = õ;
+3
+A(s) = Edge(s) // return the edge set starting at s;
+4
+foreach a ∈ A(s) do
+5
+Calculate obj(s, a) based on Z (s, a) with
+respect to the specific RSP objective, e.g.,
+SOTA, α-reliable, mean-std;
+6
+
+7
+8
+9
+10
+
+11
+
+12
+13
+14
+15
+
+Choose a from A(s) with respect to obj(s, a) (e.g.,
+ϵ-greedy) ;
+while s ̸ = d̃ do
+Execute action a, observe r, s ′ ;
+foreach a ′ ∈ A(s ′ ) do
+Calculate obj(s ′ , a ′ ) based on Z (s ′ , a ′ ) with
+respect to the specific RSP objective, e.g.,
+SOTA, α-reliable, mean-std;
+Choose a ′ from A(s ′ ) with respect to
+obj(s ′ , a ′ ) (e.g., ϵ-greedy);
+
+Z (s, a) ←
+− Z (s, a)+αt T (r+Z (s ′ , a ′ ))−Z (s, a) ;
+s←
+− s′;
+a←
+− a′;
+epi ←
+− epi + 1;
+
+∗
+16 Z (s, a)
+17
+
+←
+− Z (s, a);
+return Z ∗ (s, a)
+
+D. Skip-Gram for Node Feature Embedding
+In the last subsection, we have presented the tabular DRL
+as a universal solution to the RSP problem. However, there are
+two disadvantages of the tabular DRL method. Firstly, it lacks
+the generalization ability, e.g., it is impossible to generalize the
+trained Z π (s, a) distribution parameters to another unforeseen
+state-action pair. Secondly, the tabular DRL method is not
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: GE-DDRL FOR RELIABLE SHORTEST PATH: A UNIVERSAL AND SCALE FREE SOLUTION
+
+scale-free in terms of memory and decision making, in that
+when the number of nodes or edges increases, the corresponding new Z π (s, a) distribution parameters have to be allocated
+and trained. In view of these disadvantages, in this subsection,
+we employ the skip-gram method to encode the nodes in
+a graph into fixed d-dimensional real-valued vectors, which
+opens the possibility of scale-free and generalizable solutions
+of GE-DDRL.
+As we have stated in the last section, skip-gram is a
+word2vec embedding scheme for NLP applications. It takes
+the sentences of words as inputs and output the embedded
+feature vectors of the words in the vocabulary. In this paper,
+we adapt the skip-gram scheme to take the trajectories of nodes
+as inputs and output the embedded features for the nodes in
+the transportation network.
+Given a collection of node trajectories, denoted as 0,
+if Node i (denoted as si in the MDP framework) is contained
+by any trajectory ~ ∈ 0, we say si ∈ 0. s j refers to the
+subsequent node of si with respect to 0, if there exists a
+trajectory ~ ∈ 0, where s j is the next node of si , and we
+denote N (si ) as the set of subsequent nodes of si conforming
+to 0. The objective of skip-gram is to find d-dimensional
+real-valued vectors to represent all the nodes contained in 0,
+which maximizes the log likelihood of the nodes’ subsequent
+relationship occurrence. The problem can be formulated as:
+X X
+max
+log P[φ(s j )|φ(si )],
+(11)
+φ
+
+si ∈0 s j ∈N (si )
+
+where P[φ(s j )|φ(si )] is calculated as:
+P[φ(s j )|φ(si )] = P
+
+
+exp φ(si )⊤ φ(s j )
+s∈0
+
+.
+exp φ(s)⊤ φ(si )
+
+(12)
+
+The features of all the nodes in 0 can be updated through the
+gradient ascent method with respect to Eq. (11).
+So far, we have introduced the node feature embedding
+process with the skip-gram scheme, similar to the node2vec
+scheme [59]. The next natural question is how to generate/obtain the set of trajectories covering all the nodes in the
+graph. In this paper, we initialize the trajectory set with LET
+path induced node sequence as the ‘sentence library’, and
+then gradually add to the trajectory set with the trajectories
+generated by the GE-DDRL induced policy. The underlying
+rationale is that a specific node sequence which corresponds
+to the reliable shortest path solution should be embedded as
+‘near’ to each other in the d-dimensional space. In this way, the
+node-embedding process (through skip-gram) helps with the
+reliable shortest path selection, and reversely, the selected reliable shortest path trajectory set helps with the node-embedding
+process. We believe that with trajectories generated by the
+GE-DDRL induced policy, the embedded node features will
+be better shaped towards a good representation for the RSP
+objective. The pseudo code for the node feature embedding
+process through skip-gram is presented in Algorithm 3.
+E. FPN-QVN as a Scale-Free Solution to RSP
+We have presented the tabular DRL methodology and the
+skip-gram scheme to embed graph nodes into d-dimensional
+
+12203
+
+Algorithm 3 Skip-Gram for Node Embedding
+Input: (1) collection of node trajectories: 0; (2) node
+embedding dimension: d; (3) learning rate of
+skip-gram: αe .
+Output: embedded d-dimensional vector for each
+node s ∈ 0: φ(s).
+Init: ∀s ∈ 0, randomly initialize φ(s).
+1 foreach si ∈ 0 do
+2
+foreach s j ∈ N (si ) do
+3
+J (φ) = log P[φ(s j )|φ(si )] ;
+∂J
+4
+φ(si ) = φ(si ) + αe · ∂φ(s
+;
+i)
+∂J
+;
+5
+φ(s j ) = φ(s j ) + αe · ∂φ(s
+j)
+6
+
+return ∀s ∈ 0 : φ(s)
+
+vectors in the last two subsections, respectively. In this section,
+we will make use of the embedded node features, and advance
+the tabular DRL methodology to deep distributional reinforcement learning (DDRL). With DDRL, we are able to generalize
+the estimated value distribution to ‘unforeseen’ nodes,3 and
+make the algorithm scale-free in terms of the memory space
+and decision-making time.
+Suppose that we already have the feature representation
+of any node s, which is φ(s) from the skip-gram scheme,
+recall Eq. (9), we have Z π (φ(s), a) ←
+− r + Z π (φ(s ′ ), a ′ ).
+π
+Since Z (φ(s), a) is a distribution, we use N parameterized
+bins to approximate it, i.e., Z π (φ(s), a; τ , θ(s, a)), where
+τi < τi+1 , ∀i ∈ {0, 1, . . . , N − 1} and τ0 = 0, τ N = 1;
+θ j (s, a) = P[τ j−1 ≤ Z π (φ(s), a) ≤ τ j ], ∀ j ∈ {1, . . . , N }.
+Note that we have two sets of parameters for Z π (φ(s), a),
+namely, the adjustable fraction points: τ and the quantilerelated values: θ (s, a). For τ , one can use the fraction proposal
+network (FPN) to iteratively approximate the optimal values;
+for θ (s, a), one can use the quantile value network (QVN)
+to approximate the values. Note that QVN approximates the
+quantile values when given τ , i.e., FZ−1 (τ ) = inf(z ∈ R :
+FZ (z) ≥ τ ), where FZ (z) refers to the cumulative distribution
+function of Z , and θi (s, a) = FZ−1 (τi−1 + τi )/2 . FPN and
+QVN function alternatively and in the end, the two sets of
+parameters are jointly optimized.
+The routing policy π is updated in the same way as what the
+tabular DRL does, i.e., ϵ-greedy with respect to the obj values.
+The algorithm flow process for FPN-QVN is presented in
+Algorithm 4, and for details of FPN-QVN’s derivation process,
+one can refer to Appendix B or Section III-A of [57].
+F. GE-DDRL’s Generalization Ability to New Destination
+In the last two subsections, we introduce, respectively, the
+GE module which embeds distinct nodes into d-dimensional
+real-valued vectors, and the DDRL module, which essentially
+trains a parameterized distributional function to estimate a
+3 Here, the term ‘unforeseen’ means that the specific destination node
+has never been trained as the destination node before, however, it needs to
+have appeared in the collected node trajectories, and thus has been properly
+embedded by the graph embedding module. GE-DDRL cannot generalize the
+estimation to a completely unseen node.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+12204
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+Algorithm 4 FPN-QVN
+Input: (1) transportation network: G(N , E ); (2)
+origin-destination pair: õ, d̃; (3) RSP
+objective-related parameter: T /α/ζ ; (4) max
+training episodes: Epimax ; (5) number of
+quantiles: N ; (6) skip-gram embedded feature
+vectors for all the nodes: φ(s).
+Output: optimal policy’s return distribution:
+Z ∗ (φ(s), a; τ , θ ).
+Init: (1) initialize parameters of FPN and QVN; (2)
+epi ←
+− 0; (3) t ←
+− 0; (4) Replay Buffer = {}.
+1 while epi < Epimax do
+2
+st = õ;
+3
+while st ̸ = d̃ do
+4
+A(st ) ←
+− Edge(st ) ;
+5
+foreach a ∈ A(st ) do
+6
+τ←
+− FPN(φ(st ), a) ;
+7
+FZ−1 (τ ) ←
+− QVN(τ, φ(st ), a) ;
+8
+θi ←
+− FZ−1 ( τi−12+τi );
+9
+Calculate obj(φ(st ), a) based on τ and θ
+with respect to the specific RSP objective,
+e.g., SOTA, α-reliable, mean-std
+10
+Choose at from A(st ) with respect to
+obj(φ(st ), a) (e.g., ϵ-greedy);
+11
+Execute action at , observe rt , st+1 ;
+12
+Add tuple (st , at , rt , st+1 ) to the replay buffer;
+13
+Train FPN and QVN;
+14
+t←
+−t +1
+15
+16
+
+epi ←
+− epi + 1 ;
+return Z ∗
+
+given routing policy’s total travel-time distribution from an
+origin node to a destination node. In order for GE-DDRL to
+be able to generalize to new destination node, we just need
+to augment the input feature vector of the DDRL module
+with the embedded destination nodes, i.e., Z π (φ(õ), a) is
+augmented to Z π (φ(õ), φ(d̃), a), and we follow the same
+procedure, i.e., through the FPN-QVN method (pseudo code
+shown in Alg. 4), to train the DDRL module. In this case, the
+resulting travel-time distribution estimator is able to generalize
+its estimation to the newly supplied destination node vector.
+For the new testing OD pair, the GE module will map
+both the origin node and the destination node to corresponding d-dimensional real-valued vectors, and then the DDRL
+module takes the mapped vectors as inputs and will output
+the estimated full travel-time distribution. After that, based on
+the specific RSP objective, e.g., SOTA, GE-DDRL will decide
+which edge to take.
+Here, we deliver a simple example to illustrate why and
+how GE-DDRL achieves the generalization ability to ‘unforeseen’ destination nodes, and we will evaluate the performance
+of GE-DDRL’s generalization functionality in Section V-E.
+Consider a simple straight-line network with five nodes and
+four edges, as shown in Fig. 2. For the training process, the
+OD pair is set to be õ = 1 and d̃ = 5. The graph embedding
+
+Fig. 2.
+
+Example network topology.
+
+module within GE-DDRL will embed all the five distinct nodes
+into d-dimensional real-valued vectors, and the FPN-QVN
+module will be trained to take the embedded OD pair feature
+vector as inputs and output the corresponding full travel-time
+distribution. Since all five nodes have been embedded into
+real-valued vectors by the GE module, and the FPN-QVN
+module can be deemed as a parameterized function which
+maps the embedded OD feature vector to the corresponding
+full travel-time distribution, when the user chooses another
+OD pair, e.g., õ = 2 and d̃ = 4, the FPN-QVN module is
+still able to output the corresponding estimated full travel-time
+distribution, and thus GE-DDRL has the generalization ability
+to unforeseen destination nodes. Note that in order for the
+generalization ability to function effectively, the ‘unforeseen’
+nodes, e.g., d̃ = 4 in the example, needs to have appeared in
+the ‘sentence library’, and hence are properly embedded by
+the GE module within the GE-DDRL framework.
+G. Pruning Algorithm to Guarantee Arrival
+So far, we have presented all the main functional components within the GE-DDRL framework. However, during the
+training process of GE-DDRL, there is no guarantee that it
+will navigate the ego vehicle to the exact destination node
+because of random initialization and exploration. In view of
+that, we propose a pruning algorithm to filter out the suboptimal policy in the exploration step. Here, we wish to note
+that the similar pruning algorithms have been adopted to
+guarantee arrival in [32], [41], [60], and [61], and thus we
+do not treat the pruning algorithm as a novel idea, but deem
+it as a functional component to guarantee arrival. The pruning
+algorithm is presented in Algorithm 5.
+Algorithm 5 Pruning Algorithm
+Input: (1) Current node st ; (2) Adjacent Candidate
+Points A(st );
+Output: Filtered candidate nodes A′ (st ).
+1 foreach a ∈ A(st ) do
+2
+if check_feasibility(a) then
+3
+if LET_cost(a) < LET_cost(st ) then
+4
+add a into A′ (st )
+5
+
+return A′ (st );
+
+H. Application of GE-DDRL to Miscellaneous RSP Problems
+In the previous several subsections, we have presented
+(1) the tabular DRL method to estimate a given policy’s
+full travel-time distribution and thereby optimize the policy
+with GPI; (2) graph embedding (GE) to embed nodes into
+d-dimensional real-valued vectors; (3) deep distributional reinforcement learning (DDRL) for scale-free and generalizable
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: GE-DDRL FOR RELIABLE SHORTEST PATH: A UNIVERSAL AND SCALE FREE SOLUTION
+
+RSP solution; and (4) the pruning algorithm to expedite
+training and guarantee arrival. In this subsection, we introduce GE-DDRL’s functionality to RSP problems beyond the
+aforementioned three canonical categories. Since GE-DDRL
+estimates the generic full travel-time distribution, it applies
+to a variety of RSP objectives, including but not limited to
+SOTA, mean-std, and α-reliable. We lay down three new RSP
+problems which have not been extensively studied in the RSP
+literature over the past two decades: (1) the minimal expected
+delay problem; (2) the constrained RSP problem; (3) the multiobjective RSP problem.
+The minimal expected delay problem is to find a routing
+policy which minimized the expectation of delay if it happens.
+The constrained RSP problem we propose as an example is
+to reach a routing policy with SOTA objective, but subject
+to an α-reliable constraint, i.e., the probability that the total
+electricity consumption is below a given threshold is greater
+than a confidence level (α). The multi-objective RSP problem
+we propose as an example is to navigate to the destination
+with both minimal α1 and minimal α2 quantile travel time,
+i.e., double α-reliable shortest path problem.
+For the minimal expected delay problem, let Z π (s, a)
+denote the estimated full travel time distribution, and we
+calculate the objective value obj(s, a) as follows:
+obj(s, a) = E[Z π (s, a)|Z π (s, a) ≥ T ],
+
+obj2 (s, a) = P[Z 2π (s, a) ≤ T2 ],
+
+(14)
+(15)
+
+where obj1 and obj2 are the on-time arrival probability
+and the probability that total electricity consumption is less
+than T2 . One may decide the updated routing policy as
+a = arg max [obj1 (s, a)|obj2 (s, a) ≥ α], where α is the predea
+
+fined confidence level. In essence, it means that we select the
+edge with maximizes the SOTA probability but subject to an
+α-reliable electricity consumption constraint.
+Similar to the constrained RSP problem, the multi-objective
+RSP problem, e.g., the double α-reliable shortest path problem,
+given the preference vector [λ1 , λ2 ], where λ1 , λ2 ≥ 0, the
+unified objective value obj is calculated as:
+obj(s, a) = λ1 × obj1 (s, a) + λ2 × obj2 (s, a),
+
+TABLE III
+S TATE - OF - THE -A RT RSP P LANNING A LGORITHMS
+
+TABLE IV
+A LGORITHM PARAMETERS
+
+(13)
+
+where T is the pre-defined path planning budget. In fact,
+Eq. (13) is to calculate the conditional expectation of Z π (s, a),
+in which the condition is that Z π (s, a) ≥ T . With the full
+travel-time distribution, calculating the conditional expectation is straightforward, and one can just follow the definition of conditional expectation to calculate the value. With
+obj(s, a) for all the available edges, one can decide a =
+argmin aobj(s, a).
+For the considered constrained RSP problem, denote
+Z 1π (s, a) as the total travel-time distribution, and Z 2π (s, a)
+as the total electricity consumption distribution, then, we can
+calculate the two obj values as follows:
+obj1 (s, a) = P[Z 1π (s, a) ≤ T1 ]
+
+12205
+
+(16)
+
+where obj1 (s, a) and obj2 (s, a) are the α1 -quantile value and
+α2 -quantile value of Z π (s, a), respectively. With Eq. (16),
+the edge is decided as a = argmin aobj(s, a). For different
+
+preference vectors([λ1 , λ2 ]), we can obtain different solutions,
+and hence reach the Pareto optimal solution curve. The related
+experimental results for the minimal expected delay RSP, constrained RSP, and multi-objective RSP problems, are presented
+in Section V-D.
+V. E XPERIMENTAL R ESULTS AND A NALYSIS
+In this section, we evaluate GE-DDRL’s performance for
+the three aforementioned RSP planning objectives in a range
+of transportation networks, and make comparisons with stateof-the-art RSP planning algorithms. Since state-of-the-art RSP
+planning algorithms are ‘specific’ ones, which cannot provide
+universal solutions, we categorize them into the different
+algorithm sets corresponding to different RSP objectives in
+Table III.
+All the algorithms are implemented in Python 3.7, and we
+conduct the experiments on a 2.30 GHz, Intel(R) Core(TM)
+i7-11800H CPU computer with a 64-bit version of Windows
+10 operating system, NVIDIA(R) GeForce(R) RTX 3060 and
+32GB RAM. The source code of GE-DDRL is publicly
+available,4 with the FPN module of GE-DDRL based on [62].
+Table IV summarizes the algorithms’ parameter configurations. Note that (1) the parameters of GE-DDRL are selected
+empirically based on GE-DDRL’s average performance and
+4 https://github.com/YoZo-X/GE-DDRL
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+12206
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+efficiency, and we skip studying the impact of different
+parameter configurations (d and N ) due to page limitations
+and (2) for E-PA, we implement the authors’ proposed algorithm with the independent phase-type distributed random
+variables, which is referred to as ‘PA-PH’ in the original
+manuscript [32].
+In the following subsections, we first construct a very
+simple network to dissect GE-DDRL’s computational process
+(sanity check), which consists of (1) the tabular DRL’s stepby-step computational procedure,
+(2) the value distribution’s
+
+evolution process Z (s, a) , (3) the skip-gram scheme’s node
+embedding process, (4) the learning process of FPN-QVN
+in terms of the parameterized cumulative distribution function; and then we use a slightly more complex network,
+i.e., Sioux Falls Network (SFN), with the real mean traveltime information to further evaluate the correctness of GEDDRL. After that, we compare the performance of GE-DDRL
+with state of the arts in six realistic transportation networks,
+namely, (1) Sioux Falls Network (SFN), (2) Eastern Massachusetts (EM), (2) Anaheim Network (AN), (3) Barcelona
+Network (BN) [63], (4) Chengdu Network (CN) [64], and
+(5) Minnesota road network (MN) [65]. for all the three
+RSP objectives, and we also evaluate the performance of
+GE-DDRL for three additional RSP problems, namely the
+minimal expected delay problem, constrained RSP problem,
+multi-objective RSP problem (double α-reliable shortest path).
+Lastly, we evaluate the unique characteristic of GE-DDRL:
+the generalization ability to ‘unforeseen’ destination nodes
+with pre-trained FPN-QVN parameters. Note that for the first
+sanity check, since the test network is too simple, we adopt
+smaller d values, e.g., d ∈ {2, 3, 4}, and configure the
+related parameters for the tabular DRL with specific parameter
+values.
+A. Sanity Check With a Simple Network
+This subsection performs the sanity check of GE-DDRL
+with a simple test network, whose topology is shown in
+Fig. 4a. There are 5 nodes and 4 edges in the network, and the
+edges’ travel time distributions are depicted in Fig. 4b. Note
+that we intentionally design different parametric distributions
+for different edges so as to evaluate the ‘model-free’ feature
+of tabular DRL.
+In the next, we will configure the tabular DRL algorithm,
+and depict the step-by-step update procedure of Z (s, a). We set
+N = 101, δw = 1, αt = 0.05, Epimax = 800, õ = 1 and
+d̃ = 5. The value distributions (Z ) are initialized as Z (1, 1) =
+Z (2, 2) = Z (3, 3) = Z (4, 4) = (1/N , 1/N , . . . , 1/N )⊤ , since
+δw = 1. We denote Z i (s, a) as the value of the i th bin, i.e.,
+the i th bin’s height, for (s, a). Specifically, for 1 ≤ i ≤ N − 1,
+we have Z i (s, a) = P[(i − 1) · δw ≤ Z (s, a) ≤ i · δw]; for
+i = N , we have Z i (s, a) = P[Z (s, a) ≥ (N − 1) · δw].
+1) Tabular DRL’s Step-by-Step Computational Procedure:
+We go through one full episode, and dissect the value distribution’s update process for Z (s1 , a1 ) in a step-by-step manner.
+Suppose that the ego vehicle starts at Node 1 (s1 = 1) and
+proceeds to Node 5, and the collected trajectory is (s1 = 1,
+a1 = 1, r1 = 8.7, s2 = 2, a2 = 2, r2 = 11.2, s3 = 3,
+
+a3 = 3, r3 = 15.7, s4 = 4, a4 = 4, r4 = 6.3, s5 = 5).
+We have:
+
+Z (s1 , a1 ) = Z (s1 , a1 )+αt T (r1 + Z (s2 , a2 ))− Z (s1 , a1 ) .
+(17)
+Since Z (s2 , a2 ) = (1/N , 1/N , . . . , 1/N ), r1 + Z (s2 , a2 )
+effectively moves the value distribution, i.e., all the bins of
+Z (s2 , a2 ), to the right by r1 . Now define the intermediate
+value distribution Z ′ = r1 + Z (s2 , a2 ), and we have Z i′ =
+1/N , which means that P[r1 + (i − 1) · δw ≤ Z ′ ≤
+r1 + i · δw] = 1/N . T (Z ′ ) transforms the new distribution basis (the positions of the bins) to fit the originally
+designed distribution basis. For the case of r1 = 8.7, we have
+T (Z ′ ) = (0, 0, . . . , 0, 0.3/N , 1/N , 1/N , . . . , 9.7/N ), where
+the first 8 elements are zeros; the 9th element is 0.3/N ; the
+last element is 9.7/N ; and the remaining elements remain at
+1/N . With αt = 0.05, we have
+Z (s1 , a1 )
+
+= Z (s1 , a1 ) + αt T (r1 + Z (s2 , a2 )) − Z (s1 , a1 )
+= (1 − αt )Z (s1 , a1 ) + αt T (r1 + Z (s2 , a2 ))
+= (1 − αt )(1/N , 1/N , . . . , 1/N )
++ αt (0, 0, . . . , 0, 0.3/N , 1/N , 1/N , . . . , 9.7/N )
+= (0.95/N , . . . , 0.95/N , 0.965/N , 1/N , . . . , 1.435/N ),
+(18)
+with the first 8 elements at 0.95/N , the 9th element at
+0.965/N , the last element at 1.435/N and the remaining
+elements at 1/N . Following the similar procedure, we can
+update the value distributions of Z (s2 , a2 ), Z (s3 , a3 ) and
+Z (s4 , a4 ). Note that since Node 5 is the absorbing state in
+DRL, we initialize Z (s5 ) = 0 for all distribution basis.
+2) Evolution Process of Z (s1 , a1 ): We evaluate the ‘correctness’ of tabular DRL through showcasing the evolution
+process of Z (s1 , a1 ) with the number of episodes in Fig. 3.
+Note that the last sub-figure (Fig. 3e) shows the ‘true’ travel
+time distribution of Z (s1 , a1 ) (estimated from the Monte Carlo
+method). In the figure, we can visibly observe that the estimated value distribution approximates the ‘true’ distribution
+better and better as the number of episodes increases, and one
+can barely differentiate the estimated value distribution after
+500 episodes from the ‘true’ value distribution obtained from
+the Monte Carlo sampling method.
+3) Graph Embedding Process With the Skip-Gram Scheme:
+We set αe = 1e − 4 for skip-gram, and evaluate its node
+embedding process for different d values, i.e., d ∈ {2, 3, 4}.
+The collection of node trajectories is 0 = {(1, 2, 3, 4, 5)}. Note
+that essentially there is only one valid node trajectory in 0,
+and we repeatedly feed the trajectory to the graph embedding
+process. We randomly initialize the embedded features of all
+the 5 nodes as d-dimensional real-valued vectors. Fig. 5a
+shows the evolution process of skip-gram scheme’s objective
+value (Eq. (11)) for different d values, and we report the
+subsequent node probabilities (P[φ j |φ i ]) in Fig. 5b for the
+case of d = 4. In Fig. 5a, we can see that the skip-gram
+scheme embeds the node features better and better as the
+training process continues, and the finally embedded features
+of the 5 nodes for the case of d = 4, are able to capture the
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: GE-DDRL FOR RELIABLE SHORTEST PATH: A UNIVERSAL AND SCALE FREE SOLUTION
+
+Fig. 3.
+
+A representative evolution process of Z (s1 , a1 ).
+
+Fig. 4.
+
+Simple Test Network for Sanity Check.
+
+12207
+
+Fig. 6. The learning process of FPN-QVN (The ‘true’ CDF is achieved
+through the Monte Carlo sampling method).
+
+Fig. 5. Node embedding process of skip-gram. Fig. 5a shows the evolution
+process of the skip-gram scheme for different d values, and Fig. 5b shows
+the predicted subsequent node probabilities with underlined values indicating
+the next node with the highest probability for the use case of d = 4.
+
+Fig. 7. The learning process of GE-DDRL in SFN with real travel-time
+statistics (The ‘true’ CDF is achieved through the Monte Carlo sampling
+method).
+
+topological relationship of the test network, as evidenced by
+the predicted subsequent node in Fig. 5b.
+4) The Learning Process of FPN and QVN: The details
+of FPN and QVN are configured as follows: (1) FPN is a
+feed-forward neural network with 128 hidden nodes, with
+rectified linear activation function (ReLU); the learning rate
+α f = 1e − 3, and the number of quantiles N = 128;
+(2) QVN is a four-layer deep neural network with both hidden
+layers containing 128 hidden nodes; ReLU is the activation
+function, and the learning rate αq = 1e − 3. We present
+the evolution process of the FPN-QVN estimated cumulative
+distribution function (CDF) of Z (s, a), together with the true
+CDF obtained from Monte Carlo sampling, in Fig. 6. In the
+figure, we can see that FPN and QVN functions cooperatively
+to improve the estimated CDF towards the true CDF. Comparing Fig. 6b with Fig. 6c (the ‘true’ CDF), we can see that
+the trained FPN-QVN approximates the true CDF with good
+accuracy.
+
+travel time of all the edges in SFN. We select the OD pair
+as (1, 15), and the underlying routing policy is the least
+expected time (LET) policy. With the Monte Carlo sampling
+method, we are able to estimate the ‘true’ total travel time
+distribution whose cumulative distribution function (CDF) is
+visualized in Fig. 7c. With GE-DDRL, the estimated CDF of
+the routing policy’s travel-time distribution at the 20th episode
+and the 2000th episode are visualized in Fig. 7a and Fig. 7b,
+respectively. From Fig. 7, we can visably see that GE-DDRL’s
+CDF estimation gradually approaches the true CDF, which is
+obtained with the Monte Carlo method.
+
+B. Additional Sanity Check in a Realistic Network: SFN
+In the last subsection, we use a toy network to evaluate
+the step-by-step computation process of tabular DRL and
+how GE-DDRL gradually approximates the true distribution.
+Now, we further verify the correctness of GE-DDRL with
+a realistic transportation network, namely the Sioux Falls
+Network (SFN), with real travel-time statistics, i.e., the mean
+
+C. Performance and Efficiency Comparison in Six
+Realistic Transportation Networks
+In this subsection, we compare the performance and efficiency of GE-DDRL with state-of-the-art algorithms in six
+realistic networks, namely, (1) Sioux Falls Network (SFN),
+(2) Eastern Massachusetts (EM), (3) Anaheim Network (AN),
+(4) Barcelona Network (BN), (5) Chengdu Network (CN), and
+(6) Minnesota Road Network (MN). The network details, i.e.,
+the number of nodes and the number of edges, are presented
+in Table V.
+The edges’ mean travel times (µi j ) of the first four transportation networks (SFN, EM, AN and BN) are publicly
+available [63], and we follow the same method as proposed
+in [17] to generate the standard deviation value of each edge
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+12208
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+TABLE V
+T EST N ETWORK S UMMARY
+
+in the network. Specifically, we set σi j = Uniform(0, κ)µi j ,
+where κ = 0.3. With µi j and σi j available, and assuming that
+the travel time follows the truncated Gaussian distribution,
+one is able to obtain as many samples as required for GEDDRL and the related benchmark algorithms. The Minnesota
+dataset [65] is a widely accepted dataset in the field of graph
+representation [66], [67] and graph embedding [68], [69]
+research. Since it does not contain the travel-time information,
+we randomly assigned the travel time of each road segment.
+For Chengdu Network, the travel-time samples for each edge
+are publicly available at [64].
+Since GE-DDRL serves as a universal solution to the
+RSP problem, we evaluate its performance and efficiency
+with respect to all the three aforementioned RSP objectives,
+i.e., (1) SOTA, (2) mean-std and (3) α-reliable, and make
+comparisons with the respective group of benchmark algorithms. Here, we wish to point out that GE-DDRL targets
+the independent and stationary travel-time distribution use
+case, while a few benchmark algorithms are considering more
+complex use cases. For example, decreasing order-of-time
+(DOT) [23] considers the time-varying use case, and Gaussian
+process path planner (GP3) [9] targets the spatially correlated
+travel time. Therefore, in implementation, we trim down the
+related algorithm to fit with the simpler (independent and
+stationary) use case. For example, for DOT [23], we simply
+discretize the time horizon while travel times are the same over
+different time intervals. In this paper, the related algorithms’
+efficiency comparison is just for the independent and stationary
+travel-time use case, and in the meanwhile, we acknowledge
+that most benchmark algorithms are having a more complex
+setting, e.g., spatially correlated and/or time-varying traveltime use cases.
+The parameter configuration of each RSP problem’s objective is set up as follows: (1) for the SOTA objective, we set
+three types of path planning budget T for evaluation, namely,
+tight budget: T = 0.975 × t LET , where t LET refers to the
+expected travel time of the corresponding LET path, exact
+budget: T = tLET , and loose budget: T = 1.025 × t LET ;
+(2) for the α-reliable shortest path objective, we choose three
+representative α values, namely, risk-averse: α = 0.9, riskneutral: α = 0.5 and risk-seeking: α = 0.1; (3) for the
+mean-std objective, we choose three representative ζ values5
+as follows: ζ = {1, 10, 40}. The number of evaluating OD
+pairs is set up as follows: (1) EM and AN, we randomly
+choose 50 OD pairs, (2) for SFN, due to its small network
+size, we randomly choose 5 OD pairs, and report the average
+performance metric.
+5 The selection falls in the range of ζ values used in [7].
+
+Fig. 8.
+
+Performance and efficiency comparison for SOTA RSP.
+
+Note that in order to compare the solution quality of each
+algorithm to each RSP problem in a unified perspective,
+we introduce the notion of optimality index (Opt) as the
+algorithm’s performance metric. For the SOTA RSP problem,
+Opt is calculated as:
+Opt =
+
+f alg − f LET
+× 100%,
+f LET
+
+(19)
+
+and for the mean-std shortest path and the α-reliable shortest
+path, Opt is calculated as:
+Opt = −
+
+f alg − f LET
+× 100%.
+f LET
+
+(20)
+
+In both Eq. (19) and Eq. (20), f alg refers to the evaluating
+algorithm’s average resulting RSP objective value, e.g., for
+SOTA, f alg refers to the ego algorithm’s average stochastic
+on-time arrival probability; for mean-std, f alg refers to the
+ego algorithm’s average mean-std combination value. While
+f LET refers to the LET path’s corresponding average RSP
+objective value, e.g., for SOTA, f LET refers to the LET path’s
+average stochastic on-time arrival probability. The reason that
+we flip the sign between Eq. (19) and Eq. (20) is that for
+SOTA, the objective is to maximize the objective value, while
+for the other two RSP problems, the objective is to minimize
+the corresponding objective values. Through flipping the sign
+in Eq. (19) and Eq. (20), the algorithm’s Opt value is always
+the larger the better, and it refers to the performance increase
+percentage with respect to the LET path, which serves as
+the baseline performance indicator. Here, all of the evaluated
+RSP objectives are essentially probabilistic terms, i.e., SOTA,
+α-quantile value, mean and standard deviation combination.
+In the performance evaluation phase, we use the samplingbased method to evaluate the corresponding probabilistic item
+values. We re-run each evaluating algorithm for 500 times,
+and use the corresponding statistics as the estimate for the
+probabilistic item value. For example, for SOTA, we use the
+percentage of on-time arrival samples over the total samples as
+the estimate. For α-quantile values, we evaluate the α-quantile
+statistic based on the collected samples, and use it as the
+estimated value.
+1) SOTA RSP Performance Comparison and Analysis:
+Fig. 8a reports the performance comparison of GE-DDRL with
+related benchmark algorithms, i.e., PLM, ILP, DOT, OS-MIP
+and PA. In the figure, we can see that (1) all the algorithms are
+able to achieve a performance increase with respect to the LET
+path’s SOTA performance; (2) all the algorithms are having the
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: GE-DDRL FOR RELIABLE SHORTEST PATH: A UNIVERSAL AND SCALE FREE SOLUTION
+
+12209
+
+TABLE VI
+GE-DDRL’ S O FFLINE T RAINING T IME S UMMARY
+
+largest performance increase percentage with respect to LET’s
+SOTA value in AN when compared with SFN and EM, in that
+AN offers a wide range of path selections and thus leads
+to better path planning performance; (3) GE-DDRL always
+rank top two when compared with state of the arts across all
+the testing networks, and the performance difference between
+GE-DDRL’s performance and the best algorithm’s performance is barely discernible, e.g., always below 1%.
+Additionally, since one of GE-DDRL’s advantages over
+state of the arts is that its online decision making process is
+fast and scale-free with the size of the transportation network,
+we evaluate and report the average online decision-making
+time6 of all the algorithms in Fig 8b.
+In the figure, we can see that GE-DDRL’s online decisionmaking time is at least an order-of-magnitude less than the
+planning time of state of the arts,7 and it does not grow as
+the network size increases. Note that (1) since GE-DDRL’s
+decision making time is too small, we report the log value of
+the actual decision making/planning time in Fig. 8b; (2) the
+fast decision making feature of GE-DDRL is at the expense
+of GE-DDRL’s offline training process, which consists of the
+node feature embedding with skip-gram, and the joint training
+of FPN-QVN for RSP planning. GE-DDRL’s offline training
+time depends on the total number of training episodes, and
+the specific configuration of the deep neural networks, and
+the size of the underlying transportation networks. We report
+GE-DDRL’s offline training time for the SOTA problem in
+Table VI. In the table, we can see that the offline training
+time of GE-DDRL grows with the size of the transportation
+network, and it takes more than one full day (24 hours) for
+the last two networks, i.e., CN and MN, to reach the ‘up-tostandard’ and ‘all-to-all’ navigation solution.
+2) Mean-Std Shortest Path and α-Reliable Shortest Path
+Performance Comparison and Analysis: Fig. 9 and Fig. 10
+report the performance and efficiency comparisons of GEDDRL with state of the arts for the mean-std shortest path and
+α-reliable shortest path respectively. In both figures, similar
+trends can be observed: (1) GE-DDRL performs equivalently
+well with the respective group of state of the arts, see
+Fig. 9a and Fig. 10a; (2) GE-DDRL’s decision making time is
+6 Here, the online decision-making time of an algorithm is calculated as
+the total computational time it takes to execute a given optimal policy from
+origin to destination. For path-based RSP planner, it refers to the one-shot
+planning time, and for policy-based planner, it refers to the total computation
+time required to execute a policy. The same rule applies to the other two RSP
+problems.
+7 Here, ‘an order of magnitude less’, means that GE-DDRL is 10 times
+faster than all the other algorithms, i.e., the log value of GE-DDRL’s decisionmaking time is less than all the other algorithms’ log value of decision making
+time by 1 full unit in Fig. 8b.
+
+Fig. 9.
+Performance and efficiency comparison for the mean standard
+deviation shortest path problem.
+
+Fig. 10. Performance and efficiency comparison for the α-reliable shortest
+path problem.
+
+significantly less than all of its counterparts, see Fig. 9b and
+Fig. 10b.
+3) Summary: In this subsection, we conduct the performance and efficiency comparison of GE-DDRL with the
+corresponding group of state of the arts for all the three RSP
+problems. GE-DDRL essentially provides an approximated
+solution to the RSP problem, in that (1) the estimation of the
+routing policy’s travel time through deep distributional reinforcement learning, and the node embedding process (through
+skip-gram) brings in another layer of approximation. Thus,
+the yielded RSP solution, though generic for a variety of
+RSP objectives, is an approximate one instead of an exact
+one. Therefore, when compared with the baseline algorithms,
+especially the exact solutions, e.g., iterative labelling approach
+(ILA) proposed by Khani and Boyles [7], GE-DDRL does
+not have the superior performance as shown in Fig. 9a.
+Nevertheless, the comparative results (Fig. 8a to Fig. 10a)
+indicate that GE-DDRL is able to output ‘up-to-standard’
+performance when compared with baseline algorithms, and
+in the meanwhile makes the online decisions an order of
+magnitude faster than baseline algorithms.
+In a nutshell, GE-DDRL offers a model-free and fast
+solution to a variety of RSP objectives, with ‘up-to-standard’
+but not always the best performance. Therefore, users may
+select the corresponding specific algorithm if they have a wellgauged model, and allow enough computation time for the
+algorithm to achieve the final solution. While for GE-DDRL,
+its advantage is (1) it offers a generic form of travel-time
+distribution expression, and hence it applies to a variety of
+RSP problems, and even applicable to a completely new RSP
+objective which has not been considered before; (2) it yields
+the solution very fast, in that the well-trained GE-DDRL only
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+12210
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+Fig. 11. Performance for the Minimal Expected Delay Problem. Note that
+the Y-axis is the averaged normalized expected delay with respect the the
+corresponding OD pairs LET time. In this way, the performance indicator is
+meaningful, i.e., the smaller the better.
+
+forward propagates the deep neural network for distribution
+estimation, which typically reacts in less than one second,
+especially when we compress the node representation into a
+fixed d-dimensional vector.
+
+Fig. 12. Performance for the Constrained RSP Problem. We indicate both the
+on-time ‘arrival’ probability and the ‘survival’ probability, i.e., the probability
+that the electric vehicle consumes less than the electricity consumption
+threshold.
+TABLE VII
+M ULTI -O BJECTIVE RSP P ROBLEM
+
+D. Performance Evaluation for the Three New RSP Problems
+In the last subsection, we compare the performance and
+efficiency of GE-DDRL with state of the arts for the three
+canonical RSP problems, and show that GE-DDRL is able
+to achieve the ‘up-to-standard’ performance with very small
+online decision-making time. In this subsection, we will
+demonstrate the ‘universality’ characteristic of GE-DDRL by
+applying it to three new RSP problems, which have not
+been studied extensively in the RSP domain over the past
+two decades. The three new RSP problems are (1) minimal
+expected delay problem: minimize the delay time expected
+if it happens; (2) constrained RSP problem: SOTA with
+α-reliable constraints on total electricity consumption;
+(3) multi-objective RSP: double α-reliable shortest path problem. The OD pair selection scheme and the travel-time sampling method follow exactly what the last subsection sets up.
+For the minimal expected delay problem, we set the path
+planning budget T ∈ {0.985, 1, 1.015} × t LET , and compare
+the performance of GE-DDRL with the LET path. Fig. 11
+shows the comparative results of GE-DDRL with the LET
+routing policy for the three configurations, across the six
+transportation networks. In the figure, we can observe that
+for both the difficult task (T = 0.985 × t LET and the easy
+task (T = 1.015 × t LET ), GE-DDRL is able to reach a better
+solution than LET does. For the medium task (T = 1 × t LET ),
+the two policies perform equally well, in that we conjecture
+that the optimal solution is exactly to follow the LET path in
+that case.
+For the constrained RSP problem, we set up the specific
+problem as follows: (1) the navigation objective is to arrive
+at the destination with maximal on-time arrival probability
+(path planning budget is T ); (2) the constraint is that the total
+electricity consumption is less than the pre-defined budget
+(T1 ) with a probability of α. We set T = t LET , and T1 =
+0.985×eLET , where eLET refers to the expected total electricity
+consumption suppose that the vehicle takes the LET path.
+We vary α ∈ {0.2, 0.4, 0.6}, and evaluate the performance of
+GE-DDRL, to see whether GE-DDRL is able to take advantage
+of different α values for better routing policy generation.
+Fig. 12 shows the performance of GE-DDRL for different
+values of α across the six realistic transportation networks.
+
+In the figure, we can see that as we increase α, GE-DDRL
+becomes more conservative, and results in a lower SOTA
+performance, which is reasonable, in that the larger α value
+should lead to safer in terms of electricity consumption but
+more conservative path.
+Next, we evaluate GE-DDRL’s performance for a multiobjective RSP problem, where the objective is to minimize
+both α1 -quantile travel time and α2 -quantile travel time. We set
+α1 = 0.9, and α2 = 0.5, and evaluate the performance
+of GE-DDRL in Chengdu Network (CN), in that only CN
+has publicly available real travel-time samples and distance
+measurements and is large enough to offer a wide range of
+policy/path selections. With different preference vectors of
+λ1 and λ2 , GE-DDRL is able to reach a set of Pareto optimal
+solutions. We select 3 representative OD pairs, namely short
+OD (distance less than 5km), medium OD (distance between
+5km and 10km), and long OD (distance greater than 10km).
+Table VII presents the Pareto optimal path set for different
+types of OD pairs. In the table, we can see that the long OD
+pair tends to have more Pareto optimal paths than short and
+medium OD pairs.
+E. Generalization to Unforeseen Destinations of GE-DDRL
+In the last subsection, we have shown that GE-DDRL
+serves as a universal solution to all the RSP problems and is
+scale-free to the size of the transportation network. Besides
+being ‘universal’ and ‘scale-free’, GE-DDRL has another
+unique characteristic, namely, ‘generalizable’ to unforeseen
+destination nodes. It means that we train the GE-DDRL
+with one destination node, but during deployment, we feed
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: GE-DDRL FOR RELIABLE SHORTEST PATH: A UNIVERSAL AND SCALE FREE SOLUTION
+
+12211
+
+TABLE VIII
+GE-DDRL’ S G ENERALIZATION P ERFORMANCE IN SFN
+
+use case to spatially correlated and time-varying transportation networks. Currently, GE-DDRL can only be applied to
+the independent and stationary use case, and we intend to
+use multi-step or even λ-step return as the distributional
+update target, which alleviates the independent travel-time
+requirements.
+
+another destination node’s embedded features into the GEDDRL framework, and GE-DDRL is still able to output a
+reasonable RSP solution. Since almost all state-of-the-art RSP
+solutions are treating destination nodes as distinct ones, and
+thus, to the best of our knowledge, are unable to offer a
+‘generalizable’ solution to unforeseen destination nodes.8
+We showcase the generalization ability of GE-DDRL in
+this subsection. Specifically, we randomly select 50 OD pairs,
+named as training OD pairs, from the Sioux Falls Network,
+and train the whole GE-DDRL framework. Then, with the
+final skip-gram embedded node features and the parameterized
+FPN-QVN module, we feed GE-DDRL with another set
+of 50 randomly generated OD pairs, named as testing OD
+pairs, and directly evaluate the performance of GE-DDRL.
+Table VIII shows the performance comparison Opt value in
+Eq. (19) and Eq. (20) of the average performance between the
+50 training OD pairs and the 50 testing OD pairs, for all the
+three RSP problems. In the table, we can see that GE-DDRL
+is still able to output a reasonably good RSP solution (with
+positive Opt values) for the unforeseen destination nodes.
+
+A PPENDIX A
+P ROOF OF C ONVERGENCE FOR GE-DDRL
+
+VI. C ONCLUSION AND F UTURE W ORK
+This paper presents graph embedding and deep distributional reinforcement learning (GE-DDRL) as a universal and
+scale-free solution to the reliable shortest path (RSP) problem.
+GE-DDRL uses one of the prevalent graph embedding techniques, i.e., skip-gram, to compress the distinct nodes into
+d-dimensional real-valued vectors and then develops a deep
+distributional reinforcement learning method, which estimates
+and hence optimizes the full value distribution of a given
+routing policy. We test the correctness of GE-DDRL’s each
+functional module with a simple yet illustrative network,
+compare GE-DDRL’s performance with 15 state-of-the-art
+RSP solutions (separated into three groups) in a range of
+transportation networks with satisfying results, and showcase
+GE-DDRL’s unique characteristic, i.e., being generalizable to
+unforeseen destination nodes in the experiments section.
+In the future, we would like to test GE-DDRL’s performance
+in large-scale metropolitan transportation networks with real
+traffic data, and enhance GE-DDRL’s stable behavior during
+learning. Another aspect of improving GE-DDRL is to add
+the nodes’ contextual information, e.g., local, arterial or highway, as well as the latitude-longitude information into the
+graph embedding process, which may help with better node
+embedding. Additionally, we are keen to extend GE-DDRL’s
+8 Here, an algorithm, being ‘generalizable’ to unforeseen destination nodes,
+means that the algorithm does not need to re-plan or retrain itself, and is
+still able to output a reasonably good RSP solution. When supplied with a
+new destination node, almost all state-of-the-art RSP algorithms need the replanning process to yield an RSP solution.
+
+In this section, we briefly sketch the convergence proof
+process of GE-DDRL. In classical value-based reinforcement learning, we need to calculate the optimal value of
+Q to determine the optimal policy. The Bellman operator
+in classical value-based reinforcement learning is known to
+be γ -contraction, i.e., for any Q, the following inequality is
+satisfied:
+dist(T Q 1 , T Q 2 ) ≤ γ dist(Q 1 , Q 2 ),
+where 0 < γ ≤ 1 is the discount factor. In classical
+reinforcement learning, the definition of dist is the infinity
+norm, i.e., dist(Q 1 , Q 2 ) := ||Q 1 −Q 2 ||∞ . However, in order to
+evaluate the distance between two distance, the 1-Wasserstein
+distance metric is used to as the dist to help with the training
+of neural network.
+In FQF, the distributional Bellman update operator is
+expressed as a projection onto a parameterized quantile distribution. The operator aims to project an arbitrary distribution
+Z onto Z Q (Z is a space of distribution), i.e.,
+5W1 Z := argmin Z θ ∈ Z Q (Z , Z θ ),
+N Z τi
+X
+W1 (Z , Z θ ) =
+|FY−1 (ω) − θi |dω
+i=1
+
+τi −1
+
+where θi refers to the supports of Z θ , and 5W1 is the
+quantile projection used as distributional Bellman operator.
+Now, we have the following proposition:
+Proposition 1: For any two distributions Z 1 , Z 2 for an
+MDP with finite state and action space,
+d̄∞ (5W1 T Z 1 , 5W1 T Z 2 ) ≤ γ d̄∞ (Z 1 , Z 2 )
+The proof of Proposition 1 needs the following two Lemmas
+whose proofs are provided in [55]:
+Lemma 1: Consider an MDP with countable state and
+action spaces, and let Z , Y be the value distributions such
+that each state-action distribution Z (x, a), Y (x, a) is given by
+a single column. Consider the particular case where rewards
+are identically 0 and γ = 1, and let τ ∈ [0, 1]. Denote by 5τ
+the projection operator which maps a probability distribution
+onto a column delta located at its τ th quantile. Then
+d̄∞ (5τ T Z , 5τ T Y ) ≤ γ d̄∞ (Z , Y )
+Lemma 2: For any two probability distributions v1 , v2 ,
+and the Wasserstein projection operator 5W1 that projects
+distributions onto the support of size n, we have that
+d̄∞ (5W1 v1 , 5W1 v2 ) = max |Fv−1
+(
+1
+i=1,...,n
+
+2i − 1
+2i − 1
+) − Fv−1
+(
+)|
+2
+2n
+2n
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+12212
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+(1) Case 1: γ = 1, since the operator T π is a γ -contraction
+in d̄∞ , it is proved;
+(2) Case 2: r ≡ 0, we know that the Wasserstein distances
+are constant in a translation of the supports of distributions,
+so it is proved;
+(3) Case 3: every distribution is composed of one single column.
+solve this case with Lemma
+We denote Z (s, a) =
+P N 1.
+P N We
+1
+1
+δ
+)
+and
+Y
+(s,
+a)
+=
+δ
+θ
+(s,a)
+k=1 N φk (s,a) ). The (s, a) is
+k=1 N k
+a state-action pair, and (s ′ , a ′ ) is able to access all state-action
+pairs. Now, we set pi as the probability of transitioning from
+(s ′ , a ′ ) to (s, a), and a new MDP is constructed for the MDP
+where all distributions are given by a single column. Further,
+we take the (s ′ , a ′ ), and the MDP can guarantee that the (s ′ , a ′ )
+˜j ˜j
+˜j ˜j
+transitions to (si , ai ), and the probability of reaching (si , ai )
+is pi /n(i is all the next state of s, j = [1, . . . , N ]). We define
+new distributions Z̃ , Ỹ , as follows:
+˜j ˜j
+Z̃ (si , ai ) = δθ j (si ,ai )
+˜j ˜j
+Ỹ (si , ai ) = δφ j (si ,ai )
+With Lemma 2, the d∞ distance between the 1-Wasserstein
+projections of two distributions is the max operation over the
+difference of a certain set of quantiles, we apply Lemma 1 to
+obtain the following:
+d∞ (5W1 (T Z̃ )(s ′ , a ′ ), 5W1 (T Ỹ )(s ′ , a ′ ))
+≤ sup |θ j (si , ai ) − φ j (si , ai )|
+= sup d∞ (Z (si , ai ), Y (si , ai ))
+
+(21)
+
+Then, we perform a transition:
+d∞ (5W1 (T Z̃ )(s ′ , a ′ ), 5W1 (T Ỹ )(s ′ , a ′ ))
+= d∞ (5W1 (T Z )(s ′ , a ′ ), 5W1 (T Y )(s ′ , a ′ )).
+
+(22)
+
+Combining the inequality equation in Eq. (22), we get:
+d∞ (5W1 (T Z̃ )(s ′ , a ′ ), 5W1 (T Ỹ )(s ′ , a ′ ))
+≤ sup |Z (si , ai ) − Y (si , ai )|.
+
+(23)
+
+Taking the maximum over the initial state (s ′ , a ′ ) yields the
+result.
+A PPENDIX B
+D ERIVATION P ROCESS OF FPN-QVN
+In this section, we present the detailed mathematical derivation process of FPN-QVN as a scale-free solution to the
+RSP problem. The key idea of FPN-QVN is to minimize
+the Wasserstein distance between the approximated value
+distribution
+the true one, which is given by W1 (Z , θ, τ ) =
+P N R τi and
+−1
+|F
+i=1 τi−1
+Z (t) − θi | dt. τ is proposed by the fraction
+proposal network (FPN), and the Wasserstein distance is with
+respect to the loss function of FPN. In this way, the weight of
+W1
+FPN is updated through ∂∂τ
+.
+When the location of quantiles, τ , are fixed, the quantile
+value network (QVN) will optimize the corresponding quantile
+value, i.e., θ . FPN-QVN combines the quantile regression and
+distributional Bellman update based on the given τ to train the
+
+network. QVN is trained with the Huber quantile regression
+loss as follows:
+L(δi j )
+ρτκ (δi j ) = |τ − 1{δi j ≤ 0}|
+,
+κ
+
+1
+
+ δi2j ,
+if|δi j | ≤ κ
+,
+Lκ (δi j ) = 2
+1
+
+ κ(|δi j | − κ), otherwise
+2
+where κ is the threshold value, and δi j is the weighted temporal
+difference (TD) error between the two probabilities, δi j = r +
+γ θi (s ′ , a ′ ) − θ j (s, a). 1{statement} is the indicator function,
+which returns 1 if the statement is true, and returns 0 if the
+statement is false.
+the loss function of QVN is given
+PFinally,
+N PN
+by, L(s, a) = N1 i=1
+j=1 ρκ (δi j ), and the weight of QVN
+is updated with ∇L.
+
+CDF
+DDRL
+DOT
+DP
+DRL
+FPN
+GCN
+GE
+GE-DDRL
+GP
+GP3
+GPI
+ITS
+LET
+MDP
+MF
+MP
+NLP
+OD
+QVN
+RSP
+SA
+SFN
+SOTA
+VaR
+
+L IST OF ACRONYMS
+Cumulative distribution function.
+Deep distributional reinforcement learning.
+Decreasing order-of-time.
+Dynamic programming.
+Distributional reinforcement learning.
+Fraction proposal network.
+Graph convolutional network.
+Graph embedding.
+Graph embedding and deep distributional reinforcement Learning.
+Genetic programming.
+Gaussian process path planner.
+Generalized policy iteration.
+Intelligent transportation system.
+Least expected time.
+Markov decision process.
+Matrix factorization.
+Mathematical programming.
+Natural language processing.
+Origin-destination.
+Quantile value network.
+Reliable shortest path.
+Successive approximation.
+Sioux Falls Network.
+Stochastic on-time arrival.
+Value-at-risk.
+ACKNOWLEDGMENT
+
+The authors would like to thank the Editor-in-Chief,
+an Associate Editor, and the three anonymous reviewers for
+their invaluable comments and suggestions, which are quite
+constructive in improving the manuscript’s quality.
+R EFERENCES
+[1] Y. Zhang, Y. Hsueh, W. Lee, and Y. Jhang, “Efficient cache-supported
+path planning on roads,” IEEE Trans. Knowl. Data Eng., vol. 28, no. 4,
+pp. 951–964, Apr. 2016.
+[2] Y. Ge, H. Li, and A. Tuzhilin, “Route recommendations for intelligent
+transportation services,” IEEE Trans. Knowl. Data Eng., vol. 33, no. 3,
+pp. 1169–1182, Mar. 2021.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: GE-DDRL FOR RELIABLE SHORTEST PATH: A UNIVERSAL AND SCALE FREE SOLUTION
+
+[3] S. Dabiri, C. Lu, K. Heaslip, and C. K. Reddy, “Semi-supervised
+deep learning approach for transportation mode identification using
+GPS trajectory data,” IEEE Trans. Knowl. Data Eng., vol. 32, no. 5,
+pp. 1010–1023, May 2020.
+[4] Y. Li et al., “Top-k vehicle matching in social ridesharing: A priceaware approach,” IEEE Trans. Knowl. Data Eng., vol. 33, no. 3,
+pp. 1251–1263, Mar. 2021.
+[5] W. Huang, Y. Zhang, Z. Shang, and J. X. Yu, “To meet or not to meet:
+Finding the shortest paths in road networks,” IEEE Trans. Knowl. Data
+Eng., vol. 30, no. 4, pp. 772–785, Apr. 2018.
+[6] T. Xing and X. Zhou, “Finding the most reliable path with and without
+link travel time correlation: A Lagrangian substitution based approach,”
+Transp. Res. B, Methodol., vol. 45, no. 10, pp. 1660–1679, Dec. 2011.
+[7] A. Khani and S. D. Boyles, “An exact algorithm for the mean–standard
+deviation shortest path problem,” Transp. Res. B, Methodol., vol. 81,
+pp. 252–266, Nov. 2015.
+[8] H. Guo, X. Hou, and Q. Peng, “CTD: Cascaded temporal difference
+learning for the mean-standard deviation shortest path problem,” IEEE
+Trans. Intell. Transp. Syst., vol. 23, no. 8, pp. 10868–10886, Aug. 2022.
+[9] H. Guo, X. Hou, Z. Cao, and J. Zhang, “GP3: Gaussian process path
+planning for reliable shortest path in transportation networks,” IEEE
+Trans. Intell. Transp. Syst., vol. 23, no. 8, pp. 11575–11590, Aug. 2022.
+[10] H. Frank, “Shortest paths in probabilistic graphs,” Oper. Res., vol. 17,
+no. 4, pp. 583–599, Aug. 1969.
+[11] A. Chen and Z. Ji, “Path finding under uncertainty,” J. Adv. Transp.,
+vol. 39, no. 1, pp. 19–37, Sep. 2005.
+[12] T. Uchida and Y. Iida, “Risk assignment: A new traffic assignment model
+considering the risk of travel time variation,” Transp. Traffic Theory,
+vol. 10, pp. 89–105, Jan. 1993.
+[13] R. A. Sivakumar and R. Batta, “The variance-constrained shortest path
+problem,” Transp. Sci., vol. 28, no. 4, pp. 309–316, Nov. 1994.
+[14] H. Hu and R. Sotirov, “Special cases of the quadratic shortest path
+problem,” J. Combinat. Optim., vol. 35, no. 3, pp. 754–777, Apr. 2018.
+[15] Q. Tu, L. Cheng, T. Yuan, Y. Cheng, and M. Li, “The constrained reliable
+shortest path problem for electric vehicles in the urban transportation
+network,” J. Cleaner Prod., vol. 261, Jul. 2020, Art. no. 121130.
+[16] Y. Zhang, Z.-J. Max Shen, and S. Song, “Lagrangian relaxation for the
+reliable shortest path problem with correlated link travel times,” Transp.
+Res. B, Methodol., vol. 104, pp. 501–521, Oct. 2017.
+[17] Y. Zhang and A. Khani, “An algorithm for reliable shortest path problem
+with travel time correlations,” Transp. Res. B, Methodol., vol. 121,
+pp. 92–113, Mar. 2019.
+[18] X. Hou, H. Guo, and Y. Zhang, “Adaptive reliable shortest path in
+Gaussian process regulated environments,” in Proc. IEEE/RSJ Int. Conf.
+Intell. Robots Syst. (IROS), Oct. 2020, pp. 6819–6825.
+[19] Y. M. Nie and X. Wu, “Reliable a priori shortest path problem with
+limited spatial and temporal dependencies,” in Transportation and Traffic
+Theory 2009: Golden Jubilee. Cham, Switzerland: Springer, 2009,
+pp. 169–195.
+[20] A. A. Agafonov, V. V. Myasnikov, and A. I. Maksimov, “Approximation
+of the road segments travel time using Levy distributions in the reliable
+shortest path problem,” J. Phys., Conf. Ser., vol. 1368, no. 3, Nov. 2019,
+Art. no. 032008.
+[21] P. Chen, R. Tong, B. Yu, and Y. Wang, “Reliable shortest path finding
+in stochastic time-dependent road network with spatial–temporal link
+correlations: A case study from Beijing,” Expert Syst. Appl., vol. 147,
+Jun. 2020, Art. no. 113192.
+[22] L. Shen, H. Shao, L. Zhang, and J. Zhao, “The global optimal algorithm
+of reliable path finding problem based on backtracking method,” Math.
+Problems Eng., vol. 2017, pp. 1–10, Jan. 2017.
+[23] A. Arun Prakash, “Algorithms for most reliable routes on stochastic
+and time-dependent networks,” Transp. Res. B, Methodol., vol. 138,
+pp. 202–220, Aug. 2020.
+[24] S. Gao and I. Chabini, “Optimal routing policy problems in stochastic
+time-dependent networks,” Transp. Res. B, Methodol., vol. 40, no. 2,
+pp. 93–122, Feb. 2006.
+[25] Y. Nie and X. Wu, “Shortest path problem considering on-time arrival
+probability,” Transp. Res. B, Methodol., vol. 43, no. 6, pp. 597–613,
+Jul. 2009.
+[26] L. Yang and X. Zhou, “Optimizing on-time arrival probability and
+percentile travel time for elementary path finding in time-dependent
+transportation networks: Linear mixed integer programming reformulations,” Transp. Res. B, Methodol., vol. 96, pp. 68–91, Feb. 2017.
+
+12213
+
+[27] Y. Liu, S. Blandin, and S. Samaranayake, “Stochastic on-time arrival
+problem in transit networks,” Transp. Res. B, Methodol., vol. 119,
+pp. 122–138, Jan. 2019.
+[28] Y. Fan, R. Kalaba, and J. Moore, “Arriving on time,” J. Optim. Theory
+Appl., vol. 127, no. 3, pp. 497–513, 2005.
+[29] B. Y. Chen, C. Shi, J. Zhang, W. H. K. Lam, Q. Li, and S. Xiang, “Most
+reliable path-finding algorithm for maximizing on-time arrival probability,” Transportmetrica B: Transp. Dyn., vol. 5, no. 3, pp. 248–264,
+Jul. 2017.
+[30] F. Manseur, N. Farhi, C. Nguyen Van Phu, H. Haj-Salem, and
+J.-P. Lebacque, “Robust routing, its price, and the tradeoff between
+routing robustness and travel time reliability in road networks,” Eur.
+J. Oper. Res., vol. 285, no. 1, pp. 159–171, Aug. 2020.
+[31] B. Y. Chen, W. H. K. Lam, and Q. Li, “Efficient solution algorithm
+for finding spatially dependent reliable shortest path in road networks,”
+J. Adv. Transp., vol. 50, no. 7, pp. 1413–1431, Nov. 2016.
+[32] D. Corredor-Montenegro, N. Cabrera, R. Akhavan-Tabatabaei, and
+A. L. Medaglia, “On the shortest α-reliable path problem,” J. Spanish
+Soc. Statist. Oper. Res., vol. 29, no. 1, pp. 287–318, 2021.
+[33] Y. Fan and Y. Nie, “Optimal routing for maximizing the travel time reliability,” Netw. Spatial Econ., vol. 6, nos. 3–4, pp. 333–344, Sep. 2006.
+[34] Y. Nie and Y. Fan, “Arriving-on-Time problem: Discrete algorithm
+that ensures convergence,” Transp. Res. Rec., J. Transp. Res. Board,
+vol. 1964, no. 1, pp. 193–200, Jan. 2006.
+[35] Z. Cao, H. Guo, J. Zhang, D. Niyato, and U. Fastenrath, “Finding
+the shortest path in stochastic vehicle routing: A cardinality minimization approach,” IEEE Trans. Intell. Transp. Syst., vol. 17, no. 6,
+pp. 1688–1702, Jun. 2016.
+[36] Z. Cao, H. Guo, J. Zhang, D. Niyato, and U. Fastenrath, “Improving the
+efficiency of stochastic vehicle routing: A partial Lagrange multiplier
+method,” IEEE Trans. Veh. Technol., vol. 65, no. 6, pp. 3993–4005,
+Jun. 2016.
+[37] Z. Cao et al., “An accurate solution to the cardinality-based punctuality
+problem,” IEEE Intell. Transp. Syst. Mag., vol. 12, no. 4, pp. 78–91,
+Winter 2020.
+[38] W. Zeng, T. Miwa, Y. Wakita, and T. Morikawa, “Application of
+Lagrangian relaxation approach to α-reliable path finding in stochastic
+networks with correlated link travel times,” Transp. Res. C, Emerg.
+Technol., vol. 56, pp. 309–334, Jul. 2015.
+[39] M. Rajabi-Bahaabadi, A. Shariat-Mohaymany, M. Babaei, and
+C. W. Ahn, “Multi-objective path finding in stochastic time-dependent
+road networks using non-dominated sorting genetic algorithm,” Expert
+Syst. Appl., vol. 42, no. 12, pp. 5056–5064, Jul. 2015.
+[40] Z. Ji, Y. S. Kim, and A. Chen, “Multi-objective α-reliable path finding in
+stochastic networks with correlated link costs: A simulation-based multiobjective genetic algorithm approach (SMOGA),” Expert Syst. Appl.,
+vol. 38, no. 3, pp. 1515–1528, Mar. 2011.
+[41] P. Chen, R. Tong, G. Lu, and Y. Wang, “The α-reliable path problem
+in stochastic road networks with link correlations: A moment-matchingbased path finding algorithm,” Expert Syst. Appl., vol. 110, pp. 20–32,
+Nov. 2018.
+[42] F. Qian et al., “Unsupervised seismic footprint removal with physical
+prior augmented deep autoencoder,” IEEE Trans. Geosci. Remote Sens.,
+vol. 61, 2023, Art. no. 5910920.
+[43] F. Qian, Y. He, Y. Yue, Y. Zhou, B. Wu, and G. Hu, “Improved
+low-rank tensor approximation for seismic random plus footprint
+noise suppression,” IEEE Trans. Geosci. Remote Sens., vol. 61, 2023,
+Art. no. 5903519.
+[44] H. Cai, V. W. Zheng, and K. C. Chang, “A comprehensive survey of
+graph embedding: Problems, techniques, and applications,” IEEE Trans.
+Knowl. Data Eng., vol. 30, no. 9, pp. 1616–1637, Sep. 2018.
+[45] S. Cao, W. Lu, and Q. Xu, “GraRep: Learning graph representations
+with global structural information,” in Proc. 24th ACM Int. Conf. Inf.
+Knowl. Manage., Oct. 2015, pp. 891–900.
+[46] D. Cai, X. He, and J. Han, “Spectral regression: A unified subspace
+learning framework for content-based image retrieval,” in Proc. 15th
+ACM Int. Conf. Multimedia, Sep. 2007, pp. 403–412.
+[47] S. Xiang, F. Nie, C. Zhang, and C. Zhang, “Nonlinear dimensionality
+reduction with local spline embedding,” IEEE Trans. Knowl. Data Eng.,
+vol. 21, no. 9, pp. 1285–1298, Sep. 2009.
+[48] M. Balasubramanian and E. L. Schwartz, “The isomap algorithm and
+topological stability,” Science, vol. 295, no. 5552, p. 7, 2002.
+[49] R. Jiang, W. Fu, L. Wen, S. Hao, and R. Hong, “Dimensionality reduction on anchorgraph with an efficient locality preserving projection,”
+Neurocomputing, vol. 187, pp. 109–118, Apr. 2016.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+12214
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 11, NOVEMBER 2023
+
+[50] T. Mikolov, K. Chen, G. Corrado, and J. Dean, “Efficient estimation of
+word representations in vector space,” 2013, arXiv:1301.3781.
+[51] T. N. Kipf and M. Welling, “Semi-supervised classification with graph
+convolutional networks,” 2017, arXiv:1609.02907.
+[52] T. N. Kipf and M. Welling, “Variational graph auto-encoders,” 2016,
+arXiv:1611.07308.
+[53] W. L. Hamilton, R. Ying, and J. Leskovec, “Inductive representation
+learning on large graphs,” in Proc. 31st Int. Conf. Neural Inf. Process.
+Syst. (NeurIPS), 2017, pp. 1025–1035.
+[54] M. G. Bellemare, W. Dabney, and R. Munos, “A distributional perspective on reinforcement learning,” in Proc. Int. Conf. Mach. Learn. (ICML),
+2017, pp. 449–458.
+[55] W. Dabney, M. Rowland, M. G. Bellemare, and R. Munos, “Distributional reinforcement learning with quantile regression,” in Proc. 32nd
+AAAI Conf. Artif. Intell. (AAAI), 2018, pp. 2892–2899.
+[56] W. Dabney, G. Ostrovski, D. Silver, and R. Munos, “Implicit quantile
+networks for distributional reinforcement learning,” in Proc. Int. Conf.
+Mach. Learn. (ICML), 2018, pp. 1096–1105.
+[57] D. Yang, L. Zhao, Z. Lin, T. Qin, J. Bian, and T.-Y. Liu, “Fully parameterized quantile function for distributional reinforcement learning,” in
+Proc. Adv. Neural Inf. Process. Syst., vol. 32, 2019, pp. 6193–6202.
+[58] R. Peyre, “Comparison between W2 distance and H−1 norm, and
+localization of Wasserstein distance,” ESAIM, Control, Optim. Calculus
+Variat., vol. 24, no. 4, pp. 1489–1501, Oct. 2018.
+[59] A. Grover and J. Leskovec, “Node2Vec: Scalable feature learning for
+networks,” in Proc. 22nd ACM SIGKDD Int. Conf. Knowl. Discovery
+Data Mining, Aug. 2016, pp. 855–864.
+[60] J. Jain, V. Bagadia, S. Manchanda, and S. Ranu, “NeuroMLR: Robust &
+reliable route recommendation on road networks,” in Proc. Adv. Neural
+Inf. Process. Syst., vol. 34, 2021, pp. 1–22.
+[61] D. Ouyang, L. Yuan, L. Qin, L. Chang, Y. Zhang, and X. Lin,
+“Efficient shortest path index maintenance on dynamic road networks
+with theoretical guarantees,” Proc. VLDB Endowment, vol. 13, no. 5,
+pp. 602–615, Jan. 2020.
+[62] S. Dittert. (2020). Fully Parameterized Quantile Function (FQF)
+and Extensions. [Online]. Available: https://github.com/BY571/FQFand-Extensions
+[63] Transportation Networks for Research Core Team. Transportation Networks for Research. Accessed: Nov. 19, 2021. [Online]. Available:
+https://github.com/bstabler/TransportationNet works
+[64] F. Guo, D. Zhang, Y. Dong, and Z. Guo, “Urban link travel speed dataset
+from a megacity road network,” Sci. Data, vol. 6, no. 1, pp. 1–10,
+May 2019.
+[65] R. A. Rossi and N. K. Ahmed, “The network data repository with
+interactive graph analytics and visualization,” in Proc. AAAI, 2015,
+pp. 1–25. [Online]. Available: https://networkrepository.com
+[66] L. Song, Y. Zhuo, X. Qian, H. Li, and Y. Chen, “GraphR: Accelerating
+graph processing using ReRAM,” in Proc. IEEE Int. Symp. High
+Perform. Comput. Archit. (HPCA), Feb. 2018, pp. 531–543.
+[67] F. Sala, C. De Sa, A. Gu, and C. Ré, “Representation tradeoffs
+for hyperbolic embeddings,” in Proc. Int. Conf. Mach. Learn., 2018,
+pp. 4460–4469.
+[68] G. H. Nguyen, J. B. Lee, R. A. Rossi, N. K. Ahmed, E. Koh, and S. Kim,
+“Continuous-time dynamic network embeddings,” in Proc. Companion
+Web Conf. Web Conf., 2018, pp. 969–976.
+[69] J. Boaz Lee, G. Nguyen, R. A. Rossi, N. K. Ahmed, E. Koh,
+and S. Kim, “Dynamic node embeddings from edge streams,” 2019,
+arXiv:1904.06449.
+
+Hongliang Guo (Member, IEEE) received the
+B.Eng. degree in dynamic engineering and the
+M.Eng. degree in dynamic control from the Beijing
+Institute of Technology, China, in 2005 and 2007,
+respectively, and the Ph.D. degree in electrical and
+computer engineering from the Stevens Institute of
+Technology, USA. He was an Associate Professor with the University of Electronics Science and
+Technology of China, from 2016 to 2020. In 2023,
+he joined Sichuan University (SCU), as an Associate
+Professor. His research interests include planning
+and learning under uncertainties and multi-robot search for moving targets.
+
+Wenda Sheng received the bachelor’s degree
+(Hons.) from the School of Automation Engineering,
+University of Electronic Science and Technology
+of China (UESTC), in 2020, where he is currently
+pursuing the master’s degree in control science and
+engineering. His research interests include distributional reinforcement learning for reliable shortest
+path and reinforcement learning for safe autonomous
+navigation in dynamic environments.
+
+Yingjie Zhou (Member, IEEE) received the Ph.D.
+degree from the School of Communication and
+Information Engineering, University of Electronic
+Science and Technology of China (UESTC), China,
+in 2013. He is currently an Associate Professor with
+the College of Computer Science, Sichuan University (SCU), China, where he is also the Director
+of the Institute of Network and Intelligent Systems. His current research interests include network
+management, behavioral data analysis, and resource
+allocation. He has served as the Local Arrangement
+Chair for IEEE BMSB; the Publicity Chair for EAI MONAMI; and a TPC
+Member for IEEE conferences, including IEEE Globlecom, IEEE ITSC, IEEE
+HPCC, and IEEE MSN.
+
+Yunping Chen (Member, IEEE) received the bachelor’s and master’s degrees from the Southwest University of China, and the Ph.D. degree in geographic
+information system and remote sensing from Beijing
+Normal University. Currently, he is an Associate
+Professor with the University of Electronics Science
+and Technology of China (UESTC). His research
+interests include remote sensing, geographic information systems, and mapping and localization with
+multi-modal sensor information.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:26:37 UTC from IEEE Xplore. Restrictions apply.
+
+

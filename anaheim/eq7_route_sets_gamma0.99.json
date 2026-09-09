@@ -1,0 +1,285 @@
+[
+  {
+    "network": "Sioux Falls",
+    "zones": 24,
+    "nodes": 24,
+    "links": 76,
+    "destinations_solved": 24,
+    "gamma": 0.99,
+    "mean_traversal_cost": 4.131578947368421,
+    "beta": 4.131578947368421,
+    "r_goal": 41.31578947368421,
+    "nodes_with_identical_optimal_action_set": 542,
+    "nodes_differing": 10,
+    "share_identical": 98.18840579710145,
+    "examples_of_divergence": [
+      {
+        "dest": 1,
+        "node": 15,
+        "travel_time": [
+          22
+        ],
+        "aligned": [
+          14
+        ]
+      },
+      {
+        "dest": 3,
+        "node": 15,
+        "travel_time": [
+          22
+        ],
+        "aligned": [
+          14
+        ]
+      },
+      {
+        "dest": 6,
+        "node": 23,
+        "travel_time": [
+          22
+        ],
+        "aligned": [
+          14
+        ]
+      },
+      {
+        "dest": 8,
+        "node": 11,
+        "travel_time": [
+          4
+        ],
+        "aligned": [
+          10
+        ]
+      },
+      {
+        "dest": 11,
+        "node": 8,
+        "travel_time": [
+          6
+        ],
+        "aligned": [
+          16
+        ]
+      },
+      {
+        "dest": 12,
+        "node": 15,
+        "travel_time": [
+          22
+        ],
+        "aligned": [
+          14
+        ]
+      },
+      {
+        "dest": 15,
+        "node": 3,
+        "travel_time": [
+          12
+        ],
+        "aligned": [
+          4,
+          12
+        ]
+      },
+      {
+        "dest": 15,
+        "node": 12,
+        "travel_time": [
+          13
+        ],
+        "aligned": [
+          11
+        ]
+      },
+      {
+        "dest": 19,
+        "node": 12,
+        "travel_time": [
+          13
+        ],
+        "aligned": [
+          11
+        ]
+      },
+      {
+        "dest": 23,
+        "node": 6,
+        "travel_time": [
+          8
+        ],
+        "aligned": [
+          5
+        ]
+      }
+    ],
+    "delta_smallest_positive_action_gap": 1.0,
+    "K_longest_hop": 6,
+    "k_min_shortest_hop": 1,
+    "phi_max": 6,
+    "eq7_threshold": 0.9969745222929937,
+    "eq7_threshold_printed": 0.996975,
+    "delta_printed": 1.0,
+    "eq7_satisfied_at_0.99": false,
+    "od_pairs_completing_under_both": 552,
+    "od_pairs_not_completing": 0,
+    "pairs_with_a_different_travel_time": 0,
+    "share_pairs_with_a_different_travel_time": 0.0,
+    "max_absolute_travel_time_difference": 0.0,
+    "max_relative_travel_time_difference": 0.0,
+    "mean_relative_travel_time_difference_over_differing_pairs": 0.0
+  },
+  {
+    "network": "Anaheim",
+    "zones": 38,
+    "nodes": 416,
+    "links": 914,
+    "destinations_solved": 38,
+    "gamma": 0.99,
+    "mean_traversal_cost": 0.882353374601751,
+    "beta": 0.882353374601751,
+    "r_goal": 8.82353374601751,
+    "nodes_with_identical_optimal_action_set": 14796,
+    "nodes_differing": 974,
+    "share_identical": 93.82371591629676,
+    "examples_of_divergence": [
+      {
+        "dest": 1,
+        "node": 37,
+        "travel_time": [
+          401
+        ],
+        "aligned": [
+          402
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 52,
+        "travel_time": [
+          401
+        ],
+        "aligned": [
+          402
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 58,
+        "travel_time": [
+          137
+        ],
+        "aligned": [
+          145
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 229,
+        "travel_time": [
+          277
+        ],
+        "aligned": [
+          228
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 259,
+        "travel_time": [
+          258
+        ],
+        "aligned": [
+          267
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 261,
+        "travel_time": [
+          260
+        ],
+        "aligned": [
+          269
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 269,
+        "travel_time": [
+          270
+        ],
+        "aligned": [
+          290
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 285,
+        "travel_time": [
+          286
+        ],
+        "aligned": [
+          284
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 297,
+        "travel_time": [
+          148
+        ],
+        "aligned": [
+          298
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 314,
+        "travel_time": [
+          313
+        ],
+        "aligned": [
+          315
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 324,
+        "travel_time": [
+          323
+        ],
+        "aligned": [
+          325
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 350,
+        "travel_time": [
+          349
+        ],
+        "aligned": [
+          351
+        ]
+      }
+    ],
+    "delta_smallest_positive_action_gap": 1.000000082740371e-09,
+    "K_longest_hop": 29,
+    "k_min_shortest_hop": 1,
+    "phi_max": 29,
+    "eq7_threshold": 0.9999999999989622,
+    "eq7_threshold_printed": 1.0,
+    "delta_printed": 0.0,
+    "eq7_satisfied_at_0.99": false,
+    "od_pairs_completing_under_both": 15562,
+    "od_pairs_not_completing": 208,
+    "pairs_with_a_different_travel_time": 3518,
+    "share_pairs_with_a_different_travel_time": 22.60634879835497,
+    "max_absolute_travel_time_difference": 2.065052946000007,
+    "max_relative_travel_time_difference": 0.1477117529467804,
+    "mean_relative_travel_time_difference_over_differing_pairs": 0.01936052651892426
+  }
+]

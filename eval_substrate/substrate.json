@@ -1,0 +1,1819 @@
+{
+ "per_study": {
+  "0": {
+   "engines": {
+    "SUMO": " Smart agents are embedded into SUMO simulator in a dynamic transportation system",
+    "VISSIM": "There are several widely used traffic simulators, including Quadstone Paramics Cameron and Duncan (1996), VISSIM Fellendorf (1994), AIMSUN Casas et al",
+    "Aimsun": "There are several widely used traffic simulators, including Quadstone Paramics Cameron and Duncan (1996), VISSIM Fellendorf (1994), AIMSUN Casas et al",
+    "MATSim": "(2010), MATSIM Axhausen et al",
+    "Paramics": "There are several widely used traffic simulators, including Quadstone Paramics Cameron and Duncan (1996), VISSIM Fellendorf (1994), AIMSUN Casas et al"
+   },
+   "network": {
+    "real city or corridor": "Real-time Deep Reinforcement Learning based Vehicle Routing and Navigation Songsang Koha , Bo Zhoua , Hui Fangb,∗, Po Yangd , Zaili Yanga , Qiang Yangc , Lin Guanb , Zhigang Jie,∗, a School "
+   },
+   "metrics": {
+    "travel time": "Real-time Deep Reinforcement Learning based Vehicle Routing and Navigation Songsang Koha , Bo Zhoua , Hui Fangb,∗, Po Yangd , Zaili Yanga , Qiang Yangc , Lin Guanb , Zhigang Jie,∗, a School ",
+    "delay": "The traditional way to set the reward of each action in a sequential decision making process suffers from the long delay issue",
+    "distance": ", travel distance and speed limit",
+    "fuel or emission": "Real-time Deep Reinforcement Learning based Vehicle Routing and Navigation Songsang Koha , Bo Zhoua , Hui Fangb,∗, Po Yangd , Zaili Yanga , Qiang Yangc , Lin Guanb , Zhigang Jie,∗, a School "
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The very first solution in early years for vehicle navigation problems was the shortest path algorithm, which aims to find a path between two nodes with minimum traveling distance",
+    "random or greedy": "In the first stage, the conventional \u000f-greedy policy is used to control the ratio between exploration and decisions made by the current neural network",
+    "user equilibrium": "GDUE-Dijkstra and GDUE-A* are the default traffic assignment algorithm in SUMO, where GDUE stands for Gawron’s Dynamic User Equilibrium Gawron (1998)"
+   },
+   "nodes_stated": [],
+   "links_stated": [
+    12,
+    18,
+    10000
+   ]
+  },
+  "1": {
+   "engines": {
+    "Flow/RLlib": "2018) method in Ray Rllib (Liang et al"
+   },
+   "network": {
+    "real city or corridor": "Traditional routing algorithms such as capacitated scheduling algorithm (Osman and Ram 2013), genetic algorithm (Gomes and Straub 2017), and cellular automatabased evacuation (Li et al"
+   },
+   "metrics": {
+    "travel time": "(2013)’s comprehensive review, flood evacuation models with different optimized variables, including travel times, travel costs, unknown traffic, travel distance, and identification of evacu",
+    "reward or return": "A higher safety score and episode reward of the model are demonstrated when compared to these classical methods",
+    "distance": "(2013)’s comprehensive review, flood evacuation models with different optimized variables, including travel times, travel costs, unknown traffic, travel distance, and identification of evacu"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "(2006) developed an adaptive evacuation route model based on the trad­ itional Dijkstra shortest path algorithm (Dijkstra 1959) to pursue the goal of minimiz­ ing the total evacuation time"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "2": {
+   "engines": {
+    "SUMO": "4, our algorithm is applied to a real-world network with traffic simulated in SUMO (i"
+   },
+   "network": {
+    "benchmark road network": "To be specific to the route choice task, we introduce the single-agent deep Q learning approach on a Braess network, as presented in Figure (1)",
+    "real city or corridor": "Four examples are solved to illustrate the algorithm efficiency and consistency between DUE and the MRG equilibrium, on a simple network without and with spillback, the Ortuzar Willumsen (OW"
+   },
+   "metrics": {
+    "travel time": "Link travel time on lij is denoted by ∆tij",
+    "delay": "We illustrate that the developed Markov game for dynamic routing depicts analytical DTA assuming complete information of environment transition dynamics and travel or delay time functional f",
+    "throughput or queue": "The x-axis represents the time and the y-axis represents the queue length",
+    "reward or return": "In other words, every traveler is a self-interest agent who aims to maximize individual accumulative rewards or minimize individual cost or maximize payoffs, including but not limited to aut",
+    "distance": ", negative travel distance"
+   },
+   "baselines": {
+    "user equilibrium": "We show that the routing behavior of intelligent agents is shown to converge to the classical notion of predictive dynamic user equilibrium (DUE) when traffic environments are simulated usin"
+   },
+   "nodes_stated": [
+    13,
+    69
+   ],
+   "links_stated": [
+    24,
+    166
+   ]
+  },
+  "3": {
+   "engines": {
+    "SUMO": "Simulation We utilize SUMO1 (Simulation of Urban MObility), a commonly adopted microscopic and space-continuous multi-modal traffic simulator, to simulate traffic dynamics including movement"
+   },
+   "network": {
+    "real city or corridor": "2 200 400 600 800 1000 1200 Time(s) (b) Baoding-19 5 0 0 250 500 750 1000 1250 1500 1750 Time(s) (c) Hangzhou-4x4 DQNConcat NavTL XRouting CoLight DQNnavigation FMA2C 160 140 120 100 80 60 4"
+   },
+   "metrics": {
+    "travel time": "The objective is to improve travel efficiency and reduce total travel time by minimizing congestion at the intersections while guiding AVs to avoid the temporally congested roads",
+    "delay": "to the information regarding the traffic situation at intersections, such as length of waiting vehicles in the incoming directions, vehicles’ average waiting time, total number of approachin",
+    "throughput or queue": "3 Evaluation Metrics Commonly used evaluation metrics for the traffic signal control task include vehicles’ average waiting time, average total number of stops, total throughput, total delay"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Classical pathfinding solutions such as Dijkstra’s algorithm [6] and A* [10] compute the shortest path between a departure node and a destination node greedily",
+    "another RL method": "97% on the Hangzhou-4x4 data compared with DQNnavigation, which indicates our model can not only reduce congestion from the macroscopic perspective, but also guide AVs to avoid the temporall"
+   },
+   "nodes_stated": [
+    16
+   ],
+   "links_stated": []
+  },
+  "4": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Dynamic route guidance promises to improve the capacity of urban traffic management and mitigate traffic congestion in big cities"
+   },
+   "metrics": {
+    "travel time": "Unlike most prediction methods, our method predicts the road congestion index rather than the road travel time (TT)",
+    "delay": "The principle of the MQ algorithm is that, although the vehicle may not choose the user-optimal route, it can meet the transportation network traffic expectations, thus mitigating congestion",
+    "distance": "In this study, an A∗ trajectory rejection method based on multi-agent reinforcement learning (A∗ R2 ) is proposed; the method integrates both system and user perspectives to mitigate traffic",
+    "fuel or emission": "His main research interests are in intelligent transport systems, vehicle emissions measurement and modeling, and environmental impacts of freight transport"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Compared to other shortest path algorithms (such as the Dijkstra [45] and Floyd [46] algorithm), the advantage of the A∗ is that it combines a breadth-first search algorithm with a greedy st",
+    "user equilibrium": "In this study, simulation-based DTA deployed in [47] was used to achieve user equilibrium through an iterative simulation"
+   },
+   "nodes_stated": [
+    8
+   ],
+   "links_stated": []
+  },
+  "5": {
+   "engines": {
+    "SUMO": "Reinforcement Learning for Vehicle Route Optimization in SUMO Koh Song Sang Department of Computer Science, Liverpool John Moores University, Liverpool, L3 3AF, UK S"
+   },
+   "network": {
+    "real city or corridor": "Through its learning progress, the agent will learn a distributed routing policy that could maximize the capacity of urban"
+   },
+   "metrics": {
+    "travel time": "The modern solution for traffic congestion aims to achieve an autonomous, environmental and sustainable traffic control, optimize each vehicle’s route in transportation network by reducing t",
+    "delay": "Giorgio Stampa [12] designed Deep-Reinforcement Learning agent which is able to adapt automatically to current traffic conditions and proposes tailored configurations that attempt to minimiz",
+    "fuel or emission": "It offers an opportunity to build a sustainable and resilient urban transport network for a variety of objects, such as minimizing the fuel consumption or improving the safety of roadway"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "In 1959, Dijkstra proposed a static algorithm to find the shortest path in two nodes [4]"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "6": {
+   "engines": {
+    "SUMO": "The simulation was conducted using Python, PyTorch, and simulation of urban mobility (SUMO) [24]"
+   },
+   "network": {
+    "real city or corridor": "The Revolution of Driving: From Connected Vehicles to Coordinated Automated Road Transport (C-ART); Publications Office of the European Union: Luxembourg, 2017; pp"
+   },
+   "metrics": {
+    "travel time": "In [19], a DQN-based method was proposed to optimize the routes of vehicles and minimize their travel time",
+    "completion or arrival rate": "To evaluate the effectiveness of the proposed method, various vehicle arrival rates that corresponded to vehicle density and MPR values, which themselves corresponded with a mixed ratio of A",
+    "delay": "Simulation results showed that the proposed method outperformed existing methods in terms of the driving distance, time, and waiting time of AVs, particularly in more dynamic traffic environ",
+    "reward or return": "Given the current state s ∈ S, the agent selects an action a ∈ A to maximize the long-term cumulative reward R",
+    "distance": "Consequently, it exhibited the worst performance in terms of travel distance, thereby leading to a lower travel time performance compared to other methods",
+    "fuel or emission": "In [10], the authors used the PSO algorithm to minimize carbon emissions, waiting times, and the number of vehicles"
+   },
+   "baselines": {},
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "7": {
+   "engines": {
+    "SUMO": "Simulation of Urban Mobility (SUMO) candidates based on s t and enacts a new route choice a t is a widely used open source microscopic traffic simulafrom the action space A (i"
+   },
+   "network": {
+    "real city or corridor": "3) Numerical experiments in both a toy network and a real-world network demonstrate the effectiveness of the proposed approach in guiding a single vehicle as well as multiple vehicles throug",
+    "synthetic grid or lattice": "Simulation experiments on both a toy network and a realworld network of Suzhou, China, are performed to demonstrate the effectiveness of the proposed approach in terms of guiding a single ve"
+   },
+   "metrics": {
+    "travel time": "Comparative results confirm that the DRL approach outperforms the traditional shortest path method by further reducing the average travel time in the network",
+    "delay": "The two junctions, for which the to avoid the possibly excessive waiting time at signalized intersections",
+    "reward or return": ", one of the three alternative routes) such that the sequence of actions taken leads to the maximum cumulative reward considering the changing traffic conditions",
+    "distance": "In parOrigin Destination ticular, they consist of the route with the shortest travel distance, the route Vehicle Route Definition in Simulation Network with the least instantaneous travel ti"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Comparative results confirm that the DRL approach outperforms the traditional shortest path method by further reducing the average travel time in the network"
+   },
+   "nodes_stated": [
+    14,
+    2423
+   ],
+   "links_stated": [
+    19,
+    4970
+   ]
+  },
+  "8": {
+   "engines": {
+    "SUMO": "Lee: Transfer Learning-Based DRL Approach for Robust Route Guidance configurations with mixed traffic environments, this study conducts microscopic traffic simulation experiments based on th"
+   },
+   "network": {
+    "real city or corridor": "degree in civil engineering from Tsinghua University, Beijing, China, in 2011, and the M",
+    "synthetic grid or lattice": "The target area includes 3 × 3, 5 × 5, and 8 × 8 grid-shaped urban road networks"
+   },
+   "metrics": {
+    "travel time": "ABSTRACT A previously developed Deep Reinforcement Learning-based Vehicle Routing (DRL-VR) algorithm aims to be used for providing the shortest Origin-Destination (OD) travel time path in dy",
+    "reward or return": "It plays a pivotal role to obtain the optimal policy for maximizing the expected return, which is the expected cumulative rewards over the course of an episode"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Most of conventional route guidance methodologies have considered Dijkstra algorithm or A∗ algorithm based real-time traffic information using the latest traffic information [14], [15], [16]",
+    "static or fixed routing": "Responsive Transit (DRT) services with flexible routes as well as public transit buses operating on fixed routes [1], [2], [3], [4]"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "9": {
+   "engines": {
+    "SUMO": "This study uses the simulation of urban mobility (SUMO) [34] for microscopic traffic simulations"
+   },
+   "network": {
+    "real city or corridor": "degree in civil engineering from Tsinghua University, Beijing, China, in 2011, and the M",
+    "synthetic grid or lattice": "A 3 × 3 grid-shaped urban network is considered as the study site, where each link has four lanes, all of which are bidirectional"
+   },
+   "metrics": {
+    "travel time": "ABSTRACT There have been enormous efforts to develop a novel vehicle routing algorithm to reduce originto-destination (OD) travel time",
+    "delay": "It may take a detour or extra travel time to pass through the congested road if the initial global route provided by the navigation system includes the link, often resulting in a delay in ti",
+    "reward or return": "Average reward plot for each episode"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The most conventional method employed in such routing algorithms is the Dijkstra algorithm [4], which is commonly used to find the shortest path between an origin and destination with static"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "10": {
+   "engines": {
+    "SUMO": "Simulation settings Software and Hardware: The traffic simulation platform used in our experiments is Simulation of Urban Mobility(SUMO) 1",
+    "Flow/RLlib": "The reinforcement learning training tool used in our experiment is RLlib 1"
+   },
+   "network": {
+    "real city or corridor": "9922404 XRouting: Explainable Vehicle Rerouting for Urban Road Congestion Avoidance using Deep Reinforcement Learning Zheng Wang Shen Wang Beijing-Dublin International College University Col"
+   },
+   "metrics": {
+    "travel time": "Our simulation study validates that compared with existing rerouting solutions, XRouting can achieve higher reductions in travel time, fuel consumption, CO2 emission, and the route length",
+    "distance": "Our simulation study validates that compared with existing rerouting solutions, XRouting can achieve higher reductions in travel time, fuel consumption, CO2 emission, and the route length",
+    "fuel or emission": "Our simulation study validates that compared with existing rerouting solutions, XRouting can achieve higher reductions in travel time, fuel consumption, CO2 emission, and the route length"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": ", Dijkstra’s algorithm) to update the route with the current traffic conditions",
+    "another RL method": "Compared with PPObased model, it is evidently shown that not only does the DQN-based model vibrate more, but it is also incapable of finding the optimal route for the DRL vehicle in this rel"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "11": {
+   "engines": {
+    "SUMO": "com/ Capsule capsule/6105686/tree/v1 Legal Code License MIT License Code versioning system used git Software code languages, tools, and Python, SUMO, OpenStreetMap, services used PettingZoo,"
+   },
+   "network": {
+    "real city or corridor": "com/ Capsule capsule/6105686/tree/v1 Legal Code License MIT License Code versioning system used git Software code languages, tools, and Python, SUMO, OpenStreetMap, services used PettingZoo,"
+   },
+   "metrics": {
+    "travel time": "RouteRL records travel times, rewards, and space-time trajectories of individual vehicles, aggregating them into key performance indicators (KPIs) to assess the impact on system performance ",
+    "delay": "6 Table 2: AV behaviors and corresponding objectives AV Behavior Objective Altruistic Collaborative Competitive Malicious Selfish Social Minimize delay for everyone Minimize delay for onesel",
+    "fuel or emission": "sight highlights the need for research towards a better understanding of the effects of AV introduction, such as increased congestion or CO2 emissions"
+   },
+   "baselines": {
+    "user equilibrium": "Given a road network (from OpenStreetMap (OSM) [4]) and a demand pattern (agents’ origins, destinations, and departure times), RouteRL first computes the day-to-day route-choice process of h"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "12": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Mega-cities like Beijing, New York, Tokyo, London, and others experience particularly severe congestion, significantly impacting residents’ satisfaction"
+   },
+   "metrics": {
+    "travel time": "The objective of this scheme is to identify the most suitable route from numerous possibilities, taking into account factors, such as total travel time and total travel distance",
+    "delay": "[21] reduced delay of IoV services by accurately determining vehicle network conditions based on the fuzzy theory and effectively offloading service requests based on RL",
+    "reward or return": "1) Definition of MDP: The primary aim of RL algorithms is to iteratively train the agent through interactions with the environment, empowering it to autonomously make decisions that lead to ",
+    "distance": "The objective of this scheme is to identify the most suitable route from numerous possibilities, taking into account factors, such as total travel time and total travel distance",
+    "fuel or emission": "The proposed strategy helps reduce the power consumption and CO2 gas emissions of unmanned devices"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "3) Path Planning Scheme Based on Dijkstra (Dijkstra): Dijkstra is a greedy search algorithm that iteratively expands the most promising path at each step, ensuring optimality in finding the ",
+    "another RL method": "D3QN demonstrates a reduction in variance by 36% compared to DQN and 8"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "14": {
+   "engines": {
+    "SUMO": "Singapore Reinforcement Learning method with Dynamic Learning Rate for Real-Time Route Guidance based on SUMO 2022 17th International Conference on Control, Automation, Robotics and Vision ("
+   },
+   "network": {
+    "real city or corridor": "Singapore Reinforcement Learning method with Dynamic Learning Rate for Real-Time Route Guidance based on SUMO 2022 17th International Conference on Control, Automation, Robotics and Vision ("
+   },
+   "metrics": {
+    "travel time": "After measuring the mean traveling time, it will update the information every second and each car can use real-time information",
+    "delay": "Meanwhile, the waiting time before each traffic light also is considered as a reward factor in the proposed algorithm"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "R ELATED W ORK Conventional graph-based methods, like Dijkstra and the A* algorithm, perform well in solving route-planning problems",
+    "random or greedy": "The greedy policy rate ϵ is minus by 0"
+   },
+   "nodes_stated": [
+    16
+   ],
+   "links_stated": []
+  },
+  "15": {
+   "engines": {
+    "SUMO": "In this study, the Simulation of Urban MObility (SUMO) traffic simulator, a widely-used tool for constructing and testing traffic networks, is employed [4]"
+   },
+   "network": {
+    "real city or corridor": "This is similar to the standard grid size for residential streets in the city of Chicago and other major cities in North America",
+    "synthetic grid or lattice": "Phase transition of traffic congestion in lattice hydrodynamic model: Modeling, calibration and validation"
+   },
+   "metrics": {
+    "travel time": "Traditional routing algorithms typically focus on distance, travel time, or ease of navigation for human operators",
+    "throughput or queue": "One approach focuses on increasing traffic throughput as a means of improving the network-level fuel efficiency [7,8]",
+    "distance": "A quantitative analysis of route length and travel time will be conducted in future work to provide a more comprehensive evaluation of the trade-offs between fuel efficiency, travel time, an",
+    "fuel or emission": "Introduction Recently, reducing greenhouse gas emissions has become a major focus in automotive and transportation research"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "In addition to fuel consumption, it was observed that nearly all optimized routes remained within a comparable time window and network region as the shortest-path baseline, as enforced by th"
+   },
+   "nodes_stated": [
+    34,
+    36,
+    259
+   ],
+   "links_stated": []
+  },
+  "16": {
+   "engines": {},
+   "network": {
+    "benchmark road network": "The proposed approach is evaluated on both the Braess and Ortúzar–Willumsen (OW) networks",
+    "real city or corridor": "Bazzan, “Using topological statistics to bias and accelerate route choice: Preliminary findings in synthetic and real-world road networks"
+   },
+   "metrics": {
+    "travel time": "A central agent sequentially recommends routes to travelers as origin-destination (OD) demands arrive, to minimize total system travel time",
+    "delay": "The marginal travel time ttpmarginal of a traveler on route p is defined as the sum of travel time of the entering traveler and the additional delay of all travelers experienced on that rout"
+   },
+   "baselines": {
+    "user equilibrium": "INDEX TERMS Reinforcement Learning, Route Recommendation, System Optimum, Traffic Assignment I"
+   },
+   "nodes_stated": [
+    13
+   ],
+   "links_stated": [
+    48
+   ]
+  },
+  "17": {
+   "engines": {
+    "SUMO": "Environment settings SUMO-simulated traffic environment is adopted to evaluate the effectiveness of the proposed method"
+   },
+   "network": {
+    "benchmark road network": "We test the proposed joint control method in a modified Sioux Falls network",
+    "real city or corridor": "Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized Road Networks using Multi-Agent Deep Reinforcement Learning Xianyue Penga,b,c,d, Hang Gaoe, Gengyue Hana,c,d, H"
+   },
+   "metrics": {
+    "travel time": "This was because their route guidance approach aims to divert traffic away from congested areas, thereby improving the overall travel time in the network",
+    "completion or arrival rate": "The x-axis represents the multiplicative factor of the current traffic volume, the bars represent the total number of arrived vehicles, and the line represents the completion rate, which is ",
+    "delay": "Signal Control Agent SA optimizes the signal timings of an intersection, thereby reducing vehicle delay",
+    "throughput or queue": "25, the throughputs of the situations increase as the traffic demand increases",
+    "reward or return": "In DRL, the agent searches for the optimal policy within a continuous time series, whereby the optimal policy typically corresponds to the maximum cumulative reward over the long term"
+   },
+   "baselines": {
+    "user equilibrium": "Akcelik and Maher (1977) explored the interaction between route control and signal control, concluding that coupling signal control with route control is superior to signal control alone as "
+   },
+   "nodes_stated": [
+    7
+   ],
+   "links_stated": []
+  },
+  "18": {
+   "engines": {
+    "SUMO": "The effectiveness of the proposed method is verified through simulation on the Urban Mobility Simulation (SUMO) platform, and it is shown that the proposed method performs well in complex an"
+   },
+   "network": {
+    "real city or corridor": "10333741 Dynamic Route Guidance System Based on Real-time Vehicle-Road Collaborations with Deep Reinforcement Learning Zhongqing Su and Congduan Li∗ School of Electronics and Communication E"
+   },
+   "metrics": {
+    "travel time": "The second one is to accurately estimate the travel time required for a vehicle to pass through a particular road or have more reasonable road weights, such as Re-routing with FOg-CloUd Syst",
+    "reward or return": "1000 Average reward Average travel time 1100 900 800 -40 900 -50 800 -60 700 -70 -80 -90 700 600 500 400 10 20 30 40 50 60 70 80 90 400 200 10 20 30 40 50 60 70 80 90 100 Episode (a) (b) -40"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Static RGS are no longer applicable today, but some classic shortest path algorithms such as Dijkstra [7] and A* [8] are still widely used"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "19": {
+   "engines": {
+    "SUMO": "We utilize the simulation of urban mobility to generate a large quantity of traffic data for use as reinforcement learning samples"
+   },
+   "network": {
+    "real city or corridor": "Transactions on Emerging Telecommunications Technologies RESEARCH ARTICLE Deep Reinforcement Learning for Vehicle Swarm Navigation and Urban Traffic Optimization Rubo Zhang1 | Peiqun Lin2, 3"
+   },
+   "metrics": {
+    "travel time": "The experimental results demonstrate that the proposed model reduces average travel time by up to 7",
+    "completion or arrival rate": "The strategy employs multiple independent simulation threads, each generating unique traffic scenarios with randomly initialized vehicle arrival rates and destination selection probabilities",
+    "delay": "[28] investigated the application of problem-feature-based meta-heuristic algorithms combined with Q-learning in urban traffic light scheduling, aiming to minimize the total network delay ti",
+    "throughput or queue": "[37] proposed an adaptive traffic light control system based on DQN, aimed at optimizing urban traffic signals using real-time traffic data to reduce vehicle waiting time and queue length",
+    "distance": "When there are multiple paths between an OD pair, paths with long travel distances may have a low probability of being selected, especially in large road networks",
+    "fuel or emission": "Keywords: deep reinforcement learning | graph neural network | stochastic traffic demand | vehicle navigation ABSTRACT Traffic congestion has become a prevalent phenomenon on urban roads, le"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "An alternative solution method involves the use of shortest path algorithms, such as Dijkstra [8] and A* [9], which are commonly employed in navigation software",
+    "user equilibrium": "We verify the effectiveness of our model by performing simulations on a simplified road network and a real-life road network under multiple traffic scenarios and compare the results to those"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "20": {
+   "engines": {
+    "SUMO": "The PSRRSM is experimentally validated using the traffic simulation platform SUMO (Simulation of Urban Mobility) in both artificial and real road networks"
+   },
+   "network": {
+    "real city or corridor": "′ According to the BPR (Bureau of Public Roads) formula, the time cost for any edge l ji′ ∈ L in the road network in the population game occurring at intersection si is calculated as follows"
+   },
+   "metrics": {
+    "travel time": "Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic Multi-Vehicle Route Abstract: To address urban traffic congestion, researchers have made various efforts to mit",
+    "delay": "[24] proposed a cooperative behavioural strategy for self-driving vehicles by using a game theory approach, which can effectively solve the turn entry problem and shorten the waiting time",
+    "throughput or queue": "The experimental results demonstrate that PSRRSM outperforms several comparative algorithms in terms of network throughput and average travel cost",
+    "distance": "The vertical coordinate unit in Figure 6a is second, and the vertical coordinate value in Figure 6b is the weighted sum of average travel time, average travel distance, average fuel consumpt",
+    "fuel or emission": "Population Game-Assisted Multi-Agent Reinforcement Learning Method for Dynamic Multi-Vehicle Route Abstract: To address urban traffic congestion, researchers have made various efforts to mit"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The microscopic route selection methods, which concentrate on the single-vehicle perspective, encompass a range of conventional methods such as Dijkstra’s algorithm [4], A* algorithm [5], an",
+    "another RL method": "Comparing the number of vehicles on different roads reveals that the PLA-RS results in a more evenly distributed spatial arrangement of vehicles compared to the Q-Learning and the DQN algori"
+   },
+   "nodes_stated": [
+    21,
+    66
+   ],
+   "links_stated": [
+    72,
+    152
+   ]
+  },
+  "21": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "This comparison in a real-world network evaluates the proposed method using MARL"
+   },
+   "metrics": {
+    "travel time": "33% off from the actual travel times by the proposed method",
+    "delay": "(2007) and Kiam and Lee (2010) developed a multi-agent taxi dispatch system in which collaborative taxi agents negotiated to minimize the total waiting time for their customers",
+    "reward or return": "A scalar reward signal evaluates the quality of each transition, and the agent must maximize the cumulative rewards along the course of interaction",
+    "distance": "TrvTim is the route travel time (per minute) computed based on average speed of the vehicle (AvgSpd) and travel distance (Dist",
+    "fuel or emission": "These services lead to more efﬁcient trafﬁc ﬂows on all transport networks, resulting in reduced pollution and lower fuel consumption"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The main thrust of using RPS in these situations is to compare the shortest path algorithms with Dijkstra0 s algorithm",
+    "random or greedy": "When τ was large, the Boltzmann distribution was identical to the random policy, while τ¼ 0 means that the shortest path is only available like greedy strategy (Eq"
+   },
+   "nodes_stated": [
+    6,
+    10
+   ],
+   "links_stated": []
+  },
+  "22": {
+   "engines": {},
+   "network": {
+    "synthetic grid or lattice": "They use 700 learning agents in the problem to evaluate the approach in an abstract trafﬁc network in format of a 6 × 6 grid"
+   },
+   "metrics": {
+    "travel time": "On the other hand, if drivers build their routes aiming at maximizing the overall travel time (system’s utility), rather than their individual travel time (agents’ utility), the whole system"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The travel time depends of the shortest path algorithms which determines the path with minimum cost for each OD-pair"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "23": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Route Guidance System Algorithm Figure 5 shows the road network map of a part of Kuala Lumpur (KL), the capital city of Malaysia",
+    "synthetic grid or lattice": "They can be cells in a lattice representing pieces of land or representations of human behavior [1]"
+   },
+   "metrics": {
+    "travel time": "The actual travel times can provide dynamic changes in travel times at the current time",
+    "delay": "Therefore, the second group obtains 521s as the average delay time and the saving time is 23"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Furthermore, the proposed algorithm is compared with Dijkstra algorithm to find optimal solution using some simple real sample of Kuala Lumpur (KL) road network map"
+   },
+   "nodes_stated": [
+    6,
+    16,
+    20,
+    30
+   ],
+   "links_stated": [
+    100
+   ]
+  },
+  "24": {
+   "engines": {
+    "SUMO": "1 Experimental Setup For the traffic simulation purposes, we used Simulation of Urban Mobility (SUMO) [5]"
+   },
+   "network": {
+    "real city or corridor": "As a result, due to the limited capacity of roads, the current shortest path gets quickly congested",
+    "synthetic grid or lattice": "The destination of the routing query 𝑞, is forwarded to the agent 𝑢𝑖 = 𝑞-𝑢, and goes through its linear layer and produces embeddings of the destination IDs: [𝑠𝑞 ] = 𝑅𝑒𝐿𝑈 (𝐿𝑖𝑛𝑒𝑎𝑟𝑖 (𝑠𝑞 )) Net"
+   },
+   "metrics": {
+    "travel time": "ca EECS Department, Lassonde School of Engineering, York University Toronto, Ontario, Canada ABSTRACT 1 Traffic congestion is characterized by longer trip times, and increased air pollution",
+    "delay": "Moreover, SPFWR does not consider the waiting times in the traffic lights queues"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "[2] Edsger W Dijkstra"
+   },
+   "nodes_stated": [
+    52
+   ],
+   "links_stated": []
+  },
+  "25": {
+   "engines": {
+    "SUMO": "5) correspond to the time-dependent dynamics of moving and queuing vehicles, modeled using a microscopic simulation, simulation of urban mobility (SUMO)"
+   },
+   "network": {
+    "benchmark road network": "The experiment is conducted by implementing a medium-sized network, the Nguyen-Dupuis network (Zhou et al",
+    "real city or corridor": "Notations Sets T: Set of all discrete time intervals considered in the analysis, t ∈ T L: Set of links in the network, l ∈ L Ldown,l : Set of all downstream links given link l Ω: Set of all "
+   },
+   "metrics": {
+    "travel time": "While the SO principle aims to minimize total system travel time (TSTT) across the entire network, achieving this relies on a joint decision-making process by all travelers",
+    "delay": "A new framework for mixed-user dynamic traffic assignment considering delay and accessibility to information",
+    "reward or return": "Over time, the TMC learns an optimal strategy, or policy, that maximizes the expected cumulative reward",
+    "fuel or emission": "Some opportunities include increasing the safety of road environments, promoting eco-driving practices to reduce carbon emissions, and reducing stop-and-go traffic by speed harmonization (Fa"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The DSO-Iterative method involves (1) applying the Dijkstra’s algorithm to compute a set of alternative routes, (2) Randomly assigning a proportion of demands to paths (3) Adjusting the prop",
+    "random or greedy": "Algorithm 1: DQN approach for the DSO assignment problem 1: Set buffer size B, target network update period ν, initial exploration rate ε 2: Initialize Q-network Q(s, a; θQ ) with random wei",
+    "user equilibrium": "Traffic assignment harks back from the seminal work of Wardrop, which outlines two primary principles, system optimal (SO) and user equilibrium (UE)"
+   },
+   "nodes_stated": [
+    13,
+    87
+   ],
+   "links_stated": [
+    19,
+    206
+   ]
+  },
+  "27": {
+   "engines": {
+    "SUMO": "py, both of which are in the SUMO tools"
+   },
+   "network": {
+    "real city or corridor": "10442929 2023 3rd International Conference on Electronic Information Engineering and Computer (EIECT) Optimization Method of DRL-based Route Planning under Limited Resources 1st Chenhao Jin "
+   },
+   "metrics": {
+    "travel time": "The optimization goal of route planning algorithm is to minimize the vehicle's total travel time, so our reward mechanism is designed as the estimated remaining time for the vehicle to reach",
+    "reward or return": "The objective of DRL is to maximize the cumulative reward, which is consistent with MDP, so DRL is suitable for solving complex and dynamic route planning problems in real traffic networks"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The agent can observe only part Traditional global planning algorithms, such as Dijkstra's algorithm, the A* family and the RRT family [1], have been proved to obtain optimal solutions theor"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "28": {
+   "engines": {
+    "SUMO": "To verify the effectiveness of our algorithm, we design experiments on the Simulation of Urban MObility (SUMO) platform"
+   },
+   "network": {
+    "real city or corridor": "cn The authors are with School of Electronics and Communication Engineering, Sun Yat-sen University, Shenzhen, China 978-1-6654-6880-0/22/$31",
+    "synthetic grid or lattice": "He, “Rhythmic control of automated traffic part ii Grid network rhythm and online routing,” 2020"
+   },
+   "metrics": {
+    "travel time": "When the agent chooses an action, the environment feedbacks expected travel time of the action as an immediate reward: ( −(Lst+1 /Vat+1 ) on the way (13) rs = 0 reach the end, where Va =1 if",
+    "reward or return": "In this paper, we formulate the vehicle global path planning as a Markov decision problem, and propose an A*-assisted deep reinforcement learning algorithm to achieve path optimization in co"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The traditional global path planning algorithms include: Graph-based methods, such as Dijkstra’s Algorithm [2][3], A* Algorithm family [4][5]; Bionics-based methods, such as Ant Colony Algor",
+    "random or greedy": "The action policy uses the ϵ−greedy policy, while the evaluation policy uses the greedy maxπ Q(s, a)"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "29": {
+   "engines": {
+    "SUMO": "SUMO Simulation Environment We consider a map of the city centre of Bari extracted from OpenStreetMap",
+    "Flow/RLlib": "The modular DRL training is implemented in Python language using the RLLib [16] libraries"
+   },
+   "network": {
+    "real city or corridor": ", solar radiation and crime risk) are modeled based on the real-world data in downtown New York"
+   },
+   "metrics": {
+    "travel time": "00 ©2024 IEEE signalized traffic network and automatically explore ecoroutes based on drivers’ preferences for travel time and fuel consumption",
+    "reward or return": "The agent purpose is to maximize the expectation of the return over time that is called thePdiscounted cumulative reward and is ∞ defined as G(s(t)) = h=0 γ h r(t + h + 1), where γ ∈ [0, 1] ",
+    "distance": "The problem to be solved for a given pair c = (es , ef ), is determining the optimum path exhibiting the minimum path length, the minimum number of right/left turns crossed and the maximum n",
+    "fuel or emission": "Optimizing routes and travel times is a way to reduce congestion, decrease gas emissions and contribute to global efforts to mitigate climate change [1], [2]"
+   },
+   "baselines": {},
+   "nodes_stated": [],
+   "links_stated": [
+    3426
+   ]
+  },
+  "30": {
+   "engines": {
+    "SUMO": "After routes are assigned, the network’s state is updated, and data are collected for Proactive vehicular traffic rerouting to reduce travel time An intelligent traffic Developed multi-route"
+   },
+   "network": {
+    "real city or corridor": "803 F I G U R E 6 OpenStreetMap (OSM) Manhattan network, Simulation of Urban Mobility (SUMO) Manhattan network, and Manhattan network with fog nodes added"
+   },
+   "metrics": {
+    "travel time": "After routes are assigned, the network’s state is updated, and data are collected for Proactive vehicular traffic rerouting to reduce travel time An intelligent traffic Developed multi-route",
+    "reward or return": "T A B L E 3 Comparison of training performance in terms of the episode rewards across various priority standards",
+    "fuel or emission": "On-line vehicle routing problems for carbon emissions reduction"
+   },
+   "baselines": {},
+   "nodes_stated": [
+    120
+   ],
+   "links_stated": []
+  },
+  "31": {
+   "engines": {
+    "SUMO": "The simulation environment is built using Simulation of Urban MObility, with traffic flows generated coherently with the data collected from TomTom",
+    "Flow/RLlib": "The DRL agent, implemented using Ray RLlib [25] with PPO, was trained to optimize routes that balance path efficiency with traffic avoidance"
+   },
+   "network": {
+    "real city or corridor": "The road network of the city of Bari is used as a case study, and traffic conditions are modeled across three distinct time slots to capture typical daily traffic fluctuations"
+   },
+   "metrics": {
+    "travel time": "The routing problem is formally modeled as a Markov Decision Process, where the agent interacts with a dynamic environment and learns a policy that minimizes travel time and avoids congestio",
+    "delay": "While Google prioritizes nominal distance and current delay estimations, the DRL agent leverages dynamic reward shaping to minimize cumulative penalties, thus exhibiting anticipatory behavio",
+    "reward or return": "The total reward rtot (t) at each time t is composed of multiple sub-functions: rtot (t) = rshortest (t) + rtraf f ic (t) + rarrival (t) + rinvalid (t) Fig",
+    "fuel or emission": "I NTRODUCTION Autonomous driving represents one of the most transformative and ambitious challenges of modern engineering, with the potential to redefine urban transportation, significantly "
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Traditional algorithms such as Dijkstra and A* have served as the backbone of pathfinding but are increasingly inadequate for modern cities characterized by dynamic, unpredictable traffic co",
+    "user equilibrium": "Moreover, the integration of graph neural networks with DRL has enabled the representation of complex traffic interactions, while parallel simulation approaches have improved scalability, al"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "32": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Yue,” Environmental factors for outdoor jogging in Beijing: Insights from using explainable spatial machine learning and massive trajectory data,” Landscape and Urban Planning, vol"
+   },
+   "metrics": {
+    "travel time": "The proposed framework integrates live traffic updates, road-conditions, weather information and emissions metrics to dynamically adjust routes, minimizing travel time and environmental impa",
+    "fuel or emission": "The proposed framework integrates live traffic updates, road-conditions, weather information and emissions metrics to dynamically adjust routes, minimizing travel time and environmental impa"
+   },
+   "baselines": {},
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "33": {
+   "engines": {
+    "SUMO": "This is achieved by integrating Simulation of Urban Mobility (SUMO) with MATLAB via Python Traffic Control Interface (TraCI) and User Datagram Protocol (UDP) sockets that enable real-time mo"
+   },
+   "network": {
+    "real city or corridor": "A real-world road network was extracted from Java OpenStreetMap (JOSM) to maintain realistic junction topologies, lane structures, and traffic densities"
+   },
+   "metrics": {
+    "travel time": "This study addresses the need for intelligent rerouting by manipulating learning-based models while controlling key traffic variables such as speed, acceleration, vehicle position, and trave",
+    "delay": "The DQL agent is trained in live vehicle parameters which selects less congested routes to reduce average delay and improve traffic flow",
+    "throughput or queue": "This method ensures each vehicle follows the most efficient path in terms of distance but does not account for real-time traffic conditions like congestion or queue length",
+    "fuel or emission": "Time travel in (1) is related with the congestion level shown in (3): 𝐶= 𝑖 =1 𝑇 𝑖 𝑉𝑚𝑎𝑥 To quantify, a fuel consumption index in (4) is defined: (4) 𝐹 = ∑𝑛𝑖=1 𝑓(𝑣𝑖 ) (1) 𝑛 (3) 𝑉𝑐𝑢𝑟𝑟𝑒𝑛𝑡 where "
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Most existing solutions still depend on rigid algorithms like Dijkstra’s method [13] or heuristic approaches [11] that cannot adapt to changing traffic conditions"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "34": {
+   "engines": {
+    "SUMO": "[13] adopted Q-learning to help a vehicle find the right path in the Simulation of Urban Mobility (SUMO) simulator"
+   },
+   "network": {
+    "real city or corridor": "7, JULY 2022 8037 Urban Multiple Route Planning Model Using Dynamic Programming in Reinforcement Learning Ningyezi Peng , Yuliang Xi, Jinmeng Rao, Xiangyuan Ma , and Fu Ren Abstract— With th"
+   },
+   "metrics": {
+    "travel time": "The deterministic and heuristic methods mentioned above can achieve good results with simple objectives (normally the shortest distance or travel time)",
+    "reward or return": "Model-Based Reinforcement Learning RL is intended to learn an optimal policy from experiences in which an agent interacts with an environment, and the policy can lead to the maximization of ",
+    "fuel or emission": "I NTRODUCTION S COUNTRIES undergo economic development and urbanization, traffic congestion has become a universal problem that increases fuel consumption and environmental A Manuscript rece"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Among the deterministic methods, the representative algorithms are Dijkstra [3] and Floyd [4]",
+    "random or greedy": "1, policy iteration starts from a random policy, and then V π (s) is calculated to evaluate this policy",
+    "user equilibrium": "In the future, more complicated route planning objectives, such as user equilibrium and system optimum, can be taken into account"
+   },
+   "nodes_stated": [
+    50,
+    495,
+    2245
+   ],
+   "links_stated": [
+    719,
+    3536
+   ]
+  },
+  "36": {
+   "engines": {},
+   "network": {
+    "benchmark road network": "Illustration on Nguyen-Dupuis network"
+   },
+   "metrics": {
+    "travel time": "Leveraging these advantages, this research proposes a reinforcement learning framework involving CAVs and an information provider, where CAVs conduct real-time learning to minimize their ind",
+    "delay": ", 2022), minimizing delay at intersections (Adkins et al",
+    "reward or return": "The goal of solving the MDP is to find a policy 𝜋 ∶ 𝑆 → 𝛥(𝐴), a mapping from the state space 𝑆 to the distribution over the action space 𝐴, so that 𝑎𝑡 ∼ 𝜋(⋅|𝑠𝑡 ) and the expected discounted "
+   },
+   "baselines": {
+    "user equilibrium": "■ The next theorem explores how the system optimum can be achieved and the relationship between the additional reward 𝜂 and the potential in achieving SO"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "37": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "After abstraction, the network connects the residential neighborhoods (the origin) and the downtown (the destination) through two routes: (1) route 1 is the main corridor with high free-flow",
+    "synthetic grid or lattice": "Experiments We conduct extensive experiments on three networks, including an abstractive two-route network, a synthetic network, and a large network with hundreds of links"
+   },
+   "metrics": {
+    "travel time": "com/locate/trc Real-time system optimal traffic routing under uncertainties — Can physics models boost reinforcement learning? Zemian Ke a , Qiling Zou a , Jiachao Liu a , Sean Qian a,b a b ",
+    "delay": "Tan and Gao (2018) proposed a model predictive control method for dynamic pricing to reduce the total traveler delay",
+    "reward or return": "During training, TransRL aims to maximize cumulative rewards while minimizing the Kullback–Leibler (KL) divergence between the current policy and the teacher policy"
+   },
+   "baselines": {
+    "user equilibrium": "com/locate/trc Real-time system optimal traffic routing under uncertainties — Can physics models boost reinforcement learning? Zemian Ke a , Qiling Zou a , Jiachao Liu a , Sean Qian a,b a b "
+   },
+   "nodes_stated": [
+    16,
+    361
+   ],
+   "links_stated": [
+    18,
+    41,
+    621
+   ]
+  },
+  "38": {
+   "engines": {
+    "SUMO": "We utilize the open-source microscopic traffic simulator, Simulation of Urban Mobility (SUMO) [28], to create reproducible testing environments"
+   },
+   "network": {
+    "real city or corridor": "Experiments on synthetic grids and real urban maps (Toronto, Manhattan) show that AN reduces average travel time versus SPF and learning baselines, maintaining 100% routing success",
+    "synthetic grid or lattice": "We employ three distinct road networks to evaluate our models under varying conditions of complexity and scale (Figures 6, 7, and 8): (1) Synthetic 5x6 Grid: A canonical Manhattan-style grid"
+   },
+   "metrics": {
+    "travel time": "Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing FAZEL ARASTEH ∗ , York University, Canada ARIAN HAGHPARAST ∗ , York University, Canada MANOS PAPAGELIS , York",
+    "completion or arrival rate": "Our primary evaluation metrics are Average Vehicle Travel Time (AVTT), which quantifies system efficiency, and Routing Success Rate (RSR), defined as the percentage of vehicles that successf",
+    "delay": "67% in waiting time reduction during peak hours when evaluated on real-world SUMO data",
+    "throughput or queue": "(2) System-Wide Efficiency: Metrics such as the total number of active vehicles, completion throughput ratio (completed vs",
+    "reward or return": "In this framework, each agent 𝑢𝑘 maintains a local Q-network 𝑄𝑘 (𝜏𝑘 , 𝑎𝑘 ), which estimates the expected cumulative reward for taking action 𝑎𝑘 given the local observation 𝜏𝑘",
+    "fuel or emission": "Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing FAZEL ARASTEH ∗ , York University, Canada ARIAN HAGHPARAST ∗ , York University, Canada MANOS PAPAGELIS , York"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Mostly known as the Dijkstra algorithm, SPF is a routing algorithm in which a router computes the shortest path between a pair of nodes in a network",
+    "static or fixed routing": "• Shortest Path First (SPF): A static routing baseline where each vehicle is assigned the shortest path (in terms of travel time on an empty network) from its origin to its destination and d",
+    "random or greedy": "An 𝜖-greedy policy with 𝜖 decaying from 1"
+   },
+   "nodes_stated": [
+    30,
+    52,
+    320
+   ],
+   "links_stated": [
+    98,
+    333,
+    1184
+   ]
+  },
+  "39": {
+   "engines": {},
+   "network": {
+    "real city or corridor": ", OpenStreetMap) and other real-world datasets on trafﬁc, weather, and air substances"
+   },
+   "metrics": {
+    "travel time": ", travel time, fuel consumption, charging monetary cost, risks, and so on) are considered equally without any consideration of user preference",
+    "reward or return": "The goal of the algorithm is to maximize the expected cumulative reward by maintaining a certain policy function, Q(·)",
+    "distance": "Currently, different map services already provide the source-destination vehicle routing service that considers travel distance or travel time [1], [2]",
+    "fuel or emission": ", travel time, fuel consumption, charging monetary cost, risks, and so on) are considered equally without any consideration of user preference"
+   },
+   "baselines": {},
+   "nodes_stated": [
+    12
+   ],
+   "links_stated": [
+    154
+   ]
+  },
+  "41": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Final Reward   MaxTotal Traveltime  Total Traveltime  *1000 Where MaxTotal Traveltime is calculated based on Manhattan distance between origin and destination and the minimum speed of th",
+    "synthetic grid or lattice": "The Q-learning algorithm with a reverse order Q matrix is updated to reach the optimal path within a grid network, during which different coefficients have been evaluated and analyzed based "
+   },
+   "metrics": {
+    "travel time": "In addition, this paper discusses how a machine achieves an optimal solution in the case that there are a large number of intelligent agents trying to minimize their travel times simultaneou"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Based on the travel pattern proposed earlier and the diagonal shortest path algorithm defined, the expected background traffic resembles Figure 1",
+    "random or greedy": "9-greedy policy"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "42": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "(1) Road Network data This dataset was derived from the New York City road network data published by OpenStreetMap, as shown in Fig"
+   },
+   "metrics": {
+    "travel time": "This study proposes a multi-objective route recommendation method based on the reinforcement learning algorithm Q-learning, that comprehensively considers multiple objective attributes, such",
+    "reward or return": "It aims to simulate the decision-making and learning process of agents in the constantly changing environment, with the goal of maximizing the cumulative reward value of agents",
+    "distance": "Simultaneously, most existing multi-objective route recommendation algorithms tend to focus on common indicators, such as travel time, travel distance, and fuel consumption, while ignoring t",
+    "fuel or emission": "For example, when following the user preferences of fuel consumption with less weight, travel time, and environmental index with more weight, the existing multi-objective route recommendatio"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The commonly used Dijkstra algorithm is used to search for the shortest route, which corresponds to optimizing a single objective and typically only considers one-dimensional costs such as d"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "43": {
+   "engines": {
+    "SUMO": "System Overview In the SUMO simulation environment, 12 interconnected roads are created"
+   },
+   "network": {
+    "real city or corridor": "Agent-Based Route Planning with Deep Q Learning Ali Osman Köroğlu1, Ali Emre Edem2, Serra Nur Akmeşe3, Özge Elmas4, Ilhan Tunc5 and M"
+   },
+   "metrics": {
+    "travel time": "It is aimed to be able to comprehend the actions to be implemented to complete the given task most cost-effectively, with deep Q learning, considering criteria such as travel time and waitin",
+    "delay": "It is aimed to be able to comprehend the actions to be implemented to complete the given task most cost-effectively, with deep Q learning, considering criteria such as travel time and waitin",
+    "reward or return": "The cumulative reward, on the other hand, proceeds by adding the reward value after each decision region and represents the reward-punishment value accumulated as a result of a certain seque",
+    "fuel or emission": "About a third of the USA's carbon dioxide (CO2) emissions stem from the mobility of people and merchandise [1]"
+   },
+   "baselines": {},
+   "nodes_stated": [
+    5
+   ],
+   "links_stated": []
+  },
+  "46": {
+   "engines": {
+    "SUMO": "Using the Simulation of Urban Mobility (SUMO), this method manipulates traffic flow during peak hours to improve urban mobility"
+   },
+   "network": {
+    "synthetic grid or lattice": "Illustration of an urban grid network showcasing the application of an optimized vehicle routing algorithm"
+   },
+   "metrics": {
+    "travel time": "We explored the effectiveness of Double Q-Learning enhanced by Prioritized Experience Replay (DQL-PER) in optimizing vehicle routing to shorten travel times and reduce congestion",
+    "delay": "[33] in their work, combined Q-learning with genetic algorithms to optimize traffic light scheduling, achieving notable improvements in vehicle waiting times compared to conventional methods",
+    "reward or return": "The Q-value for a state-action pair (𝑠, 𝑎) is denoted as 𝑄(𝑠, 𝑎), and it represents the expected cumulative reward that can be obtained by taking action 𝑎 in state 𝑠 and following the optima",
+    "fuel or emission": "1 Introduction Traffic congestion is an increasing problem in urban areas worldwide that results in longer drive times, higher CO2 emissions, and more stress for drivers"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Classic graph-based methods were the foundation of such planning; Dijkstra’s algorithm [2] is wellknown for finding the shortest path in a static network",
+    "another RL method": "Compared to DQN, which struggles with uniform replay sampling in larger networks, DQL-PER’s prioritization mechanism ensures that learning remains focussed on the most critical transitions"
+   },
+   "nodes_stated": [
+    39
+   ],
+   "links_stated": []
+  },
+  "47": {
+   "engines": {
+    "SUMO": "1 Experimental environment This paper utilizes the open-source traffic simulation software SUMO (Simulation of Urban Mobility, ​h​t​t​p​s​:​/​/​e​c​l​i​p​ s​e​"
+   },
+   "network": {
+    "real city or corridor": "cn 1 School of Computer Science and Engineering, Hunan University of Science and Technology, Xiangtan 411201, Hunan, China 2 Intelligent Connected Vehicle Software Design and Service of Huna",
+    "synthetic grid or lattice": "It is a 16 × 3 grid network in Manhattan consisting of 48 intersections and 230 road sections"
+   },
+   "metrics": {
+    "travel time": "The experimental evaluations on both synthetic and real traffic networks demonstrate that our method minimizes average vehicle waiting and travel times, significantly improving urban traffic",
+    "completion or arrival rate": "7 Comparison of average vehicle travel time for different traffic arrival rates Q-routing methods to provide guidance for vehicle routes",
+    "delay": "Cloud-edge computing can effectively shorten the transmission distance, reduce the transmission delay, and meet the needs of large-scale urban vehicle guidance [8]",
+    "distance": "These evaluation metrics primarily include Average Travel Time (Avtt), Average Travel Distance (Avtd), and Average Waiting Time (Avwt)"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "2 Baseline methods and evaluation metrics To evaluate the multi-agent deep reinforcement learning method for traffic intersection-based route guidance, we conducted a comparison of the follo",
+    "user equilibrium": "Dynamic User Assignment (DUA) 2: DUA is an iterative method implemented by SUMO developers, utilizing the duarouter tool to calculate the fastest route for each vehicle based on current road"
+   },
+   "nodes_stated": [
+    25,
+    35,
+    48
+   ],
+   "links_stated": [
+    114,
+    230
+   ]
+  },
+  "48": {
+   "engines": {
+    "SUMO": "The environment module is simulated with a widely-used traffic simulator called Simulation of Urban Mobility (SUMO) [22]"
+   },
+   "network": {
+    "real city or corridor": "2) is from the City of Pasadena, CA, USA, which is obtained from OpenStreetMap [23]"
+   },
+   "metrics": {
+    "travel time": "MOM-DQL can explore the optimal ecoroutes with respect to drivers’ different preferences on saving travel time and fuel",
+    "delay": "In order to reflect the cost variations affected by traffic signal status ‫ݎ‬௩ , we split each road link into a free-flow segment and a delay segment, and obtain the average costs for each s",
+    "fuel or emission": "The MOM-DQL agent is trained under a series of learning environments that are based on historical vehicle trajectories, fuel consumption, and traffic signal status in the remote data center"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": ", Dijkstra method); and 2) driver’s random exploration",
+    "random or greedy": "Algorithm 1 Meta-deep Q-learning 1: function Meta-DQL(envs, w, ߠ) 2: Initialize target network parameter vector ߠ ି ൌ ߠ 3: Initialize thread-specific parameter vector ߠ ᇱ ൌ ߠ 4: Initialize c"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "49": {
+   "engines": {
+    "SUMO": "EXPERIMENTS, RESULTS, AND ANALYSIS Scenario: network and demand Simulations were performed using a microscopic tool called Simulation of Urban Mobility (SUMO, Lopez et al"
+   },
+   "network": {
+    "real city or corridor": "Further, we have performed robustness tests, by allowing messages to be lost, and by reducing the storage capacity of the communication devices",
+    "synthetic grid or lattice": "428 9/20 Top0 Top1 Top2 Top3 Top4 Left4 A4 B4 C4 D4 E4 Right4 Left3 A3 B3 C3 D3 E3 Right3 Left2 A2 B2 C2 D2 E2 Right2 Left1 A1 B1 C1 D1 E1 Right1 Left0 A0 B0 C0 D0 E0 Right0 Bottom0 Bottom1 "
+   },
+   "metrics": {
+    "travel time": "To address the challenges posed by an ever increasing demand, transportation authorities and trafﬁc experts try to distribute the ﬂow among existing routes in order to minimize the overall t",
+    "completion or arrival rate": "Communication success rate In the real world, it might be the case that some information gets lost due to failure in the communication devices"
+   },
+   "baselines": {
+    "static or fixed routing": "Actions here correspond to the selection of one among k pre-computed routes",
+    "user equilibrium": "Also, the main approaches are based on iterative methods that seeks convergence to the user equilibrium (see “User Equilibrium”)"
+   },
+   "nodes_stated": [],
+   "links_stated": [
+    50
+   ]
+  },
+  "50": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "A bathtub model of downtown traffic congestion"
+   },
+   "metrics": {
+    "travel time": "Besides, the trade-off between total travel time and average trip length is studied, wherein the balance reward in a deep reinforcement learning-based approach enables controllable agents to",
+    "completion or arrival rate": "Dynamic modeling of trip completion rate in urban areas with mfd representations",
+    "delay": "Optimizing distribution of metered traffic flow in perimeter control: Queue and delay balancing approaches",
+    "throughput or queue": "By optimal here, depending on the specific requirement of applications, we mean the minimal individual travel time or total traffic throughput of the entire network",
+    "reward or return": "An agent refers to an intelligent entity or system that interacts with an environment to learn and make decisions in order to maximize its long-term cumulative reward",
+    "distance": "Following this, the numerical experiments in Section 5 demonstrate: (i) the total travel time and total travel distance performance of different routing strategies, (ii) the impact of severe"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The most widely used techniques to find shortest routes are the Dijkstra algorithm (Dijkstra et al",
+    "user equilibrium": "Hence, applying user-oriented guidance can lead to the user equilibrium state (Leclercq et al"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "51": {
+   "engines": {
+    "MATSim": "An example is MATSim [1], [2], which deals with activity-based simulation of route choice"
+   },
+   "network": {
+    "benchmark road network": "They show results for small networks such as the one used to illustrate the Braess paradox",
+    "real city or corridor": "An abstract route choice scenario was used, having Conference on Neural Networks (/JCNN) some features of real world networks"
+   },
+   "metrics": {
+    "travel time": "Agents learn their routes by deciding, at each node, how to continue their trips to each one's destination, in a way to minimize their travel times",
+    "delay": "Another relevant concept that needs to be introduced is the one of volume-delay functions (VDFs) or cost-flow functions"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The first step can be accomplished with any variant of the Dijkstra algorithm for shortest paths",
+    "user equilibrium": "It is also known that the user equilibrium be analytically computed, except for very simple networks, as discussed in Section II"
+   },
+   "nodes_stated": [],
+   "links_stated": [
+    76
+   ]
+  },
+  "52": {
+   "engines": {
+    "SUMO": "SUMO is a widely used simulation software in the field of traffic control field [38–40]",
+    "VISSIM": "Compared to other simulation software, such as VISSIM, and TRANSIMS, SUMO can balance between the accuracy and the speed of the simulation [41]"
+   },
+   "network": {
+    "real city or corridor": "com/locate/fgcs Connected vehicles’ dynamic route planning based on reinforcement learning Kanghua Ma, Shubing Liao, Yunyun Niu ∗ School of Information Engineering, China University of Geosc"
+   },
+   "metrics": {
+    "delay": "The experimental results show that compared to existing algorithms, the DWQL algorithm proposed in this paper can effectively reduce the duration, time loss, waiting time, economic cost, and",
+    "fuel or emission": "Economic cost: the economic cost during the vehicle driving, mainly energy consumption, in yuan"
+   },
+   "baselines": {
+    "another RL method": "5: The DWQL shows slightly inferior performance compared to DQN and DDQN algorithms in terms of waiting time but outperforms the ACO algorithm results"
+   },
+   "nodes_stated": [
+    70
+   ],
+   "links_stated": []
+  },
+  "53": {
+   "engines": {},
+   "network": {
+    "benchmark road network": "As we can see from Table 4, from Case I to Case IV, with more and more travelers involved in the Nguyen-Dupuis network, the links are becoming congested little by little"
+   },
+   "metrics": {
+    "travel time": "com/locate/amc A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion game Bo Zhou a,b,∗, Qiankun Song a, Zhenjiang Zhao c, Tangzhi Li",
+    "fuel or emission": "Schutter, A multi-class model-based control scheme for reducing congestion and emissions in freeway networks by combining ramp metering and route guidance, Transp"
+   },
+   "baselines": {
+    "user equilibrium": "Zhou, A prospect-based user equilibrium model with endogenous reference points and its application in congestion pricing, Transp"
+   },
+   "nodes_stated": [
+    13
+   ],
+   "links_stated": [
+    19
+   ]
+  },
+  "54": {
+   "engines": {},
+   "network": {},
+   "metrics": {
+    "travel time": "Our proposed method is evaluated in a simulated road network environment, and experimental results show that our method is able to plan the shortest routes that minimize stochasticity in tra",
+    "completion or arrival rate": "[11] focused on the indoor navigation of a mobile ground robot, and trained a distributional RL agent that could learn the collision risk of control commands (linear and angular velocity); t",
+    "delay": "Green, magenta and black blocks represent the start, goal, and a crosswalk with stochastic delay",
+    "reward or return": "Hence, the total reward of reaching a goal state is 0",
+    "fuel or emission": "[7] also worked on the route planning problem for electric vehicles, but with an emphasis on the power management issue; they used reinforcement learning to train a route planner that could "
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "[9] proposed a DRL based real-time navigation system operating in complex city maps with varying traffic conditions; the system re-plans the route for the ego vehicle given its surrounding i",
+    "random or greedy": "In settings where there is not an exact tie among the actions offering the largest expected returns, the SSD policy will be equivalent to the standard greedy policy"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "55": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Springer, Singapore"
+   },
+   "metrics": {
+    "travel time": "With this rendering of real time traffic data, we use DRL to make autonomous decisions to reduce travel time and congestion of routes",
+    "delay": "time decision making in traffic systems, which can drastically reduce average waiting times at crossings",
+    "fuel or emission": "To reduce travel time, fuel consumption, as well as congestion, the proposed solution aims to develop a real time intelligent routing system that will change routes based on traffic conditio"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "A limitation to traditional route planning algorithms such as A* and Dijkstra's algorithm [3] is the inability to adapt to changing traffic circumstances"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "56": {
+   "engines": {
+    "SUMO": "The proposed method was implemented and evaluated in the SUMO (Simulation of Urban MObility) simulator under low, medium, and high traffic demand conditions and compared with other baseline "
+   },
+   "network": {
+    "real city or corridor": "To validate the performance of our proposed method using real-world traffic data, we selected the Hangzhou4 3 4 dataset (51) as an example"
+   },
+   "metrics": {
+    "travel time": "Traditional vehicle routing algorithms, such as Dijkstra’s algorithm (24) and A* (25), calculate the shortest path based on the starting and ending points considering the travel time",
+    "throughput or queue": "‘‘Pressure,’’ as a concept from the maximum pressure control theory, can be simply understood as the difference in queue lengths between upstream and downstream vehicles",
+    "reward or return": "According to the Bellman equation, the Q-value of the current state–action pair can be represented as the sum of the immediate reward rt and the maximum expected cumulative reward for the ne",
+    "fuel or emission": "In addition, traffic congestion results in both time and economic losses, with increased energy consumption further exacerbating environmental impacts, ultimately posing health risks to the "
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Traditional vehicle routing algorithms, such as Dijkstra’s algorithm (24) and A* (25), calculate the shortest path based on the starting and ending points considering the travel time"
+   },
+   "nodes_stated": [
+    16
+   ],
+   "links_stated": []
+  },
+  "57": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Road Network and Charger Graph Let G = (V, E) be a directed road graph extracted from OpenStreetMap, where each node v ∈ V stores a geographic coordinate and each edge (i, j) ∈ E carries len"
+   },
+   "metrics": {
+    "travel time": "12 h total trip time and minimum SoC 11",
+    "fuel or emission": "For route planning, we compute energy consumption per road segment under a constant-speed approximation"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": ", Dijkstra, A*) can incorporate energy costs but scale poorly when SoC constraints require statespace expansion [3]"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "58": {
+   "engines": {
+    "SUMO": "Simulations were performed using a microscopic tool called Simulation of Urban Mobility (SUMO [Lopez et al"
+   },
+   "network": {
+    "real city or corridor": "First, for evaluation of the proposed approach, we use a simplified version of the central area of the city of Cottbus, Germany",
+    "synthetic grid or lattice": "The first one is a grid network, in which the demand is distributed in a synthetic, close to regular way, as described in Section 5"
+   },
+   "metrics": {
+    "travel time": "To address this, traffic authorities and experts try to distribute the flow among existing routes in order to minimize the overall travel time",
+    "throughput or queue": "The smaller the queue length, the higher the influence of the newest reward values",
+    "reward or return": "Since the information that is then sent to the vehicle agents consists of an average reward computed over a subset of the values in the queue, the length of these queues have an impact on ho"
+   },
+   "baselines": {
+    "static or fixed routing": "Actions here correspond to the selection of one among k pre-computed routes",
+    "user equilibrium": "As a result of our approach, we are able to show that the MARL technique combined with a C2I model can accelerate the learning process, meaning it will take less time for the system to reach"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "59": {
+   "engines": {
+    "TransModeler": "DynaMit is a system of models for guidance generation based on the predicted traffic condition (Ben-Akiva et al"
+   },
+   "network": {
+    "real city or corridor": "Extensive experimental results, based on real taxicab mobility traces in Beijing, have demonstrated that the proposed model can achieve human-like performance with a high success rate and re"
+   },
+   "metrics": {
+    "travel time": "In the proposed method, the Markov decision process (MDP) is used to train simulated agents in a network so that they are able to make independent decisions under random conditions and, acco",
+    "completion or arrival rate": "Extensive experimental results, based on real taxicab mobility traces in Beijing, have demonstrated that the proposed model can achieve human-like performance with a high success rate and re",
+    "delay": "The accumulation of about 4·4 billion hours of delay over the last 29 years in the USA has encouraged many traffic engineers and experts to seek new solutions for improving the situation (Sc",
+    "reward or return": "set of actions specific action coefficient of logit model expected value number of iterations probability of choosing an action route final reward of route total reward including previous re",
+    "distance": "Details of hypothetical network Origin 1 1 2 2 3 3 3 4 4 4 Destination Route length: km Capacity (1 h) Free-flow travel time: s Density: counts/km Number of traffic lights Volume 2 3 1 4 1 4",
+    "fuel or emission": "Predicting where observed congestions may spread over a transportation network is extremely helpful for several parties, including traffic controllers (to balance traffic flows in advance in"
+   },
+   "baselines": {},
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "60": {
+   "engines": {
+    "SUMO": "To adequately analyze the performance of the resulting control architecture, the SUMO and MATLAB environments are used to implement complex operating scenarios where road maps data and vehic"
+   },
+   "network": {
+    "real city or corridor": "An urban road network map of the city of Hamburg"
+   },
+   "metrics": {
+    "delay": "i (t ψwt dec + 1tdec (t)) is given by: i (t i ψwt dec + 1tdec (t)) = −wt (tdec + 1tdec (t)) + f (loops)i (tdec + 1tdec (t)) (10) where wt is the total waiting time of the vehicle AV i from t",
+    "reward or return": "First, the evolution of the training is reported in the left hand side of Figure 8, where the episode reward (the sum of all the received rewards during each episode) and the expected episod",
+    "fuel or emission": "In particular, the learning process aims at reducing traffic congestion and C O2 emissions, whereas the MPC unit allows to adequately track the assigned path by using real-time traffic data"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "7% to a maximum of 13% with respect to the use of the well-known Dijkstra algorithm",
+    "random or greedy": "During the training, the trade-off between exploration and exploitation is managed by an epsilon-greedy policy [48]"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "61": {
+   "engines": {
+    "VISSIM": "P ERFORMANCE A NALYSIS This section evaluates the proposed DLRD algorithm by using VISSIM"
+   },
+   "network": {
+    "synthetic grid or lattice": "[14] adopted state lattice strategy for vehicle routing decision, where a set of paths containing all the 3731 geometry, kinematics, and constraints of vehicles are preset, and a rotation ma"
+   },
+   "metrics": {
+    "travel time": "Mynuddin and Gao [30] proposed a novel distributed predictive cruise control (PCC) algorithm based on reinforcement learning, which can reduces the travel time and fuel consumption rate of v",
+    "delay": "In order to alleviate such a problem, this article considers transmission and inference delay of cloud centralized computing in the software defined Internet of Vehicles (SDIoV), and builds ",
+    "fuel or emission": "Mynuddin and Gao [30] proposed a novel distributed predictive cruise control (PCC) algorithm based on reinforcement learning, which can reduces the travel time and fuel consumption rate of v"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "[13] used the algorithm Dijkstra for optimal vehicle routing decision, and updated the plan based on real time traffic conditions"
+   },
+   "nodes_stated": [],
+   "links_stated": [
+    100
+   ]
+  },
+  "62": {
+   "engines": {
+    "SUMO": "We use SUMO-based traffic simulation to examine the efficacy of TP-RLNG and alternative approaches in controlling traffic flow within the Hangzhou Liushi Expressway network under varying dem",
+    "VISSIM": "Simulation tools like VISSIM [24] and SUMO [25] are widely employed in real-time traffic state prediction",
+    "Aimsun": "While SUMO offers significant cost and accessibility advantages but exhibits limitations in detailed micro-simulations and complex urban environment handling compared to proprietary software"
+   },
+   "network": {
+    "real city or corridor": "We use SUMO-based traffic simulation to examine the efficacy of TP-RLNG and alternative approaches in controlling traffic flow within the Hangzhou Liushi Expressway network under varying dem"
+   },
+   "metrics": {
+    "travel time": "The findings indicate that, relative to RLNG approaches, our methodology achieves a reduction in average travel time of 9",
+    "reward or return": "An MDP is a standardized dynamic programming framework, in which one or multiple agents try to optimize the decision-making policies to maximize the total reward in a dynamic system",
+    "fuel or emission": "Lee, “Carbon emissionfocused dynamic eco-route guidance design for urban expressway systems,” Transportmetrica B, Transp"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Zhang [26] utilized an LSTM neural network to predict urban traffic data and integrated a double-tracking Dijkstra algorithm to propose a prediction-based path guidance scheme"
+   },
+   "nodes_stated": [
+    2279
+   ],
+   "links_stated": [
+    4568
+   ]
+  },
+  "63": {
+   "engines": {},
+   "network": {
+    "real city or corridor": ") Jiawei Zhang, Jingwei Ge, and Shu Li are with the Department of Automation, Tsinghua University, Beijing 100084, China (e-mail: zhangjw20@mails"
+   },
+   "metrics": {
+    "travel time": "The experimental results show that the upper and lower levels complement each other and work together to significantly improve the network-wide traffic efficiency and reduce the travel time ",
+    "completion or arrival rate": "When not specified, the arrival rates in different directions are equal",
+    "delay": "For the lower level, we propose an adaptive cooperative driving algorithm for CAVs at signal-free intersections, aiming to reduce the travel delay of vehicles passing through intersections w",
+    "throughput or queue": "Followed by the problem context analyzed in Section II-B, the core idea of the adaptive cooperative driving algorithm is to adaptively adjust the right-of-way assignment of vehicles passing ",
+    "fuel or emission": ", reduce travel time, minimize fuel consumption, etc"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The benchmark approach consists of the Dijkstra based shortest routing at the upper level and the state-of-the-art MCTS based cooperative driving algorithm [26] at the lower level"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "64": {
+   "engines": {},
+   "network": {
+    "real city or corridor": ") Huaxin Pei and Jiawei Zhang are with the Department of Automation, Tsinghua University, Beijing 100084, China (e-mail: phx17@tsinghua",
+    "synthetic grid or lattice": ", grid network"
+   },
+   "metrics": {
+    "travel time": "To attain overall efficiency based on self-organized routing, a novel reward mechanism of DRL is established by jointly considering the travel time of each individual vehicle and the average",
+    "completion or arrival rate": "In this experiment, the arrival rate λ of vehicles at each input link is set as 1000veh/link/h",
+    "delay": "On the one hand, the negative impacts of communication delay and packet loss on vehicle movements cannot be ignored, especially for vehicles moving at high speed",
+    "throughput or queue": "At the microscopic level, closer spacing between vehicles and better passing sequence at conflict areas help improve link capacity and intersection throughput, which has been well discussed ",
+    "reward or return": "Fortunately, reinforcement learning (RL) can be flexibly applied to search for the optimal policy π ∗ (the optimal mapping from state to action) without the complete environment model by max"
+   },
+   "baselines": {
+    "random or greedy": ", random routing strategy and greedy routing strategy, on the average travel time of vehicles in the basic traffic network"
+   },
+   "nodes_stated": [
+    25
+   ],
+   "links_stated": []
+  },
+  "65": {
+   "engines": {
+    "SUMO": "The traffic environment used to train and test the algorithms is simulated with a widely used open-source traffic simulator called Simulation of Urban Mobility (SUMO) [74]"
+   },
+   "network": {
+    "real city or corridor": "3, the signalized traffic network considered for the experiments is selected from the City of Pasadena, CA",
+    "synthetic grid or lattice": ", “Vector-based navigation using grid-like representations in artificial agents,” Nature, vol"
+   },
+   "metrics": {
+    "travel time": "GM2 DQL can explore the optimal routes with respect to drivers’ different preferences on saving fuel and travel time",
+    "delay": "Free-flow segments and delay segments for a two-way link",
+    "reward or return": "The geometric approach [51] computes the average reward for multiple objectives",
+    "fuel or emission": "7, JULY 2024 7323 Graph Convolutional Network Based Multi-Objective Meta-Deep Q-Learning for Eco-Routing Xin Ma , Yuanchang Xie , and Chunxiao Chigan Abstract— Route selection can greatly af"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "A measure called weighted fuel consumption factor for each link was calculated and fed into a shortest path algorithm for finding eco-routes"
+   },
+   "nodes_stated": [],
+   "links_stated": [
+    6
+   ]
+  },
+  "66": {
+   "engines": {},
+   "network": {
+    "benchmark road network": ", OP-GPG, OP-GAC, off-policy GPG, SEGAC, and variance-reduced SEGAC, with a simple yet illustrative network; (2) benchmark SEGAC’s performance and efficiency (in terms of the decision-making",
+    "real city or corridor": "Singapore Management University Institutional Knowledge at Singapore Management University Research Collection School Of Computing and Information Systems School of Computing and Information"
+   },
+   "metrics": {
+    "travel time": "The term ‘reliability’ in the reliable navigation domain can be defined as the navigation policy’s (1) maximal stochastic on-time arrival (SOTA) probability [3], [4], (2) minimal linear comb",
+    "delay": "Rus, “Practical route planning under delay uncertainty: Stochastic shortest path queries,” in Robotics: Science and Systems (RSS), 2012, pp",
+    "reward or return": "Reinforcement Learning Backgrounds An RL agent aims at maximizing its expected discounted cumulative reward through interacting with the environment and optimizing its decision-making policy"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "In 2021, He joins the institute of infocomm research (I2R) in A*STAR, Singapore, as a senior scientist"
+   },
+   "nodes_stated": [
+    24
+   ],
+   "links_stated": []
+  },
+  "67": {
+   "engines": {},
+   "network": {
+    "benchmark road network": ", Sioux Falls Network (SFN), with the real mean traveltime information to further evaluate the correctness of GEDDRL",
+    "real city or corridor": ") Hongliang Guo and Yingjie Zhou are with the College of Computer Science, Sichuan University, Chengdu, Sichuan 610017, China (e-mail: scott0793@gmail",
+    "synthetic grid or lattice": "Additional Sanity Check in a Realistic Network: SFN In the last subsection, we use a toy network to evaluate the step-by-step computation process of tabular DRL and how GE-DDRL gradually app"
+   },
+   "metrics": {
+    "travel time": "The reliability metric in the navigation task has various definitions in the literature, and in this paper, we roughly divide them into three categories, namely (1) maximal stochastic on-tim",
+    "delay": ", minimal expected delay, 1558-0016 © 2023 IEEE"
+   },
+   "baselines": {},
+   "nodes_stated": [
+    5
+   ],
+   "links_stated": [
+    4
+   ]
+  },
+  "68": {
+   "engines": {},
+   "network": {
+    "benchmark road network": "The complete training framework is 46722 The classical Sioux Falls network is adopted as the experimental testbed in this study"
+   },
+   "metrics": {
+    "travel time": "85, while relative deviations in travel time and emissions remain close to zero",
+    "throughput or queue": "In terms of computational efficiency, CRL-SP supports large-scale batch inference with throughput exceeding tens of thousands of paths per second, yielding orders-of-magnitude speedups over ",
+    "distance": "In terms of trends, the runtime of CRL-SP grows almost linearly with the number of links in the path, whereas the baseline label-setting algorithm exhibits little sensitivity to path length ",
+    "fuel or emission": "3677440 Shortest-Time Path Planning Under Carbon Emission Constraints via Reinforcement Learning YIFAN WANG 1 Graduate 1, KAIFENG DUAN1 , AND KENETSU UCHIDA 2 School of Engineering, Hokkaido"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The proposed model preserves this level of performance under unseen and sparsely sampled emission budgets, and is able to generate feasible and structurally consistent paths even when classi"
+   },
+   "nodes_stated": [
+    24,
+    30,
+    50,
+    70
+   ],
+   "links_stated": [
+    108,
+    182,
+    284
+   ]
+  },
+  "69": {
+   "engines": {},
+   "network": {
+    "benchmark road network": "In the following sections, we first construct a very simple test network to evaluate DRL-Router’s correctness, applicability to different travel time distributions, and parameter sensitivity",
+    "real city or corridor": "DRL Router: Distributional Reinforcement LearningBased Router for Reliable Shortest Path Problems Hongliang Guo*† Is with College of Computer Science, Sichuan University (SCU), Chengdu, Sich"
+   },
+   "metrics": {
+    "travel time": "Many definitions of the path’s reliability exist in the RSP community; for example, the term reliability in the path planning domain can be defined as finding a path or routing policy with t",
+    "delay": ", “Using reinforcement learning to minimize the probability of delay occurrence in transportation,” IEEE Trans"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Moreover, calculating a LET path as well as the corresponding travel time distribution is very easy with the A* and Dijkstra algorithms"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "70": {
+   "engines": {},
+   "network": {},
+   "metrics": {},
+   "baselines": {
+    "shortest path or Dijkstra": "Traditional traffic path planning algorithms are mainly based on mathematical models and optimization theories, such as Dijkstra algorithm, A* algorithm and genetic algorithm"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "71": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Results of experiments on the Third Ring Road of Beijing show that the proposed method reduces emergency vehicle arrival time by 27"
+   },
+   "metrics": {
+    "travel time": "The reward function R ( s, a, s′) is formulated as: ij Rij = −α (α1tija + α 2teai ) + β ( β1ql + β 2ldif ) (4) tija represents the travel time from state si to where s j , teai denotes the e",
+    "delay": "INTRODUCTION Urban transportation networks are crucial in emergency response; however, production safety accidents in industrial areas cause severe congestion that can greatly delay emergenc",
+    "throughput or queue": "We employ a dual-theoretical framework combining traffic wave theory and the Bureau of Public Roads (BPR) function to comprehensively assess vehicle queue length and travel time under variou"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Other types of path planning make use of the shortest path algorithms, like Dijkstra or A*, which do not consider realtime traffic information or factors such as accidents and traffic conges",
+    "static or fixed routing": "4% in arrival times compared to static routing given moderate levels of congestion"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "72": {
+   "engines": {},
+   "network": {},
+   "metrics": {
+    "travel time": "Reasonable planning of emergency vehicle routes can shorten the travel time of the route and improve the safety of the route",
+    "completion or arrival rate": "The experimental results show that the route travel time planned by the proposed algorithm is lower than that of the benchmark algorithm, the safety is higher than that of the benchmark algo",
+    "distance": "∈ represents the path length of the node"
+   },
+   "baselines": {
+    "static or fixed routing": "This approach not only handles static obstacles and fixed routes but also adapts to dynamic changes such as traffic flow, weather conditions, and unexpected events",
+    "another RL method": "Additionally, the proposed algorithm is more stable after convergence and achieves higher reward values compared to the DQN algorithm"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "74": {
+   "engines": {
+    "SUMO": "We simulate our proposed approach using the SUMO (Simulation of Urban Mobility) open source simulation platform, a free, open-source, highly portable, microscopic, and continuous multi-modal"
+   },
+   "network": {},
+   "metrics": {
+    "travel time": "I NTRODUCTION With the continuous increase of vehicle and urbanization, traffic congestion has become a widespread concern, increasing travel time and aggravating environmental pollution",
+    "delay": "Experiments show that the proposed method works effectively in terms of saving on driving time and waiting time to reach any destinations, compared to the existing solutions",
+    "distance": "We first list all the different combinations of origin and destination and then calculate the average travel time, the average waiting time, and the average travel distance of each scenario ",
+    "fuel or emission": "SUMO comes with a number of support tools to automate the core tasks of traffic simulation creation, execution, and evaluation, such as network import, route calculation, visualization, and "
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The first proposed algorithms are the Dijkstra and Floyd algorithms, the former of which computes the shortest path between any two nodes, and the latter, namely the Floyd algorithm [2], whi"
+   },
+   "nodes_stated": [
+    51
+   ],
+   "links_stated": []
+  },
+  "75": {
+   "engines": {
+    "SUMO": "In order to simulate the proposed DQL Algorithm in complex environments, we have developed a co-design between Simulation of Urban MObility®(SUMO) software [16] and MATLAB 2022a®"
+   },
+   "network": {
+    "real city or corridor": "In particular, the traffic data are related to the demand for Bologna’s peak hour (8:00 am - 9:00 am) and they have been generated considering the higher traffic demand data from 24 March 20"
+   },
+   "metrics": {
+    "delay": "the component ω i (tdec +∆tdec (t)) is the total cumulative waiting time of the vehicle AV i from the initial time instant t0 until tdec + ∆tdec (t)",
+    "reward or return": "8, where the episode reward (the sum of all the rewards received from the agent during each episode), the moving average reward and the expected episode reward are reported"
+   },
+   "baselines": {
+    "random or greedy": "Hence, such a hitch can be overcome by using an epsilon-greedy policy, i"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "76": {
+   "engines": {
+    "SUMO": "The proposed approach is formalized as ADAPT-S (Ant-Driven Adaptive Policy Training with Simulation-Based Validation), combining swarm intelligence, policy learning, and SUMO-based simulatio"
+   },
+   "network": {},
+   "metrics": {
+    "travel time": "The model demonstrates superior performance in Simulation of Urban Mobility (SUMO) environments, outperforming traditional routing methods in reducing travel time, congestion, and signal wai",
+    "delay": "In industrial automation, such combinations have improved multi-robot coordination for task allocation and warehouse navigation with reduced delay and energy usage",
+    "throughput or queue": "8 800 In Table III, the vehicles under the ADAPT-S policy achieve the highest average speed while maintaining smooth operation, which improves throughput and user satisfaction",
+    "fuel or emission": "This not only reduces travel time and fuel consumption but also supports decentralized, fault-tolerant traffic management"
+   },
+   "baselines": {},
+   "nodes_stated": [
+    20
+   ],
+   "links_stated": []
+  },
+  "77": {
+   "engines": {},
+   "network": {},
+   "metrics": {
+    "travel time": "For every potential path, IRO invokes adaptive Monte Carlo sampling to quantify travel time variability and the probability of events that could impact the route, thus assigning a reliabilit",
+    "completion or arrival rate": "The success rate for optimally reaching the destination rose to 92% with RL, compared to 76% using static Dijkstra’s algorithm",
+    "reward or return": "Reinforcement Learning (RL): The RL policy demonstrated substantial improvement, where the average cumulative reward per episode increased from −300 to +65 over 500 episodes",
+    "distance": "These HMM-processed states are fed into the Deep Q-Network (DQN) reinforcement learning agent, named PathSelectionDQN, which operates on a 10-dimensional state vector encoding: • Path statis"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Unlike traditional approaches that depend on static maps or simple shortest-path algorithms, IRO actively integrates live contextual data, such as time, weather, road state, and events, usin"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "78": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "11549565 Resilient Multi-Agent Deep Reinforcement Learning for Routing Control via Traffic Cost Fields Yifan Dong Huachun Tan* Xincheng Zhou School of Mechanical Engineering Beijing Institut"
+   },
+   "metrics": {
+    "travel time": "cn *Corresponding author choices, whereas the system-optimal objective minimizes the total network travel time [1]",
+    "delay": "Given the static edge attributes, including length ℓe , free-flow speed ve0 , freeflow travel time t0e , and nominal capacity Ce , we compute an online cost representation by combining a spe",
+    "reward or return": "Across all regimes, the fitted return curves increase and then stabilize, suggesting that PPO optimization remains numerically stable under the proposed TCF-based shaping"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "A dominant baseline in practice is shortest-path routing on road graphs, where Dijkstra-style algorithms compute minimum-cost paths with respect to static or time-varying edge costs [2], [3]",
+    "user equilibrium": "Consequently, decentralized self-interested routing under the perceived costs {ce (t)}e∈E may approach a Wardrop-type user equilibrium, which is not necessarily optimal from a system perspec"
+   },
+   "nodes_stated": [
+    293
+   ],
+   "links_stated": []
+  },
+  "79": {
+   "engines": {
+    "SUMO": "and team [3] concentrated on a real-time car navigation system with the use of deep reinforcement learning within the SUMO simulator"
+   },
+   "network": {
+    "real city or corridor": "The latter discovery gave rise to a flurry of hybrid systems combining classical algorithms such as D* Lite with learning models to optimize on-the- Zixiang Wang et al"
+   },
+   "metrics": {
+    "travel time": "The hybrid model reduces travel time up to 20% and replanning time to 25, and routes by the model are more stable than the methods used before",
+    "completion or arrival rate": " 0-85% success rate in dynamic environments where there are multiple impediments, simply indicates that it can deal with messiness in the real world",
+    "delay": "The proposed approach provides a dynamic balance between deterministic planning and learned adaptability for the purpose of minimizing travel cost and travel delay",
+    "reward or return": "2 The hybrid framework exhibits faster convergence (30% improvement) and achieves 20−25% higher cumulative rewards after 100 episodes"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Classic routing methods like A* and Dijkstra’s algorithm are commonly used for finding the shortest path; however, the algorithms were designed to work under stationary conditions and cannot",
+    "static or fixed routing": "mentioned the shortcomings of static routing techniques"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "81": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Chengdu, China {zkcheng, xwliao}@std"
+   },
+   "metrics": {
+    "travel time": "To minimize the total travel time, a joint routing scheme is proposed based on our trafﬁc ﬂow model with the aid of IoV",
+    "completion or arrival rate": "We assume the arrival rate of vehicles follows a Poisson distribution with λ",
+    "delay": "This is because our algorithm uses delay as part of the reward function for scheme training feedback"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "In the Dijkstra scheme, due to a lack of strategic communication, vehicles traveling on seemingly optimal routes can trigger a series of congestion effects once they move to the same road, w",
+    "another RL method": "In numerical analysis, our algorithm can reduce the congestion time compared to the DDPG scheme and the Dijkstra scheme under high road occupancy rate"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "82": {
+   "engines": {
+    "SUMO": "Hence, we propose a test bed based on Simulation of Urban MObility (SUMO) that can evaluate the performance of a trafﬁc routing policy based on the average travel time of all vehicle agents "
+   },
+   "network": {
+    "real city or corridor": "Weber, “Openstreetmap: User-generated street maps,” IEEE Pervasive Computing, vol"
+   },
+   "metrics": {
+    "travel time": "Minimizing the average travel time of all vehicles in the network with respect to their separate travel deadlines improves trafﬁc throughput",
+    "throughput or queue": "Minimizing the average travel time of all vehicles in the network with respect to their separate travel deadlines improves trafﬁc throughput"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Hatton, “Optimal path planning of an unmanned surface vehicle in a real-time marine environment using a dijkstra algorithm,” in Marine Navigation"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "83": {
+   "engines": {
+    "SUMO": "All the simulations have been carried out on a MacOs PC equipped with a Intel Core i5 processor with the MATLAB 2020a and SUMO 1"
+   },
+   "network": {
+    "real city or corridor": "It is defined as the current longitudinal velocity of the vehicle divided by the euclidian distance from the current location to the destination"
+   },
+   "metrics": {},
+   "baselines": {},
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "84": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "00058 2024 IEEE International Conferences on Internet of Things (iThings) and IEEE Green Computing & Communications (GreenCom) and IEEE Cyber, Physical & Social Computing (CPSCom) and IEEE S"
+   },
+   "metrics": {
+    "travel time": "Due to the constraints of work hours, daily travel times are usually the same"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Traditional path planning methods, such as Dijkstra and A*, have often been used to obtain good results in static maps relying on greedy enumeration methods [1]"
+   },
+   "nodes_stated": [
+    400
+   ],
+   "links_stated": []
+  },
+  "85": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Initially, the road network of Fig"
+   },
+   "metrics": {
+    "travel time": "χik+1 is the relative improve of the i vehicle travel time, between k and k + 1: Tk − Tk+1 χik+1 = Tk Tk is the time that the vehicle i needs to travel from his position at step k on the sel",
+    "throughput or queue": "Throughput the paper it is assumed that the team is topologically organized as a platoon, see Fig"
+   },
+   "baselines": {
+    "random or greedy": "1 (ε-greedy policy)"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "86": {
+   "engines": {
+    "SUMO": "Experiment Setting We run simulations of our SACRP using the open-source simulation software SUMO (Simulation of Urban Mobility)"
+   },
+   "network": {
+    "real city or corridor": "Jinfan Wang is with the Institute of Future Networks, Southern University of Science and Technology, Shenzhen, 518055, China, and with LINKINSENSE Co"
+   },
+   "metrics": {
+    "travel time": ", the travel time of an EV to reach the rescue location) remains a challenge that needs to be addressed",
+    "completion or arrival rate": "This phenomenon reduces the ability of emergency vehicles to travel to the location of an emergency incident, especially during rush hour, and delays in EVs will result in lower rescue succe",
+    "delay": "It is clear that reinforcement learning-based path planning helps EV maintain a stable speed and significantly solves the problem of EV arrival delay due to deceleration and parking",
+    "reward or return": "• Critic Network: Critic Network helps evaluate the longterm cumulative rewards of each state-action pair",
+    "fuel or emission": "It provides auxiliary tools for automating basic traffic simulation activities like network construction, route planning, visualization, and emissions analysis"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Another research line resorted to vehicle-centric approaches [8–11] to recommend the optimal path for EVs using path optimization techniques and time optimization techniques such as the Dijk"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "87": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "vf f,e is the historical free flow speed, and Ce is the designed capacity of the edge"
+   },
+   "metrics": {
+    "travel time": "Probabilistic models are established to capture the stochasticity in instruction reception and execution, while additional delay estimation is integrated to construct an expected travel time",
+    "completion or arrival rate": "• Task Completion Rate: Proportion of trips that reach the destination within the allowed time window, indicating reachability and reliability",
+    "delay": "Probabilistic models are established to capture the stochasticity in instruction reception and execution, while additional delay estimation is integrated to construct an expected travel time",
+    "distance": "2) OD Pair Construction: Based on the constructed road network, the experiment first generates origin-destination (OD) pairs covering different regions and travel distances"
+   },
+   "baselines": {},
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "88": {
+   "engines": {
+    "SUMO": "We evaluate the performance of the proposed framework using a realistic road traffic network [14] through the opensource traffic simulator SUMO [15]"
+   },
+   "network": {
+    "real city or corridor": "We evaluate our proposed GNN-based DRL framework using a real-world road network and demonstrate its ability to accommodate driver preferences, offering a range of route options tailored to "
+   },
+   "metrics": {
+    "travel time": "The results indicate that our framework can select routes that accommodate driver’s preferences with up to a 17% improvement compared to a generic route planner, and reduce the travel time b",
+    "delay": "behavior diverges from the behavior previously associated with the preference vector; (iii) The current route’s traffic condition has changed, causing a significant delay in the estimated ti",
+    "reward or return": "The DRL then estimates the Q-value based on the updated network states, learning to maximize cumulative rewards",
+    "distance": "AI] 25 Jul 2024 † School Politecnico di Torino, Italy of Electrical Engineering and Computer Science, TU Berlin, Germany Abstract—Conventional route planning services typically offer the sam",
+    "fuel or emission": "Effective route planning can improve people’s lifestyles as they spend a substantial amount of time commuting, and also impact significantly relevant factors like people’s health, air qualit"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Early route optimization systems utilized k-shortest path (kSP) algorithms [19], primarily relying on static features like travel distance and employing Dijkstra’s algorithm [20] or the Bell"
+   },
+   "nodes_stated": [
+    5,
+    44
+   ],
+   "links_stated": []
+  },
+  "89": {
+   "engines": {
+    "SUMO": "The actual road network is topologically modeled using SUMO, and the Sarsa algorithm is employed to train the agent, searching for the optimal paths under different connection modes"
+   },
+   "network": {
+    "real city or corridor": "Wang are with Beijing Key Lab of Urban Intelligent Traffic Control Technology, North China University of Technology, Shijingshan District, Beijing, CO 100144, P"
+   },
+   "metrics": {
+    "travel time": "Algorithm Comparison Comparing Sarsa algorithm and Q-Learning algorithm, results of reward value, learning time, total path length and travel time of 200 training times are shown in Fig",
+    "distance": "Compared to the Q-learning algorithm, the Sarsa algorithm demonstrates a 35% improvement in convergence speed, an 11% reduction in optimal path length, and an 8% decrease in minimum travel c"
+   },
+   "baselines": {
+    "another RL method": "Compared to the Q-learning algorithm, the Sarsa algorithm demonstrates a 35% improvement in convergence speed, an 11% reduction in optimal path length, and an 8% decrease in minimum travel c"
+   },
+   "nodes_stated": [
+    129
+   ],
+   "links_stated": [
+    408
+   ]
+  },
+  "90": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "Ortam, OpenStreetMap verileri kullanılarak Berlin, İstanbul ve Ankara şehirlerinden elde edilen grafik yapıları olarak modellenmiştir"
+   },
+   "metrics": {
+    "reward or return": "Both approaches deviate from the shortest path only when necessary due to energy constraints and their performance is evaluated by metrics such as total reward, route length and number of ch",
+    "distance": "Abstract—Abstract — The electric vehicle (EV) routing problem requires not only minimizing the travel distance but also considering energy constraints and the spatial distribution of chargin"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Ayrıca, Dijkstra algoritması ile önceden hesaplanan en kısa yol referans alınarak, Q-learning ajanına ödül şekillendirme (reward shaping) yoluyla yönlendirme sağlanmıştır"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "91": {
+   "engines": {},
+   "network": {},
+   "metrics": {
+    "travel time": "Optimization Algorithms are pivotal, considering factors like distance, travel time, and user preferences, employing sophisticated techniques such as graph theory and genetic algorithms to f",
+    "delay": "Delay (minutes) 5 2 10 3 6 12 4 Figure 7",
+    "reward or return": "Reinforcement Learning Training Results Epoch Loss Average Reward 1 0",
+    "fuel or emission": "Abstract- A route planner is crucial as it optimizes travel efficiency, minimizes time and fuel consumption, and enhances overall navigation convenience and safety"
+   },
+   "baselines": {},
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "92": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "This approach is particularly well-suited for teleoperated driving applications due to the inherent dynamicity of telecommunications environments, where bandwidth and latency parameters chan"
+   },
+   "metrics": {
+    "travel time": "Route optimization started off as a problem with a single objective such as minimizing distance or travel time",
+    "completion or arrival rate": "The assessment used 2,500 random scenarios with key metrics including success rate, path length, distance, bandwidth, latency, and KPI respect rate (paths meeting minimum viable thresholds o",
+    "distance": "Our framework simultaneously optimizes three critical objectives: minimizing physical travel distance, latency, and maximizing available bandwidth"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Classical path planning techniques include cell decomposition methods employing graph-based algorithms like Dijkstra and A* [6]"
+   },
+   "nodes_stated": [
+    5,
+    50,
+    329
+   ],
+   "links_stated": [
+    228,
+    593
+   ]
+  },
+  "94": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "In the training process, the velocity of vehicle for each road segment is an average value which is calculated based on the length and height of each road segment"
+   },
+   "metrics": {
+    "travel time": "The energy consumption is calculated by multiplying the power with the travel time on the corresponding road segment",
+    "fuel or emission": "By considering the power management of PHEVs, we aim to find the route that leads to the minimum energy consumption"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The main difference between the proposed route planning algorithm and the shortest path algorithm is that the reward function (2) in the proposed method uses fuel consumption and battery rec"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "95": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "The first is the simplicity of the traffic networks"
+   },
+   "metrics": {
+    "travel time": "Models aimed at decreasing the total travel time and those with high delay importance owing to conflicts in travel times were trained and verified under multiple traffic conditions",
+    "delay": "Models aimed at decreasing the total travel time and those with high delay importance owing to conflicts in travel times were trained and verified under multiple traffic conditions",
+    "distance": "thetravel length of Route is longer than that Route B, airrespective of However, if the length of Route A is longer than that of Route B, irrespective travel distance, but more route crossin",
+    "fuel or emission": "Traffic efficiency not only reduces travel time but also has the potential to reduce energy consumption, contributing to the realization of sustainable transportation"
+   },
+   "baselines": {
+    "user equilibrium": "In the context of the transportation field, the system optimum is mainly used to set up problems aimed at minimizing the total travel time rather than equability among Future Transp"
+   },
+   "nodes_stated": [
+    128
+   ],
+   "links_stated": []
+  },
+  "97": {
+   "engines": {
+    "SUMO": "The historical traffic flow data used in this study are time-series traffic state records generated from SUMO simulations on the target road network"
+   },
+   "network": {
+    "real city or corridor": "3708178 OpenStreetMap (OSM)"
+   },
+   "metrics": {
+    "travel time": "Second, many RGS solutions rely on single-objective optimization centered on travel time, neglecting fuel efficiency and carbon emissions [4], [5]",
+    "delay": "This passive mode limits the effectiveness of these methods and introduce extra delay into the system",
+    "reward or return": "Both the cloud agent and RSU agent transitions (SCa,t , OCa,t , aCa , rCa , SCa,t+1 , OCa,t+1 ) and (SRa,t , ORa,t , aRa , rRa , SRa,t+1 , ORa,t+1 ) are stored in the replay buffer D (line 1",
+    "distance": "DSP exhibits the highest energy consumption and emissions due to frequent path changes and detours, which increase both travel distance and duration, thereby consuming more fuel and generati",
+    "fuel or emission": "Simulation results demonstrate that the proposed architecture exhibits satisfying scalability and performance in reducing energy consumption, pollution emissions, and enhancing traffic effic"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Authors in [45] embeds task graphs via GNNs, predicts congestion using XGBoost, and integrates green parameters into a weighted graph on which Dijkstra search is performed for multi-depot ro"
+   },
+   "nodes_stated": [
+    107,
+    148,
+    149
+   ],
+   "links_stated": [
+    508
+   ]
+  },
+  "98": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "City to the southeast, Anzhou District of Mianyang City to the northeast, Shifang City to the southwest across the river, and Maoxian County of Aba Prefecture to the northwest"
+   },
+   "metrics": {
+    "travel time": "[28] introduced a multipreference route recommendation system that accounts for travel time, fuel consumption, and air quality",
+    "delay": "This delay can hinder rescue operations and risk missing the crucial 72-h rescue window",
+    "distance": "Multiobjective path planning with reinforcement learning considers not only the path length but also other benefits as decision-making criteria, leveraging the trial-and-error learning chara",
+    "fuel or emission": "[28] introduced a multipreference route recommendation system that accounts for travel time, fuel consumption, and air quality"
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "(6) (7) a) Effective distance reward rdistant : Using Dijkstra’s algorithm, the shortest path length from the starting point to the target point is denoted as rminlen and the path length gen"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "99": {
+   "engines": {},
+   "network": {},
+   "metrics": {
+    "travel time": "It used to minimize the total traveling time of vehicles by choosing the shortest path",
+    "delay": "7 depicts two learning curves for the average total delay and reward scenario: As we can observe, the learning curve shows in Figure 7",
+    "reward or return": "The principal purpose of the agents is to act efficiently by learning a good action that maximize the sum of the cumulative rewards",
+    "distance": "To solve a route planning system paper [7] proposed a Q-learning approach for minimizing the total travel distance of vehicles and obtain the shortest time routes"
+   },
+   "baselines": {},
+   "nodes_stated": [],
+   "links_stated": []
+  },
+  "101": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "These data are in many non-homogenous sources like vehicle GPS tracking, Internet of Vehicles (IoV), stationary sensors and live traffic applications (Google Maps, HERE Maps) and open geospa"
+   },
+   "metrics": {
+    "travel time": "com Abstract—The rapid proliferation of electric vehicles (EVs) has necessitated intelligent route planning systems that prioritize energy efficiency over mere distance or travel time",
+    "delay": "Real-Time Traffic Pattern Forecasting using GraphBased Temporal Convolution Networks The capability to predict the traffic congestion and the delay state over future time horizons is a very ",
+    "fuel or emission": "INTRODUCTION The transition toward sustainable transportation is reshaping the automotive industry, with electric vehicles (EVs) emerging as a key component in reducing carbon emissions and "
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "The majority of the available EV routing models are based on classical algorithms such as Dijkstra- or Astarbased, and are not flexible to changes in traffic, elevation, and battery state [8"
+   },
+   "nodes_stated": [],
+   "links_stated": []
+  }
+ },
+ "engines": {
+  "SUMO": 47,
+  "VISSIM": 4,
+  "Aimsun": 2,
+  "MATSim": 2,
+  "Paramics": 1,
+  "Flow/RLlib": 4,
+  "TransModeler": 1
+ },
+ "network": {
+  "real city or corridor": 77,
+  "benchmark road network": 11,
+  "synthetic grid or lattice": 19
+ },
+ "metrics": {
+  "travel time": 85,
+  "delay": 58,
+  "distance": 31,
+  "fuel or emission": 47,
+  "reward or return": 44,
+  "throughput or queue": 18,
+  "completion or arrival rate": 18
+ },
+ "baselines": {
+  "shortest path or Dijkstra": 62,
+  "random or greedy": 14,
+  "user equilibrium": 20,
+  "another RL method": 9,
+  "static or fixed routing": 7
+ },
+ "n_texts": 91,
+ "quarantined": [],
+ "no_text": [
+  "13",
+  "26",
+  "40"
+ ],
+ "control": {
+  "named_engine": 51,
+  "sumo": 47
+ }
+}

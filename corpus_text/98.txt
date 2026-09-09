@@ -1,0 +1,1096 @@
+IEEE TRANSACTIONS ON GEOSCIENCE AND REMOTE SENSING, VOL. 63, 2025
+
+5633314
+
+Disaster-Aware Path Planning Based on
+Reinforcement Learning for Postearthquake
+Emergency Response
+Jianchong Guo , Graduate Student Member, IEEE, Yuting Wan , Member, IEEE,
+Ailong Ma , Senior Member, IEEE, and Yanfei Zhong , Senior Member, IEEE
+
+Abstract— After earthquake disasters, ensuring that emergency rescue operations reach affected areas as quickly as
+possible, to maximize the rescue of lives and property and
+minimize secondary disaster losses, is the primary task of
+postearthquake emergency response. Remote sensing technology,
+characterized by its large-scale coverage, noncontact nature,
+and rapid response capabilities, provides valuable information
+for disaster area assessment and postearthquake emergency
+response path planning. However, existing postdisaster emergency
+path planning studies often fail to utilize this rich information.
+Traditional path planning algorithms insufficiently consider the
+disaster situation, hindering the efficient utilization of rescue
+forces and resources. To address these challenges, this study
+proposes a disaster-aware path planning method based on
+reinforcement learning for postearthquake emergency response
+(P2DARL). The P2DARL method utilizes real disaster information provided by high-resolution remote sensing images and
+models it in a reinforcement learning environment. This allows
+the intelligent agent to learn optimal postearthquake emergency
+response path planning strategies through continuous trial-anderror interactions with the environment. This approach facilitates
+the optimal allocation of rescue resources and enhances rescue
+efficiency. Experiments using real earthquake disaster images
+demonstrate that the P2DARL method effectively plans paths
+that cover more affected centers in mid-short distance scenarios,
+maximizing rescue efficiency and significantly reducing casualties
+and economic losses resulting from earthquake disasters.
+Index Terms— Disaster-aware path planning, high-resolution
+remote sensing, postearthquake emergency response, reinforcement learning.
+
+I. I NTRODUCTION
+LOBALLY, approximately 50 earthquakes with magnitudes greater than 2.5 occur daily, causing perceptible
+ground motions locally [1]. Significant earthquakes, defined
+as those with a magnitude of 7.5 or greater, or those causing
+
+G
+
+Received 16 December 2024; revised 30 April 2025; accepted 19 June
+2025. Date of publication 23 June 2025; date of current version 23 July
+2025. This work was supported in part by the National Key Research and
+Development Program of China under Grant 2022YFB3903404, in part by
+the National Natural Science Foundation of China under Grant 42301418 and
+Grant 42427801, in part by China National Postdoctoral Program for Innovative Talents under Grant BX20230275, and in part by Hubei Provincial
+Science and Technology Innovation Talent Program under Grant 2024DJA020.
+(Corresponding authors: Yuting Wan; Yanfei Zhong.)
+The authors are with the State Key Laboratory of Information Engineering
+in Surveying, Mapping and Remote Sensing, Wuhan University, Wuhan
+430079, China (e-mail: jianchongguo@whu.edu.cn; wanyuting@whu.edu.cn;
+maailong007@whu.edu.cn; zhongyanfei@whu.edu.cn).
+Digital Object Identifier 10.1109/TGRS.2025.3582106
+
+deaths or economic damage exceeding U.S. $1 million, occur
+every few days [2]. These significant earthquakes are large
+enough to inflict noticeable disasters. Fig. 1 illustrates the
+significant earthquakes recorded by the National Geophysical
+Data Center (NGDC) of NOAA from January 2000 to June
+2024, highlighting the substantial loss of life and economic
+damages incurred over the past two decades.
+Predicting earthquake disasters remains a scientific challenge. Consequently, the rapid implementation of emergency
+response efforts following an earthquake is the primary
+means to reduce casualties and economic losses [3]. After an
+earthquake, critical infrastructure such as roads, power, and
+communication systems is often severely damaged, hampering
+rescue and recovery operations [4]. Emergency rescue work
+is a race against time. Ensuring that rescue operations reach
+the disaster center as quickly as possible depends on selecting appropriate methods for real-time disaster assessment.
+Based on these assessments, planning the optimal rescue
+route and deploying matched rescue forces to maximize the
+saving of lives and property, and minimize secondary disaster
+losses, are the primary tasks of postearthquake emergency
+response.
+Remote sensing technology, characterized by its large-scale
+coverage, noncontact nature, and rapid response capabilities, provides crucial decision support for postearthquake
+emergency response [5], [6]. Among these, high-resolution
+remote sensing imagery (HRI) has increasingly become the
+mainstream method for postdisaster damage assessment [7],
+[8]. Interpreting high-resolution remote sensing images of
+disaster-affected areas yields critical information about the
+extent of damage, enabling a comprehensive understanding
+of the situation. This information is essential for effective path planning and resource allocation, forming the
+basis for postearthquake emergency response. Traditional
+damage assessment methods primarily rely on manually
+designed features for specific affected targets, making it
+challenging to quickly evaluate damage over large areas in
+response to disasters. However, with the advancement of deep
+learning technology, its data-driven paradigm allows us to
+extract high-level features from high-resolution remote sensing
+images and apply them in an end-to-end manner to downstream tasks such as object detection, semantic segmentation,
+and instance segmentation. This significantly accelerates the
+
+1558-0644 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artificial intelligence
+and similar technologies. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+5633314
+
+Fig. 1.
+
+IEEE TRANSACTIONS ON GEOSCIENCE AND REMOTE SENSING, VOL. 63, 2025
+
+On a global scale, a total of 867 significant earthquake events have been recorded from January 2000 to June 2024.
+
+damage assessment process and better meets the needs of
+postdisaster emergency response.
+Despite advancements in damage assessment, integrating
+this rich information into effective path planning remains a
+critical challenge. Emergency response path planning systems
+can be broadly classified into traditional algorithms and modern approaches. Traditional path planning algorithms, such as
+A* [9] and D* [10] methods, typically convert the application environment into a discrete space, allowing movement
+between discrete states. These algorithms are widely used
+due to their simplicity and effectiveness, but they are prone
+to falling into local optima. Modern methods include evolutionary computation and reinforcement learning approaches.
+Evolutionary computation methods, such as genetic algorithms
+(GAs) [11], [12], particle swarm optimization (PSO) [13], and
+ant colony optimization (ACO) [14], seek optimal solutions
+by iteratively optimizing a population of candidate solutions.
+However, these methods often suffer from relatively low
+computational efficiency. On the other hand, reinforcement
+learning methods have been extensively studied in the field
+of path planning, focusing primarily on online path planning
+and multiobjective path planning [15], [16]. Reinforcement
+learning-based online path planning involves making real-time
+path planning decisions based on the current environmental
+information perceived by the agent. This approach is commonly applied in dynamically changing environments, such as
+autonomous driving [17], [18]. Multiobjective path planning
+with reinforcement learning considers not only the path length
+but also other benefits as decision-making criteria, leveraging the trial-and-error learning characteristic of reinforcement
+learning to find globally optimal solutions. Reinforcement
+learning methods are well-suited for addressing multiobjective
+path planning problems and have the potential for real-time
+planning, making them highly applicable to postearthquake
+emergency response tasks.
+In actual postearthquake emergency path planning tasks,
+existing research primarily treats them as a special case of the
+
+vehicle routing problem (VRP) [19], studied within simulated
+postdisaster environments. These studies mainly focus on
+assumptions about disaster scenarios and the formulation of
+objective functions, followed by the application of traditional
+algorithms to find optimal paths. While some progress has
+been made, several issues remain as follows.
+1) Overly Idealized Environmental Conditions: Current
+methods often lack the utilization of the rich information provided by remote sensing technology and
+typically simulate disaster scenarios in overly idealized
+environments [20], [21]. These simulations frequently
+make assumptions such as direct connections between
+locations and favorable traffic conditions, which do not
+reflect the complexity and variability of real postdisaster
+situations [22].
+2) Insufficient Consideration of Disaster Impact: The
+formulation of objective functions in many studies primarily focuses on factors such as rescue path distance
+and time, while neglecting specific disaster conditions [23], [24]. Effective postearthquake emergency
+response should consider the severity of damage, the
+number of victims, and the specific needs of affected
+areas. This requires a more nuanced approach to planning and deploying rescue efforts that are tailored to the
+varying degrees of impact and urgency across different
+disaster scenarios.
+To address the aforementioned critical issues, this article
+proposes a disaster-aware path planning method based on reinforcement learning for postearthquake emergency response,
+called P2DARL. This method utilizes HRI to obtain interpreted information and employs reinforcement learning to
+incorporate disaster conditions into the emergency path planning process. The main contributions of this article are as
+follows.
+1) A Framework for Postearthquake Emergency Response
+Path Planning: By modeling postearthquake emergency
+response path planning as a reinforcement learning task
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: DISASTER-AWARE PATH PLANNING BASED ON REINFORCEMENT LEARNING
+
+and using dual-temporal high-resolution remote sensing
+images as input for disaster assessment, this framework
+enables the intelligent agent to strategically plan rescue
+paths. This approach facilitates the optimal allocation of
+rescue resources and enhances rescue efficiency.
+2) Modeling Disaster Information into a Suitable Reinforcement Learning Environment: The interpreted disaster information is used to construct a realistic model of
+the disaster environment. This model accurately reflects
+the complex conditions of a postearthquake scenario,
+allowing the reinforcement learning agent to operate in
+a simulation that closely mirrors real-world conditions.
+This enhances the reliability and applicability of the
+planned paths.
+3) Development of a Disaster-Aware Path Planning Intelligent Agent: The proposed method introduces a reinforcement learning-based agent that continuously learns
+and adapts to the disaster environment. By leveraging
+the trial-and-error learning process of reinforcement
+learning, the agent develops optimal multiobjective
+path planning strategies that are disaster-aware. This
+ensures the efficient and effective deployment of rescue
+resources, significantly improving the overall efficiency
+and effectiveness of emergency response operations.
+The structure of the remainder of this article is as follows.
+Section II reviews relevant research, including reinforcement
+learning and its applications in path planning. Section III
+outlines the framework of the proposed P2DARL method.
+Section IV details the experiments conducted and their outcomes. Finally, Section V summarizes this article and offers
+suggestions for future research.
+II. R ELATED R ESEARCH BACKGROUND
+In the proposed method, we utilize reinforcement learning
+to tackle the challenge of disaster-aware path planning in
+postearthquake emergency response. Following this, we will
+present the fundamental theory of reinforcement learning and
+discuss its application in path planning tasks.
+A. Reinforcement Learning
+A reinforcement learning problem can be represented as
+a system consisting of an agent and an environment [25],
+as shown in Fig. 2. To achieve a specific goal or task, the
+agent first interacts with the environment to obtain the current
+state. The agent then observes this state, denoted as st , and
+uses the information to select an action at . The environment
+receives the action at , transitions to the next state st+1 , and
+provides the new state and a reward rt to the agent, completing
+one time step. This process of observing the state, taking an
+action, and receiving a reward repeats until the environment
+terminates, which may occur when the goal is achieved or the
+task is completed.
+Reinforcement learning tasks are commonly described using
+a Markov decision process (MDP), which is represented by
+the tuple (S, A, P(·), R(·)). The components of the MDP are
+defined as follows.
+1) S is the set of states, where st ∈ S represents the state
+at time t.
+
+Fig. 2.
+
+5633314
+
+Schematic of the principles of reinforcement learning.
+
+2) A is the action space, where at ∈ A denotes the action
+taken at time t.
+3) P(st+1 |st , at ) is the state transition function, which
+specifies the probability of transitioning to the next state
+st+1 given the current state st and action at . This is
+represented as st+1 ∼ P(st+1 |st , at ).
+4) R(st , at , st+1 ) is the reward function, which gives the
+reward rt received after transitioning from state st to
+state st+1 by taking action at . This is represented as
+rt = R(st , at , st+1 ).
+To concretely formulate the problem, it is essential to
+define the agent’s ultimate objective in order to enable it to
+maximize its goal. This is done by defining the return R(τ )
+of the problem, which is based on the trajectory of events
+τ = (s0 , a0 , r0 ), (s1 , a1 , r1 ), . . . , (st , at , rt )
+R(τ ) = r0 + γ r1 + γ 2r2 + · · · + γ τ r T =
+
+T
+X
+
+γ t rt
+
+(1)
+
+t=0
+
+where R(τ ) represents the weighted sum of all rewards r
+in the trajectory and τ ∈ [0, 1] is the discount factor that
+determines the rate of decay. A smaller τ results in a lower
+weight for rewards received in later time steps, making the
+objective increasingly short-sighted.
+Moreover, the objective J (τ ) is defined as the expected
+return across multiple trajectories and can be expressed as
+follows:
+" T
+#
+X
+t
+J (τ ) = Eτ ∼π [R(τ )] = Er
+γ rt .
+(2)
+t=0
+
+After defining reinforcement learning as an MDP problem
+and establishing the objective, the principles of reinforcement
+learning, as illustrated in Fig. 2, can be represented by the
+MDP control loop. This control loop serves as a general
+framework for reinforcement learning algorithms.
+B. Path Planning With Reinforcement Learning
+In recent years, path planning using reinforcement learning
+has gained significant attention. Our study aims to leverage
+the trial-and-error learning paradigm inherent in reinforcement
+learning to find the global optimum in multipreference path
+planning tasks. As a result, we will not delve into the specifics
+of reinforcement learning for online path planning.
+In existing research, Chen et al. [26] proposed a general
+dual-objective optimal path-finding framework based on deep
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+5633314
+
+IEEE TRANSACTIONS ON GEOSCIENCE AND REMOTE SENSING, VOL. 63, 2025
+
+Fig. 3. General framework of the P2DARL method for postearthquake emergency response path planning consists of three main components: (a) disaster
+information extraction, (b) postearthquake environmental modeling, and (c) disaster-aware path planning agent.
+
+reinforcement learning, known as cuRL, which has been
+evaluated for effectiveness under various objective criteria.
+The SafeRoute method [27] uses deep reinforcement learning
+algorithms to find safe paths in urban environments, specifically avoiding high-crime areas. Additionally, Sarker et al. [28]
+introduced a multipreference route recommendation system
+that accounts for travel time, fuel consumption, and air quality.
+Rückin et al. [29] combined Monte Carlo tree search with
+convolutional neural networks, showing improved planning
+abilities in challenging environments. Cao et al. [30] designed
+attention-based neural networks for context-aware planning in
+2-D workspaces, delivering better environmental adaptability,
+and Wei and Zheng [31] utilized Q-learning-trained recurrent
+neural networks in path optimization, leading to enhanced
+trajectory generation.
+In summary, reinforcement learning-based path planning
+has been validated in well-developed urban road networks,
+demonstrating strong global optimization capabilities. However, postearthquake environments are highly complex and
+lack comprehensive road network information, making it challenging to incorporate structural damage into path planning
+objectives. Unlike existing studies, this article utilizes HRI
+to interpret disaster information, construct a postdisaster road
+network, and perform targeted path planning based on the
+extent of the damage.
+III. P ROPOSED P2DARL M ETHOD
+To effectively plan emergency response paths following
+an earthquake, two main tasks must be accomplished. First,
+it is crucial to accurately assess the postearthquake disaster
+conditions. Second, based on this assessment, targeted path
+planning must be performed, taking into account the affected
+areas to efficiently allocate rescue forces and resources. This
+approach aims to maximize rescue efficiency while minimizing
+casualties and economic losses caused by the earthquake.
+The general framework of the proposed P2DARL method,
+
+as illustrated in Fig. 3, includes three main steps: 1) disaster
+information extraction; 2) postearthquake environmental modeling; and 3) disaster-aware path planning agent.
+A. Disaster Information Extraction
+To facilitate postearthquake emergency response path planning, it is essential to understand both the disaster situation
+and the damage to the road network. The P2DARL framework leverages dual-temporal HRI as input. First, it uses the
+ChangeOS framework, which is based on deep object semantic
+change detection, to extract and assess postearthquake building
+damage and identify core affected areas [32]. Second, the
+D-LinkNet is employed to extract road network information
+from postearthquake imagery for planning emergency rescue paths [33]. Following this, brief descriptions of these
+postearthquake remote sensing image interpretation methods
+will be provided.
+1) Building Damage Assessment Using HRI: Sudden natural and man-made disasters pose significant threats to human
+life and property, making the automated assessment of postdisaster damage crucial for many countries. The U.S. Defense
+Innovation Unit (DIU), in collaboration with humanitarian
+aid and disaster recovery organizations, launched the xView2
+Challenge. This competition utilizes the xBD dataset, a labeled
+dual-temporal HRI dataset [34]. The xBD dataset is distinguished by its diverse range of natural disasters and extensive
+spatiotemporal coverage, providing robust generalization for
+postearthquake scenarios. It categorizes building damage into
+four levels: no damage, minor damage, major damage, and
+destroyed, with the specific assessment criteria illustrated in
+Fig. 4.
+Given the high demands for timeliness in postdisaster
+emergency response, we use ChangeOS, a top-performing
+model from the xView2 Challenge, to assess postearthquake
+building damage. ChangeOS framework models the building
+damage assessment task as a bi-temporal change detection
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: DISASTER-AWARE PATH PLANNING BASED ON REINFORCEMENT LEARNING
+
+Fig. 4.
+
+Description of the joint damage scale in the xBD dataset.
+
+problem. The framework first takes high-resolution pre- and
+post-disaster images as input, then extracts common building
+features through a weight-sharing feature encoder. Subsequently, the building localization and damage assessment
+modules perform task-specific feature extraction, generating predisaster building localization results and pixel-level
+postdisaster building damage assessment results separately.
+Finally, incorporating object-oriented concepts, the framework
+uses predisaster building information as constraints to obtain
+instance-level postdisaster building damage assessment results.
+This end-to-end inference framework significantly accelerates
+the entire disaster response process. The overall structure of
+the ChangeOS framework is illustrated in Fig. 5(a).
+2) Postearthquake Road Extraction Using HRI: Road
+extraction is a fundamental task in the field of remote sensing [35]. In postearthquake scenarios, roads are often disrupted
+by earthquakes and landslides. Additionally, in nonurban areas,
+road network data may not have been updated for a long
+time, making existing data difficult to apply directly for
+postearthquake emergency response path planning. This delay
+can hinder rescue operations and risk missing the crucial 72-h
+rescue window. Therefore, rapidly obtaining postearthquake
+road network data is a critical step in facilitating efficient
+rescue efforts.
+In disaster-stricken areas, especially in developing countries,
+the lack of up-to-date maps and obstacle information greatly
+impacts postdisaster emergency response. To address this, the
+CVPR DeepGlobe 2018 Road Extraction Challenge was introduced by DeepGlobe [36]. This study employs the winning
+solution from the challenge, D-LinkNet, for postearthquake
+road extraction. The structure of the D-LinkNet is illustrated
+in Fig. 5(b). The D-LinkNet retains detailed feature layer
+information while expanding the receptive field in the central part and integrating multiscale features. This approach
+effectively handles the narrowness, connectivity, complexity,
+and long span of roads, resulting in improved road extraction
+accuracy.
+B. Postearthquake Environmental Modeling
+Using reinforcement learning for postearthquake emergency
+path planning requires modeling the postdisaster environment
+to create an interactive setting for the agent. Previously,
+we obtained postearthquake building damage assessments
+and road extraction results. Based on these assessments, we
+
+5633314
+
+consider modeling the postdisaster environment as either a
+raster or a vector environment.
+First, in the raster environment, the original interpreted
+information can be effectively converted since the imagery
+itself is raster data. Constructing a reinforcement learning
+environment in this format is straightforward, with the action
+space simply comprising the eight neighboring pixels. However, several issues arise as follows.
+1) HRI is massive, occupying significant memory. Typically, deep learning models use a sliding window to crop
+high-resolution imagery for interpretation, followed by
+reassembly. However, path planning requires consideration of global information, not just local details.
+2) Path planning is essentially a graph search problem. Unlike traditional robot grid path planning,
+postearthquake emergency path planning does not
+require pixel-level obstacle avoidance. For example,
+on a specific road grid, the agent does not need
+to make pixel-level decisions but simply follows the
+road. The critical aspect is planning transitions at road
+intersections.
+3) Storing data at the grid level leads to considerable redundancy. As illustrated in Fig. 5(b), the road extraction
+results occupy a small fraction of a high-resolution
+postearthquake urban image, while the disaster centers
+are represented as points. Thus, using the original raster
+for environment modeling is not ideal.
+However, using vector data for postearthquake emergency
+path planning presents challenges in data conversion but effectively addresses issues encountered with raster-based planning.
+Therefore, this study explores postearthquake emergency path
+planning based on vector data.
+1) Postprocessing of Postearthquake Building Damage
+Assessment: Using dual-temporal remote sensing imagery as
+input to ChangeOS for building damage assessment, postprocessing of the assessment results is necessary to identify
+disaster centers or areas with severe building damage.
+Kernel density analysis is a method to calculate the density of features within their surrounding neighborhoods. It is
+commonly used in community planning to analyze housing
+density or crime incidents [37]. In the context of postdisaster
+scenarios, disaster centers can be understood as peak points
+in kernel density analysis, representing areas with the most
+severe building damage.
+This study begins by masking the building damage assessment results, setting masks for undamaged buildings and
+nonbuilding areas. It then performs a raster-to-point conversion, assigning values of 0.5 for undamaged buildings, 1 for
+minor damaged buildings, 2 for major damaged buildings,
+and 3 for destroyed buildings, allowing for subsequent kernel
+density analysis operations.
+For point features, kernel density analysis calculates the
+density of point features around each output raster cell.
+Conceptually, each point feature is covered by a smooth
+surface, with the highest surface value directly over the point
+location. This value gradually decreases with distance from
+the point until it reaches zero at the search radius distance.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+5633314
+
+IEEE TRANSACTIONS ON GEOSCIENCE AND REMOTE SENSING, VOL. 63, 2025
+
+Fig. 5.
+Diagram of the disaster information extraction component, which includes the changeOS framework and the D-linkNet architecture. The
+changeOS framework comprises four parts: (a) weight-sharing building general feature extraction, (b) task-specific context encoding, (c) FCN decoder,
+and (d) object-oriented postprocessing. The D-linkNet architecture consists of three parts: (a) downsampling feature extraction, (b) dilated convolution layers,
+and (c) decoder.
+
+The predicted density at position (x, y) in the density map is
+computed as follows:
+
+
+
+2 !2
+n
+X
+1
+3
+dist
+i
+ · popi 1 −
+
+Density =
+(radius)2 i=1 π
+radius
+For disti < radius (3)
+where i = 1, . . . , n represents the input point features, disti
+denotes the distance between point feature i and the position
+(x, y), radius is the search radius, and popi is the population
+field value of point feature i, which in this study represents
+the assigned value based on the degree of building damage in
+the raster cell where the point feature is located.
+After calculating the kernel density analysis results for
+postearthquake building damage assessment, the image is
+normalized to unify the scales. Subsequently, the density map
+is traversed to extract all peak points, ultimately identifying the
+building damage centers. The specific postprocessing workflow is illustrated in Fig. 6.
+
+2) Postearthquake Road Extraction Postprocessing: While
+some existing neural networks can directly extract road centerlines, their performance often falls short compared to
+extracting complete road surface pixels. Therefore, this study
+utilizes the D-LinkNet to extract postearthquake road surfaces
+and then performs postprocessing to derive the road centerlines [38]. Subsequently, the road centerlines are vectorized
+using the raster-to-vector conversion method provided by the
+arcpy library.
+3) Postearthquake
+Environmental
+Modeling:
+The
+postearthquake disaster environment modeled in this study is
+illustrated in Fig. 6. It focuses on two core elements: first, the
+coordinates of each affected center and their corresponding
+severity; and second, the comprehensive road network,
+which includes the coordinates of each node, the next node
+in the eight-neighborhood directions, and their respective
+distances. This information is crucial for defining the states
+in reinforcement learning and constructing the action space.
+Notably, if there is no road between two nodes, the distance
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: DISASTER-AWARE PATH PLANNING BASED ON REINFORCEMENT LEARNING
+
+5633314
+
+Fig. 6. Postearthquake environmental modeling module processes the building damage assessment results and postdisaster road extraction results to create
+a reinforcement learning environment.
+
+is recorded as −1. Similarly, if there is no next node in a
+given direction, this is also recorded as −1.
+
+the current node [39]. The specific definition is as follows:
+
+C. Disaster-Aware Path Planning Agent
+
+However, not all actions are feasible in practice. Therefore,
+when employing the ϵ-greedy strategy to select an action, if a
+randomly chosen action corresponds to a nonconnected direction, a new random action must be selected. When choosing
+the action with the highest estimated expected return based
+on past experience, only actions corresponding to connected
+directions are considered.
+3) Reward Function: The goal of postearthquake emergency response path planning is to devise routes that are
+both short and as close as possible to multiple disaster
+centers, addressing rescue needs effectively. Therefore, the
+reward function must account for both the path length and the
+proximity to disaster centers. Additionally, the agent should be
+incentivized to reach the target point and avoid broken roads.
+In this study, the reward function is defined as shown in (7),
+with a detailed explanation of the role of each component
+provided
+
+1) Status Representation: During the interaction between
+the agent and the environment, the agent retrieves the current
+state information from the environment and then determines
+the final action using a deep neural network (DNN). In current
+research on deep reinforcement learning for path planning, the
+state st at time t is typically represented by the coordinates
+of the current node and the target node, as illustrated in the
+following equation:
+
+st = xc , yc , xtarget , ytarget
+(4)
+where xc and yc represent the coordinates of the current node
+and xtarget and ytarget denote the coordinates of the target node.
+With this state definition, the agent does not account for
+the surrounding environment. While this approach may suffice
+for path planning in a well-connected urban road network,
+it becomes inadequate in a postearthquake fractured road
+network. In such scenarios, the agent struggles to identify an
+appropriate path due to its limited awareness of the overall
+road network. Therefore, this study employs an alternative
+state representation, detailed as follows:
+
+(5)
+st = xc , yc , xtarget , ytarget , xc0 , yc0 , xc1 , yc1 , . . . , xc7 , yc7
+where st includes the coordinates of the current node, the target
+node, and the coordinates of the next nodes in the eight neighborhood directions. Here, xci and yci denote the coordinates of
+the next node in direction i ∈ [0, 7]; if there is no next node
+in a given direction, the value is set to −1.
+2) Action Space: In the environmental modeling section,
+the eight-neighborhood table has been constructed, as illustrated in Fig. 7. Consequently, the action space can be defined
+as the possible next nodes in each of the eight directions from
+
+A = {0, 1, 2, . . . , 6, 7}.
+
+rt = rdistant + α ∗ rdisaster + I ∗ rtarget + J ∗ rdead .
+
+(6)
+
+(7)
+
+a) Effective distance reward rdistant : Using Dijkstra’s
+algorithm, the shortest path length from the starting point
+to the target point is denoted as rminlen and the path length
+generated in the current episode is rnowlen . The effective
+distance reward, rdistant , is defined as follows:
+rnowlen
+rdistant = 1 −
+(8)
+rminlen
+with the guidance of rdistant , the agent will tend to choose
+actions with shorter path lengths.
+b) Proximity to disaster centers reward rdisaster : In each
+episode, the midpoint pm of the path, determined by the start
+and end nodes, is used as the center of a search area. Using the
+path length len as the radius, disaster centers d in this area
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+5633314
+
+Fig. 7.
+
+IEEE TRANSACTIONS ON GEOSCIENCE AND REMOTE SENSING, VOL. 63, 2025
+
+Flowchart illustrating the disaster-aware path planning agent.
+
+are identified. The reward for proximity to disaster centers,
+rdisaster , is defined as follows:
+
+
+n
+X
+distant(di , pm )
+(9)
+rdisaster =
+popi ∗ 1 −
+len
+i=1
+where n represents the number of identified disaster centers,
+popi ∈ [0, 1] denotes the severity value of each disaster center,
+and distant(di , xm ) represents the distance from disaster center
+di to the midpoint pm of the path. This reward guides the agent
+to prefer paths that cover more disaster centers. To balance the
+considerations of path length and proximity to disaster centers,
+a hyperparameter α is introduced into the reward function.
+When α = 0, the agent ignores disaster situations and focuses
+solely on minimizing the path length.
+c) Reaching the target point reward rtarget : Reaching the
+target point is a critical aspect of path planning. Therefore, the
+agent should receive a substantial reward rtarget upon reaching
+the target point. In this context, I is an indicator function where
+I = 1 if the target point is reached, and I = 0 otherwise.
+d) Negative reward for encountering a dead end rdead :
+Unlike path planning on a regular network, the road network
+derived from postearthquake remote sensing imagery often
+includes many dead ends due to road fractures. Since the agent
+may not have a complete understanding of the environment’s
+state, a negative reward is introduced to discourage the agent
+from moving toward these dead ends. Similar to the reward
+for reaching the target point, rdead is a large negative reward.
+If the number of connected neighbors in the agent’s eightneighborhood is 1, J is set to 1. This negative reward,
+as defined in (1), continuously influences the state leading to
+the dead end, thereby decreasing the likelihood of the agent
+moving toward dead ends in future actions.
+IV. E XPERIMENTS AND A NALYSES
+Mianzhu is a county-level city in Deyang City, Sichuan
+Province. It is situated in the northwest part of the Sichuan
+Basin, at the base of the Longmen Mountains, covering an area
+of 1245 km2 . Mianzhu borders Jingyang District of Deyang
+
+Fig. 8. Dual-temporal high-resolution remote sensing images and image
+interpretation information of Mianzhu City.
+
+City to the southeast, Anzhou District of Mianyang City to
+the northeast, Shifang City to the southwest across the river,
+and Maoxian County of Aba Prefecture to the northwest.
+The city experienced significant damage during the Wenchuan
+Earthquake on May 12, 2008, and is classified as a severely
+affected area.
+A. Experimental Datasets
+This study employs pre- and postearthquake high-resolution
+remote sensing images of Mianzhu City to interpret the
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: DISASTER-AWARE PATH PLANNING BASED ON REINFORCEMENT LEARNING
+
+Fig. 9.
+Accuracy assessment of postearthquake remote sensing image
+interpretation.
+
+5633314
+
+Fig. 10.
+Local path planning and global comparison diagram. (a)–(j)
+Represent typical regions.
+
+as defined in the following equation:
+disaster impacts and plan paths based on this interpreted
+information. The images were captured by the QuickBird
+satellite, featuring both panchromatic and multispectral bands
+(RGB + NIR). The panchromatic band has a spatial resolution
+of 0.5 m, while the multispectral band has a resolution of 2 m.
+The preearthquake image was acquired on February 29,
+2008, and the postearthquake image was acquired on June
+19, 2008. Both images have less than 15% cloud cover and
+an off-nadir angle of less than 30◦ . The ChangeOS change
+detection framework was utilized to assess building damage in
+Mianzhu City. Additionally, the D-LinkNet was employed to
+extract postearthquake road networks, as illustrated in Fig. 8.
+B. Accuracy Assessment of Postearthquake Remote Sensing
+Image Interpretation
+Due to the challenges in quantitatively describing building
+damage assessment criteria in the xBD dataset, the accuracy
+of the building damage assessment was evaluated through
+visual interpretation, as depicted in Fig. 9(a). The overall
+performance was satisfactory, with precise localization of
+buildings and a good representation of the extent of damage.
+The accuracy of postearthquake road extraction was
+assessed using the intersection over union (IoU) metric,
+
+A∩B
+(10)
+A∪B
+where A and B represent the ground truth and the interpreted
+road information, respectively. Fifty images were randomly
+selected from a total of 563 cropped images for manual
+road annotation. The IoU between the manually annotated
+roads and those extracted by the D-LinkNet was calculated,
+yielding an average IoU of 0.7105, which indicates good visual
+performance. Additionally, by identifying road breakpoints
+in the images and comparing them with the road extraction
+results, it was found that some breakpoints were effectively
+recognized, as shown in Fig. 9(b).
+The accuracy assessment of the interpreted information
+from postearthquake remote sensing images demonstrates
+strong performance in both building damage recognition
+and road extraction. This accurate interpretation establishes
+a robust foundation for modeling the reinforcement learning environment, thereby supporting effective path planning
+research.
+IoU =
+
+C. Experimental Setting
+In our implementation, the hyperparameters for the Disaster
+Information Extraction approach were consistent with those
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+5633314
+
+Fig. 11.
+
+IEEE TRANSACTIONS ON GEOSCIENCE AND REMOTE SENSING, VOL. 63, 2025
+
+(a)–(e) Emergency path planning diagram. (Left to right) Dijkstra algorithm, ant colony algorithm, reinforcement learning, and P2DARL.
+
+specified in its original publication. The ChangeOS framework
+was trained using the train and tier3 portions of the xBD
+dataset, comprising 18 336 high-resolution remote sensing
+images with dimensions of 1024 × 1024 pixels. The training
+process employed an SGD optimizer with an initial learning
+rate of 0.03, which followed a polynomial decay pattern
+throughout training, decreasing according to the formula one
+minus the ratio of current iteration to maximum iterations
+raised to the power of 0.9. The optimization process utilized
+a weight decay coefficient of 0.0001 alongside a momentum
+value of 0.9. For the D-LinkNet, which was trained on
+6226 images of 1024 × 1024 pixels from the DeepGlobe
+Road Extraction Challenge dataset, we established an initial
+learning rate of 2e−4 , implementing three progressive reductions by a factor of 5 when observing training loss plateaus.
+
+All experimental models underwent training for 60k iterations
+with a batch size of 16.
+For the disaster-aware path planning training process, the
+maximum number of episodes was set to 50 000, with each
+episode allowing up to 100 steps. The exploration probability
+ϵ ranged from 0.5 to 0, with a decay factor γ of 0.95. The
+batch size for sampling was 64, and a fully connected DNN
+with hidden layer sizes of 128, 256, 512, 256, and 128 was
+employed. The learning rate was set to 0.0001, using the
+Adam optimizer. The parameter update frequency between
+the Q-network and the target Q-network was 300. In the
+reward function, α was set to 10 to balance path length and
+effectiveness, the reward for reaching the target point r T was
+10, and the negative reward for encountering a dead end r B
+was −5.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: DISASTER-AWARE PATH PLANNING BASED ON REINFORCEMENT LEARNING
+
+Fig. 12.
+
+5633314
+
+(a)–(e) Emergency path planning diagram. (Left to right) Dijkstra algorithm, ant colony algorithm, reinforcement learning, and P2DARL.
+
+A pretraining approach was developed to optimize paths
+covering more disaster centers, addressing the challenge
+of agents exploring unfamiliar environments. Starting and
+
+target points were randomly generated throughout the region,
+and Dijkstra’s algorithm was utilized to verify connectivity
+between these points before their inclusion in the training
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+5633314
+
+Fig. 13.
+
+IEEE TRANSACTIONS ON GEOSCIENCE AND REMOTE SENSING, VOL. 63, 2025
+
+Histogram of emergency path comparison analysis results.
+Fig. 14.
+
+dataset. Importantly, all regions depicted in Fig. 10 were
+deliberately excluded from the training data, as these areas
+were specifically reserved for testing the agents’ generalization
+capabilities.
+During pretraining, Dijkstra’s algorithm was utilized to generate reference shortest paths, which were reverse-decomposed
+into sequential decisions for path planning. These decisions,
+current state, selected action, received reward, and next state,
+were stored in the DQN’s experience replay buffer. Continuous
+sampling from this buffer was conducted while parameters
+between the Q-network and target Q-network were periodically synchronized. In pretraining, only the reward for reaching
+the target point was utilized, ensuring that only the primary
+objective of reaching the destination was learned by the agent.
+After pretraining was completed, additional training with the
+complete reward function was conducted to explore paths that
+are both short and proximity-optimized to disaster centers.
+D. Experimental Results and Analyses
+Due to the scattered nature of postearthquake disaster centers, evaluating experimental results by randomly generating
+start and target points often shows minimal difference between
+paths to disaster centers and the shortest paths planned by
+traditional algorithms. Significant deviations occur mainly in
+scenarios where disaster centers form loops or other configurations where proximity to disaster centers is critical.
+Consequently, randomly selecting road network nodes as start
+and target points for path planning is not suitable for comprehensive evaluation.
+The experiment selected ten optimized paths based on
+remote sensing images. Their specific distribution is shown
+in Fig. 10, and local path planning results are illustrated
+in Fig. 11. Fig. 11(a)–(e) demonstrates that the proposed
+algorithm generates paths that effectively consider disaster
+centers. Fig. 12(a)–(d) reveals that the proposed algorithm prioritizes reaching the target point without excessively favoring
+disaster centers. Fig. 12(e) illustrates that, even in scenarios
+with no disaster centers, the proposed algorithm still finds the
+shortest path.
+The sum of rdisaster on a path was calculated using formula (9) to evaluate the change in benefits, with the global
+shortest path found by Dijkstra’s algorithm as the baseline.
+
+Reward function limitations in fragmented road networks.
+
+We compared our method against a classical evolutionary
+computation-based path planning algorithm (ACO) and a basic
+reinforcement learning path planning algorithm (RL). The
+specific quantitative comparative analysis results are shown
+in Fig. 13.
+In summary, the proposed reinforcement learning algorithm
+effectively incorporates disaster centers into path planning and
+outperforms both ACO and basic RL approaches. It optimizes
+paths between the starting and target points to cover as many
+disaster centers as possible, thereby improving the allocation
+of rescue resources and enhancing rescue efficiency.
+E. Limitations in Real-World Applications
+Despite the promising performance of our proposed method
+in short to medium-distance path planning, several limitations
+warrant consideration as follows.
+1) Path Planning Challenges in Long-Distance Scenarios:
+The reinforcement learning approach faces efficiency
+challenges in long-distance route planning. Due to
+the exploration–exploitation tradeoff in the ϵ-greedy
+algorithm, the probability of discovering optimal paths
+decreases exponentially with the number of decision
+points. This makes the method less effective for
+extended routes where multiple sequential optimal decisions are required.
+2) Reward Function Limitations in Fragmented Road Networks: The reward function design is challenged by
+fragmented road networks in postdisaster scenarios.
+When continuous roads are interpreted as disconnected
+segments, the search areas for disaster centers become
+inconsistent. As illustrated in Fig. 14, the fragmentation
+of a road length a into segments b and c results in
+reduced search coverage areas, affecting the accuracy
+of proximity-based reward calculations.
+3) Temporal and State Representation Challenges: The
+current state representation methods have limitations
+in capturing the complex characteristics of disasteraffected areas. While adapted from urban environments,
+these methods struggle with the irregular and incomplete
+nature of postdisaster road networks. This constrains the
+development of an online-capable path-aware agent that
+can effectively respond to evolving disaster scenarios.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+GUO et al.: DISASTER-AWARE PATH PLANNING BASED ON REINFORCEMENT LEARNING
+
+V. C ONCLUSION
+This article investigates postearthquake emergency path
+planning using dual-phase high-resolution remote sensing
+images. By leveraging these images for detailed interpretation,
+the research models the interpreted data as a reinforcement
+learning environment. The proposed method integrates both
+path length and proximity to disaster centers into the path
+planning process, allowing for a tradeoff between minimizing
+path length and maximizing coverage of disaster centers.
+The experimental results, based on real earthquake disaster
+images, demonstrate that the proposed method effectively
+balances path length and disaster coverage in medium and
+short path planning scenarios. While the approach enables
+efficient deployment of rescue forces along optimized paths,
+challenges remain in long-distance planning and fragmented
+road network scenarios. Future work could focus on developing more robust state representation methods for disaster
+environments and improving the handling of fragmented road
+networks, ultimately enhancing the practical applicability of
+the proposed approach.
+R EFERENCES
+[1] P. M. Shearer, Introduction to Seismology. Cambridge, U.K.: Cambridge
+Univ. Press, 2019.
+[2] H. Ritchie and P. Rosado. Natural Disasters. Our World in Data.
+Accessed: Dec. 2024. [Online]. Available: https://ourworldindata.
+org/natural-disasters
+[3] S. Haigang et al., “Reflection and exploration of rapid remote sensing
+emergency response for typical natural disasters,” Geomatics Inf. Sci.
+Wuhan Univ., vol. 45, no. 8, pp. 1137–1145, 2020.
+[4] E. Khankeshizadeh et al., “A novel weighted ensemble transferred U-Net
+based model (WETUM) for postearthquake building damage assessment
+from UAV data: A comparison of deep learning- and machine learningbased approaches,” IEEE Trans. Geosci. Remote Sens., vol. 62, 2024,
+Art. no. 4701317.
+[5] D. Li, Q. Tong, R. Li, J. Gong, and L. Zhang, “Current issues in highresolution Earth observation technology,” Sci. China Earth Sci., vol. 55,
+no. 7, pp. 1043–1051, Jul. 2012.
+[6] E. Khankeshizadeh, A. Mohammadzadeh, A. Moghimi, and
+A. Mohsenifar, “FCD-R2U-net: Forest change detection in bi-temporal
+satellite images using the recurrent residual-based U-net,” Earth Sci.
+Informat., vol. 15, no. 4, pp. 2335–2347, Dec. 2022.
+[7] D. Brunner, G. Lemoine, and L. Bruzzone, “Earthquake damage assessment of buildings using VHR optical and SAR imagery,” IEEE Trans.
+Geosci. Remote Sens., vol. 48, no. 5, pp. 2403–2420, May 2010.
+[8] F. Dell’Acqua and P. Gamba, “Remote sensing and earthquake damage
+assessment: Experiences, limits, and perspectives,” Proc. IEEE, vol. 100,
+no. 10, pp. 2876–2890, Oct. 2012.
+[9] P. Hart, N. Nilsson, and B. Raphael, “A formal basis for the heuristic
+determination of minimum cost paths,” IEEE Trans. Syst. Sci. Cybern.,
+vol. SSC-4, no. 2, pp. 100–107, Feb. 1968.
+[10] A. Stentz, “Optimal and efficient path planning for partially-known environments,” in Proc. IEEE Int. Conf. Robot. Autom., vol. 4, May 1994,
+pp. 3310–3317.
+[11] A. Sonmez, E. Kocyigit, and E. Kugu, “Optimal path planning for UAVs
+using genetic algorithm,” in Proc. Int. Conf. Unmanned Aircr. Syst.
+(ICUAS), Jun. 2015, pp. 50–55.
+[12] J. D. S. Arantes, M. D. S. Arantes, C. F. M. Toledo, O. T. Júnior, and
+B. C. Williams, “Heuristic and genetic algorithm approaches for UAV
+path planning under critical situation,” Int. J. Artif. Intell. Tools, vol. 26,
+no. 1, Feb. 2017, Art. no. 1760008.
+[13] E. Masehian and D. Sedighizadeh, “A multi-objective PSO-based
+algorithm for robot path planning,” in Proc. IEEE Int. Conf. Ind.
+Technol., Mar. 2010, pp. 465–470.
+[14] M. Dorigo, M. Birattari, and T. Stützle, “Ant colony optimization,” IEEE
+Comput. Intell. Mag., vol. 1, no. 4, pp. 28–39, Nov. 2006.
+[15] J. Xin, H. Zhao, D. Liu, and M. Li, “Application of deep reinforcement
+learning in mobile robot path planning,” in Proc. Chin. Autom. Congr.
+(CAC), Oct. 2017, pp. 7112–7116.
+
+5633314
+
+[16] B. Wang, Z. Liu, Q. Li, and A. Prorok, “Mobile robot path planning in
+dynamic environments through globally guided reinforcement learning,”
+IEEE Robot. Autom. Lett., vol. 5, no. 4, pp. 6932–6939, Oct. 2020.
+[17] R. Cimurs, I. H. Suh, and J. H. Lee, “Goal-driven autonomous exploration through deep reinforcement learning,” IEEE Robot. Autom. Lett.,
+vol. 7, no. 2, pp. 730–737, Apr. 2022.
+[18] B. Zhou, F. Gao, L. Wang, C. Liu, and S. Shen, “Robust and efficient
+quadrotor trajectory generation for fast autonomous flight,” IEEE Robot.
+Autom. Lett., vol. 4, no. 4, pp. 3529–3536, Oct. 2019.
+[19] M. Cannioto, A. D’Alessandro, G. Lo Bosco, S. Scudero, and G. Vitale,
+“Brief communication: Vehicle routing problem and UAV application in
+the post-earthquake scenario,” Natural Hazards Earth Syst. Sci., vol. 17,
+no. 11, pp. 1939–1946, Nov. 2017.
+[20] L. Deng, H. Yuan, L. Huang, S. Yan, and Y. Lai, “Post-earthquake search
+via an autonomous UAV: Hybrid algorithm and 3D path planning,” in
+Proc. 14th Int. Conf. Natural Comput., Fuzzy Syst. Knowl. Discovery
+(ICNC-FSKD), Jul. 2018, pp. 1329–1334.
+[21] Y. Li, J. Zhang, W. Wang, J. Sun, and J. Wan, “Post earthquake path
+planning based on improved ant colony algorithm,” in Proc. 2nd Int.
+Conf. Artif. Intell. Comput. Eng. (ICAICE), Nov. 2021, pp. 284–288.
+[22] Z. Cao, W. Wang, D. Ma, J. Su, Z. Gao, and H. Yang, “Optimum
+path analysis of post-earthquake transportation considering multiobjective based on GIS,” in Proc. Int. Conf. Transp. Eng., Jul. 2009,
+pp. 1104–1109.
+[23] X. Wang, T.-M. Choi, H. Liu, and X. Yue, “A novel hybrid ant colony
+optimization algorithm for emergency transportation problems during
+post-disaster scenarios,” IEEE Trans. Syst., Man, Cybern., Syst., vol. 48,
+no. 4, pp. 545–556, Apr. 2018.
+[24] X. Cheng, X. Zhao, S. Xiao, and J. Lin, “Research on real-time rescue
+path planning after earthquake based on priority queue,” in Proc. 6th
+Int. Conf. Electromech. Control Technol. Transp. (ICECTT), Q. Zeng,
+Ed., Feb. 2022, p. 180.
+[25] V. Mnih et al., “Human-level control through deep reinforcement learning,” Nature, vol. 518, no. 7540, pp. 529–533, 2015.
+[26] C. Chen et al., “CuRL: A generic framework for bi-criteria optimum
+path-finding based on deep reinforcement learning,” IEEE Trans. Intell.
+Transp. Syst., vol. 24, no. 2, pp. 1949–1961, Feb. 2023.
+[27] S. Levy, W. Xiong, E. Belding, and W. Y. Wang, “SafeRoute: Learning
+to navigate streets safely in an urban environment,” ACM Trans. Intell.
+Syst. Technol., vol. 11, no. 6, pp. 1–17, Sep. 2020.
+[28] A. Sarker, H. Shen, and K. Kowsari, “A data-driven reinforcement
+learning based multi-objective route recommendation system,” in Proc.
+IEEE 17th Int. Conf. Mobile Ad Hoc Sensor Syst. (MASS), Dec. 2020,
+pp. 103–111.
+[29] J. Rückin, L. Jin, and M. Popović, “Adaptive informative path planning
+using deep reinforcement learning for UAV-based active sensing,” in
+Proc. Int. Conf. Robot. Autom. (ICRA), May 2022, pp. 4473–4479.
+[30] Y. Cao, Y. Wang, A. Vashisth, H. Fan, and G. A. Sartoretti, “Catnipp:
+Context-aware attention-based network for informative path planning,”
+in Proc. Conf. Robot Learn., Nov. 2023, pp. 1928–1937.
+[31] Y. Wei and R. Zheng, “Informative path planning for mobile sensing
+with reinforcement learning,” in Proc. IEEE Conf. Comput. Commun.
+(INFOCOM), Jul. 2020, pp. 864–873.
+[32] Z. Zheng, Y. Zhong, J. Wang, A. Ma, and L. Zhang, “Building damage
+assessment for rapid disaster response with a deep object-based semantic
+change detection framework: From natural disasters to man-made disasters,” Remote Sens. Environ., vol. 265, Nov. 2021, Art. no. 112636.
+[33] L. Zhou, C. Zhang, and M. Wu, “D-LinkNet: LinkNet with pretrained
+encoder and dilated convolution for high resolution satellite imagery
+road extraction,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. Workshops (CVPRW), Jun. 2018, pp. 192–1924.
+[34] R. Gupta et al., “Creating xBD: A dataset for assessing building damage
+from satellite imagery,” in Proc. IEEE/CVF Conf. Comput. Vis. Pattern
+Recognit. (CVPR) Workshops, Jun. 2019, pp. 10–17.
+[35] X. Lu et al., “Cascaded multi-task road extraction network for road
+surface, centerline, and edge extraction,” IEEE Trans. Geosci. Remote
+Sens., vol. 60, 2022, Art. no. 5621414.
+[36] I. Demir et al., “Deepglobe 2018: A challenge to parse the earth through
+satellite images,” in Proc. IEEE Conf. Comput. Vis. Pattern Recognit.
+(CVPR) Workshops, Jun. 2018, pp. 172–181.
+[37] M. S. Gerber, “Predicting crime using Twitter and kernel density
+estimation,” Decis. Support Syst., vol. 61, pp. 115–125, May 2014.
+[38] T. Y. Zhang and C. Y. Suen, “A fast parallel algorithm for thinning digital
+patterns,” Commun. ACM, vol. 27, no. 3, pp. 236–239, Mar. 1984.
+[39] J. Li, Y. Zhang, J. Tang, X. Liu, and A. Ibrahim, “Path planning
+algorithm for two-dimensional raster maps based on deep reinforcement
+learning,” in Proc. 7th Int. Conf. Big Data Comput. Commun. (BigCom),
+Aug. 2021, pp. 247–254.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+5633314
+
+IEEE TRANSACTIONS ON GEOSCIENCE AND REMOTE SENSING, VOL. 63, 2025
+
+Jianchong Guo (Graduate Student Member, IEEE)
+received the B.S. degree from the School of Geographic Information Science, China University of
+Geosciences, Beijing, China, in 2023. He is currently pursuing the M.S. degree with the State Key
+Laboratory of Information Engineering in Surveying,
+Mapping and Remote Sensing (LIESMARS), Wuhan
+University, Wuhan, China.
+His major research interests include real-time
+remote sensing processing and disaster emergency
+response.
+
+Yuting Wan (Member, IEEE) received the B.S.
+degree from the School of Geosciences and InfoPhysics, Central South University, Changsha, China,
+in 2017, and the Ph.D. degree in photogrammetry
+and remote sensing from the State Key Laboratory of
+Information Engineering in Surveying, Mapping and
+Remote Sensing (LIESMARS), Wuhan University,
+Wuhan, China, in 2022.
+He is currently a Post-Doctoral Researcher at
+Wuhan University. His major research interests
+include real-time remote sensing image processing,
+evolutionary computation, neural architecture search, and disaster emergency
+response.
+
+Ailong Ma (Senior Member, IEEE) received the
+B.S. degree from China University of Petroleum,
+Qingdao, China, in 2010, and the Ph.D. degree in
+photogrammetry and remote sensing from Wuhan
+University, Wuhan, China, in 2017.
+He is currently working as an Associate Professor with Wuhan University. He has authored
+or co-authored more than 30 research articles in
+Remote Sensing of Environment, ISPRS Journal
+of Photogrammetry and Remote Sensing, IEEE
+T RANSACTIONS ON G EOSCIENCE AND R EMOTE
+S ENSING, and IEEE T RANSACTIONS ON E VOLUTIONARY C OMPUTATION.
+His major research interests include multimodal remote sensing image processing, pattern recognition, and disaster damage assessment.
+
+Yanfei Zhong (Senior Member, IEEE) received
+the B.S. degree in information engineering and the
+Ph.D. degree in photogrammetry and remote sensing
+from Wuhan University, China, in 2002 and 2007,
+respectively.
+Since 2010, he has been a Full Professor with
+the State Key Laboratory of Information Engineering in Surveying, Mapping and Remote Sensing
+(LIESMARS), Wuhan University. He organized the
+Intelligent Data Extraction, Analysis, and Applications of Remote Sensing (RSIDEA) Research Group.
+He has published more than 150 research papers in international journals, such
+as Remote Sensing of Environment, ISPRS Journal of Photogrammetry and
+Remote Sensing, and IEEE T RANSACTIONS ON G EOSCIENCE AND R EMOTE
+S ENSING.
+Dr. Zhong is a fellow of the Institution of Engineering and Technology
+(IET). He is currently serving as an Associate Editor for the IEEE J OURNAL
+OF S ELECTED T OPICS IN A PPLIED E ARTH O BSERVATIONS AND R EMOTE
+S ENSING and the International Journal of Remote Sensing.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:52 UTC from IEEE Xplore. Restrictions apply.
+
+

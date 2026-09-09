@@ -1,0 +1,1423 @@
+Research Article
+
+Vehicle–Infrastructure Cooperation
+Framework for Vehicle Navigation and
+Traffic Signal Control using Deep
+Reinforcement Learning
+
+Transportation Research Record
+2026, Vol. 2680(1) 568–583
+Ó The Author(s) 2025
+Article reuse guidelines:
+sagepub.com/journals-permissions
+DOI: 10.1177/03611981251359285
+journals.sagepub.com/home/trr
+
+Long Wang1 , Weibin Zhang1 , and Ziqi Yan1
+
+Abstract
+As the number of vehicles continues to rise, traffic congestion has become a significant factor affecting travel efficiency. The
+development of intelligent connected technology offers new approaches for achieving coordinated optimization in road traffic. This study proposes a deep reinforcement learning-based vehicle–infrastructure cooperation framework to achieve cooperative control of vehicle navigation and traffic signals, aiming to minimize the impact of traffic congestion on road traffic
+efficiency. The tasks of vehicle navigation and signal control are modeled as a partially observable Markov decision process.
+Based on real-time road condition information, roadside agents can flexibly adjust signal phases, while vehicle agents determine the next routing step as vehicles approach intersections. Through communication cooperation, on-board units and
+roadside units can acquire more comprehensive and accurate traffic status information. Rewards for the vehicle navigation
+task, based on spatiotemporal dimensions, and for the pressure-based signal control task, ensure that reinforcement learning
+agents continuously improve their traffic efficiency optimization capabilities during training. The proposed method was implemented and evaluated in the SUMO (Simulation of Urban MObility) simulator under low, medium, and high traffic demand
+conditions and compared with other baseline methods. The study also analyzed the impact of reward design, the training
+sequence, and the intelligent connectivity penetration rate on the effectiveness of the framework, demonstrating the effectiveness and robustness of the proposed vehicle–infrastructure collaborative optimization framework in improving network
+traffic efficiency.
+Keywords
+intelligent connected, vehicle–infrastructure cooperation, vehicle navigation, traffic signal control, deep reinforcement
+learning
+
+Because of the continually increasing number of vehicles
+and limited road capacity, traffic congestion has become
+a common issue faced by major cities. On one hand, congestion can lead to driver frustration and discomfort,
+thereby increasing the likelihood of operational errors
+while driving. On the other hand, excessive concentration
+of traffic flow also heightens the risk of accidents (1, 2).
+In addition, traffic congestion results in both time and
+economic losses, with increased energy consumption further exacerbating environmental impacts, ultimately posing health risks to the population (3–5). Thus, finding
+effective strategies to mitigate the effects of traffic congestion has become a focal point of concern across various sectors of society.
+
+Traffic congestion in road networks can be broadly
+categorized into two types: recurring congestion and
+non-recurring congestion. Recurring congestion refers to
+systematic congestion resulting from inadequacies in the
+road network’s design, while non-recurring congestion is
+characterized by sudden traffic jams caused by unexpected events, such as accidents or construction work
+(6). The unpredictability of non-recurring congestion
+1
+
+School of Electronic and Optical Engineering, Nanjing University of
+Science and Technology, Nanjing, China
+Corresponding Author:
+Weibin Zhang, wbin.zhang@outlook.com
+
+Wang et al
+contributes to a larger proportion of traffic delays (7).
+To address the issue of traffic congestion, various measures are often considered, such as constructing new
+roads or optimizing the road network’s structure; however, these strategies primarily alleviate recurring congestion. In response to the need for better management of
+non-recurring congestion, researchers have begun exploring more flexible traffic control measures. Generally,
+traffic management strategies can be divided into two
+main categories: designing more effective traffic signal
+control strategies (8–10) and guiding vehicles to divert
+away from or avoid congested areas (11–13).
+Traditional signal control methods, such as the
+Webster method and MaxPressure (14), primarily utilize
+heuristic approaches to optimize signal phase differences,
+green time ratios, and cycles. However, these methods
+lack the flexibility to adapt to dynamic traffic conditions.
+Some studies have begun exploring the acquisition of
+real-time traffic state information through sensors, followed by the application of reinforcement learning techniques for traffic signal control (15–17). The
+development of sensor technology enables people to
+obtain richer traffic data, thereby facilitating further traffic situation analysis and decision-making (18–20). Li
+et al. (21) were among the first to employ the deep Q-network (DQN) to optimize traffic signals at individual
+intersections, achieving promising results. Chen et al.
+(22) designed a multi-intersection traffic signal control
+method based on long short-term memory (LSTM) networks and the QMIX (Q-decomposition Multi-agent
+Independent eXtension) algorithm (23). However, solely
+focusing on optimizing signal control still yields limited
+improvements in overall traffic efficiency.
+Traditional vehicle routing algorithms, such as
+Dijkstra’s algorithm (24) and A* (25), calculate the
+shortest path based on the starting and ending points
+considering the travel time. Similar to Google Maps,
+vehicle navigation systems (VNSs) can access city-wide
+traffic information to provide the fastest routes for individual drivers. However, these traditional navigation systems do not account for sudden changes in road traffic
+conditions. Their low update frequency and limited coverage create significant limitations in dynamic traffic scenarios, and when multiple vehicles are navigated along
+the same route, secondary congestion can occur (26).
+Recent studies have approached vehicle navigation as a
+series of re-routing decisions (27–29), continuously
+adjusting routing strategies based on acquired traffic status information. Wang et al. (26) designed a practical
+vehicle detour system that aids drivers in selecting the
+most suitable next road by calculating cost function values, effectively reducing average travel time in simulation
+experiments. However, these studies often overlook the
+collaboration and communication between on-board
+
+569
+units and roadside units, which could provide vehicles
+with richer real-time status data from nearby roads (30,
+31). Furthermore, some works (27–29) focus solely on
+single vehicles or specific starting points, making them
+impractical for complex road traffic scenarios involving
+multiple vehicles and varied starting points.
+Traffic signal control and vehicle control are two critical factors influencing road traffic. Optimizing both to
+enhance traffic flow on road networks would significantly contribute to the realization of a real-time, accurate, and efficient intelligent transportation system (32,
+33). Some research has employed traditional mathematical methods to address the problem of coordinating the
+optimization of traffic signals and vehicle trajectories
+(34–38). However, on one hand, the complexity of the
+collaborative optimization modeling increases significantly with the scale of the road network, leading to a
+potential exponential growth in the number of parameters. On the other hand, we are still some distance
+from the large-scale implementation of fully autonomous
+driving, making it unrealistic to expect all vehicles to precisely control their trajectories. A more pragmatic
+approach involves utilizing intelligent networking technologies to guide drivers on route navigation (11–13, 39,
+40) or to provide speed recommendations (41–43). Cao
+et al. (4) proposed a traffic management framework
+based on pheromones, which integrates dynamic vehicle
+re-routing strategies with traffic signal control. This
+framework collects pheromone data through roadside
+infrastructure agents to assess real-time traffic conditions
+and predict road congestion levels, allowing for the allocation of alternative routes before vehicles enter congested roads. Nevertheless, many similar studies (4, 33,
+35, 44) have encountered challenges in modeling the collaborative optimization of vehicle control and traffic signals, leading to excessive computation times that fail to
+meet real-time requirements, especially when dealing
+with large road networks and high traffic volumes.
+This paper proposes a collaborative optimization
+framework for vehicle navigation and traffic signal control based on deep reinforcement learning. By designing
+the states and rewards of the agents appropriately, the
+proposed framework leverages reinforcement learning
+methods to optimize the traffic efficiency of the road network, thereby achieving a flexible and efficient vehicle–
+infrastructure collaborative optimization process.
+Many existing vehicle navigation algorithms are based
+on traditional mathematical models or complex neural
+network designs. The complexity of these methods tends
+to increase rapidly with the expansion of the traffic network scale, and they place high demands on the computational power and operational performance of the
+deployment platform. In this paper, we transform the
+vehicle navigation task into a form of re-routing at each
+
+570
+
+Transportation Research Record 2680(1)
+
+intersection, which enables flexible vehicle navigation
+through a lightweight reinforcement learning approach.
+We have carefully designed the states and rewards of the
+agents to enhance the performance of the proposed
+framework.
+On the other hand, much of the current research on
+traffic efficiency optimization focuses solely on vehicle
+control or traffic signal control. In contrast, this paper
+models both vehicle navigation and traffic signal control
+as partially observable Markov processes. By employing
+vehicle-to-infrastructure cooperation, the on-board units
+and roadside units can share richer state information,
+thereby realizing a unified and coordinated traffic optimization process. This approach is conducive to better
+optimizing the traffic efficiency of connected and automated vehicles. The primary contributions of this work
+can be summarized as follows.
+
+
+
+
+
+
+A comprehensive framework has been established
+for routing navigation and traffic signal optimization when intelligent connected vehicles pass
+through intersections based on vehicle–
+infrastructure collaboration technology. On-board
+and roadside units share perceived traffic states
+through intelligent connected means. Vehicle
+agents recommend the best next road for drivers,
+while roadside agents automatically adjust the signal phase sequence at intersections.
+Both the vehicle re-routing problem at intersections
+and the signal control problem are modeled as
+Markov decision processes. The structure of reinforcement learning agents is specifically designed to
+learn optimal policy functions through continuous
+training in the SUMO simulation environment. A
+dual-tier spatiotemporal reward design enables
+vehicle agents to learn policy functions that allow
+faster arrival at destinations, while intersection
+pressure is used as a reward to train roadside agents
+to learn the next optimal signal phase.
+Simulation experiments were conducted in road
+network environments under light, medium, and
+heavy traffic flow conditions to validate the effectiveness of the proposed vehicle–infrastructure
+collaborative optimization framework. The performance was compared with several baseline
+methods, taking into account the impact of
+reward design, training sequence, and intelligent
+connected vehicle penetration rates. The results
+demonstrated that the proposed method can optimize road traffic networks more efficiently and
+flexibly.
+
+The remainder of this paper is organized as follows:
+the second section describes the characteristics of the
+
+research problem and the overall structure of the collaborative optimization framework. The third section provides a detailed explanation of the specific design of the
+proposed collaborative optimization framework, including the setting of reinforcement learning states and
+rewards. The fourth section presents experimental validation of the proposed framework’s effectiveness in the
+SUMO simulation environment. The fifth section summarizes the work done and discusses directions for future
+research.
+
+Problem Description
+The objective of this study is to minimize traffic congestion within the road network through two main strategies: intersection signal control and vehicle re-routing.
+This aims to reduce the average travel time of vehicles
+while also minimizing computational demands. The traffic network (45) in this problem can be represented as
+G = fN , V , E, Lg, where N denotes the intersection nodes
+in the road network, V represents the vehicles present in
+the network, E denotes the roads that connect intersections, and L signifies the connection relationships
+between intersection nodes and vehicles (the term ‘‘vehicles’’ refers to connected vehicles approaching the intersection within a certain distance range). When a vehicle
+approaches an intersection, its on-board unit communicates with the roadside unit to establish a connection
+between the intersection node and the vehicle. An intersection can connect with multiple nearby vehicles. As illustrated in the 2 3 2 road network example in Figure 1,
+intersections 1–4 belong to N, vehicles 1–4 belong to V,
+roads 1–4 belong to E, and connections 1–4 belong to L.
+As illustrated in Figure 2, within the framework
+designed in this study, when a vehicle approaches an
+intersection, its on-board unit establishes a connection
+with the roadside unit and determines the next turn (left,
+straight, or right) based on the traffic conditions of adjacent roads. The roadside intelligent agent at the intersection periodically adjusts the signal phases based on its
+observations of the traffic conditions, thereby managing
+the flow order of traffic on the connected roads.
+Assuming that the intelligent connected vehicles
+approaching the intersection and the traffic signals at the
+intersection are controlled by independent intelligent
+agents, and that the right-hand turn of the vehicle is not
+controlled by the traffic light, along with sufficiently reliable and stable communication between the on-board
+unit and the roadside unit, once the driver receives the
+turning suggestion from the vehicle agent, they can execute the turning operation accurately and promptly. In
+this framework, both sub-tasks (vehicle intelligent navigation and traffic signal control) can be viewed as partially observable Markov decision processes.
+
+Wang et al
+
+571
+
+Figure 1. Diagram of the traffic network.
+
+Figure 2. Integrated framework for vehicle navigation and traffic signal control.
+
+The characteristics of the problem studied in this
+study can be represented as hV , S, A, p, P, r, O, g, N ,
+S 0 , A0 , p0 , P0 , r0 , O0 , g0 i, where V and N represent the sets
+of vehicle agents and roadside agents near intersections in the road network, S and S# represent the sets
+of global states of vehicle agents and roadside agents,
+A and A# denote the joint actions of all vehicles and
+roadside agents, p and p# are the policy functions of
+
+vehicle and roadside agents based on local observations, P and P# represent the state transition probability distributions of the vehicle and roadside agents, r
+and r# indicate the rewards obtained from the environment after the actions taken by vehicle and roadside agents, O and O# denote the local states
+observable by each vehicle and roadside agent, and g
+and g# are the discount factors used by vehicle and
+
+572
+
+Transportation Research Record 2680(1)
+decision zone can be understood as a circular area near
+the intersection, as shown in Figure 3, with a radius d
+defined as follows:
+d = min½lroad , vmax (vmax =a + tr )
+
+Figure 3. Vehicle navigation task.
+
+roadside agents to calculate the expected discounted
+returns, respectively.
+It is important to note that vehicle intelligent navigation and traffic signal control are not independent decision processes within this framework. On one hand, the
+vehicle agent obtains information about the surrounding
+traffic conditions through the roadside agent, while on
+the other hand, the roadside agent gains advance knowledge of vehicle turning information from the vehicle
+agent, enriching the state information perceived by both
+parties. In addition, the goal of vehicle navigation is to
+reduce travel time, while the objective of signal control is
+to minimize congestion at the intersection. Appropriate
+reinforcement learning reward settings can enable both
+sub-tasks to work together toward improving the traffic
+efficiency of the road network.
+
+Methodology
+In this section, we introduce the technical details of the
+proposed framework, focusing on the design of states,
+actions, and rewards for the vehicle and roadside agents.
+We then describe the deep reinforcement learning algorithm employed and, finally, provide the pseudocode for
+the algorithm.
+
+Design of the Vehicle Agent
+In this framework, each vehicle is considered as an independent intelligent agent. As the vehicle approaches the
+intersection, the vehicle agent obtains real-time information about adjacent roads through the roadside unit and,
+in conjunction with destination information, decides on
+the next road it will take. Vehicles should make routing
+decisions based on the latest road conditions; therefore, it
+is stipulated that routing decisions are made only when
+entering the decision zone at the intersection. The
+
+ð1Þ
+
+Let lroad represent the length of the current road, vmax
+indicate the maximum allowable speed for vehicles on
+the road, a denote the average acceleration of the vehicle,
+and tr represent the average reaction time of the driver.
+This configuration is intended to ensure that drivers have
+adequate time to decelerate.
+The specific design of the vehicle agent is as follows.
+State: The state of the vehicle agent can be represented
+by a six-tuple ½vr , nr , dr , p, ld , a, which can be divided into
+two parts. The first part consists of state information
+obtained through communication with the roadside unit,
+including the average speed of vehicles on the road vr, the
+vehicle density nr, dr indicating the distance to the destination after passing through the road segment (as illustrated in Figure 3, where B is the start point of an
+adjacent road, C is the end point of that road, and D is
+the endpoint of the destination road; dr is calculated as
+the length of line segment BD minus the length of line
+segment CD), and the current traffic signal phase p. The
+second part contains the vehicle’s current positional
+information relative to the destination, including the distance from the vehicle to the destination ld (represented
+by the length of segment AD in Figure 3) and the angle a
+between the line connecting the vehicle to the destination
+and the horizontal line (as shown by angle a in Figure 3).
+The first part of the state information represents the realtime status of the roads connected to the next intersection, including the current average vehicle speed, vehicle
+density, and the proximity to the destination. This allows
+connected vehicles approaching the intersection to gain
+more road condition information, enabling better routing
+decisions. The second part of the state information represents the current state of the vehicle, allowing the vehicle
+to understand its relative position to the destination.
+Actions: The actions are defined as the possible route
+choices for the vehicle at the intersection. For example,
+in Figure 3, the vehicle has three action choices: turning
+left, going straight, and turning right. To avoid navigation failures, such as vehicles being directed to closed
+roads at the network’s edge and subsequently being
+unable to reach their destination, the framework implements rule constraints before executing each navigation
+action. Specifically, if there is no direct path from the
+selected next road to the destination, the action is modified to choose an alternative road that ensures a continuous path to the destination.
+Reward: Some studies (27–29, 44) that utilize reinforcement learning algorithms for route selection at intersections often define the reward as the time interval between
+
+Wang et al
+
+573
+
+two actions (Dt), thereby training vehicles to select routes
+with shorter travel times. However, this approach has
+limitations. The objective of vehicle navigation is not
+only to minimize travel time but also to ensure reaching
+the destination. Designing the reward based solely on the
+time interval between two intersections may lead vehicles
+to favor routes that are quicker with respect to travel
+time, but shorter travel time does not necessarily mean
+being closer to the destination; it could simply reflect
+shorter road lengths. As depicted in Figure 3, longitudinal roads are generally shorter than lateral roads. When
+the average speeds of vehicles on these roads are similar,
+vehicles may continuously choose the longitudinal route,
+which could result in delays in reaching the destination.
+This study proposes a reward design that integrates
+both temporal and spatial indicators. It takes into
+account not only the time interval of the two actions (Dt)
+but also the distance to the destination during travel
+(Dd). Let us assume that when the vehicle agent executes
+the first action, the distance to the destination is l1, and
+when it performs the second action, the distance is l2. We
+denote the difference between these two distances as Dd.
+Thus, the reward r for the first action can be designed as
+follows:
+r = Dd=Dt
+
+ð2Þ
+
+This reward design encourages vehicles to preferentially select routes that are both faster and closer to the
+destination, thereby reducing travel time while simultaneously approaching the destination more closely.
+In some studies (27, 28), the navigation process of an
+individual vehicle is often trained in isolation. However,
+this approach can adversely affect the performance when
+multiple vehicles are executing the navigation algorithm
+simultaneously. In addition, training a single navigation
+task from a specific starting point may also affect the
+effectiveness of navigation tasks from multiple starting
+points. Therefore, in our framework, the reinforcement
+learning for vehicle navigation is conducted with a strategy that simultaneously trains all vehicle agents, and the
+use of parameter sharing is employed to accelerate the
+convergence of the algorithm.
+
+Design of the Roadside Agent
+Intelligent algorithms for traffic signal control can coordinate the vehicles across different lanes to improve traffic efficiency at urban intersections. If each intersection’s
+roadside unit is regarded as an intelligent agent, these
+roadside agents can observe traffic conditions and make
+optimal actions to regulate traffic signals. Compared to
+traditional methods, reinforcement learning-based traffic
+signal control approaches can better adapt to dynamic
+traffic conditions.
+
+Currently, there are mainly two methods for addressing regional traffic signal control issues: one involves
+centralized optimization of the traffic signals at each
+intersection in the region, while the other employs appropriate state and reward designs to enable each intersection agent to optimize signals in a decentralized manner
+(46). The use of centralized optimization methods can
+lead to a rapid increase in computational complexity as
+the scale of the road network grows. Therefore, our
+framework adopts a decentralized control strategy for
+traffic signals at each intersection.
+Some reinforcement learning algorithms utilize complex state designs. However, such complexity not only
+increases computational difficulty but also may not significantly enhance performance. To simplify state representation, inspired by previous research (46, 47), we have
+incorporated ‘‘pressure’’ into the design of roadside
+agents within the framework. ‘‘Pressure,’’ as a concept
+from the maximum pressure control theory, can be simply understood as the difference in queue lengths between
+upstream and downstream vehicles. It reflects the uneven
+distribution of vehicles and achieves the goal of balancing
+vehicle distribution by minimizing pressure, thereby optimizing the traffic throughput of the network.
+In the framework presented in this study, the traffic
+signals at each intersection are controlled by individual
+agents. Roadside agents periodically select the next phase
+of traffic lights based on the observed traffic conditions
+at the intersection. The specific design of the reinforcement learning agent is as follows.
+State: The state O# of the roadside agent can be
+expressed as ½nl , p, nf . The variable nl represents the
+number of vehicles on each inbound and outbound lane
+within a certain range of the intersection, as observed by
+sensors in the roadside unit (as illustrated by the 24 lanes
+in Figure 4). The variable p denotes the current phase.
+The variable nf represents the ratio of vehicle numbers in
+various traffic flow directions determined through
+vehicle–infrastructure communication (as shown by the
+12 traffic flow directions in Figure 4: N-W, N-S, N-E, EN, E-W, E-S, S-E, S-N, S-W, W-S, W-E, and W-N). By
+communicating with vehicle agents, the roadside agent
+can ascertain the turning intentions of vehicles approaching the intersection, enabling it to better decide the next
+optimal signal phase.
+Action: The roadside agent determines the next optimal phase at fixed intervals, implementing phase updates
+after a set period of yellow light. The action is defined as
+the phase number of the current intersection’s traffic
+light, with the example in Figure 4 showing eight phases.
+Reward: Intersection pressure P is defined as the absolute difference between the number of vehicles approaching the intersection and those leaving it. It reflects the
+degree of imbalance between the incoming and outgoing
+
+574
+
+Transportation Research Record 2680(1)
+
+Figure 4. Intersection schematic diagram.
+
+vehicle density. The larger the value of P, the more
+uneven the vehicle distribution (43, 44). It can be defined
+as follows:
+
+
+nin
+nout
+X
+
+X
+
+in
+out 
+P=
+qi 
+qi 
+ð3Þ
+i = 1
+
+i=1
+In the above equation, qin represents the length of the
+vehicle queue in the incoming lane, while qout denotes
+the length of the vehicle queue in the outgoing lane.
+Here, nin represents the number of incoming lanes, while
+nout denotes the number of outgoing lanes.
+For example, the intersection pressure is
+jð1 + 1 + 2 + 1Þ  ð3 + 2Þj = 0, as depicted in Figure 4.
+In traffic signal control tasks, efforts should be made to
+minimize intersection pressure to reduce the uneven distribution of vehicles and enhance network throughput.
+Thus, the reward can be set as follows:
+r0 =  P
+
+ð4Þ
+
+The roadside intelligent agent gathers real-time
+intersection data via road sensors and communicates
+with vehicle agents to acquire information about vehicles’ turning intentions. By determining the next optimal phase of the traffic lights, the agent aims to
+balance vehicle distribution across the network by
+minimizing intersection pressure, thereby increasing
+network throughput.
+
+Design of the Deep Reinforcement Learning Algorithm
+In this framework, our algorithm’s training process is
+devised based on an improved DQN algorithm (48). The
+DQN is a value-based model-free reinforcement learning
+algorithm that utilizes a multi-layer neural network as a
+function approximator to estimate the state–action value
+function Q(s, a). The state–action value function can be
+interpreted as an estimate of the expected cumulative
+reward and can be defined as follows:
+Q(s, a) = E½Rt jst = s, at = a
+
+ð5Þ
+
+where St represents the state at time t, capturing the traffic conditions when the agent makes a decision, and at
+denotes the action taken at that time, which, for vehicle
+agents, is the selected next road, and for roadside agents,
+is the chosen next traffic light phase. The action with the
+highest Q-value for the current state is selected as the
+optimal action. According to the Bellman equation, the
+Q-value of the current state–action pair can be represented as the sum of the immediate reward rt and the
+maximum expected cumulative reward for the next step.
+Thus, it can be expressed as follows:
+Qt (st , at ) = rt + g max Qt + 1 (st + 1 , a)
+a
+
+ð6Þ
+
+The discount factor g satisfies 0 \ g ł 1. To alleviate
+the overestimation problem of the state–action value
+function in the DQN algorithm, techniques from the
+
+Wang et al
+
+575
+
+Figure 5. Schematic diagram of the reinforcement learning algorithm structure.
+Note: TD = temporal difference.
+
+double DQN (49) are utilized in our framework. In this
+approach, two neural networks are set up: the current
+network Q and the target network Q#. The current network Q is continually trained to approximate the state–
+action value function, while the target network Q# has its
+parameters u# periodically updated to match the parameters u of Q.
+The parameters u of the current network are optimized by minimizing the temporal difference (TD) error,
+which can be defined as follows:
+0
+
+L(u) = (rt + g max Qt + 1 (St + 1 , aju )  Qt (St , at ju)
+a
+
+ð7Þ
+
+To enhance the convergence of the algorithm, the
+techniques from dueling DQN (50) are employed, introducing the advantage function A. The advantage function is defined as the difference between the state–action
+value function Q and the state value function V. The
+state value function V can be understood as the expected
+value of the action values for all possible actions.
+Therefore, the state–action value function Q can be
+expressed as follows:
+Q(st , at ) = V (st ) + A(st , at )
+
+ð8Þ
+
+In the specific reinforcement learning structure, as illustrated in Figure 5, the network Q’s parameters are
+trained by continuously sampling experiences (st, at, rt,
+
+st + 1) from the replay memory. This process helps in decorrelating the experiences and stabilizes the training process. Furthermore, the parameters of the target network
+Q# are updated every fixed number of steps. This periodic
+update mechanism allows the network Q to approximate
+the actual state–action value function more accurately.
+
+Pseudocode
+The framework encompasses two sub-tasks: vehicle navigation and traffic signal control. Both the decisions made by
+vehicle agents and roadside agents affect the state of the
+environment. This interdependence makes it challenging to
+distinguish whether a particular environmental change
+results from a vehicle navigation action or a traffic signal
+control action. To mitigate the instability in the training
+environment, a strategy of training these two tasks separately is employed. The vehicle agents are trained to complete the vehicle navigation task first and, then, within an
+environment where vehicle agents are deployed, the roadside
+agents are trained to complete the traffic signal control task.
+The training process of the agents can be illustrated with
+pseudocode in Algorithm 1. It is noteworthy that vehicle
+agents make their decision to choose the next turn or road
+on entering the decision zone at an intersection. On the
+other hand, the roadside agents make their decision to select
+the next optimal phase at the end of each phase duration.
+
+576
+
+Transportation Research Record 2680(1)
+
+Algorithm 1: Pseudocode for the training process of
+reinforcement learning agents
+1 for episode in 1: Ndo
+2
+Initialize parameters, replay memory M and reset the
+environment.
+3
+for i in 1: T do
+4
+if agents need to make decisions then
+5
+Retrieve the state st from the environment
+6
+With probability 2 randomly select action at
+7
+Otherwise at = arg max Q(st , a; u)
+a
+
+8
+
+Execute actions at, obtain observe st + 1 and reward rt
+from the environment.
+9
+Store the transition (st, at, rt, st + 1) in replay memory M.
+10
+end
+11
+if len(M) threshold and t% training interval T1 = 0 then
+12
+Sample a batch from replay memory M.
+13
+Update the network Q’s parameters u based on the
+TD loss.
+14
+end
+15
+if t% update interval T2 = 0 then
+16
+Update u# of target network Q# with u of training
+network Q
+17
+end
+18
+end
+19 end
+
+Datasets
+As shown in Figure 6, we selected a road network from
+an open-source dataset, specifically the Grid-4 3 4 network (51), for our simulation environment. In this setup,
+each road segment is 300 m long and has three lanes. The
+grid comprises a total of 16 intersections, with each intersection equipped with a roadside agent responsible for
+controlling the traffic signals
+To evaluate the performance of the proposed framework under varying levels of traffic demand, we utilized
+the SUMO script randomTrips.py to randomly generate
+vehicle routing files corresponding to low, medium, and
+high traffic demands. Specifically, these routing files represent scenarios where a maximum of 500, 1000, and 1500
+vehicles enter the road network within a 30-min period,
+respectively. In addition, to simulate the uneven traffic
+efficiency across different roads in the network, we randomly lowered the maximum speed limits on certain road
+segments. This adjustment was made to reflect real-world
+conditions, such as road congestion or construction work,
+that may lead to reduced speed limits. By creating this
+more complex training environment, we aim to provide
+reinforcement learning agents with challenging scenarios
+that require adaptive decision-making strategies.
+To validate the performance of our proposed method
+using real-world traffic data, we selected the Hangzhou4 3 4 dataset (51) as an example. The Hangzhou-4 3 4
+road network has a structure similar to the Grid-4 3 4 network, comprising 16 signalized intersections. However,
+the lengths of all N-S roads are 600 m, while the lengths of
+all W-E roads are 800 m. In addition, we extracted 30 min
+of real-world traffic flow data as the traffic demand, with
+a total of 1660 vehicles entering the network.
+
+Experiment Settings
+
+Figure 6. Schematic diagram of the simulated road network.
+
+Experiment and Discussion
+We evaluated the proposed method using the SUMO
+simulation software, which is an open-source microscopic
+traffic simulation tool designed for modeling urban traffic
+flows. By leveraging the TRACI (traffic control interface)
+provided by the SUMO simulator, we can obtain realtime traffic state information from the simulation environment. In addition, we can execute actions within the
+simulation environment and receive feedback in the form
+of rewards. This enables us to effectively train and assess
+the performance of the reinforcement learning agents.
+
+Evaluation Metrics. The framework presented in this study
+includes two sub-tasks: vehicle navigation and signal
+control. We selected average travel time and effective
+throughput of the road network to evaluate performance. Average travel time refers to the mean travel time
+of all vehicles in the road network and is one of the most
+commonly used evaluation metrics in the traffic field
+(52). Effective throughput in this study refers to the number of vehicles that successfully reach their destination,
+excluding those that arrive at incorrect endpoints or are
+still navigating in the road network.
+Compared Methods. We compared the effectiveness of the
+proposed method with other baseline methods, including
+some traditional approaches, reinforcement learningbased methods, and their combinations.
+Dijkstra’s algorithm + fixed time: Dijkstra’s algorithm is used for the vehicle navigation task, while the
+
+Wang et al
+
+577
+
+Figure 7. Training performance of vehicle navigation agents.
+
+Figure 8. Training performance of signal control agents.
+
+fixed time method is employed for signal control.
+Dijkstra’s algorithm is a classic path-planning algorithm
+that always selects the shortest path. The fixed time
+method sequentially switches phases according to a predetermined schedule, with each phase set to last 30 s.
+DRL-Navigation + fixed time: For the vehicle navigation task, we employed DRL-Navigation, while the
+fixed time method was used for signal control. DRLNavigation (28) constructs a real-time intelligent vehicle
+routing and navigation system based on reinforcement
+learning by framing the task as a sequence of decisionmaking processes.
+Dijkstra’s algorithm + PressLight: For the vehicle
+navigation task, we utilized Dijkstra’s algorithm, and for
+signal control, the PressLight method was adopted.
+PressLight (47) links reinforcement learning with the
+maximum pressure approach, designing a reinforcement
+learning method for traffic signal control at multiple
+intersections.
+DRL-Navigation + PressLight: For the vehicle navigation task, we used DRL-Navigation, and the
+PressLight method was employed for signal control.
+
+the reward is set to 0.99, the learning rate for training is
+set to 0.0005, and the mini-batch size is set to 128.
+
+Parameter Settings. In this experiment, the duration of
+each green light phase is set to 10 s, with a 3 s yellow light
+duration during each phase transition. The decision zone
+radius for intelligent connected vehicles at intersections
+is set to 150 m. The MLPs (multi-layer perceptrons) of
+the reinforcement learning agent consist of two hidden
+layers, with the first hidden layer containing 100 neurons
+and the second hidden layer containing 100 neurons. The
+model uses the ReLU (rectified linear unit) as the activation function and employs RMSprop (root mean square
+propagation) as the optimizer. The discount factor for
+
+Performance Evaluation
+We compared the experimental performance of the proposed framework under low, medium, and high traffic
+demand conditions, while also evaluating its effectiveness
+against other intelligent vehicle navigation and signal
+control algorithms.
+Performance under Different Traffic Flows. The framework
+consists of two sub-tasks: vehicle navigation and signal
+control. We first train the vehicle navigation task in
+environments with varying traffic demand levels, and
+then deploy the trained vehicle agent into the training
+environment of the roadside agent to continue training
+for the signal control task. Traffic flow 1, traffic flow 2,
+and traffic flow 3 correspond to environments with a
+maximum of 500, 1000, and 1500 vehicles entering,
+respectively, representing light, medium, and high traffic
+demand conditions.
+We first trained the vehicle navigation task in an environment with fixed signal timing, and then deployed the
+trained vehicle agent into a simulation environment to
+begin training the signal control task. At the initial stage
+of training the signal control task, the traffic signals were
+relatively chaotic and random, resulting in a still relatively low initial traffic efficiency. From Figures 7 and 8,
+it is evident that in training environments with different
+traffic flows, the average travel time of vehicles in the
+road network significantly decreases and converges as the
+training process progresses. By adopting a multi-agent
+collaborative training and parameter sharing strategy,
+
+578
+
+Transportation Research Record 2680(1)
+
+Table 1. Comparison of Experimental Effects with Other Baseline Methods on the Grid-434 Dataset
+Average travel time (s)
+
+Effective throughput
+
+Different methods
+
+Flow 1
+
+Flow 2
+
+Flow 3
+
+Flow 1
+
+Flow 2
+
+Flow 3
+
+Dijkstra’s algorithm + fixed time
+DRL-Navigation + fixed time
+Dijkstra’s algorithm + PressLight
+DRL-Navigation + PressLight
+Our method
+
+356.36
+286.48
+249.72
+143.86
+239.99
+
+365.21
+290.47
+254.72
+178.25
+246.61
+
+391.29
+295.80
+268.70
+269.60
+253.62
+
+387
+69
+433
+123
+436
+
+772
+139
+860
+237
+873
+
+1099
+212
+1281
+316
+1301
+
+Table 2. Comparison of Experimental Effects with Other
+Baseline Methods on the Hangzhou-434 Dataset
+Different
+methods
+Dijkstra’s algorithm + fixed time
+DRL-Navigation + fixed time
+Dijkstra’s algorithm + PressLight
+DRL-Navigation + PressLight
+Our method
+
+Average travel
+time (s)
+
+Effective
+throughput
+
+450.10
+407.08
+339.23
+315.28
+322.02
+
+1167
+212
+1393
+177
+1410
+
+the model exhibits a relatively fast convergence speed
+and strong optimization performance, with both vehicle
+navigation and signal control tasks leading to a marked
+improvement in road network traffic efficiency.
+However, it is also apparent that while the training
+results of the model are quite noticeable under various
+traffic flows, the training environment under higher traffic flows is relatively more complex and unstable. This
+complexity results in a slightly slower convergence speed
+for the model in high-traffic environments compared to
+lower traffic scenarios, leading to a marginally longer
+average travel time even after convergence.
+Performance of Experiments with Different Methods.
+Compared to other traditional methods and reinforcement learning-based approaches, the framework we proposed is not only relatively lightweight with respect to
+network structure design but also vehicle–infrastructure
+collaborative technology allows intelligent agents to
+acquire richer state information, enabling them to make
+better real-time decisions. For example, DRLNavigation only optimizes vehicle routing selection and
+considers reward design solely from a temporal perspective, and PressLight solely optimizes traffic signal design
+at intersections without considering the interaction with
+vehicles near the intersection. As shown in Table 1 (traffic flows 1–3 represent light, medium, and high traffic
+demand conditions, respectively, with maximum vehicle
+entries of 500, 1000, and 1500), our proposed method
+demonstrates overall superior optimization effects on
+
+road network traffic efficiency compared to other methods. It performs well across various metrics, such as
+average vehicle travel time and effective throughput.
+Specifically, compared to the traditional shortest path
+navigation and fixed signal control scheme (Dijkstra’s
+algorithm + fixed time), our method reduces average
+travel time by 33.48% and increases effective throughput
+by 15.59%.
+We also conducted comparative experiments on the
+real-world traffic dataset (the Hangzhou-4 3 4 dataset).
+As shown in Table 2, our method achieved overall better
+traffic optimization results, such as average vehicle travel
+time and effective throughput. Specifically, compared to
+the traditional shortest path navigation and fixed signal
+control scheme (Dijkstra’s algorithm + fixed time), our
+method reduces average travel time by 28.46% and
+increases effective throughput by 20.82%.
+It is noteworthy that the DRL-Navigation algorithm, which utilizes reinforcement learning to address
+vehicle navigation issues, only considers time-based
+reward settings while neglecting spatial reward considerations. While it successfully reduces average travel
+time, the effective throughput is significantly lower
+than that of our method. For instance, the ‘‘DRLNavigation + PressLight’’ method achieves lower
+average travel times than our approach under low and
+medium traffic flows and the real traffic flow of the
+Hangzhou-4 3 4 dataset. However, its effective throughput is less than one third of ours. This indicates that,
+because of the lack of spatial reward guidance during
+training, a substantial number of vehicles are directed
+to incorrect destinations. Such performance is clearly
+inadequate to meet the requirements for effective
+navigation.
+
+Study of the Framework
+This section discusses some variants of the proposed
+approach, including the impact of different reward factors on vehicle navigation tasks, the effects of the training sequence and penetration rates for the navigation
+task, and the signal control task.
+
+Wang et al
+
+579
+
+Table 3. Impact of Different Reward Factors on Vehicle Navigation Tasks
+Average travel time (s)
+
+Effective throughput
+
+Different rewards
+
+Flow 1
+
+Flow 2
+
+Flow 3
+
+Flow 1
+
+Flow 2
+
+Flow 3
+
+r1 = 1=Dt
+r2 = Dd
+r3 = Dd=Dt
+
+350.96
+356.73
+338.13
+
+357.58
+363.72
+343.11
+
+381.83
+383.52
+367.02
+
+395
+397
+401
+
+773
+780
+804
+
+1141
+1147
+1162
+
+spatial factor (considering only Dd), and r3 is the reward
+based on both temporal and spatial factors (considering
+both Dt and Dd).
+As can be seen from the analysis of Table 3, the
+reward design of r1 lacks spatial guidance. Consequently,
+vehicles may disregard the proximity to the destination
+when selecting the next road, resulting in a longer average travel time and lower effective throughput to reach
+the destination. While r2 exhibits effective throughput
+comparable to r3 across different traffic volumes, its average travel time is consistently longer than that of r3. This
+indicates that the lack of a temporal factor in the reward
+design of r2 prevents vehicles from reaching their destinations more quickly. In summary, the reward design r3,
+which incorporates both temporal and spatial metrics,
+achieves superior vehicle navigation performance.
+Figure 9. Average travel time under different training sequences.
+
+Ablation Studies on Reward Design for Vehicle Agents. As vehicles approach intersections, the vehicle agents make decisions on which road to proceed to based on the observed
+state information, thereby completing the navigation
+task. This paper proposes a reinforcement learning
+reward design that incorporates both spatial and temporal dimensions. To better investigate the impact of different reward factors on the vehicle navigation task, we
+conducted ablation studies to analyze the effects of various reward designs under light, medium, and high traffic
+demand conditions. In addition, to more clearly highlight the impact of different reward designs on vehicle
+navigation, we removed the traffic signal control task in
+this experiment.
+Table 3 presents the experimental results of the vehicle
+navigation task under different reward designs, reflecting
+the impact of various reward factors on the navigation
+task. Here, Dt denotes the time interval between two consecutive actions taken by the vehicle agent, and Dd represents the difference in distance to the destination between
+two consecutive actions. The reward designs are as follows: r1 is the reward based solely on the temporal factor
+(considering only Dt), r2 is the reward based solely on the
+
+Effect of Training Order. Since the actions of vehicle navigation and traffic signal control both influence the road
+network’s traffic and subsequently alter traffic conditions, we adopted a strategy of training the vehicle navigation task and the signal control task separately to
+reduce the instability of the training environment and
+the complexity of the training process. In this section, we
+discuss the impact of the training order of the two tasks
+on the overall training effectiveness.
+As shown in Figures 9 and 10, ‘‘order 1’’ refers to the
+training sequence where the vehicle navigation task is
+trained first, followed by the signal control task. In contrast, ‘‘order 2’’ involves training the signal control task
+first.
+The results indicate that the model under ‘‘order 1’’
+consistently outperforms that under ‘‘order 2’’ across different traffic volumes, with a significant reduction of
+approximately 21.65% in average travel time. Training
+in ‘‘order 2’’ can create an unstable environment for vehicle navigation because of dynamic signal control actions,
+whereas ‘‘order 1’’ helps reduce interference from signal
+control on navigation training, leading to better overall
+performance. Consequently, our framework adopts the
+sequence of training the vehicle navigation task before
+the signal control task.
+
+580
+
+Transportation Research Record 2680(1)
+
+Figure 10. Effective throughput under different training
+sequences.
+
+according to predetermined shortest routes, and nonconnected roadside units can only switch phases according to a fixed phase sequence.
+As shown in Table 4 (traffic flows 1–3 represent light,
+medium, and high traffic demand conditions, respectively, with maximum vehicle entries of 500, 1000, and
+1500), the experimental results show that under different
+traffic demands, as the penetration rate of intelligent networking increases, our collaborative optimization framework demonstrates increasingly significant improvements
+in road network traffic efficiency. The average travel time
+of vehicles continually decreases, and effective throughput continually increases. Notably, with respect to average travel time, full connectivity leads to a reduction of
+approximately 33.48% compared to scenarios without
+connectivity, with larger optimization gains observed at
+higher traffic flow levels.
+
+Conclusion and Outlook
+Impact of Different Penetration Rates. In the framework
+designed in this study, on-board units and roadside units
+communicate and collaborate through intelligent connected technologies. The driver or autonomous driving
+system selects the best route based on prompts from the
+vehicle agent, while the roadside agent periodically determines the next optimal phase for traffic signals at intersections. However, the full widespread adoption of
+intelligent connectivity is a gradual process. In this section, we experimentally compare the framework’s performance at different levels of intelligent connectivity
+penetration. Intelligent connectivity penetration refers to
+the proportion of connected vehicles and roadside units,
+which can include both connected human-driven and
+connected autonomous vehicles.
+In our experiments, we randomly assigned connected
+communication capabilities to certain vehicles and roadside agents at intersections based on the penetration rate
+of intelligent networking. Only connected vehicles and
+roadside units can communicate and collaborate to perform intelligent vehicle navigation and traffic signal control tasks. Non-connected vehicles can only travel
+
+This study proposes a collaborative optimization framework for vehicle navigation and traffic signal control
+based on deep reinforcement learning. By modeling the
+navigation and signal control processes as a partially
+observable Markov decision process, vehicle agents and
+roadside agents can determine the optimal next action
+based on dynamic traffic information (vehicle agents
+decide which road to turn onto when approaching intersections, while roadside agents periodically determine the
+next optimal signal phase). Through the communication
+and collaboration between vehicle and roadside agents,
+the reinforcement learning agent accesses richer real-time
+state information. The time–space vehicle navigation
+rewards and pressure-based traffic signal control rewards
+ensure the agent continually optimizes traffic efficiency
+in the road network. The proposed method is validated
+in a SUMO simulation environment under various traffic demands, and comparisons are made with traditional
+and reinforcement learning-based baseline methods.
+Several variations of the proposed method are discussed,
+demonstrating the effectiveness and robustness of the
+lightweight collaborative framework.
+
+Table 4. Performance at Different Penetration Rates
+Average travel time (s)
+
+Effective throughput
+
+Penetration rates
+
+Flow 1
+
+Flow 2
+
+Flow 3
+
+Flow 1
+
+Flow 2
+
+Flow 3
+
+0%
+25%
+50%
+75%
+100%
+
+356.36
+342.51
+325.65
+295.48
+239.99
+
+365.21
+331.44
+303.05
+261.55
+246.61
+
+391.29
+342.72
+327.69
+273.97
+253.62
+
+387
+399
+401
+414
+436
+
+772
+806
+828
+863
+873
+
+1099
+1181
+1200
+1279
+1301
+
+Wang et al
+Because of practical constraints, this study only conducted experimental validation in a simulation environment, which may not fully reflect real traffic conditions.
+Therefore, further validation and adjustments are necessary during actual deployment. In addition, while vehicle
+control and traffic signal control are both crucial for
+improving traffic efficiency, this study focuses solely on
+dynamic routing for vehicles. Future work could explore
+more refined vehicle control strategies, such as optimizing vehicle behavior when approaching intersections, to
+further enhance traffic efficiency and safety.
+Moreover, in this research, the communication
+between vehicle agents and roadside agents is assumed to
+be ideally reliable and stable. Future studies should
+address how to ensure the reliability of V2X (vehicle-toeverything) communication and investigate the specific
+impact of communication quality on vehicle–
+infrastructure collaboration processes.
+
+581
+
+2.
+
+3.
+
+4.
+
+5.
+
+Author Contributions
+
+6.
+
+The authors confirm contribution to the paper as follows: study
+conception and design: L. Wang, W. Zhang; data collection: L.
+Wang, Z. Yan; analysis and interpretation of results: L. Wang;
+draft manuscript preparation: L. Wang, W. Zhang, Z. Yan. All
+authors reviewed the results and approved the final version of
+the manuscript.
+
+7.
+
+Declaration of Conflicting Interests
+
+8.
+
+The authors declared no potential conflicts of interest with
+respect to the research, authorship, and/or publication of this
+article.
+9.
+
+Funding
+The authors disclosed receipt of the following financial support
+for the research, authorship, and/or publication of this article:
+This research was sponsored by the National Natural Science
+Foundation of China (Grant 71971116).
+
+10.
+
+ORCID iDs
+Long Wang
+https://orcid.org/0009-0009-2224-0009
+Weibin Zhang
+https://orcid.org/0000-0002-0701-9690
+https://orcid.org/0009-0004-2694-2378
+Ziqi Yan
+
+11.
+
+12.
+
+Data Accessibility Statement
+Some or all data, models, or code that support the findings of
+this study are available from the corresponding author by
+request.
+
+13.
+
+References
+1. Chen, J., Z. Pu, N. Zheng, X. Wen, H. Ding, and X. Guo.
+A Novel Generative Adversarial Network for Improving
+Crash Severity Modeling with Imbalanced Data.
+
+14.
+
+Transportation Research Part C: Emerging Technologies,
+Vol. 164, 2024, p. 104642.
+Li, S., Z. Pu, Z. Cui, S. Lee, X. Guo, and D. Ngoduy.
+Inferring Heterogeneous Treatment Effects of Crashes on
+Highway Traffic: A Doubly Robust Causal Machine
+Learning Approach. Transportation Research Part C:
+Emerging Technologies, Vol. 160, 2024, p. 104537.
+Zhang, S., Y. Yao, J. Hu, Y. Zhao, S. Li, and J. Hu. Deep
+Autoencoder Neural Networks for Short-Term Traffic
+Congestion Prediction of Transportation Networks. Sensors, Vol. 19, No. 10, 2019, p. 2229.
+Cao, Z. G., S. W. Jiang, J. Zhang, and H. L. Guo. A Unified Framework for Vehicle Rerouting and Traffic Light
+Control to Reduce Traffic Congestion. IEEE Transactions
+on Intelligent Transportation Systems, Vol. 18, No. 7, 2017,
+pp. 1958–1973.
+Li, Y., Z. Pu, P. Liu, T. Qian, Q. Hu, J. Zhang, and Y.
+Wang. Efficient Predictive Control Strategy for Mitigating
+the Overlap of EV Charging Demand and Residential
+Load Based on Distributed Renewable Energy. Renewable
+Energy, Vol. 240, 2025, p. 122154.
+Collins, M., S. Etzioni, and E. Ben-Elia. Travel Behavior
+and System Dynamics in a Simple Gamified Automated
+Multimodal Network. Transportation Research Part A:
+Policy and Practice, Vol. 183, 2024, p. 104060.
+Sun, F. Z., A. Dubey, and J. White. DxNAT—Deep
+Neural Networks for Explaining Non-Recurring Traffic
+Congestion. Proc., 2017 IEEE International Conference on
+Big Data (Big Data), Boston, MA, IEEE, New York,
+2017, pp. 2141–2150.
+Wang, X., A. Taitler, I. Smirnov, S. Sanner, and B. Abdulhai. EMARLIN: Distributed Coordinated Adaptive Traffic Signal Control with Topology-Embedding Propagation.
+Transportation Research Record: Journal of the Transportation Research Board, 2024. 2678: 189–202.
+Ye, B. L., R. T. Sun, W. M. Wu, B. Chen, and Q. Yao.
+Traffic Signal Control Method Based on Asynchronous
+Advantage Actor-Critic. Journal of Zhejiang University
+(Engineering Science), Vol. 58, No. 8, 2024,
+pp. 1671–1680.
+Huang, W., X. Y. Zhang, S. C. Li, and J. Zhao. A Model
+Bias Learning Approach for Adaptive Traffic Signal Control. Journal of Railway Science and Engineering, Vol. 21,
+No. 6, 2024, pp. 2229–2240.
+Lu, S. F., J. Wang, G. H. Liu, and W. Shao. Macroscopic
+Fundamental Diagram of Urban Road Network Based on
+Traffic Volume and Taxi GPS Data. Highway Traffic Science, Vol. 31, No. 9, 2014, pp. 138–144.
+Huo, J., X. Wen, L. Liu, L. Wang, M. Li, and Z. Lu.
+CHRT: Clustering-Based Hybrid Re-Routing System for
+Traffic Congestion Avoidance. China Communications,
+Vol. 18, No. 7, 2021, pp. 86–102.
+Yan, L. P., W. B. Hu, H. Wang, Z. Y. Qiu, and B. Du.
+Dynamic Real-Time Algorithm for Multi-Intersection
+Route Selection in Urban Traffic Networks. Journal of
+Software, Vol. 27, No. 9, 2016, pp. 2199–2217.
+Varaiya, P. Max Pressure Control of a Network of Signalized Intersections. Transportation Research Part C: Emerging Technologies, Vol. 36, 2013, pp. 177–195.
+
+582
+15. Zhang, W. B., C. Yan, X. F. Li, L. L. Fang, Y. J. Wu, and
+J. Li. Distributed Signal Control of Arterial Corridors
+Using Multi-Agent Deep Reinforcement Learning. IEEE
+Transactions on Intelligent Transportation Systems, Vol. 24,
+No. 1, 2022, pp. 178–190.
+16. Chen, D., T. Xu, S. Ma, X. Gao, and G. Zhao. Research
+on Intelligent Signal Timing Optimization of Signalized
+Intersection Based on Deep Reinforcement Learning Using
+Floating Car Data. Transportation Research Record: Journal of the Transportation Research Board, 2024. 2678: 1126–
+1147.
+17. Yan, L. P., L. L. Zhu, K. Song, Z. H. Yuan, Y. J. Yan, Y.
+Tang, and C. Peng. Graph Cooperation Deep Reinforcement Learning for Ecological Urban Traffic Signal Control. Applied Intelligence, Vol. 53, No. 6, 2023,
+pp. 6248–6265.
+18. Chen, X., J. Zheng, C. Li, B. Wu, H. Wu, and J. Montewka. Maritime Traffic Situation Awareness Analysis via
+High-Fidelity Ship Imaging Trajectory. Multimedia Tools
+and Applications, Vol. 83, No. 16, 2024, pp. 48907–48923.
+19. Chen, X., H. Wu, B. Han, W. Liu, J. Montewka, and R.
+W. Liu. Orientation-Aware Ship Detection via a Rotation
+Feature Decoupling Supported Deep Learning Approach.
+Engineering Applications of Artificial Intelligence, Vol. 125,
+2023, pp. 1–16.
+20. Li, S., W. Wu, X. F. Ma, M. Zhong, and M. Safdar. Modelling Medium- and Long-Term Purchasing Plans for Environment-Orientated Container Trucks: A Case Study of
+Yangtze River Port. Transportation Safety and Environment, Vol. 5, No. 1, 2023, p. tdac043.
+21. Li, L., Y. Lv, and F. Y. Wang. Traffic Signal Timing via
+Deep Reinforcement Learning. IEEE/CAA Journal of
+Automatica Sinica, Vol. 3, No. 3, 2016, pp. 247–254.
+22. Chen, X. Y., G. Xiong, Y. Lv, Y. Y. Chen, B. Song, and
+F.-Y. Wang. A Collaborative Communication-Qmix
+Approach for Large-Scale Networked Traffic Signal Control. Proc., 2021 IEEE International Intelligent Transportation Systems Conference (ITSC), Indianapolis, IN, IEEE,
+New York, 2021, pp. 3450–3455.
+23. Rashid, T., M. Samvelyan, C. S. De Witt, G. Farquhar, J.
+Foerster, and S. Whiteson. Monotonic Value Function
+Factorisation for Deep Multi-Agent Reinforcement Learning. Journal of Machine Learning Research, Vol. 21, No.
+178, 2020, pp. 1–51.
+24. Dijkstra, E. W. A Note on Two Problems in Connexion
+with Graphs Numer. Numerische Mathematik, Vol. 1, No.
+1, 1959, pp. 269–271.
+25. Hart, P. E., N. J. Nilsson, and B. Raphael. A Formal Basis
+for the Heuristic Determination of Minimum Cost Paths.
+IEEE Transactions on Systems Man and Cybernetics, Vol.
+4, No. 2, 1968, pp. 100–107.
+26. Wang, S., S. Djahel, Z. H. Zhang, and J. McManis. Next
+Road Rerouting: A Multiagent System for Mitigating
+Unexpected Urban Traffic Congestion. IEEE Transactions
+on Intelligent Transportation Systems, Vol. 17, No. 10,
+2016, pp. 2888–2899.
+27. Geng, Y. Z., E. W. Liu, R. Wang, Y. M. Liu, W. X. Rao,
+S. J. Feng, Z. Dong, Z. R. Fu, and Y. F. Chen.. Deep Reinforcement Learning Based Dynamic Route Planning for
+
+Transportation Research Record 2680(1)
+
+28.
+
+29.
+
+30.
+
+31.
+
+32.
+
+33.
+
+34.
+
+35.
+
+36.
+
+37.
+
+38.
+
+39.
+
+Minimizing Travel Time. Proc., 2021 IEEE International
+Conference on Communications Workshops (ICC Workshops), Montreal, QC, Canada, IEEE, New York, 2021,
+pp. 1–6.
+Koh, S., B. Zhou, H. Fang, P. Yang, Z. L. Yang, Q. Yang,
+L. Guan, and Z. G. Ji. Real-Time Deep Reinforcement
+Learning Based Vehicle Navigation. Applied Soft Computing, Vol. 96, 2020, p. 106694.
+Wang, Z., and S. Wang. XRouting: Explainable Vehicle
+Rerouting for Urban Road Congestion Avoidance Using
+Deep Reinforcement Learning, Proc., 2022 IEEE International Smart Cities Conference (ISC2), Pafos, Cyprus,
+IEEE, New York, 2022, pp. 1–7.
+Wang, W. B., and W. B. Zhang. CRRFNet: An Adaptive
+Traffic Object Detection Method Based on Camera and
+Radar Radio Frequency Fusion. Transportation Research
+Part C: Emerging Technologies, Vol. 166, 2024, p. 104791.
+Chen, H., V. K. Bandaru, Y. Wang, M. A. Romero, A.
+Tarko, and Y. Feng. Cooperative Perception System for
+Aiding Connected and Automated Vehicle Navigation and
+Improving Safety. Transportation Research Record: Journal
+of the Transportation Research Board, 2024. 2678:
+1498–1510.
+Feng, L., X. Zhao, Z. J. Chen, and L. Song. An Adaptive
+Coupled Control Method Based on Vehicles Platooning for
+Intersection Controller and Vehicle Trajectories in Mixed
+Traffic. IET Intelligent Transport Systems, Vol. 18, No. 8,
+2024, pp. 1459–1476.
+Zheng, S., Y. G. Liu, K. Fu, R. R. Li, and H. T. Yang.
+Optimization of Isolated Intersection Signal Timing and
+Trajectory Planning Under Mixed Traffic Environment:
+The Flexible Catalysis of Connected and Automated Vehicles. Physica A: Statistical Mechanics and its Applications,
+Vol. 640, 2024, p. 129668.
+Feng, Y. H., C. H. Yu, and H. X. Liu. Spatiotemporal
+Intersection Control in a Connected and Automated Vehicle Environment. Transportation Research Part C: Emerging Technologies, Vol. 89, 2018, pp. 364–383.
+Yu, C. H., Y. H. Feng, H. X. Liu, W. J. Ma, and X. G.
+Yang. Integrated Optimization of Traffic Signals and Vehicle Trajectories at Isolated Urban Intersections. Transportation Research Part B: Methodological, Vol. 112, 2018,
+pp. 89–112.
+Jiang, Y. S., B. Zhao, M. Liu, and Z. H. Yao. A Two-Level
+Model for Traffic Signal Timing and Trajectories Planning
+of Multiple CAVs in a Random Environment. Journal of
+Advanced Transportation, Vol. 1, 2021, p. 9945398.
+Guo, Y., and J. Q. Ma. DRL-TP3: A Learning and Control
+Framework for Signalized Intersections with Mixed Connected Automated Traffic. Transportation Research Part C:
+Emerging Technologies, Vol. 132, 2021, p. 103416.
+Ma, W. J., J. J. Li, and C. H. Yu. Shared-Phase-DedicatedLane Based Intersection Control with Mixed Traffic of
+Human-Driven Vehicles and Connected and Automated
+Vehicles. Transportation Research Part C: Emerging Technologies, Vol. 135, 2022, p. 103509.
+Orfila, O., G. Saint Pierre, M. Messias, J. Abecassis, P.
+Mejuto, and P. Lopez. Development of an Ecodriving
+Assistance Application for Nomadic Devices Performing
+
+Wang et al
+
+40.
+
+41.
+
+42.
+
+43.
+
+44.
+
+45.
+
+Real-Time and Post-Trip Coaching for Road Vehicles.
+Proc., TRA2014-Transport Research Arena, France, April
+2014.
+Bilgram, A., E. Ernstsen, P. Greve, H. Lahrmann, K. G.
+Larsen, M. Muñiz, P. Taankvist, and T. Pedersen. Online
+and Proactive Vehicle Rerouting with Uppaal Stratego.
+Transportation Research Record: Journal of the Transportation Research Board, 2021. 2675: 13–22.
+Liu, S., W. T. Zhang, X. J. Wu, S. Feng, X. Pei, and D. Y.
+Yao. A Simulation System and Speed Guidance Algorithms for Intersection Traffic Control Using Connected
+Vehicle Technology. Tsinghua Science and Technology,
+Vol. 24, No. 2, 2018, pp. 160–170.
+Li, H. R., D. F. Chu, D. C. Liang, and T. Q. Zhou. ClosedLoop Feedback Speed Guidance Method Considering
+Driving Style. Journal of Transportation Systems Engineering and Information Technology, Vol. 21, No. 3, 2021, p. 94.
+Xu, L. P., and M. J. Deng. A Speed Guidance Method at
+Signalized Intersections Based on Vehicle Infrastructure
+Cooperation. Traffic Information and Safety, Vol. 39, No.
+2, 2021, pp. 78–86.
+Sun, Q., L. Zhang, H. Yu, W. J. Zhang, Y. Mei, and H.
+Xiong. Hierarchical Reinforcement Learning for Dynamic
+Autonomous Vehicle Navigation at Intelligent Intersections.
+Proc., 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining, Long Beach, CA, Association for
+Computing Machinery, New York, 2023, pp. 4852–4861.
+Ding, F., Y. Zhao, H. Tan, Z. Liu, and Z. Pu. A Fundamental-Diagram-Informed Spatial Partitioning Method for
+Heterogeneous Traffic Networks. IEEE Internet of Things
+Journal, Vol. 12, No. 9, 2024, pp. 12193–12205.
+
+583
+46. Chen, C. C., H. Wei, N. Xu, G. J. Zheng, M. Yang, Y. H.
+Xiong, K. Xu, and Z. H. Li. Toward a Thousand Lights:
+Decentralized Deep Reinforcement Learning for LargeScale Traffic Signal Control. Proceedings of the AAAI Conference on Artificial Intelligence, Vol. 34, No. 4, 2020,
+pp. 3414–3421.
+47. Wei, H., C. C. Chen, G. J. Zheng, K. Wu, V. Gayah, K.
+Xu, and Z. H. Li. PressLight: Learning Max Pressure Control to Coordinate Traffic Signals in Arterial Network.
+Proc., 25th ACM SIGKDD International Conference on
+Knowledge Discovery & Data Mining, Anchorage, AK,
+Association for Computing Machinery, New York, 2019,
+pp. 1290–1298.
+48. Mnih, V., K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou, D. Wierstra, and M. Riedmiller. Playing Atari with
+Deep Reinforcement Learning. Computer Science, Vol. 21,
+2013, pp. 351–362.
+49. Hasselt, H. V., A. Guez, and D. Silver. Deep Reinforcement Learning with Double Q-Learning. Proceedings of the
+AAAI Conference on Artificial Intelligence, Vol, 30, No. 1,
+2016, pp. 2094–2100.
+50. Wang, Z., T. Schaul, M. Hessel, H. van Hasselt, M. Lanctot, and N. de Freitas. Dueling Network Architectures for
+Deep Reinforcement Learning. International Conference on
+Machine Learning, PMLR, Vol. 48, 2016, pp. 1995–2003.
+51. Mei, H., X. L. Lei, L. C. Da, B. Shi, and H. Wei. Libsignal:
+An Open Library for Traffic Signal Control. Machine
+Learning, Vol. 113, No. 8, 2024, pp. 5235–5271.
+52. Roess, R. P., E. S. Prassas, and W. R. McShane. Traffic
+Engineering. Pearson/Prentice Hall, Upper Saddle River,
+NJ, 2011.
+
+

@@ -1,0 +1,1384 @@
+IET Intelligent Transport Systems
+
+ORIGINAL RESEARCH
+
+Optimizing Traffic Routes With Enhanced Double
+Q-Learning
+Mayur Patil
+
+Pooja Tambolkar
+
+Shawn Midlam-Mohler
+
+Department of Mechanical and Aerospace Engineering, The Ohio State University, Ohio, USA
+Correspondence: Mayur Patil (patil.151@osu.edu)
+Received: 12 September 2024
+
+Revised: 23 December 2024
+
+Accepted: 24 January 2025
+
+Funding: The author received no specific funding for this work.
+
+ABSTRACT
+Traffic management has become a major issue in urban planning due to the increasing number of vehicles on urban roads.
+In this study, we introduce a novel approach using the Reinforcement Learning (RL) technique to address the vehicle routing
+problem (VRP). We explored the effectiveness of Double Q-Learning enhanced by Prioritized Experience Replay (DQL-PER)
+in optimizing vehicle routing to shorten travel times and reduce congestion. Using the Simulation of Urban Mobility (SUMO),
+this method manipulates traffic flow during peak hours to improve urban mobility. DQL-PER stands out due to its superior
+performance in managing complex traffic systems characterized by multiple interconnected variables and dynamic conditions
+inherent in urban traffic networks. Compared to standard Q-learning, DQL-PER reduces overestimation bias and facilitates
+faster convergence toward optimal solutions. This paper includes a comparison between DQL-PER and other RL methods,
+namely Q-learning, Double Q-learning (DQL), and deep Q-network (DQN), demonstrating its benefits through simulations
+and analysis. We also perform a scalability analysis to evaluate the algorithm’s performance across network sizes, with node
+counts 𝑁 = 39, 545, 1672, 3236, and 9652, showing that DQL-PER performs exhaustively over larger networks, demonstrating its
+scalability potential. DQL-PER offers a scalable solution with the potential to transform urban transportation systems.
+
+1
+
+Introduction
+
+Traffic congestion is an increasing problem in urban areas worldwide that results in longer drive times, higher CO2 emissions, and
+more stress for drivers. With the increasing number of vehicles
+on the road, the need for effective traffic management systems
+also increases. According to [1] report of 2023 from INRIX, the
+average U.S. person spent 51 h sitting in 2022–15 h more than
+in 2021, though it remains 50% lower than the pre-pandemic
+high of 99 h in 2019. However, the biggest challenge for traffic
+management authorities is optimizing routes with less traffic
+or congestion. The problem is popularly known as the ‘vehicle
+routing problem’ (VRP), which searches for the most efficient
+path for a vehicle to deliver goods to different locations (Figure 1).
+When applied to urban mobility, the goal of VRP becomes a
+
+search for ways to reduce travel time and avoid congestion
+in a stochastic environment. Traditionally, traffic management
+strategies have relied on static path planning, using a collection
+of well-reputed algorithms. Classic graph-based methods were
+the foundation of such planning; Dijkstra’s algorithm [2] is wellknown for finding the shortest path in a static network. The
+A-star (A*) algorithm [3] adds heuristics to speed up the search
+process. In addition, studies have been done to use naturebased algorithms, such as ant colony optimization (ACO) [4]
+and particle swarm optimization (PSO) [5], which mimic natural
+processes to solve complex routing problems. Genetic algorithms
+[6] use evolutionary strategies to create optimal routes over
+time, while sample-based planning techniques, such as rapidly
+exploring random tree (RRT) [7] and its variants, randomly
+explore the search space and are useful for path planning for
+
+This is an open access article under the terms of the Creative Commons Attribution License, which permits use, distribution and reproduction in any medium, provided the original work is properly
+cited.
+© 2025 The Author(s). IET Intelligent Transport Systems published by John Wiley & Sons Ltd on behalf of The Institution of Engineering and Technology.
+
+IET Intelligent Transport Systems, 2025; 19:e70002
+https://doi.org/10.1049/itr2.70002
+
+1 of 12
+
+autonomous vehicles due to their ability to handle complex,
+multi-variable scenarios. Traditional methods often lack the
+flexibility to respond efficiently to stochastic patterns in traffic. To
+handle this, dynamic route planning [8] integrates methods that
+can respond to traffic information dynamically, such as adaptive
+traffic control systems, which modify signal timings based on
+live traffic conditions, and dynamic routing algorithms, which
+integrate incoming traffic data to update and optimize routes.
+Advancements in innovations progressed and made use of traffic
+prediction models with machine learning (ML) for traffic pattern
+recognition [9]. This paved the way for better traffic management
+systems. Even with the advances in dynamic routing, many
+of these algorithms struggle with the scaling of urban road
+networks. As a city network grows transportation networks also
+become larger and more complicated. Algorithms that work
+well on smaller scales may not be able to handle the increased
+complexity. They can become less efficient and can fail to provide
+optimal routes. This is where reinforcement learning (RL) comes
+into play [10, 11]. RL is a type of ML method where an agent
+learns to make decisions by performing actions and recording the
+results. In traffic management, an RL agent might try different
+routes and learn which ones are usually the fastest or least
+congested over time. The agent’s decision-making process is
+modelled as a Markov decision process (MDP), a mathematical
+framework that captures the probabilities and rewards of moving
+from one state (or traffic condition) to another.
+This paper focuses on a specific RL technique called double
+Q-learning (DQL), which is enhanced by a mechanism known
+as prioritized experience replay (PER). Drawing inspirations
+from [12, 13] focusing on the advantages of PER and DQL, this
+approach helps to overcome the limitations of vanilla RL methods
+in many ways. It can handle the complex, high-dimensional
+scenarios typical of urban traffic systems and learn more efficient
+policies faster. To test the double Q-learning with prioritized
+experience replay (DQL-PER) algorithm, we use the Simulation
+of Urban MObility (SUMO) platform [14]. SUMO allows us
+to create realistic traffic scenarios and simulate the behaviour
+of individual drivers and vehicles. It is an invaluable tool for
+researchers because it lets us test how well our algorithms might
+2 of 12
+
+work in the real world without having to deploy them on actual
+city streets first. This study introduces the DQL-PER algorithm
+and also conducts a comparative analysis with other established
+algorithms in the field, including traditional Q-learning, double
+Q-learning (DQL), and deep Q-network (DQN), to demonstrate
+its efficacy and efficiency in optimizing traffic routes. Additionally, we are also examining how efficiently DQL-PER can
+scale with increasing network size by performing scalability
+analysis. Can it still find good routes quickly when there are
+thousands of intersections (nodes) and tens of thousands of
+vehicles? This question is crucial because a traffic management
+system’s scalability is crucial for real-world applications.
+The rest of this paper is organized as follows: Section 2 provides
+an overview of the literature in this field. Section 3 discusses
+the specifics of DQL-PER model development in tandem with
+the SUMO simulation environment. Next, Section 4 describes
+the experiments and results, by comparing DQL-PER to other
+advanced ML methods. It also includes the scalability analysis
+of how these methods perform as traffic networks get bigger,
+showing how well they can be applied in larger scenarios. Finally,
+the conclusions are presented in Section 5.
+
+2
+
+Related Work
+
+The work on vehicle routing and traffic management problems
+has gone through a lot of evolution over the decades from
+conventional algorithms to adopting artificial intelligence
+(AI)-based models. This development showed the acceptance
+of better and more dynamic real-time solutions to tackle the
+increasing complexity of urban traffic systems. Initially, many
+classical algorithms were proposed such as Dijkstra’s and the
+A* algorithm. They provided efficient solutions for handling
+the static shortest path problems. However, these solutions
+had limitations in adapting to the stochastic nature of traffic
+dynamics, which motivated the development of more adaptable
+algorithms. Graph-based methods like the Bellman–Ford
+algorithm [15] and Floyd–Warshall algorithm [16] expanded
+the knowledge base for the shortest path problems to handle
+more complex network structures. Other approaches involving
+IET Intelligent Transport Systems, 2025
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+FIGURE 1
+Vehicle routing problem. Illustration of an urban grid network showcasing the application of an optimized vehicle routing algorithm.
+The green line represents the most efficient path calculated from the origin (O) to the destination (D), navigating through various city blocks and traffic
+conditions. The algorithm strategically selects routes to minimize travel time and avoid congestion.
+
+The deep learning models especially convolutional neural networks (CNNs) [22] and recurrent neural networks (RNNs) [23]
+played an important role in traffic prediction and route optimization. These models are capable of discerning complex traffic
+patterns and can build better routing strategies. RL provides many
+foundational algorithms like Q-learning that can set the stage
+for models to learn and refine routing policies for problems in
+the field of urban traffic environment. The integration of Qlearning with DQN [24] represented an impressive advancement
+that enables the handling of complex and high-dimensional state
+spaces of urban traffic networks. [25] applied RL for solving the
+VRP using a policy model with an RNN and attention mechanism. Their approach demonstrated competitive performance
+against traditional heuristics and highlighted RL’s adaptability
+for dynamic VRP scenarios. Dynamic attention model (AM-D) by
+[26] proposed a dynamic attention mechanism that updates node
+embeddings during solution construction for VRP. This approach
+improves adaptability and generalization across varying problem
+sizes. [27] proposed an RL-based hyper-heuristic (RLHH) method
+to solve the heterogeneous vehicle routing problem (HVRP) by
+dynamically selecting meta-heuristics, improving scalability for
+large-scale routing tasks. Another work by [28] explored graph
+neural networks combined with dynamic programming to solve
+VRP efficiently. Their approach achieved strong performance
+on tasks like TSP and VRP while improving scalability and
+solution speed. On the same lines, [29] introduced a Q-learningbased multiobjective evolutionary algorithm (QMOEA) to solve
+VRP with time windows (VRPTW), optimizing vehicle duration,
+energy consumption, and customer satisfaction. Their hybrid
+initialization and adaptive local search strategies significantly
+improved convergence and solution quality. In the same year, a
+study conducted by [30] provided an extensive review of recent
+advancements in solving the VRP using RL techniques. They
+highlighted the benefits of RL over conventional methods like
+OR-Tools and meta-heuristics, emphasizing RL’s adaptability for
+dynamic and stochastic VRP variants. The work underscores
+RL’s ability to efficiently handle large-scale instances while
+optimizing vehicle routes, although computational challenges
+remain a limitation.
+In their study [31] tackled the stochastic vehicle routing problem (SVRP) by introducing a RL model that incorporates both
+stochastic demands and travel costs. The proposed RL framework
+outperformed state-of-the-art methods like ACO, reducing travel
+costs by 3.43%, while demonstrating robustness across varying
+
+problem sizes and stochastic settings. Recently, [32] further
+advanced RL applications in routing problems by proposing
+a DQN-based adaptive search to solve time-dependent green
+VRPs, achieving significant improvements in solution quality
+and diversity. [33] in their work, combined Q-learning with
+genetic algorithms to optimize traffic light scheduling, achieving notable improvements in vehicle waiting times compared
+to conventional methods. Then, [34] reviewed a great deal
+of ML-based VRP methods, emphasizing RL’s capability to
+handle dynamic and large-scale problems while identifying
+challenges like computational cost and generalization. A wellsummarized paper by [35] provided a comprehensive survey
+of ML-based approaches to solving VRPs. Their work classifies
+methods into end-to-end and hybrid approaches while evaluating
+state-of-the-art solutions on benchmark datasets. The study
+emphasizes the potential of ML models to address complex
+routing scenarios efficiently compared to traditional optimization
+methods
+There has been major progress in traffic simulation tools that provide better computational power and have built-in tools for route
+and vehicle characterization. These tools help in improving the
+simulation and evaluation of traffic scenarios. The open-source
+SUMO simulation platform with its comprehensive supporting
+tools and external control features via APIs, has provided a
+conducive platform for applying and testing RL algorithms
+for routing-related problems. Despite these advancements, the
+application of RL algorithms utilizing the SUMO framework
+remains an unexplored path. Research efforts by [36–38] have
+shown progress in addressing various traffic navigation challenges using RL-based algorithms within the SUMO environment
+by tackling problems from traffic signal prediction to traffic
+controller benchmarking. A notable experiment by [39] showed
+the potential of RL-based algorithms to enable vehicles to learn
+better navigation strategies in a controlled setting using SUMO
+and TraCI. Building on this foundation, [40] presented a dynamic
+learning rate in RL for real-time route navigation, showcasing the
+algorithm’s adaptability to sudden traffic changes. In this study,
+we leverage the DQL-PER model to contribute towards providing
+solutions to the VRP. DQL-PER is a robust RL method and its
+enhanced learning mechanisms make it a promising candidate
+for addressing the complexities of urban traffic management. By
+prioritizing important experiences and reducing overestimation
+bias, DQL-PER potentially delivers improved solutions for realtime traffic management and can address the challenges of traffic
+congestion taking into account the stochastic nature of urban
+traffic flows. To evaluate DQL-PER, we aim to test its efficacy
+against other state-of-the-art RL algorithms namely Q-learning,
+double Q-learning, and DQN.
+
+3
+
+Model Development
+
+In this section, we provide an in-depth explanation of the
+methodologies and algorithms used in the study. The focus is on
+DQL-PER and its application within the SUMO traffic simulation
+environment. We start by discussing the underlying Markov
+decision processes (MDPs), followed by a detailed exposition of
+Q-learning, DQL, and DQN, leading up to the development and
+implementation of the DQL-PER model.
+
+3 of 12
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+bionics-based methods introduced some innovative algorithms
+such as bee colony optimization [17], which mimicked the natural
+searching behaviour of honey bees to enhance route optimization.
+Subsequently, genetic algorithms (GA) were developed and were
+further bolstered by evolutionary strategies (ES) [18] and genetic
+programming (GP) [19], by leveraging the process of natural
+evolution to identify optimal or near-optimal solutions for
+routing problems. The repository of sample-based planning
+methods also expanded to include probabilistic roadmaps (PRM)
+[20] and the visibility graph method [21], providing advanced
+strategies for handling high-dimensional spaces. These methods
+advanced the transition towards the algorithm’s capability of
+addressing the subtle demands of vehicle routing in complex
+environments.
+
+Markov Decision Processes (MDPs)
+
+At the core of RL algorithms lies the MDP, which provides
+a mathematical framework for decision-making in stochastic
+environments. An MDP is defined as a tuple (𝑆, 𝐴, 𝑃, 𝑅, 𝛾), where:
+∙ S: A finite set of states, 𝑆 = {𝑠1 , 𝑠2 , … , 𝑠𝑛 }. In the context of
+traffic management, each state represents the current traffic
+condition at a specific road segment or intersection.
+∙ A: A finite set of actions, 𝐴 = {𝑎1 , 𝑎2 , … , 𝑎𝑚 }. Each action
+corresponds to a possible decision, such as selecting the next
+road segment for a vehicle.
+∙ P: A state transition probability function, 𝑃 ∶ 𝑆 × 𝐴 × 𝑆 →
+[0, 1], which specifies the probability of transitioning from one
+state to another after taking a specific action. For instance,
+in traffic routing, 𝑃(𝑠, 𝑎, 𝑠′ ) could represent the likelihood of
+reaching a less congested road segment 𝑠′ after taking action
+𝑎 in state 𝑠.
+∙ R: A reward function, 𝑅 ∶ 𝑆 × 𝐴 × 𝑆 → ℝ, which provides
+feedback to the agent for transitioning between states. In this
+study, rewards are shaped based on traffic conditions, such as
+reduced waiting times on road segments.
+∙ 𝛾: The discount factor, 0 ≤ 𝛾 < 1, which determines the
+importance of future rewards relative to immediate rewards.
+A higher 𝛾 encourages the agent to prioritize long-term gains
+over short-term benefits.
+The objective of an MDP is to identify a policy 𝜋 ∶ 𝑆 → 𝐴 that
+maximizes the expected cumulative discounted reward, given by:
+𝐺𝑡 = 𝔼
+
+[∞
+∑
+
+]
+𝛾𝑘 𝑅𝑡+𝑘+1 ,
+
+FIGURE 2
+Flowchart representation of the Q-learning algorithm,
+highlighting the state-action selection, reward update, and Q-value
+computation.
+
+where:
+∙ 𝑟 is the reward received after transitioning from state 𝑠 to state
+𝑠′ by taking action 𝑎.
+∙ 𝛼 is the learning rate, determining how much new information overrides the old information.
+∙ 𝛾 is the discount factor.
+∙ max 𝑎′ 𝑄(𝑠′ , 𝑎′ ) is the estimated maximum future reward
+achievable from the next state 𝑠′ .
+
+(1)
+
+𝑘=0
+
+where 𝐺𝑡 represents the total discounted reward starting from
+state 𝑠𝑡 under the policy 𝜋. Here:
+
+To enhance clarity and focus on the core logic, we provide a
+simplified flowchart representation of the Q-learning process in
+Figure 2.
+
+∙ 𝑡: The current time step at which the agent starts making
+decisions.
+
+While Q-learning is powerful, it tends to overestimate Q-values,
+leading to suboptimal policy learning in certain environments,
+especially those with high-dimensional state spaces.
+
+∙ 𝑘: The offset representing future time steps after 𝑡. For
+example, 𝑡 + 𝑘 + 1 corresponds to the time step where the
+reward 𝑅𝑡+𝑘+1 is received.
+
+3.3
+
+Double Q-Learning (DQL)
+
+This formulation enables the agent to evaluate and improve its
+decisions over time, balancing immediate and future rewards for
+optimal performance.
+
+DQL was introduced to mitigate the overestimation bias inherent in Q-learning. Instead of using a single Q-function, DQL
+maintains two separate Q-value functions, 𝑄1 and 𝑄2 , which are
+updated independently. The update rules are as follows:
+
+3.2
+
+With a probability of 50%, 𝑄1 is updated using the following
+equation:
+
+Q-Learning
+
+Q-learning is an off-policy RL algorithm that aims to learn the
+value of taking a particular action in a particular state, known as
+the Q-value. The Q-value for a state-action pair (𝑠, 𝑎) is denoted as
+𝑄(𝑠, 𝑎), and it represents the expected cumulative reward that can
+be obtained by taking action 𝑎 in state 𝑠 and following the optimal
+policy thereafter. The update rule for Q-learning is given by:
+]
+[
+𝑄(𝑠′ , 𝑎′ ) − 𝑄(𝑠, 𝑎)
+𝑄(𝑠, 𝑎) ← 𝑄(𝑠, 𝑎) + 𝛼 𝑟 + 𝛾 max
+′
+𝑎
+
+4 of 12
+
+(2)
+
+[
+]
+′
+′
+𝑄1 (𝑠, 𝑎) ← 𝑄1 (𝑠, 𝑎) + 𝛼 𝑟 + 𝛾𝑄2 (𝑠′ , arg max
+𝑄
+(𝑠
+,
+𝑎
+))
+−
+𝑄
+(𝑠,
+𝑎)
+1
+1
+′
+𝑎
+
+(3)
+Alternatively, with the remaining 50% probability, 𝑄2 is updated
+using:
+[
+]
+′
+′
+𝑄
+(𝑠
+,
+𝑎
+))
+−
+𝑄
+(𝑠,
+𝑎)
+𝑄2 (𝑠, 𝑎) ← 𝑄2 (𝑠, 𝑎) + 𝛼 𝑟 + 𝛾𝑄1 (𝑠′ , arg max
+2
+2
+′
+𝑎
+
+(4)
+IET Intelligent Transport Systems, 2025
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+3.1
+
+This alternating update mechanism reduces overestimation bias
+by decoupling the action selection and evaluation processes,
+thereby leading to more accurate value estimates and a more
+stable learning process. To provide a high-level overview, the DQL
+process is illustrated in Figure 3.
+
+3.4
+
+3.5
+DQL-PER: Double Q-Learning with
+Prioritized Experience Replay
+
+Deep Q-Network (DQN)
+
+DQN combines Q-learning with deep neural networks to handle
+high-dimensional state spaces. In DQN, a neural network is
+used to approximate the Q-value function, 𝑄(𝑠, 𝑎; 𝜃), where 𝜃
+represents the parameters of the network. The key innovation
+in DQN is the use of experience replay and a target network to
+stabilize training.
+∙ Experience replay: Instead of updating the Q-values immediately after each action, DQN stores experiences (𝑠, 𝑎, 𝑟, 𝑠′ )
+in a replay buffer. During training, random mini-batches are
+sampled from this buffer to update the Q-values, which breaks
+the correlation between consecutive samples and improves
+learning stability.
+∙ Target network: A separate target network with parameters 𝜃 −
+is used to generate the Q-value target in the loss function:
+𝐿(𝜃) = 𝔼
+
+[(
+
+𝑄(𝑠′ , 𝑎′ ; 𝜃 − ) − 𝑄(𝑠, 𝑎; 𝜃)
+𝑟 + 𝛾 max
+′
+𝑎
+
+FIGURE 4
+Flowchart representation of the DQN algorithm highlighting the replay buffer and target network for stable Q-value updates.
+
+)2 ]
+(5)
+
+The parameters of the target network 𝜃 − are periodically
+updated to match the main network’s parameters 𝜃, which
+helps prevent the feedback loop of instability in the Q-value
+updates.
+Figure 4 provides a high-level representation of the DQN workflow.
+
+Building on the advantages of DQL and DQN, we implement the
+DQL-PER algorithm, which incorporates the following enhancements. By integrating DQL’s two-network approach to mitigate
+overestimation bias with the replay architecture originally introduced by DQN, DQL-PER leverages both stability and sampling
+efficiency. DQL ensures more accurate Q-value estimation, while
+the prioritized replay concept accelerates convergence by focusing on high-Temporal Difference (TD)-error transitions. This
+synergy not only reduces bias and enhances learning efficiency,
+but also equips DQL-PER with the scalability needed to handle
+large-scale urban traffic networks more effectively.
+∙ Prioritized experience replay (PER): Instead of sampling
+experiences uniformly from the replay buffer, PER assigns a
+priority to each experience based on its TD error, 𝛿 = |𝑟 +
+𝛾 max 𝑎′ 𝑄(𝑠′ , 𝑎′ ) − 𝑄(𝑠, 𝑎)|. Experiences with larger TD errors
+are sampled more frequently, as they have a higher potential
+to improve the Q-value estimates.
+∙ DQL mechanism: By maintaining two Q-functions, DQLPER benefits from reduced overestimation bias, leading to
+more accurate value estimations. This dual-network structure
+decouples action selection from action evaluation, addressing
+a key limitation in standard Q-learning and DQN.
+∙ Scalability and efficiency: DQL-PER is specifically designed to
+handle large-scale traffic networks. The use of PER ensures
+that the most informative experiences are used to update
+5 of 12
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+FIGURE 3
+High-level flowchart representation of DQL, showcasing the use of two Q-functions to decouple action selection and evaluation
+for reduced overestimation bias.
+
+Q-Table 1 structure for DQL-PER.
+
+States (Current edge)
+
+Edge A
+
+Edge B
+
+...
+
+Edge N
+
+Edge ID 1
+
+𝑄1 (Edge1, EdgeA)
+
+𝑄1 (Edge1, EdgeB)
+
+...
+
+𝑄1 (Edge1, EdgeN)
+
+Edge ID 2
+
+𝑄1 (Edge2, EdgeA)
+
+𝑄1 (Edge2, EdgeB)
+
+...
+
+𝑄1 (Edge2, EdgeN)
+
+...
+
+...
+
+...
+
+...
+
+𝑄1 (EdgeM, EdgeA)
+
+𝑄1 (EdgeM, EdgeB)
+
+...
+
+𝑄1 (EdgeM, EdgeN)
+
+...
+Edge ID M
+
+Note: The Q-Table structure illustrates the possible actions (next edges) for each state (current edge) in the DQL-PER model.
+
+the Q-values, improving learning efficiency and convergence
+speed in high-dimensional state spaces.
+The integration of DQL and PER is achieved as follows: In DQL,
+two Q-functions (𝑄1 and 𝑄2 ) are maintained to separate action
+selection from evaluation, mitigating overestimation bias. The
+target Q-value is calculated as:
+)
+(
+𝑄1 (𝑠′ , 𝑎′ )
+𝑄target (𝑠, 𝑎) = 𝑟 + 𝛾𝑄2 𝑠′ , arg max
+′
+𝑎
+
+(6)
+
+where 𝑄1 is used to select the next action and 𝑄2 evaluates its
+value. This ensures a balanced update process. To further enhance
+learning efficiency, PER prioritizes transitions in the replay buffer
+based on the TD error:
+
+ALGORITHM 1
+replay (DQL-PER)
+
+1:
+
+Double Q-learning with prioritized experience
+
+Initialize Q-tables 𝑄1 and 𝑄2
+
+2:
+
+Initialize prioritized experience replay buffer (PER)
+
+3:
+
+Set learning rate 𝛼, discount factor 𝛾, initial exploration
+rate 𝜖
+
+4:
+
+Set replay buffer size, mini-batch size
+
+5:
+
+for each episode do
+
+6:
+
+Initialize state 𝑠
+
+7:
+
+while 𝑠 is not terminal do
+
+8:
+
+With probability 𝜖, select a random action 𝑎
+
+9:
+
+Otherwise, select 𝑎 = arg max 𝑎 (𝑄1 (𝑠, 𝑎) + 𝑄2 (𝑠, 𝑎))
+
+10:
+
+Execute action 𝑎, observe reward 𝑟, and new state 𝑠′
+
+11:
+
+Compute TD error 𝛿
+
+12:
+
+Store transition (𝑠, 𝑎, 𝑟, 𝑠′ , 𝛿) in PER
+
+(8)
+
+13:
+
+Sample a mini-batch from PER based on transition
+priority
+
+where 𝛼 controls the prioritization strength and 𝜖 ensures nonzero probabilities for all transitions. This approach prioritizes
+experiences with higher TD errors, allowing the algorithm to
+focus on critical learning updates, improving convergence. The
+update rule for DQL-PER is then formalized as:
+[
+]
+𝑄1 (𝑠′ , 𝑎′ )) − 𝑄1 (𝑠, 𝑎)
+𝑄1 (𝑠, 𝑎) ← 𝑄1 (𝑠, 𝑎) + 𝛼 𝛿 + 𝛾𝑄2 (𝑠′ , arg max
+′
+
+14:
+
+for each sampled transition (𝑠𝑗 , 𝑎𝑗 , 𝑟𝑗 , 𝑠𝑗′ , 𝛿𝑗 ) do
+
+)
+(
+|
+|
+′
+′
+𝑄
+(𝑠
+,
+𝑎
+)
+− 𝑄1 (𝑠, 𝑎)||
+𝛿 = ||𝑟 + 𝛾𝑄2 𝑠′ , arg max
+1
+′
+𝑎
+|
+|
+
+(7)
+
+The sampling probability of a transition 𝑖 is defined as:
+𝑝𝑖𝛼
+
+𝑃(𝑖) = ∑
+
+𝑘
+
+𝑝𝑘𝛼
+
+,
+
+𝑝𝑖 = 𝛿𝑖 + 𝜖
+
+𝑎
+
+(9)
+In the SUMO traffic simulation, road edge IDs represent the state
+𝑠, the action 𝑎 corresponds to route choices at junctions, and
+the reward 𝑅 indicates the efficacy of the actions in reducing
+travel time and congestion. Based on a calibrated traffic model
+representing a peak hour scenario, the reward function is built
+around the road segments’ mean waiting time (MWT) and is
+defined as:
+⎧
+⎪+100
+⎪−5
+⎪
+⎪−10
+⎪
+𝑅(𝑠𝑡 , 𝑎𝑡 ) = ⎨−20
+⎪−30
+⎪
+⎪−1
+⎪
+⎪−100
+⎩
+
+Upon successful arrival at the destination
+if MWT ≤ 50 s
+if 50 < MWT ≤ 100 s
+if 100 < MWT ≤ 150 s
+if 150 < MWT ≤ 200 ec
+at the start of the journey (origin)
+otherwise.
+
+(10)
+This reward-shaping framework ensures the agent learns to avoid
+highly congested routes and reduces travel times efficiently. The
+6 of 12
+
+15:
+
+Update 𝑄1 or 𝑄2 using target Q-value
+
+16:
+
+end for
+
+17:
+
+Update 𝑠 ← 𝑠′
+
+18:
+
+end while
+
+19:
+
+Apply decay to 𝜖
+
+20: end for
+
+DQL-PER algorithm uses two Q-tables (Table 1) for maintaining
+and updating state-action values. PER ensures that transitions
+with the highest learning potential are prioritized for sampling,
+thereby accelerating the training process. To further balance
+exploration and exploitation, we adopt an 𝜖-greedy strategy with
+a decaying 𝜖 over training episodes. The pseudo-code for the
+DQL-PER algorithm is provided in Algorithm 1.
+Figure 5 visually illustrates the DQL-PER algorithm’s workflow,
+emphasizing its key components: experience sampling, prioritized updates, and Q-value evaluation. This structured interaction
+between DQL and PER ensures stable learning and faster convergence, enabling the algorithm to efficiently scale to larger
+traffic networks.
+To summarize, DQL-PER combines the strengths of DQL and
+DQN to address the key limitations of these approaches. While
+IET Intelligent Transport Systems, 2025
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+TABLE 1
+
+Algorithm graph.
+
+Q-learning and DQN suffer from overestimation bias due to using
+the same Q-function for action selection and evaluation, DQL
+reduces this bias by decoupling the two processes. On the other
+hand, DQN improves sample efficiency with experience replay,
+but its uniform sampling treats all transitions equally. DQL-PER
+builds upon these methods by introducing prioritized experience
+replay, which prioritizes high-TD-error experiences for learning,
+improving convergence speed and stability. This combination
+allows DQL-PER to efficiently handle the high-dimensional and
+dynamic nature of VRP in urban traffic networks.
+
+4
+
+Simulation Results
+
+In this section, the experiments that were done to evaluate
+the performance and scalability of DQL-PER under different urban traffic network challenges are discussed. We performed scalability analysis and examined networks of varying
+complexities, characterized by different node counts at 𝑁 =
+39, 545, 1672, 3236, and 9652. The node counts represent a range
+of urban scenarios where a small number represents a small
+urban area and a larger number also includes interstates. A
+visual representation (Figure 6) of the SUMO map network,
+along with its respective node counts, begins with a detailed
+performance comparison of the algorithm on a network of 39
+nodes to demonstrate its efficiency in a controlled setting. This
+is followed by analysis on larger networks to test the scalability
+of the algorithm which is a key factor for the applicability in
+the real world urban environment. The model was created in
+the Python framework and was communicated with SUMO 1.9.2
+through TraCI.
+
+4.1
+Detailed Model Comparison on a 39-Node
+Network
+In order to evaluate the performance of DQL-PER, we performed
+several experiments and compared it to the chosen baseline
+
+FIGURE 6
+Visual representations of map-networks corresponding
+to their respective node counts.
+
+algorithms. The metrics used for the evaluation were convergence
+time and iterations per second (it/s) on the performance characteristics of each method. For simplicity, the results discussed here
+relate to a network of 39 nodes (Figure 7). The nodes are labelled
+with the origin and destination of the network. The location of
+the network is Columbus, Ohio, USA, which serves as the context
+for the process of DQL-PER. This geographical representation
+of the state and action spaces not only delineates the scope of
+the traffic model but also anchors the algorithm’s operation to a
+real-world scenario.
+The DQL-PER hyperparameters were also heuristically decided
+(Table 2). The learning rate 𝛼 dictates the degree to which new
+information overrides old information, thus a balanced value
+is crucial to ensure that the model learns effectively without
+discarding valuable prior knowledge. The discount factor 𝛾
+influences how future rewards are valued, affecting the agent’s
+foresight and thus its decision-making strategy. The parameters
+related to 𝜖, namely the initial epsilon, minimum epsilon, and
+epsilon decay, govern the exploration–exploitation balance, a core
+component in RL that manages the trade-off between discovering
+new actions and leveraging known strategies. The prioritization
+exponent 𝛼 and the importance-sampling exponents 𝛽start to 𝛽end ,
+along with their increment, adjust the bias and variance of the
+prioritized experience replay, which is critical for the stability
+and convergence of the learning process. These hyperparameters were picked by testing different combinations through a
+grid search and we kept adjusting these until our model was
+learning efficiently.
+We performed a performance comparison of the various models
+used (Table 3). The convergence time metric shows the algorithm’s efficiency in learning optimal policies, and it/s convey
+the computational efficiency and speed of the algorithm during execution. The performance of DQL-PER versus other RL
+7 of 12
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+FIGURE 5
+
+TABLE 2
+
+better understanding of the learning dynamics. Here, the closest
+competitors are the DQL-per and the DQN. Their consistent
+converging increases their effectiveness as a much more robust
+solution. On the other hand, Q-learning shows more variable
+curves that show its inefficacy in high dimensional state spaces
+as it does not converge within the range of observed episodes.
+
+Hyperparameters for DQL-PER algorithm.
+
+Hyperparameter
+
+Value
+
+Learning rate (𝛼)
+
+0.5
+
+Discount factor (𝛾)
+
+0.95
+
+Initial epsilon (𝜖initial )
+
+1.0
+
+Minimum epsilon (𝜖min )
+
+0.01
+
+Epsilon decay
+
+0.995 per iteration
+
+Replay memory size (𝐷)
+
+2000
+
+Prioritization exponent (𝛼)
+
+0.6
+
+Importance-sampling exponent start
+(𝛽start )
+
+0.4
+
+Importance-sampling exponent end
+(𝛽end )
+
+1.0
+(𝛽end − 𝛽start )∕5000
+
+Importance-sampling exponent
+increment
+Minibatch size
+
+32
+
+TABLE 3
+Performance comparison of reinforcement learning
+methods in terms of convergence time and iterations per second (it/s).
+
+Method
+Q-learning
+
+Convergence
+time(hh:mm:ss)
+
+it/s
+
+00:00:03
+
+1560.68
+
+Double Q-learning
+
+00:00:09
+
+503.05
+
+DQL-PER
+
+00:01:11
+
+44.88
+
+DQN
+
+00:10:01
+
+9.19
+
+methods over 5000 episodes (Figure 8) shows that while DQN
+consistently achieves higher rewards over the training period,
+DQL-PER shows a better degree of stability, which is the primary
+choice here. DQL-PER quickly reaches a steady state of high
+reward, followed by the DQN model. The DQN model shows a
+robust performance but it has a longer convergence time that
+makes it a potential secondary option.
+We utilized the Savitzky–Golay filter [41] to smooth out the
+curves. It helps in reducing the episode noise which gives a
+8 of 12
+
+The results (Figure 8) demonstrate the advantages of DQL-PER
+over Q-learning, DQL, and DQN. While Q-learning achieves
+faster initial learning, it suffers from significant fluctuations
+due to overestimation bias, preventing stable convergence. DQL
+addresses this bias but converges more slowly. DQN achieves
+faster convergence by leveraging experience replay but lacks prioritization, leading to slower improvements in high-dimensional
+state spaces. In contrast, DQL-PER combines the stability of DQL
+with the efficiency of prioritized replay, achieving faster and more
+stable convergence. This highlights DQL-PER’s ability to learn
+optimal routing policies efficiently, particularly in complex and
+dynamic traffic scenarios.
+To demonstrate the progression of DQL-PER’s learning, Figure 9
+shows routes generated at episodes 500, 1000 and 5000. At episode
+500, the algorithm generates a suboptimal route with a travel time
+of 19.78 min. By episode 1000, the path improves significantly,
+reducing travel time to 12.48 min. At episode 5000, the algorithm
+converges to the optimal route with a travel time of 7.53 min,
+showcasing efficient routing.
+Accelerated convergence to a stable policy is essential for realtime applications. The algorithm has learned an efficient strategy
+when it reaches convergence, which is defined as the moment at
+which it starts to provide consistent and steady performance. We
+provide a convergence threshold to quantitatively determine this
+moment. This cutoff point is set at 90% of the algorithm’s mean
+of the final awards. The algorithm is said to have converged when
+its performance rises above this point. The earliest episode where
+the accumulated rewards either match or surpass this threshold
+is then identified as the convergence episode. This methodology
+offers a simple criterion for evaluating the algorithm’s convergence and provides an effective assessment of its learning curve.
+We analysed average reward, variance, and convergence across
+the previous 500 episodes (Table 4) which is a collection of
+performance metrics that more fully represent each algorithm’s
+quality. This provides a sense of the algorithms’ stability and
+quality. While there is no clear convergence time standard
+IET Intelligent Transport Systems, 2025
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+FIGURE 7
+Visualization of a 2-mile traffic network in NW Franklin County (Columbus), showing the origin, destination, and simulated vehicles
+(yellow points) generated in SUMO to represent traffic flow. This network serves as a testbed for evaluating the DQL-PER algorithm’s routing efficiency.
+
+FIGURE 9
+Routes generated by DQL-PER at episodes 500, 1000
+and 5000, with corresponding travel times of 19.78, 12.48, and 7.53 min,
+respectively.
+
+TABLE 4
+
+Performance metrics for quality of RL algorithms.
+
+Algorithm
+
+Avg.
+reward
+
+Variance
+
+Convergence
+episode
+
+Q-learning
+
+−36.82
+
+18,883.06
+
+Not converged*
+
+Double Q-learning
+
+−145.43
+
+95,061.08
+
+40
+
+DQL-PER
+
+−80.48
+
+32,202.03
+
+9
+
+DQN
+
+−143.96
+
+59,327.79
+
+86
+
+*Q-learning did not converge within the timeframe due to explorationexploitation tradeoffs.
+
+in the literature, DQL-PER appears to offer a good balance
+between computational viability and performance as rewards
+stabilize within an acceptable amount of episodes. A detailed
+comparison of the RL algorithms is shown by the examination
+of the aforementioned measures. With a convergence episode of
+9, DQL-PER attains the fastest convergence of all the selected
+methods. Furthermore, in contrast to DQL and DQN, it shows
+a very small fluctuation in reward, suggesting stability in its
+learning process. To reiterate, it took one minute and eleven
+seconds to run 5000 episodes. The results show that DQL-PER
+is potentially a better option where good performance is attained
+in a timely manner. While DQN finally converges by 86 episodes,
+it takes a higher average reward and variance than double Qlearning and DQL-PER, taking longer for it to fully stabilize.
+The fact that it took 10 min to execute 5000 episodes, with a
+longer convergence time limits its performance factor in dynamic
+environments where execution speed is important.
+The primary evaluation metrics in this study are convergence
+time and it/s, which provide a benchmark for the learning efficiency and computational performance of DQL-PER compared
+to Q-learning, DQL and DQN. These metrics are critical for
+evaluating the real-time applicability of the algorithm in largescale traffic systems. While the reward function used in the
+experiments reflects improvements in travel time and congestion (as it penalizes higher MWT and rewards shorter travel
+durations), explicit measurement of these traffic outcomes is
+not presented in this study as we calculate MWT (an average
+delay that vehicles experience due to traffic jams or traffic
+stoppages at the intersection) a-priori on a particular road edge
+using a calibrated traffic simulation model. Future work will
+include a detailed analysis of DQL-PER’s effectiveness in terms
+9 of 12
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+FIGURE 8
+Performance trajectories of RL algorithms over 5000 episodes, smoothed with a Savitzky-Golay filter to highlight reward trends and
+stability, enabling comparison of learning efficiency and convergence behavior in the simulated traffic environment.
+
+5
+
+FIGURE 10
+Convergence time analysis for different RL algorithms
+as a function of network size using a log–log scale to emphasize the linear
+growth rate of convergence times.
+
+TABLE 5
+time growth.
+
+Model Identification: Fit comparison for convergence
+
+Algorithm
+
+Linear
+
+Polynomial
+
+Logarithmic
+
+Q-learning
+
+0.99
+
+0.99
+
+0.64
+
+Double Q-learning
+
+0.99
+
+0.99
+
+0.65
+
+DQL-PER
+
+0.99
+
+0.99
+
+0.63
+
+DQN
+
+0.99
+
+0.99
+
+0.65
+
+of reduced travel times and congestion, derived directly from the
+simulation outputs, to better demonstrate the practical benefits of
+the algorithm in urban traffic management scenarios.
+
+4.2
+Sizes
+
+Scalability Analysis Across Varied Network
+
+We evaluated the DQL-PER algorithm’s scalability study by
+testing its performance against growing network complexities.
+We tested the method on networks with node counts of 𝑁 =
+39, 545, 1672, 3236 and 9652. The convergence time–which is the
+amount of time needed for the method to arrive at a stable
+solution– was plotted against the network’s size (Figure 10). The
+observations (Table 5) showing the DQL-PER convergence time
+grows in a way that is strongly correlated with both a polynomial
+and a linear model. Here, a linear model would be the better
+option to reduce complexity.
+DQL-PER’s linear scalability holds a promising stance for use in
+large-scale urban networks, where it can be difficult to manage
+intricate traffic systems.
+This scalability analysis further reinforces the benefits of DQLPER over existing methods. As shown in Table 5, the convergence time of all algorithms fits well to a linear growth
+model. However, DQL-PER demonstrates superior scalability by
+maintaining stable performance even as network sizes increase
+10 of 12
+
+Conclusion
+
+In this research, double Q-learning with prioritized experience
+replay (DQL-PER) was investigated as a solution to the enduring
+problem of optimizing vehicle routing in urban traffic networks.
+The SUMO platform provided a dynamic and accurate testing
+environment, enabling a comprehensive evaluation of the algorithm. The results demonstrate that DQL-PER performs more
+accurately and efficiently than Q-learning, double Q-learning
+(DQL), and deep Q-network (DQN), particularly in handling
+high-dimensional state spaces– a critical feature for intricate
+urban traffic systems. Its reduced overestimation bias and accelerated convergence highlight its potential for real-time traffic
+management applications.
+The scalability study further underscored DQL-PER’s capacity to
+handle increasingly complex network structures, showcasing its
+applicability in large-scale urban environments. This is particularly important given the growing size and complexity of modern
+cities. Additionally, the algorithm’s improved learning efficiency
+and convergence speed make it well-suited for optimizing traffic
+flows in various urban contexts.
+However, the study also identified certain limitations of the DQLPER algorithm. First, while the scalability of DQL-PER was
+evident, the computational overhead increased significantly for
+larger networks due to the prioritization mechanism and the need
+to maintain two Q-value functions. This poses a challenge for realtime applications, where frequent updates are essential. Second,
+the algorithm’s reliance on accurate reward shaping and hyperparameter tuning introduces sensitivity to these factors, potentially
+affecting its robustness in diverse scenarios. Third, achieving
+stable convergence required extensive training episodes, limiting
+its adaptability in dynamic traffic environments where immediate
+responsiveness is crucial. These limitations present avenues for
+improvement in future work.
+To enhance its real-world applicability, future research could
+focus on integrating DQL-PER with incident management systems and adaptive signal control strategies, enabling a more
+holistic approach to urban traffic optimization. Furthermore,
+testing the algorithm with real-world traffic data and simulating
+scenarios with varying patterns and disruptions would help validate its effectiveness under practical conditions. By addressing
+the identified limitations, DQL-PER has the potential to further
+enhance its performance and scalability, making it a promising
+tool for real-world urban traffic management.
+
+Author Contributions
+Mayur Patil: conceptualization, data curation, formal analysis,
+investigation, methodology, software, validation, visualization, writing –
+original draft preparation. Pooja Tambolkar: conceptualization, formal
+IET Intelligent Transport Systems, 2025
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+significantly. Compared to DQN, which struggles with uniform
+replay sampling in larger networks, DQL-PER’s prioritization
+mechanism ensures that learning remains focussed on the most
+critical transitions. This makes DQL-PER particularly suitable for
+large-scale VRP applications where computational efficiency and
+scalability are essential.
+
+Conference on Intelligent Transportation Systems (ITSC) (IEEE, 2018),
+2575–2582.
+
+Acknowledgements
+
+16. R. W. Floyd, “Algorithm 97: Shortest Path,” Communications of the
+ACM 5, no. 6 (1962): 345.
+
+The authors would like to express their sincere gratitude to the Ohio State
+University Center for Automotive Research for providing the research
+facilities and resources essential to this study. Additionally, we extend
+our appreciation to the Ohio Department of Transportation (ODOT) for
+granting access to the valuable database, which significantly contributed
+to the success of this research.
+
+Conflicts of Interest
+The authors declare no conflicts of interest.
+Data Availability Statement
+
+15. R. Bellman, “On a Routing Problem,” Quarterly of Applied Mathematics 16 (1958): 87–90.
+
+17. D. Teodorovic, P. Lucic, G. Markovic, and M. Dell’Orco, “Bee Colony
+Optimization: Principles and Applications,” in Proceedings of the 2006 8th
+Seminar on Neural Network Applications in Electrical Engineering (IEEE,
+2006), 151–156.
+18. D. Mester, O. Bräysy, and W. Dullaert, “A Multi-Parametric Evolution
+Strategies Algorithm for Vehicle Routing Problems,” Expert Systems with
+Applications 32, no. 2 (2007): 508–517.
+19. R. Kala, “Multi-Robot Path Planning Using Co-Evolutionary Genetic
+Programming,” Expert Systems with Applications 39, no. 3 (2012): 3817–
+3831.
+
+Data sharing is not applicable to this article as no new data were created
+or analyzed in this study.
+
+20. R. Geraerts and M. H. Overmars, “A Comparative Study of Probabilistic Roadmap Planners,” in Proceedings of the Algorithmic Foundations of
+Robotics V (Springer, 2004), 43–57.
+
+References
+
+21. E. Masehian and M. R. Amin-Naseri, “A Voronoi Diagram-Visibility
+Graph-Potential Field Compound Algorithm for Robot Path Planning,”
+Journal of Robotic Systems 21, no. 6 (2004): 275–300.
+
+1. B. Pishue, “2022 Inrix Global Traffic Scorecard,” INRIX, published by
+January 2023.
+2. E. Dijkstra, “A Note on Two Problems in Connexion With Graphs,”
+Numerische Mathematik 1 (1959): 269–271.
+3. A. Patel, “Introduction to the A* Algorithm” (2014), accessed
+August
+2021,
+https://www.redblobgames.com/pathfinding/astar/introduction.html.
+4. C. Wu, S. Zhou, and L. Xiao, “Dynamic Path Planning Based on
+Improved Ant Colony Algorithm in Traffic Congestion,” IEEE Access 8
+(2020): 180773–180783.
+5. J. Kennedy and R. Eberhart, “Particle Swarm Optimization,” in Proceedings of the ICNN’95 - International Conference on Neural Networks, vol.
+4 (1995), 1942–1948.
+6. B. M. Baker and M. Ayechew, “A Genetic Algorithm for the Vehicle
+Routing Problem,” Computers & Operations Research 30, no. 5 (2003): 787–
+800.
+7. M. Elbanhawi and M. Simic, “Sampling-Based Robot Motion Planning:
+A Review,” IEEE Access 2 (2014): 56–77.
+8. T. Liebig, N. Piatkowski, C. Bockermann, and K. Morik, “Dynamic
+Route Planning With Real-Time Traffic Predictions,” Information Systems
+64 (2017): 258–265.
+9. D. Xu, P. Peng, C. Wei, D. He, and Q. Xuan, “Road Traffic Network State
+Prediction Based on a Generative Adversarial Network,” IET Intelligent
+Transport Systems 14, no. 10 (2020): 1286–1294.
+10. S. Yu, J. Zhou, B. Li, S. Mabu, and K. Hirasawa, “Q Value-Based
+Dynamic Programming With Sarsa Learning for Real Time Route
+Guidance in Large Scale Road Networks,” in Proceedings of the 2012
+International Joint Conference on Neural Networks (IJCNN) (IEEE, 2012),
+1–7.
+11. Z. Zhang and J.-M. Xu, “A Dynamic Route Guidance Arithmetic Based
+on Reinforcement Learning,” in Proceedings of the 2005 International
+Conference on Machine Learning and Cybernetics (IEEE, 2005), 3607–3611.
+12. T. Schaul, J. Quan, I. Antonoglou, and D. Silver, “Prioritized Experience Replay,” preprint, arXiv:1511.05952, February 25, 2015.
+13. D. Fährmann, N. Jorek, N. Damer, F. Kirchbuchner, and A. Kuijper,
+“Double Deep Q-Learning With Prioritized Experience Replay for
+Anomaly Detection in Smart Environments,” IEEE Access 10 (2022):
+60836–60848.
+14. P. A. Lopez, M. Behrisch, L. Bieker-Walz, et al., “Microscopic Traffic
+Simulation Using Sumo,” in Proceedings of the 2018 21st International
+
+22. H. J. Cho and C. W. Chung, “An Efficient and Scalable Approach
+to CNN Queries in a Road Network,” in Proceedings of the International Conference on Very Large Data Bases (VLDB, 2005), 865–
+876.
+23. J. Q. James, W. Yu, and J. Gu, “Online Vehicle Routing With Neural
+Combinatorial Optimization and Deep Reinforcement Learning,” IEEE
+Transactions on Intelligent Transportation Systems 20, no. 10 (2019): 3806–
+3817.
+24. D. Isele, A. Cosgun, and K. Fujimura, “Analyzing Knowledge Transfer
+in Deep Q-Networks for Autonomously Handling Multiple Intersections,”
+preprint, arXiv:1705.01197, May 2, 2017.
+25. M. Nazari, A. Oroojlooy, L. Snyder, and M. Takáč, “Reinforcement
+Learning for Solving the Vehicle Routing Problem,” in Proceedings of the
+Advances in Neural Information Processing Systems (Curran Associates
+Inc., 2018), 9861–9871.
+26. B. Peng, J. Wang, and Z. Zhang, “A Deep Reinforcement Learning
+Algorithm Using Dynamic Attention Model for Vehicle Routing Problems,” in Proceedings of the 11th International Symposium on Artificial
+Intelligence Algorithms and Applications, ISICA 2019 (Springer, 2020),
+636–650.
+27. W. Qin, Z. Zhuang, Z. Huang, and H. Huang, “A Novel Reinforcement Learning-Based Hyper-Heuristic for Heterogeneous Vehicle
+Routing Problem,” Computers & Industrial Engineering 156 (2021):
+107252.
+28. W. Kool, H. van Hoof, J. Gromicho, and M. Welling, “Deep Policy
+Dynamic Programming for Vehicle Routing Problems,” in Proceedings of
+the International Conference on Integration of Constraint Programming,
+Artificial Intelligence, and Operations Research (Springer International
+Publishing, 2022), 190–213.
+29. R. Qi, J.-q. Li, J. Wang, H. Jin, and Y.-y. Han, “Qmoea: A QLearning-Based Multiobjective Evolutionary Algorithm for Solving TimeDependent Green Vehicle Routing Problems With Time Windows,”
+Information Sciences 608 (2022): 178–201.
+30. S. M. Raza, M. Sajid, and J. Singh, “Vehicle Routing Problem Using
+Reinforcement Learning: Recent Advancements,” in Proceedings of the
+Advanced Machine Intelligence and Signal Processing (Springer Nature,
+2022), 269–280.
+31. Z. Iklassov, I. Sobirov, R. Solozabal, and M. Takáč, “Reinforcement
+Learning for Solving Stochastic Vehicle Routing Problem,” in Proceedings of the Asian Conference on Machine Learning (PMLR, 2023), 502–
+517.
+
+11 of 12
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+analysis, investigation, methodology, software, validation. Shawn
+Midlam-Mohler: project administration, resources, supervision,
+writing – review and editing.
+
+33. Deepika and G. Pandove, “Optimizing Traffic Flow With Q-Learning
+and Genetic Algorithm for Congestion Control,” Evolutionary Intelligence
+17, no. 5 (2024): 4179–4197.
+34. R. Shahbazian, L. Di Puglia Pugliese, F. Guerriero, and G. Macrina,
+“Integrating Machine Learning Into Vehicle Routing Problem: Methods
+and Applications,” IEEE Access 12 (2024): 93087–93115.
+35. A. Bogyrbayeva, M. Meraliyev, T. Mustakhov, and B. Dauletbayev,
+“Machine Learning to Solve Vehicle Routing Problems: A Survey,”
+IEEE Transactions on Intelligent Transportation Systems 25, no. 6 (2024):
+4754–4772.
+36. S. S. Mousavi, M. Schukat, and E. Howley, “Traffic Light Control
+Using Deep Policy-Gradient and Value-Function-Based Reinforcement
+Learning,” IET Intelligent Transport Systems 11, no. 7 (2017): 417–423.
+37. W. Genders and S. Razavi, “Using a Deep Reinforcement Learning
+Agent for Traffic Signal Control,” preprint, arXiv:1611.01142, November 3,
+2016.
+38. C. Wu, A. Kreidieh, K. Parvate, E. Vinitsky, and A. M. Bayen, “Flow:
+Architecture and Benchmarking for Reinforcement Learning in Traffic
+Control,” in Proceedings of the 2017 IEEE International Conference on Big
+Data (Big Data) (IEEE, 2017), 2575–2584.
+39. S. S. Koh, B. Zhou, P. Yang, Z. Yang, H. Fang, and J. Feng, “Reinforcement Learning for Vehicle Route Optimization in Sumo,” in Proceedings
+of the 2018 IEEE 20th International Conference on High Performance
+Computing and Communications; IEEE 16th International Conference
+on Smart City; IEEE 4th International Conference on Data Science and
+Systems (HPCC/SmartCity/DSS) (IEEE, 2018), 1468–1473.
+40. Y. Li, J. Tang, H. Zhao, and R. Luo, “Reinforcement Learning Method
+With Dynamic Learning Rate for Real-Time Route Guidance Based on
+Sumo,” in Proceedings of the 2022 17th International Conference on Control,
+Automation, Robotics and Vision (ICARCV) (IEEE, 2022), 820–824.
+41. R. W. Schafer, “What is a Savitzky-Golay Filter?,” IEEE Signal
+Processing Magazine 28, no. 4 (2011): 111–117.
+
+12 of 12
+
+IET Intelligent Transport Systems, 2025
+
+17519578, 2025, 1, Downloaded from https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/itr2.70002 by Sejong University, Wiley Online Library on [05/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+32. B. Yue, J. Ma, J. Shi, and J. Yang, “A Deep Reinforcement LearningBased Adaptive Search for Solving Time-Dependent Green Vehicle
+Routing Problem,” IEEE Access 12 (2024): 33400–33419.
+
+

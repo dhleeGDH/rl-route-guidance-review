@@ -1,0 +1,539 @@
+2022 IEEE International Symposium on Product Compliance Engineering - Asia (ISPCE-ASIA) | 979-8-3503-3248-3/22/$31.00 ©2022 IEEE | DOI: 10.1109/ISPCE-ASIA57917.2022.9970805
+
+Path Planning in Urban Environment Based on
+Traffic Condition Perception and Traffic Light Status
+1st Bin Song
+
+4th Tian Chen
+
+School of Computer Science and Artificial Intelligence
+Wuhan University of Technology
+Wuhan, China
+SongBinCS@whut.edu.cn
+
+School of Computer Science and Artificial Intelligence
+Wuhan University of Technology
+Wuhan, China
+chentian@whut.edu.cn
+
+2nd Weiyang Chen
+
+5th Bingyi Liu*
+
+School of Computer Science and Artificial Intelligence
+Wuhan University of Technology
+Wuhan, China
+weiyangchen@whut.edu.cn
+
+School of Computer Science and Artificial Intelligence
+Wuhan University of Technology
+Wuhan, China
+Chongqing Research Institute, Wuhan University
+of Technology
+Chongqing, China
+byliu@whut.edu.cn
+
+3rd Xinyu Zhou
+School of Computer Science and Artificial Intelligence
+Wuhan University of Technology
+Wuhan, China
+297932@whut.edu.cn
+
+Abstract—Vehicle path planning problems have been studied
+for decades. The existing path planning methods are suitable for
+simple objectives. However, for complex tasks such as planning
+paths for vehicles considering the effects of pedestrians, traffic
+lights, etc., it is difficult to design a reasonable cost function for
+the deterministic algorithm or a reasonable heuristic function
+for the heuristic algorithm. In this paper, we proposes a path
+planning model based on traffic light status and traffic condition
+awareness. When a vehicle arrives at a new road section, it
+senses the traffic light status, distribution and vehicle positions
+in the road network on each road section through V2V and
+V2I communication, and based on this information, we use an
+A2C-based deep reinforcement learning method to dynamically
+plan the shortest path for the vehicle in real time. Experiments
+show that the proposed method works effectively in terms of
+saving on driving time and waiting time to reach any destinations,
+compared to the existing solutions.
+Index Terms—Traffic light status, traffic flow, deep reinforcement learning
+
+I. I NTRODUCTION
+With the continuous increase of vehicle and urbanization,
+traffic congestion has become a widespread concern, increasing travel time and aggravating environmental pollution. If
+traffic congestion is not improved in the long term, it will lead
+to many serious social problems [1]. For vehicle drivers, the
+effective way to avoid traffic congestion is to obtain real-time
+traffic information and plan a reasonable route.
+* Corresponding author
+
+To solve the path planning problem, scholars have proposed many classical algorithms, which can be divided into
+the following categories: deterministic methods, heuristics,
+metaheuristics, and reinforcement learning methods. The first
+proposed algorithms are the Dijkstra and Floyd algorithms,
+the former of which computes the shortest path between any
+two nodes, and the latter, namely the Floyd algorithm [2],
+which computes the shortest path between all nodes in the road
+network. Although many new algorithms have been proposed
+after the Dijkstra and Floyd algorithms, they are still classical
+algorithms with less time complexity compared with other
+algorithms.
+There are many algorithms for heuristic search, such as
+local merit search, best-first search, A* algorithm, and so
+on. The A* algorithm [3], which was first proposed by Hart
+Nilsson, speeds up the search by introducing the valuation
+function, improves the accuracy of the local merit search, and
+thus obtains a wide range of applications. It is currently the
+shortest-circuit algorithm. Its time complexity is O(bd), where
+b is the average number of nodes, and d is the search depth
+of the shortest circuit from the start to the end. Many scholars
+have made improvements to the A* algorithm, such as the D*
+algorithm [4], D*Lite algorithm [5], etc.
+Both the deterministic and heuristic methods described
+above work well with simple objectives. However, for complex
+tasks such as planning paths for vehicles considering the
+effects of pedestrians, traffic lights, etc., it is challenging to
+design a reasonable cost function for the Dijkstra algorithm
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:43 UTC from IEEE Xplore. Restrictions apply.
+
+or a proper heuristic function for the A* algorithm. In 1991,
+Colorni and Dorigo proposed the Ant Colony Optimization
+(ACO) [6], a bionic algorithm inspired by the foraging behavior of ants. The ant colony algorithm is widely used to
+solve dynamic path planning problems because ants tend to
+take paths with high pheromone foraging. Although the ant
+colony algorithm has high robustness, the algorithm is prone
+to the local optimum problem. Sangeetha et al. proposed an
+intelligent gain-based ant colony path planning algorithm to
+solve the local optimum problem. However, the ant colony
+algorithm needs a long enough running time to converge in
+the case of a large road network size.
+The ultimate goal of reinforcement learning is to obtain the
+optimal policy by maximizing the reward value, which has
+a strong decision-making capability. In increasingly complex
+real-world applications, deep learning is needed to extract
+high-level features from large-scale raw data, and has strong
+perceptual capabilities, but lacks certain decision-making capabilities. Deep Reinforcement Learning (DRL) combines the
+decision-making ability of reinforcement learning with the
+perceptual ability of deep learning, which can be controlled
+directly based on the input information and is an artificial
+intelligence approach closer to human thinking. Nazari et
+al. present an end-to-end framework for solving the Vehicle
+Routing Problem (VRP) using deep reinforcement learning [7].
+Compared with the heuristic algorithm, the solution quality
+and computation time (after training) are better than the
+classical heuristics. Koh et al. propose a deep reinforcement
+learning (DRL) method to build a real-time intelligent vehicle
+routing and navigation system by formulating the task as a
+sequence of decisions [8]. The results show that the proposed
+method provides a better navigation solution than the benchmark routing optimization algorithms. Given the advantages of
+deep reinforcement learning over other methods for complex
+path planning problems, we use a deep reinforcement learning
+method based on the A2C algorithm.
+With the development of communication technology, vehicles and vehicles, vehicles and infrastructure are able to
+form a Vehicular Ad Hoc Network (VANET). Each vehicle
+can get real-time information about the traffic density of each
+road section and the traffic light status of each intersection
+in the whole road network, which provides data support
+for real-time path planning. In addition, 5G technology can
+provide higher bandwidth and greater scalability to support
+the decision-making process of path planning and deal with
+traffic congestion in more complex scenarios [9].
+According to the idea above, we have conducted some
+important work in the paper. The main contribution points of
+the article are as follows:
+•
+
+We establish a timing relationship for each traffic light in
+the road network. Then vehicles collect the traffic density
+of each road section and the traffic light status of each
+intersection through VANETs. Then, based on the traffic
+density of each section of the entire road network and the
+traffic light status of each intersection, we dynamically
+
+•
+
+•
+
+plan the shortest time-consuming path of vehicles for
+each passing section in real time.
+Our method takes into account the effect of traffic light
+status on the passage time. The time spent waiting for
+traffic lights is added to the design of the reward function
+for reinforcement learning.
+We explored the relationship between average travel time,
+average waiting time and average distance traveled with
+different traffic light durations. The experiments show
+that our method reduces the average travel time and
+average waiting time for different traffic light durations
+compared with the existing methods.
+
+The rest of the paper is organized as follows: Section II
+presents the system model, Section III presents the method,
+Section IV presents the experiment and result, and finally
+SectionV gives the conclusion and discussion.
+II. S YSTEM M ODEL
+A. Traffic Light Timing Relationship Model
+According to the design requirements of traffic lights in
+real traffic scenarios, we use the timing relationship of traffic
+light phases in the road network as shown in Fig. 1. This
+distribution method has traffic flows from different directions
+in each phase. For example, in phase A, there is straight
+and right-turning traffic from the north and south. In phase
+B, there is left-turning traffic from the north and south, and
+the four phases together constitute a complete signal cycle.
+Each traffic light changes periodically according to the rule of
+phase A → phase B → phase C → phase D → phase A. In
+addition, we assign the same duration to each traffic light in
+the road network so that intelligent vehicles can better learn
+the periodic change pattern of traffic lights.
+
+Fig. 1. Traffic light phase graph.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:43 UTC from IEEE Xplore. Restrictions apply.
+
+III. M ETHOD
+
+TABLE I
+EDGE ATTRIBUTES.
+
+A. Reinforcement Learning Process
+
+Road number
+
+Road vehicle number
+
+length
+
+e1
+e2
+...
+
+num1
+num2
+...
+
+len1
+len2
+...
+
+Note: e1 represents the road from Intersection v1 to Intersection v2, e2
+represents the road from Intersection v2 to Intersection v1 , e3 represents
+the road from Intersection v4 to Intersection v1, the weight on each edge
+is the density of vehicles. The vehicle density is defined as the number
+of vehicles on the road per unit length, the definition of the weight of the
+i-th edge formula is numi / leni , numi denotes the number of vehicles
+on the i-th lane, and leni denotes the length of the i-th road.
+
+State. Each time a vehicle reaches a new roadway, it
+indicates a new state. As shown in figure a below, the state
+of the agent at road segment e1 is s1. The vehicle enters road
+segment e2 after the left-turn action a1, and the state is s2.
+Action. In the road network, the reinforcement learning
+agent can only turn left, turn right or go straight from one
+state to another, so the action space is 3, which are left turn,
+right turn and go straight.
+Reward. The design of rewards directly affects the effect of
+reinforcement learning. In this paper, the reward is the opposite
+of the sum of the vehicle’s travel time and waiting time:
+reward = −(Ttravel + Twait )
+
+TABLE II
+NODE ATTRIBUTES.
+Intersection
+
+T raf f iclight phase
+
+Connected road section
+
+v1
+v2
+...
+
+Phase1
+Phase2
+...
+
+e1, e2, e3, e4
+e1, e2, e5, e6
+...
+
+Note: Each intersection has one traffic light, the phase of the i-th traffic
+light is phi , the duration of the i-th traffic light is timei , and each
+traffic light changes periodically according to the pattern of phaseA →
+phaseB → phaseC → phaseD → phaseA. Each intersection is connected
+to several roads.
+
+B. Road Network Model
+We use the directed graph shown in Fig. 3 to represent
+the entire road network, where each node represents an intersection and each edge represents a road segment, with nodes
+and edges as V = {v1, v2, v3..., n9} , E = {e1, e2, e3, ..., e22}
+respectively, each edge and each node has the following
+properties: as shown below.
+
+(1)
+
+Reinforcement learning seeks long-term reward. It is possible that a short-term action may bring a large reward, but that
+action may have a negative impact on future decisions.Hence,
+reinforcement learning uses the cumulative discounted return
+when updating network parameters. The formula for the cumulative discount return is as follows:
+U = R + γR1 + γ 2 R2 + γ i Ri + · · ·
+
+(2)
+
+where U is the cumulative discount return, γ is the discount
+factor and Ri is the reward for step i
+where the cumulative discount factor 0 < γ < 1, the γ i is
+less than 1, which means that the reward obtained at the later
+step has less weight than the previous one, and in the process
+of path planning, the time consumed by passing each section
+should have the same weight in the total passage time, so the
+cumulative discount factor should be set to 1.
+The agent planning path can be abstracted as a Markov
+decision process by reinforcement learning, as shown in Fig.
+3.
+When the agent is in state s1, the base station next to the
+road section collects information on the number of vehicles in
+each section of the road network and the status of traffic lights
+at each intersection through communication with vehicles and
+traffic lights. The agent will perform action a1 to enter the state
+s2 after observing this information. We count the time Ttravel
+and the time Twait of the agent in the process of switching
+from the state s1 to the state s2, and use the opposite of the
+time t1 as the reward r1 for the agent, iterating the process
+until we train a strategy with the shortest time.
+B. Advantage Actor-Critic Algorithm
+
+Fig. 2. Road network directed graph.
+
+In the path planning scenario, we choose the A2C (Advantage Actor-Critic) algorithm because it has better learning
+ability and robustness than the DQN (Deep Q-Learning)
+algorithm.
+The A2C algorithm is a policy gradient-based algorithm
+[10], unlike the Q-learning algorithm [11] [12], which learns
+the optimal policy directly as it interacts with the environment.
+The A2C algorithm has two structures: actor and critic, where
+the actor interacts with the environment and outputs the
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:43 UTC from IEEE Xplore. Restrictions apply.
+
+Fig. 4. The intuitive structure and training process of A2C.
+
+IV. E XPERIMENT
+Fig. 3. Agent state transition .
+
+A. Experiment Setting and Parameter Setting
+corresponding actions based on its observations; and then the
+critic scores the actions performed by the actor. In the process
+of simultaneous learning, the critic’s evaluation of the action
+becomes more and more accurate. Under the guidance of the
+critic, the actor knows the best action to perform in different
+states.
+In fact, the value of the critic network’s evaluation of the
+action can be approximated by a neural network, and the actor
+is a policy function that can also be represented by a neural
+network. Both the actor and the critic are fully connected
+neural networks. The actor network inputs state, outputs action
+probability distribution, selects action from it, and uses it
+as an input to the critic network. The loss function of the
+actor network subtracts a baseline from the Q-value of the
+Policy Gradient loss function to make the feedback positive
+and negative and reduce the fluctuation of the network. The
+critic neural network has the following update formula:
+Aπ (st , at ) ≈ r(at , st ) + γVθπ (st+1 ) − Vθπ (st )
+
+(3)
+
+θ ←− θ + αAπ (st , at )∇θ V π (st , at )
+
+(4)
+
+where Aπ (st , at ) is the advantage function, α is the learning
+rate, and θ is the critic network parameter,V indicates status
+value.
+At each step, the policy network parameter θ is updateed
+by:
+θ ←− θ + β∇θ logπθ (a|s)Aπ (s, a)
+
+(5)
+
+Where β is the learning rate of policy network. The A2C
+algorithm model graph is shown in Fig.4.
+
+We simulate our proposed approach using the SUMO (Simulation of Urban Mobility) open source simulation platform,
+a free, open-source, highly portable, microscopic, and continuous multi-modal traffic simulation package. SUMO comes
+with a number of support tools to automate the core tasks of
+traffic simulation creation, execution, and evaluation, such as
+network import, route calculation, visualization, and emission
+calculation. SUMO can be enhanced with custom models and
+provides various APIs to control the simulation remotely. For
+example, it provides a Traci interface to provide accurate and
+flexible traffic control and a large amount of real-time statistics
+for analysis. Therefore, it is well suited for traffic control
+model development.
+We use the total length of 4 km, the width of 3.9 km of a road
+network area for simulation experiments. The road network
+contains 51 intersections and 158 road sections, and the length
+of each road section varies. The maximum speed of each road
+section during the experiment is 50 km/h, to investigate the
+impact of the signal duration of the road network on the path
+planning, we set the signal duration of 10s, 20s, 30s, 40s, 50s,
+60s,70s,80s,90s, and 100s, respectively.
+SUMO is used to simulate the traffic conditions in the urban
+road network, with some simplifications compared to the urban
+scenario. Still, it can effectively demonstrate the feasibility
+and effectiveness of our proposed method. In the experimental
+process, the vehicles that need to do the route planning are
+driven from outside the road network and finally make their
+way out of the road network. We first list all the different
+combinations of origin and destination and then calculate the
+average travel time, the average waiting time, and the average
+travel distance of each scenario in all the above-mentioned
+combinations of origin and destination.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:43 UTC from IEEE Xplore. Restrictions apply.
+
+B. Evaluation Indicators
+In our experimental scenario, vehicles enter the road network from different intersections and can make their way
+out of the network from different intersections. To avoid the
+chance of experimental results, for each experimental scenario,
+we enumerate all possible combinations of vehicles entering
+and exiting the road network, and then calculate the average
+travel time, average waiting time, and average travel distance
+of vehicles through the road network, and use these three
+indexes as the evaluation index of experimental results.
+
+waiting time of the paths planned by A2C, DQN, and RPU are
+reduced compared with the traditional methods, and the two
+schemes, A2C and DQN, which consider traffic lights, have
+reduced the travel time and average waiting time compared
+with the RPU method, which does not consider traffic lights.
+Waiting time is further reduced. In particular, after taking into
+account the effect of traffic lights on path planning, the average
+waiting time is significantly reduced for both A2C and DQN
+compared to RPU without taking into account traffic lights.
+The main reason is that the A2C: algorithm has better learning
+
+C. Compared Methods
+SDN-Enabled Approach for Vehicle Path-Planning
+(SEARCH) [9] uses 5G base stations and UAVs (Unmanned
+Aerial Vehicles) to sense traffic changes on surrounding roads
+and build a global view of road traffic status. Then, the traffic
+volume of each road section is counted, the travel time of
+each road section is estimated by the model, and finally, the
+shortest path is calculated using the Dijkstra algorithm.
+Route Planning Using Dynamic Programming in Reinforcement Learning (RPU) [13] requires prior design of the
+road network structure and state transfer probabilities in the
+environment to avoid unnecessary exploration during the reinforcement learning training process, and finally plans the
+shortest path for the vehicle by reinforcement learning.
+Deep Q-Learning Network for Vehicle Path Planning [14]is
+a reinforcement learning method based on action values, where
+the action values are fitted by a neural network. For DQN, the
+action with the highest action value will be selected in the
+testing phase. The A2C algorithm is a policy gradient-based
+algorithm, unlike Q-Learning, which learns the optimal policy
+directly while interacting with the environment.
+Since the time for a vehicle to pass through the entire road
+network area is the sum of the travel time on the road and the
+time spent waiting for traffic lights, we use the A2C method
+for path planning and take into account the effect of traffic
+light status on path planning so that our deep reinforcement
+learning model can learn a policy with a shorter travel time.
+
+Fig. 5. Variation of average travel time with traffic light duration
+
+D. Experimental results analysis
+To evaluate the effectiveness of our method after considering
+the effect of signals on the path planning results, we set the
+signal duration to 10s, 20s, 30s, 40s, 50s, 60s, 70s, 80s, 90s,
+and 100s during the experiments. The experimental results
+are evaluated by several indexes, such as average travel time,
+average waiting time, and average travel distance.
+Fig. 5 shows the variation of the average travel time with
+traffic light duration for different methods when different
+durations of traffic lights are set in the network. Fig. 6 shows
+the variation of the average waiting time with traffic light
+duration for different methods when the different traffic light
+durations are set in the network. Fig. 7 shows the variation
+of the average distance traveled by the different methods with
+respect to the traffic light duration when the traffic lights in the
+network are set to different durations. From the following three
+figures, we can see that the average travel time and average
+
+Fig. 6. Variation of average waiting time with traffic light duration
+
+ability and robustness than the DQN (deep Q-Learning )
+algorithm in the path planning scenario. The main reason is
+that in the reward setting, we are looking for a shorter travel
+time and waiting time, so the agent will bypass the shorter but
+congested paths and look for longer but shorter travel times
+during the training and execution process.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:43 UTC from IEEE Xplore. Restrictions apply.
+
+Fig. 7. Variation of average travel distance with traffic light duration
+
+[6] Colorni A, Dorigo M, Maniezzo V. Distributed Optimization by Ant
+Colonies[C]// Proceedings of ECAL91 - European Conference on Artificial Life. 1991.
+[7] Nazari M, Oroojlooy A, Snyder L, et al. Reinforcement learning for
+solving the vehicle routing problem[J]. Advances in neural information
+processing systems, 2018, 31.
+[8] Koh S, Zhou B, Fang H, et al. Real-time deep reinforcement learning
+based vehicle navigation[J]. Applied Soft Computing, 2020, 96: 106694.
+[9] Oubbati O S, Atiquzzaman M, Lorenz P, et al. SEARCH: An SDNenabled approach for vehicle path-planning[J]. IEEE Transactions on
+Vehicular Technology, 2020, 69(12): 14523-14536.
+[10] Mnih V, Badia A P, Mirza M, et al. Asynchronous methods for
+deep reinforcement learning[C]//International conference on machine
+learning. PMLR, 2016: 1928-1937.
+[11] Sutton, R.S., McAllester, D.A., Singh, S.P., Mansour, Y., et al.: Policy
+gradient methods for reinforcement learning with function approximation. In: NIPs, vol. 99, pp. 1057–1063. Citeseer (1999)
+[12] Mnih, V., et al.: Asynchronous methods for deep reinforcement learning.
+In: International Conference on Machine Learning, pp. 1928–1937.
+PMLR (2016)
+[13] Peng N, Xi Y, Rao J, et al. Urban Multiple Route Planning Model
+Using Dynamic Programming in Reinforcement Learning[J]. IEEE
+Transactions on Intelligent Transportation Systems, 2021.
+[14] Osband I, Blundell C, Pritzel A, et al. Deep exploration via bootstrapped
+DQN[J]. Advances in neural information processing systems, 2016, 29.
+
+V. C ONCLUSION
+In this paper, we propose a path planning method based
+on traffic light status and real-time traffic flow information.
+The method is based on the deep reinforcement learning A2C
+model, in which intelligent vehicles perceive the traffic density
+of each road section and the traffic light status of each intersection and plan the shortest path in real-time through the A2C
+model. Our method has some limitations. The experiments
+are conducted on the SUMO simulation platform, and some
+simplifications are made compared with real road conditions,
+such as ignoring the effects of pedestrians, traffic accidents,
+and other factors. In the future, we will consider the impact of
+pedestrians and traffic accidents on path planning and optimize
+our algorithm to make the model more suitable for real traffic
+scenarios.
+VI. ACKNOWLEDGEMENT
+This work was in part supported by National Natural
+Science Foundation of China (No. 62272357, 62176194),
+Key Research and Development Program of Hubei (No.
+2022BAA052), Key Research and Development Program
+of Hainan (No. ZDYF2021GXJS014), Science Foundation
+of Chongqing of China (cstc2021jcyj-msxm4262), Research
+Project of Chongqing Research Institute, Wuhan University of
+Technology (ZD2021-04, ZL2021-05).
+R EFERENCES
+[1] Y . Wang et al., “Analysing the spatial configuration of urban bus
+networks based on the geospatial network analysis method,” Cities, vol.
+96, Jan. 2020, Art. no. 102406, doi: 10.1016/j.cities.2019.102406.
+[2] R. W. Floyd, “Algorithm 97: Shortest path,” Commun. ACM, v o l . 5
+, no. 6, p. 345, Jun. 1962.
+[3] P. Hart, N. Nilsson, and B. Raphael, “A formal basis for the heuristic
+determination of minimum cost paths,” IEEE Trans. Syst. Sci. Cybern.,
+vol. SSC-4, no. 2, pp. 100–107, Oct. 1968.
+[4] A. Stentz, “Optimal and efficient path planning for partially known
+environments,” in Intelligent Unmanned Ground Vehicles. San Diego,
+CA, USA: Springer, 1997, pp. 203–220.
+[5] S. Koenig and M. Likhachev, “D* lite,” in Proc. AAAI, vol. 15, 2002,
+pp. 476–483.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:43 UTC from IEEE Xplore. Restrictions apply.
+
+

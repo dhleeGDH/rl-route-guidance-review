@@ -1,0 +1,794 @@
+Proceedings of the 6th International Conference on Electronics and Sustainable Communication Systems (ICESC-2025)
+IEEE Xplore Part Number: CFP25V66-ART; ISBN: 979-8-3315-5503-0
+
+2025 6th International Conference on Electronics and Sustainable Communication Systems (ICESC) | 979-8-3315-5503-0/25/$31.00 ©2025 IEEE | DOI: 10.1109/ICESC65114.2025.11212408
+
+Intelligent Routing in Connected Autonomous
+Vehicles using the ADAPT-S Learning Architecture
+Vaishnavi T
+Department of ECE
+Vel Tech Rangarajan Dr. Sagunthala
+R&D Institute of Science and
+Technology
+Chennai, India
+vaishnavitamilselvan@gmail.com
+
+Maram Y. Al-Safarini
+Computer Science Department
+Zarqa University, zarqa, Jordan
+University of Business and
+Technology, Jeddah, 21448, Saudi
+Arabia. maram@zu.edu.jo
+
+Nalini.N
+Department of ECE
+Vel Tech Rangarajan Dr. Sagunthala
+R&D Institute of Science and
+Technology
+Chennai, India
+nalinineela07@gmail.com
+
+Stalin T
+Department of Mathematics
+
+J. Krishnaraj,
+Department of Mechanical
+Engineering
+MLR Institute of Technology,
+Hyderabad, Telangana, India
+dr.j.krishnaraj@mlrinstitutions.ac.in
+
+M. Dinesh
+Department of VLSI Microelectronics
+Saveetha Institute of Medical and
+Technical Sciences (SIMATS),
+Saveetha University, Chennai.
+mdinesher@gmail.com
+
+Vel Tech Rangarajan Dr. Sagunthala
+R&D Institute of Science and
+Technology
+Chennai, India
+drstalint@veltech.edu.in
+
+Abstract— The increasing complexity of intelligent
+transportation systems driven by the deployment of
+connected autonomous vehicles necessitates advanced,
+adaptive traffic management solutions. This paper
+presents a novel hybrid learning architecture that
+integrates deep reinforcement learning with ant colony
+optimization to enable edge-aware, real-time routing
+decisions for connected vehicle networks. Each vehicle
+functions as an intelligent agent trained via a multi-agent
+actor-critic deep reinforcement learning model, enhanced
+with attention mechanisms for context-sensitive
+navigation. Ant colony optimization is used to refine
+global routing paths through pheromone-inspired
+collective learning, ensuring adaptive optimization under
+dynamic traffic conditions. The proposed approach is
+formalized as ADAPT-S (Ant-Driven Adaptive Policy
+Training with Simulation-Based Validation), combining
+swarm intelligence, policy learning, and SUMO-based
+simulation.
+The
+model
+demonstrates
+superior
+performance in Simulation of Urban Mobility (SUMO)
+environments, outperforming traditional routing
+methods in reducing travel time, congestion, and signal
+wait periods. The proposed method results validated the
+framework’s effectiveness in addressing key limitations of
+existing methods, particularly in achieving decentralized
+coordination, scalability, and responsiveness in connected
+autonomous vehicle routing systems.
+Keywords— Connected Autonomous Vehicles (CAV), Deep
+Reinforcement Learning (DRL), Ant Colony Optimization (ACO),
+multi-agent actor-critic model, attention mechanism, Simulation
+of Urban Mobility (SUMO), ADAPT-S Algorithm.
+
+I.
+
+enhance traffic efficiency, safety, and sustainability.
+Globally, nations like the United States, Japan, and Germany
+have invested significantly in CAV pilot programs, such as
+Waymo’s fully autonomous ride-hailing in Phoenix or
+Japan’s autonomous shuttles in Tokyo for urban aging
+support. In India, the Ministry of Road Transport and
+Highways (MoRTH) has initiated frameworks supporting AIintegrated traffic systems and 5G-V2X testbeds. By 2025,
+numerous journals—including IEEE Transactions on
+Intelligent Transportation Systems and Elsevier's
+Transportation Research Part C—report a shift toward
+decentralized and cooperative mobility models that position
+CAVs as critical components in next-generation ITS
+infrastructures [1].
+To achieve real-time decision-making in complex and
+dynamic environments, advanced algorithmic models are
+being deployed across ITS and CAV domains. Among them,
+Deep Reinforcement Learning (DRL) has shown remarkable
+success in enabling adaptive traffic signal control, vehicle
+routing, and behavioral prediction. DRL, particularly in
+multi-agent configurations (MA-RL), empowers individual
+vehicles or intersections to learn optimal actions based on
+environmental feedback. Meanwhile, swarm intelligence
+techniques like Ant Colony Optimization (ACO) are
+employed for global route optimization due to their ability to
+solve combinatorial problems through distributed,
+pheromone-inspired search mechanisms. Recent hybrid
+models have explored combining these paradigms to integrate
+local adaptivity (via DRL) with global coordination (via
+ACO), forming robust decision systems for high-density
+traffic environments [2].
+
+INTRODUCTION
+
+Recently, The evolution of Intelligent Transportation
+Systems (ITS) is reshaping modern urban mobility through
+data-driven, automated, and connected technologies. Central
+to this transformation is the deployment of Connected
+Autonomous Vehicles (CAVs), which integrate on-board
+intelligence, vehicular communication, and sensor fusion to
+
+979-8-3315-5503-0/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:57:02 UTC from IEEE Xplore. Restrictions apply.
+
+645
+
+Proceedings of the 6th International Conference on Electronics and Sustainable Communication Systems (ICESC-2025)
+IEEE Xplore Part Number: CFP25V66-ART; ISBN: 979-8-3315-5503-0
+
+systems like urban traffic. When applied to connected
+autonomous vehicles, this integrated approach enables each
+vehicle to learn context-aware behaviors (via DRL) while
+benefiting from globally optimized route paths (via ACO).
+This not only reduces travel time and fuel consumption but
+also
+supports
+decentralized,
+fault-tolerant
+traffic
+management. Hence, such hybrid intelligence models are
+poised to significantly enhance real-time control,
+coordination, and responsiveness in CAV-based ITS
+environments.
+II.
+
+RELATED WORKS
+
+Fig. 1. CAV in ITS Environment
+
+Despite advancements, existing ITS routing as in Figure 1 and
+control models face critical limitations. Most traditional
+systems rely on centralized architectures that suffer from
+scalability issues, communication latency, and limited
+adaptability to real-time disruptions such as accidents or
+sudden congestion. Furthermore, reinforcement learningbased models, though powerful, often converge to local
+optima when applied in isolation [3]. These issues have
+prompted researchers to adopt hybrid frameworks—like
+DRL-ACO combinations—in applications such as smart
+warehouse navigation, robotic swarm control, and energyefficient building systems. However, their application to
+connected traffic management remains underexplored. The
+proposed model in this work—ADAPT-S (Ant-Driven
+Adaptive Policy Training with Simulation-Based
+Validation)—leverages this synergy to improve decisionmaking in decentralized CAV traffic networks.
+With the rise of edge computing, vehicle-to-everything
+(V2X) communication, and real-time simulation platforms
+like Simulation of Urban Mobility (SUMO), traffic
+optimization models are becoming increasingly intelligent,
+context-aware, and scalable. Frameworks like ADAPT-S are
+positioned to bridge gaps between local learning and global
+optimization, empowering vehicles to act independently
+while cooperating with the broader system. These
+technological advancements indicate a shift from reactive
+control to proactive and predictive mobility, transforming
+how urban transportation ecosystems are managed. As CAV
+deployment accelerates globally, the integration of adaptive
+learning and swarm-based reasoning will play a pivotal role
+in ensuring sustainable, efficient, and autonomous urban
+mobility.
+Recent studies across various domains have demonstrated the
+efficacy of hybrid models combining deep reinforcement
+learning and swarm-based optimization. In industrial
+automation, such combinations have improved multi-robot
+coordination for task allocation and warehouse navigation
+with reduced delay and energy usage. In smart grid energy
+distribution, DRL-ACO models have been used to balance
+dynamic loads while maintaining system stability under
+uncertainty. Similarly, autonomous drone fleet coordination
+for area coverage and delivery tasks has benefited from this
+hybrid learning by ensuring collision avoidance and optimal
+route planning. These results affirm the potential of
+combining local adaptability with global convergence
+behavior—traits critical to managing complex, non-linear
+
+Integrated research in Intelligent Transportation Systems
+(ITS) and Connected Autonomous Vehicles (CAVs) has
+accelerated over the past decade, focusing on real-time traffic
+optimization, safety, and sustainability. Works such as
+Autonomous Vehicles and Urban Traffic Management for
+Sustainability highlight both the potential and limitations of
+early CAV deployment in mixed-traffic scenarios, noting
+improvements in flow reliability by up to 25% but also
+challenges arising from control handover mechanisms.
+Systematic reviews underscore persistent issues including
+latency, scalability, and dependence on centralized
+infrastructure [4].
+Algorithmic approaches for ITS/CAV management have
+evolved from rule‑based and model‑predictive control to
+machine learning and hybrid methods. Deep Reinforcement
+Learning (DRL) models—such as multi-agent actor-critic
+systems—have been employed for signal coordination and
+platoon control, exhibiting strong adaptability in simulation
+environments like SUMO [5]. However, purely DRL systems
+struggle with convergence in dense traffic and often neglect
+global optimization, while techniques like V2X-based
+adaptive signal systems still rely on fixed detector inputs [6].
+Recent advancements in intelligent traffic systems have
+increasingly focused on leveraging advanced learning
+algorithms to enhance the performance of Connected
+Autonomous Vehicles (CAVs). Among these, Deep
+Reinforcement Learning (DRL), particularly in multi-agent
+actor-critic architectures, has proven effective for tasks such
+as intersection coordination, dynamic routing, and adaptive
+cruise control [7]. However, DRL alone often struggles with
+convergence speed, generalization in unpredictable traffic
+scenarios, and scalability. To address these limitations,
+researchers have begun integrating DRL with swarm
+intelligence techniques like Ant Colony Optimization (ACO),
+which excels at global path optimization through distributed
+pheromone-inspired learning. Hybrid DRL-ACO models
+have demonstrated improved performance in domains such as
+robotic swarm navigation, smart grid control, and multi-drone
+routing—where local adaptivity from DRL complements the
+global convergence properties of ACO [8]. Furthermore,
+attention mechanisms are increasingly embedded within DRL
+policies to improve context-aware decision-making by
+filtering relevant environmental features. Despite their
+success in adjacent applications, these hybrid approaches
+remain underutilized in real-time CAV traffic systems. Their
+integration promises significant improvements as in Figure 2
+decentralized
+decision-making,
+scalability,
+and
+
+979-8-3315-5503-0/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:57:02 UTC from IEEE Xplore. Restrictions apply.
+
+646
+
+Proceedings of the 6th International Conference on Electronics and Sustainable Communication Systems (ICESC-2025)
+IEEE Xplore Part Number: CFP25V66-ART; ISBN: 979-8-3315-5503-0
+
+responsiveness, especially when validated on realistic traffic B. Contributions of Research Work
+simulators like the Simulation of Urban Mobility (SUMO)
+[9], [10].
+• To develop a decentralized, adaptive, and scalable traffic
+management framework for connected autonomous
+vehicles (CAVs) that integrates local learning and global
+coordination.
+• A novel hybrid learning architecture named ADAPT-S
+(Ant-Driven Adaptive Policy Training with SimulationBased Validation), which combines attention-guided
+multi-agent deep reinforcement learning for local
+decision-making with ant colony optimization for global
+path planning, validated using the SUMO traffic
+simulator.
+• The proposed approach addresses critical gaps in existing
+methods by enhancing convergence stability, reducing
+communication overhead, and enabling real-time,
+context-aware routing in CAV networks given in Figure 3
+achieving improved traffic flow, reduced congestion, and
+better scalability in smart urban environments.
+The following sections explain the organization: Section
+3 presented with methodologies. Section 4 with results. The
+conclusion for work are evaluated in Section 5.
+
+Fig.2. Proposed AI Systems for CAV in ITS [10]
+
+A.
+
+Study Gap Identified
+
+Although While numerous studies have applied deep
+reinforcement learning and optimization techniques
+independently to CAV-based traffic management, a key gap
+remains in the integration of local learning adaptability and
+global path coordination within a fully decentralized and
+scalable framework. Existing DRL-based methods often
+focus on individual agent optimization without accounting for
+system-wide coordination, leading to suboptimal traffic flow
+in dense and dynamic environments. Conversely,
+optimization-based approaches like ACO, though effective at
+global path planning, lack the real-time responsiveness and
+contextual awareness needed at the individual vehicle level.
+Additionally, many current models assume centralized
+control or rely heavily on fixed infrastructure, limiting their
+scalability and applicability to heterogeneous urban scenarios
+[11]. This gap highlights the need for a hybrid framework that
+combines
+context-aware
+decision-making,
+global
+optimization, and decentralized execution. The proposed
+ADAPT-S (Ant-Driven Adaptive Policy Training with
+Simulation-Based Validation) algorithm addresses this by
+unifying attention-guided multi-agent deep reinforcement
+learning with ant colony optimization in a SUMO-based
+simulation environment. ADAPT-S enables connected
+autonomous vehicles to make intelligent, cooperative routing
+decisions in real time while dynamically adapting to traffic
+conditions, thereby overcoming the limitations of isolated
+DRL or ACO methods and advancing the state-of-the-art in
+intelligent traffic systems. system.
+
+Fig. 3. Proposed Flow Diagram
+
+III.
+
+RESEARCH WORK PROPOSED
+
+The increasing complexity of intelligent transportation
+systems (ITS) and the growing deployment of connected
+autonomous vehicles (CAVs) necessitate adaptive,
+decentralized routing frameworks. To address limitations in
+traditional centralized systems and standalone algorithms,
+this research proposes a novel hybrid architecture—ADAPTS (Ant-Driven Adaptive Policy Training with SimulationBased Validation)—which combines the strengths of deep
+reinforcement learning (DRL), swarm intelligence (ACO),
+and attention mechanisms, validated in a simulated
+environment using SUMO. This section outlines the core
+design, algorithmic structure, mathematical formulation, and
+optimization strategy of the proposed system.
+
+979-8-3315-5503-0/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:57:02 UTC from IEEE Xplore. Restrictions apply.
+
+647
+
+Proceedings of the 6th International Conference on Electronics and Sustainable Communication Systems (ICESC-2025)
+IEEE Xplore Part Number: CFP25V66-ART; ISBN: 979-8-3315-5503-0
+
+A. System Architecture
+The system architecture is designed to enable real-time
+sensing, decision-making, and communication among
+connected autonomous agents. Each vehicle in the network
+acts as an independent decision-making node embedded with
+a DRL agent, capable of learning optimal navigation policies
+through interaction with its environment. The global
+coordination of vehicle routes is achieved through an Ant
+Colony Optimization mechanism that iteratively updates
+shared routing preferences based on network-wide traffic
+conditions. The simulation environment—built using
+SUMO—replicates real-world urban traffic dynamics to
+evaluate the performance of the framework under varied
+congestion scenarios. Key components of the system include
+multi-agent vehicle models, edge-level communication, and
+adaptive route prioritization based on feedback and
+environmental perception.
+B. ADAPT-S Algorithm
+The The ADAPT-S algorithm is designed to combine
+local policy learning with global path optimization in a fully
+decentralized manner. Each vehicle runs a multi-agent actorcritic DRL model, using attention mechanisms to prioritize
+relevant features such as neighboring vehicle behaviors,
+signal states, and road occupancy. Simultaneously, the Ant
+Colony Optimization component operates at the network
+level, emulating pheromone trails that guide agents toward
+efficient paths based on cumulative learning from successful
+trajectories. The integration of ACO with DRL enables agents
+not only to adapt to local conditions but also to benefit from
+globally optimized strategies. This
+proposed model
+illustrated in Figure 4, which is a hybrid approach enhances
+convergence stability, responsiveness, and route diversity in
+dense and dynamic traffic environments.
+
+The global optimization is modeled through pheromone
+update rules in Ant Colony Optimization (ACO):
+τ_ij(t + 1) = (1 - ρ) τ_ij(t) + Δτ_ij
+(2)
+where ρ is the pheromone evaporation rate, and Δτ_ij is the
+pheromone deposit proportional to the quality of the path.
+This dual-model ensures both real-time policy refinement and
+convergence to globally efficient traffic patterns.
+D. Optimization Model
+The optimization objective of the proposed ADAPT-S
+framework is to minimize the total delay and congestion in
+the CAV network while ensuring scalability and
+decentralized control. The cost function is expressed as:
+min ∑_i (α T_i + β ∑_j D_ij)
+
+(3)
+
+where T_i is the travel time for vehicle i, and D_ij is the
+dynamic density on the link between nodes i and j. The
+constants α and β are weight coefficients representing the
+trade-off between delay minimization and traffic balancing.
+The ACO mechanism evaluates multiple path combinations
+by simulating virtual pheromone trails, favoring routes with
+lower cumulative costs. Concurrently, the DRL agent refines
+its policy through localized exploration and exploitation,
+guided by reward feedback. The integration of these two
+layers ensures real-time adaptivity while avoiding premature
+convergence—a common issue in traditional DRL or
+heuristic-based systems. As a result, ADAPT-S achieves
+improved traffic distribution, reduced average travel times,
+and efficient rerouting in response to dynamic road
+conditions.
+IV.
+
+RESULTS AND DISCUSSIONS
+
+The proposed ADAPT-S framework was implemented and
+evaluated in a simulated urban traffic environment using
+SUMO, interfaced with a custom DRL-ACO module.
+Evaluations focused on travel time, congestion levels, route
+optimality, and system scalability under varying traffic
+densities. Comparative analysis demonstrates ADAPT-S’s
+performance advantages over baseline DRL and ACO-only
+methods.
+
+Fig. 4. Proposed Design Flow
+C. Mathematical Model
+Let S be the state space, A the action space, and R(s, a) the
+reward function. Each CAV agent learns a policy π(a | s)
+using an actor-critic model, where the policy gradient is
+defined as:
+∇J(θ) = E_{s,a~π_θ} [∇_θ log π_θ(a | s) A(s, a)]
+(1)
+Where, A(s, a) represents the advantage function.
+
+A. SUMO Simulation Model
+In the SUMO-based testbed, a mid-sized urban network
+comprising 20 intersections and 200 connected autonomous
+vehicles (CAVs) was modeled. The hybrid ADAPT-S
+algorithm yielded an average travel time reduction of 15.2%,
+congestion decrease by 18.5%, and improved route
+distribution compared to standard DRL and ACO
+implementations. These results confirm ADAPT-S’s
+capability to adapt dynamically to traffic fluctuations and
+distribute load effectively across the network.
+B. Quantitative Results and Metric Comparisons
+The Table I ADAPT-S demonstrates a clear reduction in
+average travel time compared to both DRL-only and ACOonly methods. With a 12.7% improvement over ACO and
+17.1% over DRL, it shows the synergistic benefits of local
+
+979-8-3315-5503-0/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:57:02 UTC from IEEE Xplore. Restrictions apply.
+
+648
+
+Proceedings of the 6th International Conference on Electronics and Sustainable Communication Systems (ICESC-2025)
+IEEE Xplore Part Number: CFP25V66-ART; ISBN: 979-8-3315-5503-0
+
+policy learning and global route optimization. Additionally,
+ADAPT-S significantly lowers fuel consumption, indicating
+smoother acceleration and fewer stop-and-go conditions. The
+policy convergence time is also the fastest, meaning agents
+reach optimal routing behavior more quickly—an important
+aspect for real-time systems with learning-on-the-fly.
+TABLE I.
+
+Method
+DRLonly
+ACOonly
+ADAPTS
+
+AVERAGE TRAVEL TIME PARAMETERS
+
+Avg
+Travel
+Time (s)
+620
+
+Fuel
+Consumption
+(ml/km)
+94.2
+
+Policy
+Convergence
+Time (s)
+900
+
+590
+
+88.7
+
+1080
+
+545
+
+81.4
+
+780
+
+ADAPT-S achieves the lowest congestion index
+(26.2%), indicating optimal traffic dispersion and reduced
+traffic build-up at intersections illustrated in Table II. Lower
+congestion correlates directly with improved fuel efficiency,
+which is reflected in the lower fuel consumption values. The
+relatively short policy convergence time further confirms the
+robustness and responsiveness of ADAPT-S under varying
+traffic loads and dynamic events like roadblocks or spikes in
+vehicle entry rate.
+TABLE II.
+
+CONGESTION METRICS PARAMETERS
+
+Method
+
+Congestion
+Index (%)
+35.4
+
+Fuel
+Consumption
+(ml/km)
+98.3
+
+Policy
+Convergence
+Time (s)
+920
+
+DRLonly
+ACOonly
+ADAPTS
+
+32.1
+
+90.5
+
+1045
+
+26.2
+
+82.8
+
+800
+
+In Table III, the vehicles under the ADAPT-S policy
+achieve the highest average speed while maintaining smooth
+operation, which improves throughput and user satisfaction.
+This is made possible by globally efficient routing (via ACO)
+and context-aware micro-decisions (via DRL with attention).
+Consequently, the system uses less fuel per kilometer, and
+learning stabilizes faster, confirming both energy-efficiency
+and training efficiency.
+TABLE III.
+
+Method
+DRLonly
+ACOonly
+
+AVERAGE SPEED PARAMETERS
+
+Avg
+Speed
+(km/h)
+28.3
+
+Fuel
+Consumption
+(ml/km)
+91.2
+
+Policy
+Convergence
+Time (s)
+960
+
+29.7
+
+86.0
+
+1020
+
+ADAPTS
+
+31.5
+
+79.3
+
+770
+
+The reroute frequency per episode is a strong
+indicator of system stability. ADAPT-S produces the fewest
+reroutes, suggesting that initial paths selected are more
+robust, efficient, and less susceptible to real-time disruptions
+illustrated in Table IV. This contributes to less fuel waste
+from excessive recalculation and fewer data transmissions.
+Combined with quicker policy stabilization, this implies
+reduced computational load and enhanced scalability of the
+system.
+TABLE IV.
+
+REROUTE FREQUENCY PARAMETERS
+
+Method
+
+Reroutes/Episo
+de
+8.7
+
+Fuel
+Consumpti
+on (ml/km)
+95.4
+
+Policy
+Convergen
+ce Time (s)
+940
+
+DRLonly
+ACOonly
+ADAP
+T-S
+
+6.4
+
+89.1
+
+1015
+
+4.2
+
+80.7
+
+785
+
+C. Graphical Represntation and Interpretation
+The Figure 5 graph illustrates the average travel time
+across 50 simulation episodes. The ADAPT-S model
+consistently maintains the lowest travel time, with less
+variation compared to DRL-only and ACO-only methods.
+This reflects its ability to generate and sustain efficient
+routing decisions under dynamic traffic.
+
+Fig. 5. Travel time distribution over episodes
+
+The congestion index steadily in Figure 6 decreases
+over time for all models, but ADAPT-S achieves the most
+rapid and stable reduction, stabilizing below 25%. This
+confirms ADAPT-S’s efficiency in distributing vehicles more
+evenly across the road network and preventing congestion
+peaks.
+
+979-8-3315-5503-0/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:57:02 UTC from IEEE Xplore. Restrictions apply.
+
+649
+
+Proceedings of the 6th International Conference on Electronics and Sustainable Communication Systems (ICESC-2025)
+IEEE Xplore Part Number: CFP25V66-ART; ISBN: 979-8-3315-5503-0
+
+A spatial plot of 10 vehicle trajectories simulating
+SUMO output illustrated in Figure 9. The paths under
+ADAPT-S show smooth, collision-free dispersal, validating
+the algorithm’s effectiveness in maintaining route diversity
+and spatial efficiency. Vehicles avoid congestion centers and
+demonstrate cooperative spacing.
+
+Fig. 6. Congestion Index Over Time
+
+ADAPT-S maintains the highest average speed, showing
+smooth and continuous traffic flow. In contrast, DRL-only
+agents are slower due to unstable or suboptimal routing, while
+ACO-only slightly improves speed but lacks real-time
+adaptability illustrated Figure 7.
+
+Fig. 9. Simulated Vehicle Trajectories (Validation)
+
+The results from the tables and corresponding graphs
+comprehensively demonstrate the superiority of the ADAPTS algorithm in managing connected autonomous vehicle
+networks. The hybrid integration of DRL and ACO, guided
+by attention mechanisms and validated via SUMO, leads to
+lower travel time, reduced congestion, better fuel efficiency,
+and rapid convergence of policies. Each metric and
+visualization confirmed that ADAPT-S not only addresses
+but effectively overcomes the limitations of traditional and
+standalone intelligent transportation algorithms.
+V.
+Fig. 7. Average Vehicle Speed Over Episodes
+
+The Figure 8 demonstrates that ADAPT-S quickly stabilizes
+with the fewest reroutes per episode. Its rerouting frequency
+drops below 3 after ~25 episodes, while DRL-only and ACOonly agents continue making reactive adjustments. This
+indicates that ADAPT-S finds stable and reliable paths earlier
+in the learning process.
+
+This study presented ADAPT-S, a hybrid learning
+framework that integrates attention-guided multi-agent deep
+reinforcement learning with ant colony optimization for
+decentralized traffic management in connected autonomous
+vehicle (CAV) networks. Through SUMO-based simulation
+and comparative analysis, ADAPT-S demonstrated superior
+performance in reducing average travel time, congestion, fuel
+consumption, and rerouting frequency while achieving faster
+policy convergence. The results validate the effectiveness of
+combining local learning and global coordination in
+achieving scalable, adaptive, and energy-efficient traffic
+control. Future work will explore real-time deployment on
+edge-based vehicular hardware, integration with V2X
+communication standards, and expansion to multi-city smart
+transportation networks.
+VI.
+
+Fig. 8. Reroute Frequency Across Episodes
+
+CONCLUSION
+
+ACKNOWLEGEMENT
+
+The authors gratefully acknowledge the financial support
+received from Vel Tech Rangarajan Dr. Sagunthala R&D
+Institute of Science and Technology, under the Research
+Development Fund (RDF), Grant No. VTU/RDF/FY 202526/055. This support was instrumental in facilitating the
+successful execution of this research work.
+
+979-8-3315-5503-0/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:57:02 UTC from IEEE Xplore. Restrictions apply.
+
+650
+
+Proceedings of the 6th International Conference on Electronics and Sustainable Communication Systems (ICESC-2025)
+IEEE Xplore Part Number: CFP25V66-ART; ISBN: 979-8-3315-5503-0
+
+REFERENCES
+[1] Yıldırım, Zeynel Baran, and Mustafa Özuysal.
+"Autonomous vehicles and urban traffic management for
+sustainability: Impacts of transition of control and dedicated
+lanes." Sustainability 16, no. 19 (2024): 8323.
+[2] F. Alanazi, “A Systematic Literature Review of
+Autonomous and Connected Vehicles in Traffic
+Management,” Applied Sciences, 2022.
+
+[6] H. X. Liu and S. Feng, “Traffic light optimization with
+low penetration rate vehicle trajectory data,” Nature
+Communications, vol. 15, 2024.
+[7] Cai, Shuncheng, and Mélanie Bouroche. "Multi-Agent
+Deep Reinforcement Learning for Longitudinal Control of
+CAVs in Mixed Traffic Environments with Unreliable
+Communication." In ATT@ ECAI. 2024.
+
+[3] “A survey on urban traffic control under mixed traffic
+environment,” Transportation Research Part C, 2023.
+
+[8] H. Yu et al., “Automated vehicle‑involved traffic flow
+studies: A survey of assumptions, models, speculations, and
+perspectives,” Transportation Research Part C, vol. 127,
+2021.
+
+[4] S. A. Shifani, "Revolutionary Solutions for Vehicular
+Networks: Pollution Monitoring and Cluster-based Resource
+Management," 2025 International Conference on Electronics
+and Renewable Systems (ICEARS), Tuticorin, India, 2025,
+pp. 807-812, doi: 10.1109/ICEARS64219.2025.10941187.
+
+[9] P. Nirmala, "Advanced Communication Protocols for IoT
+Environments: Privacy-Preserving and UAV-based MAC
+Optimization," 2025 International Conference on Electronics
+and Renewable Systems (ICEARS), Tuticorin, India, 2025,
+pp. 502-507, doi: 10.1109/ICEARS64219.2025.10940153.
+
+[5] M. Tamilselvi, "Integrated Solutions for UAV-Assisted
+IoT Communications: Beam Selection and Wireless Mobile
+Ad Hoc Backhaul Network Design," 2025 International
+Conference on Electronics and Renewable Systems
+(ICEARS), Tuticorin, India, 2025, pp. 520-525, doi:
+10.1109/IC.
+
+[10] Liu, Tianen, Shuai Wang, Zheng Dong, Borui Li, and
+Tian He. "From Perception to Computation: Revisiting Delay
+Optimization for Connected Autonomous Vehicles." ACM
+Computing Surveys 57, no. 8 (2025): 1-45.
+[11] T. Khan, "A smart fire detector IoT system with
+extinguisher class recommendation using deep learning,"
+IoT, vol. 4, no. 4, pp. 558–581, 2023.
+
+979-8-3315-5503-0/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:57:02 UTC from IEEE Xplore. Restrictions apply.
+
+651
+
+

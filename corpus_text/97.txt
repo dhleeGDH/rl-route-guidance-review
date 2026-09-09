@@ -1,0 +1,2163 @@
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+HERO: Heterogeneous-agent
+rEinforcement learning-based Route
+Optimization for Green Transportation
+in IoVs
+SHUJUAN WANG∗ , ZIYIN GUO∗ , HAIQU YANG∗
+1
+
+∗ School of Information Engineering and Automation, Kunming University of Science and Technology, Kunming, Yunnan 650500, China
+CORRESPONDING AUTHOR: SHUJUAN WANG (e-mail: wangsj@kust.edu.cn).
+This work was supported by the National Natural Science Foundation of China (Grant No. 62562043), and by the Yunnan Provincial
+Department of Science and Technology (Grant No. 202302AQ370003-4).
+
+ABSTRACT With the rapid urbanization and increasing demand for transportation, cities are facing major
+
+problems in mitigating traffic congestion and environmental pollution. A series of work have been done to
+resolve these issues, yet great challenges still exist. Although multi-vehicle path planning is beneficial for
+finding global optimal route, it significantly complicates the computation and places higher demands on
+processing capabilities and response time. Meanwhile, existing congestion control methods mainly rely on
+real-time traffic data to identify the occurrence of congestion, and take damage control actions afterwards.
+This passive mode limits the effectiveness of these methods and introduce extra delay into the system.
+In view of this, we propose a novel Heterogeneous-agent rEinforcement Route Optimization (HERO)
+framework that combines fog and cloud computing to optimize traffic management. The system integrates
+global traffic data analysis in the cloud with real-time local traffic monitoring and adjustment through fog
+nodes, where cloud and roadside units (RSUs) collaborate to efficiently manage multi-vehicle path planning
+and congestion control. An Attention-CNN-LSTM-based prediction model is designed for surveying
+congestion tendency in each road segment, which provides basis for RSUs to take proactive response for
+avoiding congestion. The system employs a heterogeneous-agent advantage actor-critic (HAA2C) network
+to capture collaboration and interactions among heterogeneous agents, optimizing the global strategy while
+accommodating agent diversity. Simulation results demonstrate that the proposed architecture exhibits
+satisfying scalability and performance in reducing energy consumption, pollution emissions, and enhancing
+traffic efficiency through successful congestion avoidance and traffic flow balance.
+INDEX TERMS Green Transportation, Heterogeneous-Agent Reinforcement Learning, Fog-Cloud Com-
+
+puting, Congestion Avoidance, Load Balancing.
+
+I. INTRODUCTION
+
+The pervasive adoption of automobiles has greatly improved
+mobility but has also intensified traffic congestion and environmental pollution [1], [2]. Congestion forces vehicles
+to travel at low speeds for extended periods, resulting in
+energy waste and excessive emissions. To address these
+issues, intelligent transportation systems (ITS) [3] integrate
+communication, sensing, and control technologies to enhance
+network efficiency. As a core component of ITS, the route
+guidance system (RGS) leverages congestion perception and
+route planning to analyze real-time traffic data and provide
+optimal routing suggestions for vehicles.
+
+However, traditional RGS faces several limitations. First,
+its vehicle-oriented routing strategies lack a global perspective, often causing multiple vehicles to select the same “optimal” route, inadvertently creating new congestion hotspots.
+Second, many RGS solutions rely on single-objective optimization centered on travel time, neglecting fuel efficiency
+and carbon emissions [4], [5]. As a result, routing decisions
+may reduce travel time but worsen overall environmental
+impact.
+Recent research attempts to overcome these limitations
+through global optimization, real-time traffic monitoring, and
+multi-objective path planning [6], [7], [8]. Global optimization techniques [9] consider both current and predicted [10]
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+VOLUME ,
+
+1
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+WANG ET AL.: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs
+
+network states to prevent congestion formation. Real-time
+monitoring leverages V2X communication [11], [12], [13]
+and fog–cloud collaboration [14], [15] to support dynamic traffic analysis. Multi-objective routing incorporates
+weighted optimization to jointly minimize travel time, fuel
+consumption, and emissions [16]. These developments enable modern RGS to operate more efficiently in dynamic
+traffic environments.
+Nevertheless, multi-vehicle routing on large-scale road
+networks substantially increases computational complexity
+and reduces responsiveness. Moreover, most existing systems
+rely primarily on real-time data and lack the capability to
+predict future congestion, resulting in passive responses that
+occur only after congestion forms. This reactive nature limits
+their effectiveness in fast-changing traffic conditions.
+To address these challenges, this paper proposes a multiobjective RGS that integrates heterogeneous-agent reinforcement learning (HARL) [17] within a fog–cloud architecture. The system combines global routing performed by the
+cloud with real-time congestion management by RSU agents,
+achieving proactive and coordinated traffic optimization. The
+main contributions are as follows:
+1) We integrate the ITS fog–cloud architecture with a
+heterogeneous multi-agent RL framework to jointly
+optimize global and local routing decisions. The cloud
+agent performs long-horizon global path planning,
+while fog-based RSU agents execute real-time local
+adjustments based on traffic feedback. This cooperation improves scalability, responsiveness, and robustness in dynamic, large-scale networks.
+2) We convert traditional per-vehicle rerouting into flowlevel decision-making by using the rerouting ratio as
+each RSU agent’s action. This significantly reduces
+action dimensionality, computation cost, and communication overhead. RSU agents dynamically adjust
+rerouting ratios to mitigate local congestion, while the
+cloud agent ensures system-wide coordination.
+3) We introduce the concept of congestion tendency,
+combining attention mechanisms, CNN, and LSTM
+models to predict future traffic flow variations. This
+enables proactive rerouting before congestion forms,
+enhancing path assignment accuracy and contributing
+to sustainable traffic management.
+The remainder of this paper is organized as follows:
+Section II reviews the related work. Section III presents
+the system model and formulates the problem. Section IV
+provides a detailed description of the proposed method. Section V offers comprehensive simulation results and evaluates
+the proposed solution. Section VI concludes the paper
+II. RELATED WORKS
+
+The core tasks of RGS include congestion perception and
+congestion avoidance, which are closely interconnected and
+work together to achieve efficient traffic management.
+
+In [18], it is shown that the shortest path in real road
+networks often passes through highly congested, low-speed
+segments with frequent acceleration and deceleration, leading to higher energy consumption and emissions than longer
+but smoother routes. As a result, the shortest path is neither the most energy-efficient nor necessarily the fastest,
+highlighting that effective congestion awareness is essential
+for reducing emissions and improving traffic efficiency. To
+achieve efficient congestion perception, the study in [19]
+proposes a comprehensive traffic congestion index (TCI)
+based on speed, density, and acceleration. By dynamically
+monitoring speed drops, density increases, and acceleration
+anomalies, it identifies congested road sections and leverages
+cloud platforms to optimize detour costs. In [7], real-time
+data such as road density, vehicle speed, and road capacity
+are introduced. A weighted formula is used to enhance
+the accuracy of congestion assessment, and a deterministic
+weight model is constructed to optimize route allocation
+while balancing traffic efficiency and carbon emissions.
+In [20], a collaborative vehicle rerouting system is designed,
+which uses road density combined with a support vector
+regression (SVR) model to predict future traffic conditions,
+dynamically adjust vehicle arrival times, and update road
+capacity, thus improving the coordination and timeliness of
+path planning.
+In terms of congestion avoidance, [21] proposes a k -order
+routing strategy based on Copula scenario generation and
+a two-stage algorithm to enhance lane-changing decisions
+and travel efficiency. In [22], an event-based path service
+management system is developed, which avoids secondary
+congestion by sensing remaining road capacity and vehicle speed. In [23], the OppIN system is proposed for
+emergency response path intervention by integrating IoT
+infrastructure, Big Data technologies, and multi-criteria path
+evaluation. This work demonstrates that dynamic traffic conditions, road status, and context-aware information should
+be jointly considered for quasi-real-time route planning
+in critical transportation scenarios. Similarly, Armayau et
+al. [24] investigated dynamic vehicle routing optimization
+for urban distribution under real-time demand fluctuations,
+where short-term demand prediction and dynamic information processing are combined to improve routing efficiency
+under uncertain urban conditions. In [25], a spatiotemporal
+routing method based on volume-to-capacity (v/c) ratio is
+proposed by combining historical and real-time data, effectively bypassing heavily loaded road sections. In [26],
+control transitions in automated vehicles are modeled and a
+TD3-based strategy is used to optimize take-over requests,
+effectively mitigating ToC-induced congestion and improving traffic efficiency. The study in [27] constructs a path
+flexibility index to evaluate potential congestion risks and
+enhance the robustness of the traffic network. In [28], model
+predictive control (MPC) and deep reinforcement learning
+(DRL) are integrated to propose a regional route guidance
+framework, which employs multi-level strategies and reward
+
+2
+
+VOLUME ,
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+mechanisms to guide traffic in large-scale networks and
+improve user compliance.
+However, congestion perception and avoidance conducted
+solely on local segments cannot effectively resolve the
+cascading effects of traffic congestion. Chen et al. [29]
+modeled congestion propagation in urban rail transit networks using an epidemic-inspired SAIS model and showed
+that awareness-based preventive responses can suppress the
+spread of congestion. Although their study focuses on
+passenger-flow congestion in rail transit systems, it further
+indicates that congestion may propagate through network
+topology and should be addressed from a network-level
+perspective. To this end, researchers have proposed the
+concept of global route guidance (GRG). In [9], a centralized
+flow-based guidance system is developed to evaluate detour
+paths based on capacity and time loss, minimizing global
+efficiency degradation.
+Recent studies also show that coordination among multiple
+traffic participants or control entities is essential for improving traffic efficiency. Vitale et al. [30] proposed a distributed
+signal-free intersection optimization method for connected
+and automated vehicles, where iterative time-slot adjustment
+enables vehicles to coordinate intersection crossing with
+limited information exchange. This demonstrates the value
+of distributed coordination and low-communication decisionmaking, which is consistent with the motivation of introducing RSU-level local control in the proposed fog–cloud route
+guidance framework. The ReFOCUS+ system in [16] integrates multi-layer path guidance and a dynamic road weight
+measurement (RWM) model, coordinating local and global
+route optimization. In [31], spatial features are extracted
+using CNNs, vehicle interactions are modeled with graph
+attention networks (GATs), and multi-agent rerouting is
+achieved through vehicle-to-vehicle (V2V) communication,
+significantly improving path allocation efficiency. In [32],
+a system optimal (SO) route guidance framework led by a
+traffic management center (TMC) is proposed, combining
+multi-agent reinforcement learning (MARL) and neural fictitious self-play (NFSP) to model user decision dynamics
+and balance user preferences with system efficiency.
+In addition, [33] proposes a hierarchical control framework, in which the upper layer predicts critical density
+thresholds and dynamically adjusts routing weights, while
+the lower layer generates energy-efficient trajectories for
+connected and automated vehicles (CAVs). In [34], a twolevel optimization framework is built for both network-level
+planning and vehicle-level trajectory control, incorporating
+the Floyd algorithm and traffic signal constraints. In [35],
+GAQ and EBkSP algorithms are integrated under a fog-cloud
+architecture to achieve centralized learning and distributed
+decision-making. The study in [36] implements hotspot identification and real-time traffic monitoring through VANET
+and fuzzy logic.In [37], CNN is employed to predict travel
+time and optimize two-route choices. The study in [38] establishes a bidirectional game mechanism between CAVs and
+
+the information provider, enabling suggestion-driven path
+coordination. Finally, [39] combines physics-based models
+and reinforcement learning to construct the TransRL system,
+in which a teacher policy guides learning to enhance the
+stability and generalization of routing strategies under largescale and uncertain environments.
+Existing studies on path planning span heuristic optimization, graph neural networks (GNNs), multi-agent coordination, and more recently, federated reinforcement learning.
+For heuristic approaches, In [40], an improved ant colony
+algorithm incorporating artificial potential fields, a refined
+state transition strategy, and multi-objective pheromone updating is proposed to achieve faster, safer, and smoother
+global path planning for ships in both static and dynamic
+environments. In the field of cooperative path planning,
+Huang et al. [41] developed a time-dependent cooperative
+path-planning model for shipborne multi-UAV systems in
+port atmospheric pollution monitoring. Their deep learning–
+dynamic ant colony optimization method adaptively tunes
+key ACO parameters and improves convergence under dynamic spatiotemporal constraints. This study indicates that
+hybrid learning-based heuristic optimization can enhance
+path-planning performance in dynamic and multi-agent environments. [42] develops an improved particle swarm optimizer (DSI-PSO) that dynamically adjusts an S-shaped
+inertia weight based on the particle–global-best distance,
+accelerating convergence and avoiding local minima, thereby
+achieving short, smooth, and collision-free single-vehicle
+paths.
+Learning-based methods have also progressed rapidly. [43]
+models VRPTPLR as a fully connected graph and adopts
+an NNConv-GNN encoder to explicitly capture reward–cost
+relationships between nodes, yielding 0.24%–0.49% performance gains over PNN/LSTM at the cost of significantly
+higher training complexity. Huang et al. [44] proposed
+DTLight, a lightweight Decision Transformer-based offlineto-online RL method for traffic signal control. By combining offline datasets, adaptive knowledge distillation, and
+online fine-tuning, DTLight improves sample efficiency and
+reduces computational cost for practical deployment. This
+work reflects the recent trend of integrating sequence modeling and reinforcement learning to address dynamic traffic
+control problems. Authors in [45] embeds task graphs via
+GNNs, predicts congestion using XGBoost, and integrates
+green parameters into a weighted graph on which Dijkstra
+search is performed for multi-depot routing. [46] proposes a
+distributed multi-agent planner combining CNN and GNN:
+CNNs extract local features, while GNNs propagate neighborhood information to enable multi-hop perception and
+cooperative collision avoidance even under limited observations. [47] employs a context-aware GNN with attention
+to dynamically model nodes and edges for joint route and
+charging-station selection, enhanced by SHAP and LIME
+for interpretability. [48] formulates routing paths and link
+resources as a bipartite graph and uses GNN message passing
+
+VOLUME ,
+
+3
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+WANG ET AL.: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs
+
+to learn competition among paths, achieving robust distributed routing under failures and bursty traffic. [46] further
+shows that GNN-based distributed control enables structured information sharing under local observability while
+approaching centralized collision-avoidance optimality.
+In [49], an IoT-driven emergency response system (OppIN) is proposed, where real-time multi-criteria path costs
+are constructed from heterogeneous sensor data and reinforcement learning is employed to adaptively learn optimal cost weights, enabling fast and dynamic optimal path
+planning for emergency vehicles.Federated reinforcement
+learning (FRL) has recently gained traction due to its privacy
+preservation and accelerated convergence. [50] proposes
+FRIGE, which replaces data sharing with parameter aggregation across multi-subenvironment air–ground networks,
+enabling privacy-preserving cooperative path planning; a
+priority-based gradient fusion mechanism further improves
+sample utilization and policy stability, enhancing global consistency and generalization. [51] applies an FRL framework
+to robotic motion planning for “zero-shot generalization,”
+enabling policy execution in unseen environments without
+recollecting data. [52] introduces Federated Growing RL for
+mapless navigation, allowing multi-robot systems to share
+experience and improve navigation robustness in unknown
+environments. In vehicle routing, [53] proposes FLDQN, RL
+enables each vehicle to learn a travel-time-minimizing local
+strategy, while FL aggregates decentralized DQN models to
+share experience without exposing raw data, improving policy convergence, stability, and generalization under dynamic
+traffic.
+In summary, existing studies have made progress in congestion perception and avoidance, but challenges remain in
+improving the coordination between global and local optimization, computational efficiency, and system scalability.
+For one thing, traditional vehicle-by-vehicle path adjustments are computationally intensive, and the communication
+delay further hinders efficiency. For another, the existing
+congestion prediction methods often rely on historical data
+and real-time conditions, which lacks foresight for proactive intervention. Moreover, the system’s responsiveness and
+scalability in large-scale dynamic scenarios remain inadequate, limiting its ability to address complex traffic demands effectively.Despite these advances, notable limitations
+remain. GNNs struggle with long-range dependency modeling, dynamic traffic adaptation, and scalability in large
+road networks; heuristic methods suffer exponential complexity growth and local-optimality issues under large-scale
+dynamic constraints; independent-agent RL models cause
+exploding state spaces and communication overheads in
+highly dynamic urban networks; and although FRL reduces
+communication and preserves privacy, non-IID distributions
+and vehicle heterogeneity lead to policy inconsistency, while
+gradient leakage still poses privacy risks.
+To overcome these gaps, the proposed cloud–fog collaborative heterogeneous multi-agent RL framework pro-
+
+FIGURE 1. System Model
+
+vides several key advantages: joint global (cloud) and local
+(fog) optimization supports long-horizon global optimality and real-time congestion mitigation; transforming pervehicle rerouting into flow-level diversion significantly reduces action dimensionality and communication overhead,
+improving scalability and responsiveness; congestion-trendaware proactive control enhances prediction accuracy and
+system stability; and heterogeneous-agent RL enables policy
+specialization and information division, achieving higher
+convergence efficiency and cooperative performance under
+non-stationary traffic than existing paradigms.
+
+III. SYSTEM MODEL AND PROBLEM FORMULATION
+A. System Model
+
+The system model of the considered HARL-based RGS is
+shown in Fig. 1. The system adopts a fog-cloud collaborative
+architecture. Vehicles traveling in the road network constitute
+the bottom layer, referred to as the vehicle layer. RSUs
+are deployed at major signalized intersections and form the
+middle layer, namely the fog layer. The top layer is the cloud
+layer, which consists of cloud servers. It is assumed that the
+communication between the fog layer and the cloud layer is
+supported by a reliable wired backbone network to ensure
+stable and timely transmission of global traffic information
+and control decisions. Communication between vehicles and
+RSUs is enabled through V2X links, which support vehicle
+status reporting, route requests, and rerouting instruction
+delivery.
+The traffic network can be modeled as a graph G(A, E),
+where A = {a1 , a2 , . . . , ak , . . .} denotes the set of vehicles,
+and E = {e11 , e12 , . . . , eij , . . .} represents the set of road
+segments. Here, eij denotes the road segment connecting
+the i-th and the j -th intersections, and ak represents the k -th
+vehicle.
+
+4
+
+VOLUME ,
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+In each time slot, when a vehicle ak is about to enter
+the traffic network, it sends a message containing its realtime status information to the associated RSU within its
+communication coverage via V2X communication, requesting route planning service. Upon receiving the request, the
+RSU uploads the vehicle information together with realtime road data collected by multiple onboard sensors to the
+cloud server through the backbone communication network.
+After aggregating information from the fog layer, the cloud
+layer obtains a global view of the traffic network and is
+capable of generating an optimal path planning strategy for
+the requesting vehicle. The computed route is then delivered
+to the corresponding RSU and subsequently forwarded to the
+vehicle.
+However, due to the highly dynamic nature of traffic conditions, the initially assigned optimal path may not remain
+optimal throughout the entire trip. Therefore, RSUs deployed
+at intersections are responsible for congestion perception on
+their covered road segments. When an RSU detects a potential congestion risk, it learns to make rerouting decisions,
+indicating which vehicles on the affected segment should be
+rerouted and how. The selected vehicles then update their
+routes based on the latest global traffic information obtained
+from the cloud layer and leave the congested segment in
+advance, thereby mitigating congestion formation.
+
+2) Energy Consumption
+
+To calculate the energy consumption of vehicle ak on any
+road segment eij ∈ E , the mechanical power of ak runs on
+the segment must first be determined. Denote this power as
+Pk,ij , it can be calculated as follows [55]:
+Pk,ij = (mk ·g·(sin(αij )+Cr ·cos(αij ))+0.5·Cd ·ρ·A·(vij )2 )·vij
+(3)
+where mk is the mass of vehicle ak , g is the gravitational
+constant, Cr is the rolling resistance coefficient, Cd is the
+drag coefficient, ρ is the air density, A is the frontal area of
+ak , and αij is the average road gradient between vertices i
+and j .
+The energy consumption Ek,ij for vehicle ak driving on
+road segment eij can be expressed as follows:
+Ek,ij =
+
+Pk,ij · Tij
+,
+ϕk
+
+(4)
+
+where ϕk is the mechanical efficiency of vehicle ak ’s engine.
+
+3) Carbon Emission
+
+B. Problem Formulation
+
+The fuel consumption rate of ak on road segment eij is
+denoted as fk,ij , which is defined as follows [56]:
+
+
+P
+ξ · ϵ · N · Vs + k,ij
+η
+,
+(5)
+fk,ij =
+µ
+
+In this work, we aim to optimize the traffic efficiency
+and carbon emission problem derived from congestion. To
+this end, we elaborately design a novel metric, namely the
+traffic impedance (TI), for characterizing the affect of traffic
+congestion on the travel time, energy consumption, and air
+pollution.
+
+where ξ is the fuel-to-air mass ratio, ϵ is the engine friction
+coefficient, N is the engine speed, Vs is the engine displacement, η is the efficiency parameter of the engine, and µ is
+the conversion factor.
+The fuel consumption Fk,ij of ak on road segment eij is
+calculated as follows:
+Fk,ij =
+
+1) Travel Time
+
+The travel time of vehicle ak depends primarily on its speed.
+Denote the average speed of ak on road segment eij as vij ,
+it can be calculated as follows [54]:
+
+fk,ij · dij
+.
+vij
+
+The carbon emission generated by vehicle ak when traveling through road segment eij is calculated as follows:
+Ck,ij = ψ · Fk,ij ,
+
+vij = vb + 
+
+vf − vb
+1 + exp
+
+
+
+kc −kt
+0.1612kt +0.0337
+
+0.0093kt −0.0507 ,
+
+(1)
+where vf is the speed for free traffic flow, vb is the average
+speed in stop-and-go conditions, kc is the current traffic
+density, and kt is the critical density which will result
+congestion.
+The average travel time for vehicle ak on road segment
+eij is thus given by:
+Tij =
+
+dij
+,
+vij
+
+where dij is the length of the road segment eij .
+
+(2)
+
+(6)
+
+(7)
+
+where ψ is the conversion coefficient from fuel consumption to carbon emission. In this study, ψ is assumed to be the
+same for all vehicles under the homogeneous vehicle setting
+adopted in the simulation.
+Finally, the traffic impedance for vehicle ak driving on the
+road segment eij is defined as follows:
+T Ik,ij = a · Tij + b · Ek,ij + c · Ck,ij ,
+
+(8)
+
+where a, b, and c are the scaling factors for the travel time,
+the energy consumption, and the carbon emission, respectively. These components differ in physical units and scale.
+To ensure numerical stability and a balanced contribution in
+the composite impedance, each scaling factor is defined as
+the reciprocal of the maximum value of the corresponding
+
+VOLUME ,
+
+5
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+WANG ET AL.: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs
+
+term across the entire road network. This normalization
+enables the three terms to be comparable when combined.
+The objective is to optimize traffic costs while alleviating
+traffic congestion in the road network based on traffic flow
+distribution principles. The system optimal model based on
+dynamic traffic assignment is defined as follows:
+1 X X
+Minimize lim
+xij · T Ik,ij (t) · Nij (t) (9)
+T →∞ T
+vk ∈V eij ∈E
+
+s.t.
+
+C1:
+
+X
+
+xij ≥ 1,
+
+(9a)
+
+eij ∈E
+
+X
+
+xij −
+
+X
+
+xji = 0,
+
+(9b)
+
+C3: Ek,ij ≤ Ek,ini , ∀ak ∈ A,
+C4: xij ∈ {0, 1}, ∀eij ∈ E.
+
+(9c)
+(9d)
+
+C2:
+
+eij ∈E
+
+eji ∈E
+
+where Nij (t) is the number of vehicles in segment eij at
+time slot t, C1 represents the constraint for path accessibility,
+i.e., to ensure there is at least one path from the start node to
+the end node. C2 represents that the path planning does not
+contain cycles. C3 represents that the energy consumption
+of each vehicle does not exceed its initial energy level. C4
+ensures that xij is a binary decision variable, where xij ∈
+{0, 1} indicates whether the road segment ei,j is used in the
+vehicle’s path.
+IV. HETEROGENEOUS-AGENT REINFORCEMENT
+LEARNING-BASED ROUTE OPTIMIZATION
+
+To solve the above problem, this study proposes a green and
+efficient mechanism that integrates fog and cloud computing, combining with a HAA2C-based algorithm to achieve
+traffic flow balancing and congestion avoidance in complex
+transportation networks. As illustrated in Fig. 2, the proposed
+HERO mechanism employs a global optimization model on
+the cloud to characterize the real-time traffic conditions on
+road segments, and realizes efficient and fast path allocation
+based on that. In the meantime, RSUs deploy an AttentionCNN-LSTM module to predict the next time-step traffic flow
+on specific road segments, identifying congestion trends and
+estimating congestion probabilities. This predictive capability enables proactive decision-making to mitigate congestion
+on RSUs. A HAA2C-based algorithm is then applied for
+global and local collaborative optimization, using traffic network information as the environment input for heterogeneous
+multi-agent reinforcement learning, effectively enhancing the
+system’s performance in real-time route planning and traffic
+management.
+A. TI Calculation and Path Allocation
+
+As defined in Section III, TI is a key metric for evaluating
+the cost of any potential road segment that is available for
+path allocation. The traffic impedance T Iij (t) describes the
+traffic load condition of road segment eij at time t, which is
+dynamically adjusted according to variations in traffic flow
+Nij (t). The calculation of T Iij (t) is as follows:
+
+
+
+T Iij (t − 1) − T Iij (t − 2)
+T Iij (t) = T Iij (t−1)+Nij (t−1)·
+.
+Nij (t − 1) − Nij (t − 2)
+(10)
+The calculation combines historical traffic flow data with
+current flow changes, allowing for the dynamic estimation
+of the impedance for each road segment, providing real-time
+input for flow distribution and path allocation.
+After then, the obtained TI is considered as the weight of
+each road segment, and the k-shortest paths (KSP) algorithm
+is applied to find the k-shortest paths from the origin O to the
+destination D for each vehicle. The mathematical description
+is as follows:
+
+
+X
+pk (O, D) = min 
+T Iij (t) ,
+(11)
+eij ∈pk (O,D)
+
+where pk (O, D) represents the k -th shortest path from origin
+O to destination D. The KSP algorithm first calculates
+the shortest path p1 (O, D) using the classical shortest path
+algorithm Dijkstra, and then iteratively generates the next
+k-shortest paths based on the first shortest path.
+The cloud then disperses the flow of vehicles in the
+road network and adjusts in real-time based on the current
+impedance and traffic conditions. TI calculation provides
+an accurate estimation of the road impedance, enabling
+the system to predict the future state of the road network,
+while the KSP algorithm offers multiple feasible paths. This
+synergy improves the efficiency of traffic management within
+the entire network and enhances the system’s responsiveness
+in dynamically changing environments.
+B. Congestion Tendency Survey
+
+In this work, we propose an Attention-CNN-LSTM model
+to predict the traffic flow for the next time step on a
+road segment, thereby tracking and mapping the trend of
+congestion formation. Based on that, the model can predict
+the probability of congestion in the next time step, allowing
+decisions to be made before congestion occurs. Formally,
+let T denote the time-window length, F the input feature
+dimension, C the number of convolution channels, H the
+hidden size of the LSTM, and O the output dimension.
+The overall forward-inference complexity of the proposed
+predictor can be expressed as
+
+O T F CK + T (CH + H 2 ) + HT 2 + T HO ,
+(12)
+where K is the convolution kernel size, and the dominant
+terms are O(T H 2 + HT 2 ). This complexity indicates that
+the proposed model is lightweight, and its forward pass
+introduces only minor computational overhead. Such efficiency ensures that the predictor can be executed well within
+the real-time constraints of typical RSU edge-computing
+platforms. The details of the prediction model are shown
+in Algorithm 1.
+In line 1, the historical traffic flow data are normalized,
+and the parameters of the convolutional layer, LSTM layer,
+
+6
+
+VOLUME ,
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+FIGURE 2. HERO: Heterogeneous-agent rEinforcement learning-based Route Optimization
+
+attention mechanism, and fully connected layer are initialized. The historical traffic flow data used in this study are
+time-series traffic state records generated from SUMO simulations on the target road network. For each time slot, the
+convolutional layer extracts local temporal features from the
+input traffic flow data to capture short-term traffic variations
+(Lines 3–5). The extracted feature representation, denoted as
+Conv outt , is then fed into the LSTM layer for temporal
+dependency modeling.
+In the LSTM layer, the forget gate, input gate, candidate
+memory state, memory cell update, output gate, and hidden
+state update are sequentially performed to preserve useful
+historical information and capture temporal dependencies
+in the traffic flow sequence (Lines 6–20). After obtaining
+the LSTM output, the attention mechanism calculates attention scores, normalizes them into Attention weights, and
+generates Attention output to emphasize more informative temporal features (Lines 21–24). Finally, the attentionenhanced output is passed to the fully connected layer to
+generate the final traffic flow prediction result (Lines 25–
+27).
+The model is trained using collected traffic flow data, and
+is deployed to each RSU in the road network for real-time
+traffic flow prediction. The predicted traffic flow data are
+used as the state input for the reinforcement learning agent,
+serving as the basis for action decisions to optimize traffic
+flow guidance and management in the following.
+
+Using the prediction model, the congestion tendency of
+any road segment can be surveyed as a congestion function.
+Nc represents the congestion threshold, indicating the maximum number of vehicles before congestion occurs, N (t)
+denote the number of vehicles in a road segment at time t,
+and N (t + 1) is the number of vehicles in a road segment
+at time (t + 1), there are:
+∆c = Nc − N (t + 1),
+
+(13)
+
+∆N = N (t + 1) − N (t),
+
+(14)
+
+where ∆c measures how far the predicted vehicle number
+is from congestion, and ∆N reflects the change in vehicle
+number between two consecutive time steps. Nc can be
+calculated as:
+Lr
+Nc =
+,
+(15)
+Lv + ds
+where Lr represents the length of the road segment, Lv
+denotes the vehicle length, and ds is the spacing of the
+vehicle.
+When N (t + 1) < Nc and N (t) < Nc , if the number of
+vehicles increases, namely N (t + 1) > N (t), the congestion
+function is given by:
+f (N (t), N (t + 1))
+
+
+
+α
+
+
+k
+1
++
+
+Nc
+∆c
+,
+= 1−
+· 1 − e−β∆N · 1.5 +
+10
+1 + ∆N
+
+(16)
+VOLUME ,
+
+7
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+WANG ET AL.: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs
+
+Algorithm 1 Attention-CNN-LSTM Model for Traffic Flow
+Prediction
+Require: Historical traffic flow data sets.
+Ensure: Future traffic flow data sets.
+1: Initialization: Normalize the dataset, and initialize the
+parameters of CNN, LSTM, Attention, and fully connected blocks.
+2: for each time slot t = 1, 2, ..., T do
+3:
+The convolutional layer extracts local temporal
+4:
+features from the input traffic flow data:
+5:
+Conv outt = ReLU (Wc · Xt + bc )
+6:
+The forget gate in the LSTM controls what
+7:
+information is retained from the previous cell state:
+8:
+Ft = σ(Wf [Ht−1 , Conv outt ] + bf )
+9:
+The input gate controls how much new information
+10:
+is added to the memory cell:
+11:
+It = σ(Wi [Ht−1 , Conv outt ] + bi )
+12:
+The candidate memory information is generated:
+et = tanh(Wg [Ht−1 , Conv outt ] + bg )
+13:
+C
+14:
+The memory cell is updated:
+et
+15:
+Ct = Ft ⊙ Ct−1 + It ⊙ C
+16:
+The output gate determines what information is
+17:
+passed to the next hidden state or output:
+18:
+Ot = σ(Wo [Ht−1 , Conv outt ] + bo )
+19:
+The hidden state is updated:
+20:
+Ht = Ot ⊙ tanh(Ct )
+21:
+Apply the attention mechanism to LSTM outputs:
+22:
+Attention scores = tanh(Wa · Ht + ba )
+23:
+Attention weights
+=
+sof tmax(Attention scores)
+24:
+Attention output = Attention weights⊙Ht
+25:
+Get the final prediction by applying a fully
+26:
+connected layer:
+=
+sigmoid(Wp ·
+27:
+P rediction result
+Attention output + bp )
+28: end for
+where the scaling factor β controls the sensitivity to changes
+in vehicle number, while k and α are system parameters that
+modulate the overall congestion trend.
+Similarly, if N (t + 1) ≤ N (t), the function is given by:
+|∆c − N (t + 1)|
+.
+(17)
+∆c
+When N (t) ≥ Nc or N (t+1) ≥ Nc , the function is given
+by:
+f (N (t), N (t + 1)) = 1 −
+
+f (N (t), N (t + 1)) = 1.
+
+(18)
+
+Once the value of f (N (t), N (t + 1)) is determined, a
+RSU will compare this value with the reroute threshold R.
+If f (N (t), N (t+1)) < R, the current route plan is hold and
+no action is required. Otherwise, the RSU will start a new
+round of reroute, given that the segment is about to become
+congested.
+
+FIGURE 3. HAA2C-based Training Process
+
+C. HAA2C-based Routing Optimization
+
+In this study, we propose a HAA2C-based routing optimization algorithm for avoiding congestion and enhancing traffic
+efficiency, as well as reducing pollution emissions. HAA2C
+network leverages the joint advantage function to capture
+collaboration and interactions among heterogeneous agents,
+optimizing the global strategy while accommodating agent
+diversity. Unlike traditional multi-agent algorithms such as
+Multi-Agent Proximal Policy Optimization (MAPPO), which
+assume agent homogeneity and rely on shared policies,
+HAA2C allows agents to independently adjust their strategies based on joint states and actions, enabling effective
+handling of diverse roles and objectives in heterogeneous
+systems.
+As shown in Fig. 3, the training of HAA2C consists of two
+parts. In the first stage, agents interact with the environment
+to collect trajectory data. Each trajectory contains the global
+state st , local observations of each agent oit , actions ait ,
+immediate rewards rt , and the next state st+1 as well as the
+next local observations oit+1 . These data are stored in a replay buffer. In the second stage, the joint advantage function
+Aim
+π (sb , aim ) is computed to guide the policy updates, and
+the parameters of each agent’s policy network are adjusted
+using policy gradient methods. During the process, the order
+of agents is randomly shuffled, and the policy networks of
+the agents are updated sequentially. Meanwhile, the critic
+network optimizes the state value function V (s) based on the
+joint states and actions by minimizing the value estimation
+error, thereby improving network performance.
+In the considered system, there involves two types of
+agents, the cloud agent and the RSU agent. Cloud agent first
+collects global traffic information, including vehicle number
+on all road segments, as well as the current planned vehicle
+routes and the distribution ratio for each route. These data
+provide the basis for global optimization. RSU agent collects
+local traffic information for its associated road segments,
+including vehicle number and congestion tendency, ensuring that local traffic issues can be quickly identified and
+adjusted. After collecting the relevant information, cloud
+agent performs route assignment actions based on the global
+
+8
+
+VOLUME ,
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+traffic information to balance the traffic flow across the
+network, while RSU agent reroutes vehicles based on local traffic condition to quickly alleviate local congestion.
+During the interactions between the two types of agents
+and environment, trajectory data are generated, including the
+global and local states, actions, immediate rewards, and the
+next states after executing actions. These data are stored in
+the replay buffer for subsequent training and optimization.
+The agents improve their decision-making capabilities by
+jointly optimizing the policy networks and critic network.
+Policy updates are guided by the joint advantage function
+A(s, a) = Q(s, a) − V (s), where Q(s, a) is estimated using
+the immediate reward r and the next state value V (s′ ), which
+evaluates the relative value of actions. The critic network
+minimizes the value estimation error to optimize the state
+value function V (s), thereby enhancing the overall decisionmaking efficiency of the agents.
+Cloud State: The state of the cloud agent includes global
+traffic conditions, such as vehicle number on all road segments, currently assigned routes and their distribution ratios.
+Cloud Action: The cloud agent’s action includes route
+assignment and global optimization. It calculates potential
+routes using the k -shortest path algorithm and adjusts route
+distribution ratios to achieve optimal flow. It also balances
+traffic across the network by refining these ratios based on
+global conditions.
+RSU State: The state of the RSU agent includes local
+traffic conditions, such as vehicle number on controlled road
+segments, and congestion tendency.
+RSU Action: The RSU agent focuses on vehicle rerouting.
+When vehicle density on the road exceeds a threshold,
+it reallocates vehicles entering segments based on current
+traffic, alleviating congestion and maintaining smooth flow.
+Reward Function: The reward function is based on the
+Dynamic System Optimal (DSO) model for traffic flow
+allocation, with the reward being the inverse of the product
+of the road segment weights and the traffic volume at the
+current time step.
+RCa (t) = P
+
+eij ∈E
+
+1
+,
+vk ∈V T Ik,ij (t) · Nij (t)
+
+P
+
+(19)
+
+where T Ik,ij (t) represents the weight of road segment eij ,
+and Nij (t) is the traffic volume on that segment.
+Advantage Function: HAA2C uses the joint advantage
+function Aim
+π (sb , aim ) to evaluate the improvement of each
+action relative to the current policy, considering the collaborative effects among agents. The joint advantage function is
+defined as:
+Aim
+π (sb , aim ) = Qπ (sb , aim ) − Vπ (sb ),
+
+(20)
+
+where Qπ (sb , aim ) is the state-action value function representing the expected return of taking action aim in state
+sb , and Vπ (sb ) is the state value function representing the
+expected return in state sb . By maximizing the advantage
+function, agents can collaboratively select an optimal policy.
+
+Policy Gradient Update: HAA2C uses the policy gradient to optimize the policy of each agent within a collaborative framework. The the policy gradient is computed as
+follows:
+B
+1 X im
+Aπ (sb , aim )∇θim log πθim (aim | sb ),
+∇θim J(θ ) =
+B
+b=1
+(21)
+where Aim
+π (sb , aim ) is the joint advantage function estimate
+for agent im in state sb . This optimizes the policy by
+maximizing the joint advantage function.
+Policy Update Rule: The policy is updated using gradient
+ascent as follows:
+im
+
+θim ← θim + α∇θim J(θim ),
+
+(22)
+
+where α is the learning rate, and ∇θim J(θim ) is the policy
+gradient computed from the advantage function. The agents
+iteratively improve their policies through this update rule.
+Critic Network Update: To accurately estimate the state
+value function, HAA2C updates the critic network using the
+following loss function:
+L(ϕ) =
+
+B
+2
+1 X
+V̂ϕ (sb ) − Rb ,
+B
+
+(23)
+
+b=1
+
+where V̂ϕ (sb ) is the estimated state value function output by
+the critic network, and Rb is the actual return.
+Critic Update Rule: The critic parameters are updated
+using gradient descent as follows:
+ϕ ← ϕ − αc ∇ϕ L(ϕ),
+
+(24)
+
+where αc is the learning rate for the critic network. This rule
+ensures the critic network accurately estimates state values
+over time.
+Sequential Update Mechanism: To ensure stability during training in a multi-agent environment, HAA2C uses a
+sequential update mechanism. Each agent updates its policy
+in a pre-defined order, reducing the instability caused by
+simultaneous policy updates among multiple agents and
+facilitating collaborative learning.
+The detail of the proposed HAA2C-Based Routing Optimization is shown in Algorithm 2. It begins by initializing
+the parameters of the actor and critic networks for both the
+cloud agent Ca and each RSU agent Ra (line 1). For each
+episode, the system state S is initialized (line 2). At each
+time step, the cloud agent Ca first retrieves its observation
+OCa,t (line 5), computes potential routes using the k -shortest
+paths, and updates its routing decision based on the current
+policy (lines 6-7). The cloud agent then executes the action
+aCa (line 8).
+For each RSU agent Ra under Ca’s control, if the
+congestion tendency exceeds a predefined threshold, the RSU
+agent retrieves its observation ORa,t , executes its action aRa
+
+VOLUME ,
+
+9
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+WANG ET AL.: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs
+
+Algorithm 2 HAA2C-based Routing Optimization
+Require: Traffic network observation space, vehicle flow
+data, congestion trend
+Ensure: Optimized vehicle routing decisions
+1: Initialize the parameters of actor and critic networks for
+the cloud agent Ca and each RSU agent Ra;
+2: for episode n = 1, 2, . . . , N do
+3:
+Initialize the state S ;
+4:
+for time step t = 1, 2, . . . , T do
+5:
+Cloud agent Ca retrieves its observation OCa,t ;
+6:
+Compute potential routes using k -shortest paths
+7:
+and update Ca’s routing;
+8:
+Execute action aCa based on current policy
+9:
+for each RSU agent Ra under Ca’s control do
+10:
+if congestion trends exceed the threshold
+then
+11:
+RSU agent Ra retrieves its observation
+12:
+ORa,t ;
+13:
+Execute action aRa based on current policy
+14:
+and obtain new observation ORa,t+1 ;
+15:
+end if
+16:
+end for
+17:
+Store transition
+18:
+(SCa,t , OCa,t , aCa , rCa , SCa,t+1 , OCa,t+1 ) and
+19:
+(SRa,t , ORa,t , aRa , rRa , SRa,t+1 , ORa,t+1 ) in
+20:
+replay buffer D;
+21:
+Compute reward using Eq.(19);
+22:
+end for
+23:
+Sample a batch from the replay buffer D;
+24:
+for each agent im
+25:
+in a predefined order do
+26:
+Update critic network by minimizing the loss
+27:
+function using Eq.(23);
+28:
+Update actor network using policy gradient.
+29:
+using Eq.(22);
+30:
+end for
+31: end for
+
+based on the current policy, and obtains the new observation ORa,t+1 (lines 9-14). Both the cloud agent and RSU
+agent transitions (SCa,t , OCa,t , aCa , rCa , SCa,t+1 , OCa,t+1 )
+and (SRa,t , ORa,t , aRa , rRa , SRa,t+1 , ORa,t+1 ) are stored in
+the replay buffer D (line 18), and the total reward for the
+time step is computed using Eq.(19) (line 21).
+After each episode, a batch of transitions is sampled from
+the replay buffer (line 23), and each agent’s networks are
+updated sequentially in a predefined order. For each agent,
+the critic network is updated by minimizing the loss function
+based on Eq.(23), and the actor network is updated using the
+policy gradient from Eq.(22) (lines 26-29). This sequential
+update mechanism supports stable multi-agent training by
+reducing potential conflicts from simultaneous updates and
+enhancing collaborative learning among agents.
+
+FIGURE 4. The simulated area of Chicago
+
+V. PERFORMANCE EVALUATION
+
+To evaluate the proposed HERO algorithm, we conduct
+a comprehensive performance comparison against several
+baseline and enhanced methods. Initially, the evaluation
+is carried out on a medium-scale Chicago road network
+consisting of 107 nodes, where HERO is compared with
+the following three algorithms: 1) ReFOCUS+ [16], a multilayer advanced road guidance system based on a joint fogcloud system. ReFOCUS+ takes into account the effects of
+regional congestion, road congestion, and potential future
+traffic conditions for congestion detection. 2) DSP [57],
+whenever congestion is detected on a road segment, it
+collects the set of vehicles whose paths intersect with that
+segment and calculates a new shortest path for each vehicle
+based on the current travel times of the road network. 3)
+RSU-only, an algorithm proposed in this study that removes
+the cloud component and focuses on local optimization by
+RSUs, relying solely on RSUs for local traffic management.
+To further validate the scalability and robustness of HERO,
+we extend the evaluation to a larger Chicago network with
+149 nodes and include additional competitive algorithms
+for comparison: 4) CVRS [20], a congestion-aware vehicle
+rerouting strategy based on predictive information. CVRS
+dynamically selects rerouting vehicles by considering travel
+time and updates the remaining road capacity in real-time
+to enable cooperative rerouting among vehicles. 5) MAPPO,
+where the HERO system is optimized using the Multi-Agent
+Proximal Policy Optimization algorithm to assess its impact
+on coordination under heterogeneous-agent settings.
+A. Simulation Settings
+
+In the simulation, we employ the Simulation of Urban Mobility (SUMO) version 1.20.0 as the traffic simulation platform
+and construct a reinforcement learning training framework
+based on the SUMO-RL environment. The experimental
+environment is deployed on a desktop computer equipped
+with an Intel Core i5-13500H six-core processor, 16 GB of
+RAM, and an NVIDIA GeForce RTX 4050 Laptop GPU.
+Model implementation and evaluation are conducted using
+Python 3.8.19 and PyTorch 2.0.1, while the training and
+inference processes are accelerated via CUDA 11.7 and
+cuDNN 8.5.0.
+Performance evaluation is carried out under real-world
+traffic scenarios based on realistic map data obtained from
+
+10
+
+VOLUME ,
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+OpenStreetMap (OSM). Specifically, two simulation environments are constructed using different regions of the
+Chicago urban area. The first road network consists of 107
+signalized intersections and 321 directed road segments,
+while the second, larger-scale network includes 148 intersections and 508 road segments, as illustrated in Fig. 4. These
+two scenarios represent medium-scale and larger-scale urban
+traffic networks, respectively, and are used to evaluate the
+adaptability and effectiveness of the proposed method under
+varying spatial complexities.
+During the simulation, different traffic demand levels are
+modeled by adjusting the total number of vehicles. For
+the network with 107 intersections, the number of vehicles
+ranges from 900 to 1700, whereas for the network with
+148 intersections, the vehicle count is increased to 2000–
+2500. All vehicles are assumed to be connected and capable
+of communicating with roadside infrastructure. Under this
+assumption, the action of each RSU agent is defined as
+selecting a certain proportion of vehicles within its coverage
+area for rerouting based on the observed traffic state, which
+is consistent with the design of the proposed fog–cloud
+collaborative framework.
+Vehicle dynamics follow the Krauss car-following model
+and the lane-changing model implemented in SUMO. The
+maximum acceleration and deceleration are set to 2.6 m/s2
+and 4.5 m/s2 , respectively. A randomness parameter σ = 0.5
+is introduced to capture driver heterogeneity in speed adjustment and lane-changing behavior. Lane-changing decisions
+are governed by strategic motivation (lcStrategic = 0.7),
+cooperation (lcCooperative = 1.0), and speed-gain preference (lcSpeedGain = 1.0). Traffic signals operate under
+a fixed-cycle control strategy with predefined green and
+yellow phases to ensure consistency across all experimental
+scenarios.
+RSUs are deployed at all signalized intersections, with
+their observation range covering the road segments connected to each intersection. RSUs are responsible for collecting local traffic states and executing local control actions,
+while the cloud server aggregates global traffic information
+and performs overall coordination. This deployment enables
+the evaluation of the collaborative decision-making process
+between the cloud and RSUs under realistic communication
+assumptions.
+Regarding randomness control, the SUMO simulator supports both random and fixed-seed execution modes. In this
+study, a fixed SUMO random seed is adopted to ensure
+consistency in vehicle departure patterns and traffic evolution across different experimental runs. Meanwhile, during
+reinforcement learning training, random seeds are explicitly
+specified for policy initialization, environment sampling, and
+neural network optimization, thereby controlling the inherent
+stochasticity in multi-agent reinforcement learning.
+The reinforcement learning component adopts the HAA2C
+framework. Both the actor and critic networks consist of two
+fully connected hidden layers, each containing 128 neurons,
+
+TABLE 1. Simulation Parameters
+
+Parameter
+
+Value
+
+Number of hidden layers
+Neurons per layer
+Activation function
+Initialization method
+Output layer gain
+Actor learning rate
+Critic learning rate
+ε (Adam)
+Weight decay
+Discount factor γ
+GAE lambda λ
+Entropy coefficient
+Loss function
+Max gradient clipping
+Maximum vehicle speed
+vf (free flow speed)
+vb (stop-and-go speed)
+kt
+α
+β
+k
+Lv (vehicle length)
+ds (vehicle spacing)
+
+2
+128
+ReLU
+Orthogonal
+0.01
+0.0011
+0.0005
+0.00001
+0
+0.99
+0.9
+0.01
+Huber loss
+10
+13.9 m/s
+13.9 m/s
+2.5 m/s
+15 vehicles/km
+1.0
+0.6
+1.5
+5m
+0.5 m
+
+with ReLU as the activation function. Network parameters
+are initialized using orthogonal initialization, and the output
+layer gain is set to 0.01. The learning rates of the actor and
+critic networks are set to 0.0011 and 0.0005, respectively.
+The Adam optimizer is used with an epsilon value of
+1×10−5 . During training, Generalized Advantage Estimation
+(GAE) is employed, with the discount factor γ set to 0.80 and
+the GAE parameter λ set to 0.9. An entropy regularization
+term with a coefficient of 0.01 is incorporated to encourage
+exploration, and gradient norm clipping is applied with a
+threshold of 10.
+For the proposed Attention–CNN–LSTM prediction
+model, the input dimension of the LSTM is set to 64, and the
+number of hidden units is set to 128. In the HERO algorithm,
+both the actor and critic networks adopt a two-layer fully
+connected architecture with 128 neurons per layer and ReLU
+activation. Orthogonal initialization is applied to all network
+parameters, with the output layer gain set to 0.01. The actor
+and critic networks are trained using the Adam optimizer,
+with learning rates of 0.0011 and 0.0005, respectively, and
+ε = 1 × 10−5 . The algorithm incorporates GAE and the
+Huber loss function, together with entropy regularization and
+gradient norm clipping mechanisms. The detailed parameter
+configurations are summarized in Table 1.
+
+VOLUME ,
+
+11
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+WANG ET AL.: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs
+
+TABLE 2. Prediction Performance of Different Models
+
+9
+
+True Data
+Attention-CNN-LSTM
+
+Model
+
+RMSE
+
+R2
+
+Attention-CNN-LSTM
+RNN
+CNN
+
+0.075815
+0.086323
+0.083664
+
+0.795068
+0.734322
+0.750437
+
+7
+6
+5
+4
+3
+2
+
+1500
+
+1
+
+1400
+
+0
+
+0
+
+50
+
+100
+
+150
+
+Time slot
+FIGURE 5. Prediction performance of Attention-CNN-LSTM model.
+
+HAA2C
+MAPPO
+
+1300
+
+200
+
+reward
+
+Number of vehicles
+
+8
+
+1200
+1100
+1000
+
+B. Simulation Results
+
+900
+
+First, we evaluate the performance of the proposed AttentionCNN-LSTM prediction model. Fig. 5 shows the prediction
+results obtained from road-segment-level traffic flow records
+generated by the 107-node SUMO road network, where
+the number of vehicles represents the vehicle count in the
+corresponding traffic flow sequence at each time slot. As
+shown in Fig. 5, the predicted values of the AttentionCNN-LSTM model are highly consistent with the groundtruth values, indicating its strong capability in accurately
+forecasting traffic flow variations. Moreover, Table 2 reports
+the RMSE and R2 values of Attention-CNN-LSTM, classical
+RNN, and CNN models. The results show that AttentionCNN-LSTM achieves the lowest RMSE and the highest
+R2 among all compared models, further demonstrating the
+superiority of the proposed prediction model.
+The reason for Attention-CNN-LSTM’s significant performance advantage is primarily the unique architecture and
+ability of it to handle complex spatio-temporal features.
+For one thing, the Attention-CNN-LSTM model combines
+the ability of the CNN layer to extract local features with
+the LSTM’s strength in capturing long-term dependencies.
+Moreover, the attention mechanism focuses on critical time
+points. This design enables the model to effectively capture
+complex temporal patterns in traffic flow, resulting in the
+lowest prediction error (RMSE = 0.075815) and the highest
+fit (R2 = 0.795068).
+In contrast, while the RNN model can process timeseries data, it struggles with long-term dependencies due
+to the vanishing gradient problem, leading to a higher
+prediction error (RMSE = 0.086323) and a lower fit (R2 =
+0.734322). The CNN model, although able to extract features
+through convolutional layers, lacks a dedicated mechanism
+for modeling temporal dependencies, resulting in a higher
+error (RMSE = 0.083664) and a lower fit (R2 = 0.750437).
+In Fig. 6, we evaluate the convergence performance of the
+adopted HAA2C network and compare it with the classical
+MAPPO algorithm, since both methods are applicable to
+multi-agent decision-making scenarios. For each algorithm,
+two reward curves are plotted: the fluctuating curve repre-
+
+800
+
+0
+
+200
+
+400
+
+600
+
+800
+
+1000
+
+episode
+FIGURE 6. Convergence performance comparison between HAA2C and
+MAPPO.
+
+sents the actual episodic reward obtained during training,
+while the solid curve represents the corresponding movingaverage reward. Therefore, the four visible reward lines in
+Fig. 6 correspond to the actual and moving-average rewards
+of HAA2C and MAPPO, respectively.
+The actual episodic rewards exhibit noticeable fluctuations
+during training. This is mainly due to policy exploration, dynamic traffic evolution, and multi-agent interactions among
+vehicles, RSUs, and the cloud agent in complex traffic
+environments. In addition, small changes in rerouting decisions may lead to different congestion propagation patterns,
+which further causes variations in episode-level rewards.
+To better illustrate the overall learning trend, the movingaverage rewards are plotted together with the actual rewards.
+As shown in Fig. 6, HAA2C performs similarly to
+MAPPO in the early training stage. However, as training
+proceeds, HAA2C gradually achieves a higher and more
+stable moving-average reward. Although MAPPO is suitable for multi-agent scenarios, it adopts a shared-policy
+learning structure and does not explicitly distinguish the
+heterogeneous roles of the cloud and RSU agents. In contrast, HAA2C constructs separate policy networks and action
+spaces for heterogeneous agents, enabling cloud and RSU
+agents to better adapt to their respective decision-making
+tasks. Moreover, the use of Generalized Advantage Estimation (GAE) and Huber loss contributes to more stable policy
+updates. Consequently, HAA2C shows smaller fluctuations
+in the moving-average reward and faster convergence in the
+later stage of training.
+First, we evaluate and compare the performance of all
+algorithms on a 107-node Chicago road network under
+varying traffic conditions, focusing on traffic efficiency and
+environmental metrics. Fig. 7 presents the road-network
+
+12
+
+VOLUME ,
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+(a) DSP: CO2 Emission
+
+(b) ReFOCUS+: CO2 Emission
+
+(c) HERO: CO2 Emission
+
+(d) DSP: Vehicle Density
+
+(e) ReFOCUS+: Vehicle Density
+
+(f) HERO: Vehicle Density
+
+FIGURE 7. Performance of DSP, ReFOCUS+, and HERO in terms of CO2 emissions and vehicle density.
+
+heatmap comparison on the 107-node Chicago road network. The first row visualizes the spatial distribution of
+CO2 emissions under DSP, ReFOCUS+, and HERO, while
+the second row shows the corresponding vehicle density
+distributions. Through these heatmaps, the effects of different
+routing strategies on emission distribution and traffic concentration can be directly observed on the same road network.
+Compared with DSP and ReFOCUS+, HERO produces a
+more balanced vehicle density distribution and lower highemission concentration, indicating its effectiveness in mitigating local congestion and reducing environmental impact.
+Fig. 8a illustrates the average travel time achieved by
+each algorithm. As observed, DSP consistently results in
+the longest travel time. This is mainly because its path
+adjustment relies solely on local real-time traffic conditions, lacking global traffic awareness and coordination.
+Consequently, vehicles frequently detour or remain stuck in
+congested areas, significantly increasing travel times. RSUonly performs local optimization via roadside units (RSUs)
+and supports proactive adjustments. However, due to the
+absence of global coordination, it struggles to manage overall
+traffic flow efficiently, resulting in limited improvements. In
+contrast, ReFOCUS+ integrates global optimization from the
+cloud with localized responses from RSUs, enabling systemlevel adjustments to mitigate congestion more effectively.
+As a result, it outperforms DSP and RSU-only in terms
+
+of travel time. The proposed HERO algorithm achieves the
+best performance by deeply integrating global and local
+optimization through a fog-cloud collaborative architecture.
+By forecasting traffic trends, HERO anticipates and avoids
+congestion proactively, substantially reducing overall travel
+time and improving traffic efficiency.
+Figs. 8b and 8c show the total energy consumption and
+total CO2 emissions, respectively, under different traffic
+loads. DSP exhibits the highest energy consumption and
+emissions due to frequent path changes and detours, which
+increase both travel distance and duration, thereby consuming more fuel and generating more emissions. Although
+ReFOCUS+ incorporates global coordination, its thresholdbased intervention is typically activated only after congestion
+has occurred, leading to higher environmental costs. RSUonly performs better in environmental metrics by identifying
+local risks and making preemptive adjustments, thereby partially reducing energy consumption and emissions. However,
+its lack of global awareness limits overall optimization.
+HERO, on the other hand, utilizes an Attention-CNN-LSTM
+model to predict global traffic trends and applies reinforcement learning for multi-objective optimization. This enables
+efficient rerouting and congestion avoidance, leading to the
+best performance in both energy efficiency and emission
+reduction.
+
+VOLUME ,
+
+13
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+WANG ET AL.: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs
+
+2500
+
+1200
+DSP
+HERO
+RSU-only
+Refocus+
+
+1000
+800
+600
+400
+200
+
+900
+
+1000
+
+1100
+
+1200
+
+2.4M
+
+DSP
+HERO
+RSU-only
+Refocus+
+
+2.2M
+2.0M
+1.8M
+1.6M
+1.4M
+1.2M
+
+DSP
+HERO
+RSU-only
+Refocus+
+
+2000
+
+1500
+
+1000
+
+1.0M
+
+500
+
+800.0k
+
+1300
+
+CO2 emissions(kg)
+
+Total energy consumption(kj)
+
+Average travel time(s)
+
+1400
+
+900
+
+1000
+
+Number of vehicles
+
+1100
+
+1200
+
+1300
+
+900
+
+1000
+
+(a) Average travel time
+
+1100
+
+1200
+
+1300
+
+Number of vehicles
+
+Number of vehicles
+
+(b) Total energy consumption
+
+(c) Total CO2 emissions
+
+FIGURE 8. Performance comparison on the 107-node Chicago road network.
+
+CVRS
+Refocus+
+HERO
+MAPPO
+
+450
+400
+350
+300
+250
+
+3.5M
+
+CVRS
+Refocus+
+HERO
+MAPPO
+
+2500
+
+CO2 emissions(kg)
+
+4.0M
+
+Total energy consumption(kj)
+
+500
+
+Average travel time(s)
+
+3000
+
+CVRS
+Refocus+
+HERO
+MAPPO
+
+550
+
+3.0M
+
+2.5M
+
+2.0M
+
+2000
+
+1500
+
+1000
+
+1.5M
+
+200
+2000
+
+2100
+
+2200
+
+2300
+
+Number of vehicles
+
+(a) Average travel time
+
+2400
+
+2500
+
+1.0M
+
+2000
+
+2100
+
+2200
+
+2300
+
+2400
+
+Number of vehicles
+
+(b) Total energy consumption
+
+2500
+
+500
+
+2000
+
+2100
+
+2200
+
+2300
+
+2400
+
+2500
+
+Number of vehicles
+
+(c) Total CO2 emissions
+
+FIGURE 9. Performance comparison on the 148-node Chicago road network.
+
+In summary, HERO demonstrates significant advantages
+across key metrics including average travel time, total energy consumption, and CO2 emissions, highlighting the
+effectiveness and foresight of its coordinated global-local
+optimization mechanism in complex traffic environments.
+To further verify the scalability and stability of the HERO
+algorithm in larger-scale networks, we extended our experiments to a 149-node Chicago road network and introduced
+three additional baseline algorithms: CVRS, MAPPO and
+ReFOCUS+ serving as a common benchmark.
+As shown in Fig. 9a, the comparison of average travel
+time under varying traffic densities demonstrates that RLbased algorithms generally outperform traditional methods.
+It should be noted that the average travel time is not
+determined only by the number of nodes in the road network.
+In our simulations, the 107-node network contains more
+concentrated bottleneck areas, where vehicles spend a large
+proportion of travel time waiting for congestion to dissipate.
+In contrast, although the 148-node network has a larger scale,
+it provides more alternative routes and a more dispersed
+traffic distribution, which helps reduce severe queue accumulation on critical segments. Therefore, the average travel
+time in the 148-node network can be lower than that in the
+107-node network under the adopted traffic demand settings.
+
+This result further indicates that road-network topology,
+bottleneck distribution, route redundancy, and traffic demand
+distribution jointly affect the average travel time. RL agents
+can dynamically adjust their routing policies according to
+the environment, enabling more efficient path decisions that
+alleviate congestion. CVRS incorporates traffic prediction to
+proactively optimize routing before congestion occurs and
+utilizes residual road capacity as a scheduling factor, thereby
+achieving better performance than ReFOCUS+. However,
+CVRS does not sufficiently consider vehicles already on
+congested segments during rerouting, leading to prolonged
+travel time for some vehicles and exposing limitations in
+local optimization.
+MAPPO, although an RL-based method, struggles in
+heterogeneous multi-agent environments with communication delays, showing instability and suboptimal performance
+compared to HERO. In contrast, HERO consistently achieves
+the lowest average travel time across all traffic loads. As
+the network scales, HERO maintains stable performance
+gains, highlighting its strong scalability. By enabling adaptive policy updates through reinforcement learning and
+leveraging the fog-cloud collaborative architecture, HERO
+effectively balances global path optimization and local realtime scheduling. This allows for proactive and responsive
+
+14
+
+VOLUME ,
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+rerouting under dynamic and high-pressure traffic conditions,
+thereby improving overall traffic efficiency.
+Figs. 9b and 9c illustrate the total energy consumption and
+CO2 emissions under various traffic loads on the 149-node
+network. While all algorithms show an increasing trend in
+energy use and emissions as vehicle density rises, significant
+differences are observed in both growth rate and overall
+performance, especially under high-load conditions. MAPPO
+displays considerable fluctuations and disadvantages.
+MAPPO, though utilizing reinforcement learning, is not
+designed specifically for heterogeneous multi-agent environments. Its use of proximal policy optimization (PPO)
+limits its ability to handle discrepancies in agent perception, divergent goals, and decentralized reward structures.
+Consequently, it suffers from policy oscillation and frequent
+path adjustments under heavy traffic, resulting in uneven flow
+distribution and elevated energy and emission levels.
+In contrast, HERO combines the HAA2C joint advantage
+function framework with a fog-cloud collaborative structure,
+allowing distributed agents to operate with centralized value
+estimation. This enables more stable and forward-looking
+rerouting decisions. HERO not only adapts to dynamic traffic
+environments but also leverages global predictions and local
+observations to balance load and optimize paths. Experimental results demonstrate that HERO consistently achieves
+the lowest total energy consumption and CO2 emissions
+across all traffic densities, with the most stable growth trend,
+significantly outperforming other algorithms.
+In summary, the proposed HERO algorithm demonstrates
+significant advantages in terms of travel time, energy consumption, and CO2 emissions. These improvements stem
+from the integration of reinforcement learning and traffic
+load balancing. Through adaptive adjustment mechanisms,
+HERO dynamically distributes traffic flow across different
+scenarios, identifies potential congestion points early, and
+reroutes vehicles proactively. This reduces vehicle dwell time
+in heavily congested areas and optimizes routing, thereby
+lowering energy use and emissions.
+Additionally, HERO employs the HAA2C multi-agent
+collaborative optimization architecture, effectively coordinating between cloud and RSUs. The system performs global
+path planning while simultaneously adjusting local traffic
+flows in real-time via RSU sensing. This synergy allows
+the system to capture vehicle and road dynamics, adapt
+routing policies preemptively, and mitigate congestion before
+it intensifies. HERO thus unifies the goals of traffic efficiency
+and sustainable mobility, showcasing strong potential for
+deployment in large-scale urban transportation networks.
+In summary, the proposed HERO algorithm demonstrates
+significant advantages in terms of travel time, energy consumption, and CO2 emissions. These improvements stem
+from the integration of reinforcement learning and traffic
+load balancing. Through adaptive adjustment mechanisms,
+HERO dynamically distributes traffic flow across different
+scenarios, identifies potential congestion points early, and
+
+reroutes vehicles proactively. This reduces vehicle dwell time
+in heavily congested areas and optimizes routing, thereby
+lowering energy use and emissions. Additionally, HERO
+employs the HAA2C multi-agent collaborative optimization
+architecture, effectively coordinating between cloud and
+RSUs. The system performs global path planning while
+simultaneously adjusting local traffic flows in real-time via
+RSU sensing. This synergy allows the system to capture vehicle and road dynamics, adapt routing policies preemptively,
+and mitigate congestion before it intensifies. HERO thus
+unifies the goals of traffic efficiency and sustainable mobility,
+showcasing strong potential for deployment in large-scale
+urban transportation networks.
+VI. CONCLUSION
+
+This study explores a congestion-avoidance and trafficbalancing framework within a fog–cloud architecture for
+IoVs, aiming to enhance overall traffic system efficiency
+through optimized path planning and real-time adaptive
+management. We propose HERO, a reinforcement learning–based method that integrates the HAA2C framework
+with traffic flow equilibrium to achieve proactive congestion
+mitigation and dynamic adjustment. HERO forms a multiagent collaborative architecture in which the cloud performs
+global traffic optimization and equilibrium analysis, while
+RSUs monitor local traffic conditions and implement flowlevel adjustments in real time. This design enables the system
+to intervene before congestion emerges, optimizing vehicle
+allocation and routing strategies to prevent bottlenecks. The
+adaptive nature of reinforcement learning allows HERO
+to update decisions based on real-time traffic dynamics,
+overcoming the limitations of static or shortest-path-based
+traditional methods.
+In addition, HERO employs an Attention–CNN–LSTM
+model to predict short-term traffic evolution, enabling RSUs
+to evaluate congestion trends and determine whether preemptive actions are required. The flow-equilibrium optimization
+model further allows agents to learn re-routing strategies
+under diverse traffic conditions and dynamically adjust the
+proportion of vehicles to be rerouted.
+Simulation results demonstrate that HERO significantly
+outperforms traditional approaches such as DSP and ReFOCUS+ in terms of travel time, energy consumption, and
+carbon dioxide emissions. By proactively predicting congestion and optimizing routing strategies, the system effectively
+reduces congestion in high-density areas and minimizes idle
+and low-speed driving, leading to reduced energy usage and
+emissions.
+Despite its strong performance, several directions remain
+open for further extension of the framework. First, the
+current method primarily focuses on flow-level coordination,
+and finer-grained individual vehicle requirements are not yet
+fully modeled; the interaction between global optimization
+and autonomous vehicle-level decision-making may also become more diverse under complex traffic conditions. Second,
+
+VOLUME ,
+
+15
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+WANG ET AL.: Heterogeneous-agent rEinforcement learning-based Route Optimization for Green Transportation in IoVs
+
+as network size, RSU density, and vehicle volume increase,
+maintaining the optimization effectiveness and operational
+efficiency of HERO in larger transportation networks becomes an important research topic. Relevant issues include
+multi-region coordination, consistency across RSU boundaries, and reasonable control of computation and communication loads in high-dimensional scenarios. Future work may
+explore scalable collaborative optimization mechanisms for
+large road networks and consider integrating personalized
+routing, hierarchical decision structures, or region-based
+coordination strategies to further enhance the adaptability
+and robustness of HERO in real-world traffic systems.
+REFERENCES
+[1] C. Liu, Z. Xiao, C. Long, D. Wang, T. Li, and H. Jiang, “MVCAR:
+Multi-View Collaborative Graph Network for Private Car Carbon
+Emission Prediction,” IEEE Transactions on Intelligent Transportation
+Systems, pp. 1–12, 2024.
+[2] Y. Zhang, Y. Zhou, and H. Fujita, “Distributed Multi-Agent Reinforcement Learning for Cooperative Low-Carbon Control of Traffic
+Network Flow Using Cloud-Based Parallel Optimization,” IEEE Transactions on Intelligent Transportation Systems, vol. 25, no. 12, pp.
+20 715–20 728, 2024.
+[3] Z. Lv and W. Shang, “Impacts of Intelligent Transportation Systems on
+Energy Conservation and Emission Reduction of Transport Systems:
+A Comprehensive Review,” Green Technologies and Sustainability,
+vol. 1, no. 1, p. 100002, 2023.
+[4] S. S. Sarma, K. Sinha, C. Subrpa, G. Chakraborty, and B. P. Sinha,
+“Optimal Distribution of Traffic in Manhattan Road Networks for
+Minimizing Routing-Time,” IEEE Transactions on Intelligent Transportation Systems, vol. 22, no. 11, pp. 6799–6820, 2021.
+[5] B. Chen, Z. Ding, Y. Wu, J. Zhou, and Y. Chen, “An Optimal Global
+Algorithm for Route Guidance in Advanced Traveler Information
+Systems,” Information Sciences, vol. 555, pp. 33–45, 2021.
+[6] Y. Alsaawy, A. Alkhodre, A. Abi Sen, A. Alshanqiti, W. A. Bhat,
+and N. M. Bahbouh, “A Comprehensive and Effective Framework for
+Traffic Congestion Problem based on the Integration of IoT and Data
+Analytics,” Applied Sciences, vol. 12, no. 4, p. 2043, 2022.
+[7] Y. T. Tseng and H. W. Ferng, “An Improved Traffic Rerouting Strategy
+Using Real-Time Traffic Information And Decisive Weights,” IEEE
+Transactions on Vehicular Technology, vol. 70, no. 10, pp. 9741–9751,
+2021.
+[8] C. Tang, W. Hu, S. Hu, and M. E. J. Stettler, “Urban Traffic Route
+Guidance Method with High Adaptive Learning Ability under Diverse
+Traffic Scenarios,” IEEE Transactions on Intelligent Transportation
+Systems, vol. 22, no. 5, pp. 2956–2968, 2021.
+[9] Y. Matsui and T. Yoshihiro, “A Flow-Based Centralized Route Guidance System for Traffic Congestion Mitigation,” IEEE Transactions
+on Intelligent Transportation Systems, vol. 25, no. 8, pp. 8681–8694,
+2024.
+[10] A. Carianni and A. Gemma, “Overview of traffic flow forecasting
+techniques,” IEEE Open Journal of Intelligent Transportation Systems,
+vol. 6, pp. 848–882, 2025.
+[11] J. Clancy, D. Mullins, B. Deegan, J. Horgan, E. Ward, C. Eising,
+P. Denny, E. Jones, and M. Glavin, “Wireless Access for V2X
+Communications: Research, Challenges and Opportunities,” IEEE
+Communications Surveys Tutorials, vol. 26, no. 3, pp. 2082–2119,
+2024.
+[12] G. P. Rocha Filho, R. I. Meneguette, J. R. Torres Neto, A. Valejo,
+L. Weigang, J. Ueyama, G. Pessin, and L. A. Villas, “Enhancing
+Intelligence In Traffic Management Systems To Aid In Vehicle Traffic
+Congestion Problems In Smart Cities,” Ad Hoc Networks, vol. 107, p.
+102265, 2020.
+[13] R. Viterbo, F. Campolo, M. Cerutti, S. Shanker Awasthi, S. Arrigoni,
+M. Brambilla, and M. Nicoli, “A 5g roadside infrastructure assisting
+connected and automated vehicles in vulnerable road user protection,”
+IEEE Open Journal of Intelligent Transportation Systems, vol. 6, pp.
+346–362, 2025.
+
+[14] H. Dui, S. Zhang, M. Liu, X. Dong, and G. Bai, “IoT-Enabled
+Real-Time Traffic Monitoring and Control Management for Intelligent
+Transportation Systems,” IEEE Internet of Things Journal, vol. 11,
+no. 9, pp. 15 842–15 854, 2024.
+[15] H. Maheshwari, L. Yang, and R. W. Pazzi, “Machine learning advancements in urban traffic simulation: A comprehensive survey,” IEEE
+Open Journal of Intelligent Transportation Systems, vol. 6, pp. 1027–
+1052, 2025.
+[16] M. Rezaei, H. Noori, M. M. Razlighi, and M. Nickray, “ReFOCUS+:
+Multi-Layers Real-Time Intelligent Route Guidance System with Congestion Detection and Avoidance,” IEEE Transactions on Intelligent
+Transportation Systems, vol. 22, no. 1, pp. 50–63, 2021.
+[17] Y. Zhong, J. G. Kuba, X. Feng, S. Hu, J. Ji, and Y. Yang,
+“Heterogeneous-Agent Reinforcement Learning,” Journal of Machine
+Learning Research, vol. 25, no. 1-67, p. 1, 2024.
+[18] S. F. A. Batista, M. Ameli, and M. Menéndez, “On the characterization
+of eco-friendly paths for regional networks,” IEEE Open Journal of
+Intelligent Transportation Systems, vol. 4, pp. 204–215, 2023.
+[19] W. Zhu and C. Zhu, “A Prediction-Based Route Guidance Method
+toward Intelligent and Green Transportation System,” IEEE Internet
+of Things Journal, vol. 10, no. 14, pp. 12 763–12 776, 2023.
+[20] M. C. Ho, J. M.-Y. Lim, C. Y. Chong, K. K. Chua, and A. K. L.
+Siah, “Collaborative Vehicle Rerouting System with Dynamic Vehicle
+Selection,” IEEE Transactions on Intelligent Transportation Systems,
+vol. 24, no. 12, pp. 14 546–14 555, 2023.
+[21] D. Zhang and Z. Guo, “Optimal Order-K Routing Policy for Adaptive
+Routing in Real Road Networks,” Transportation Research Part C:
+Emerging Technologies, vol. 157, p. 104392, 2023.
+[22] S. Chavhan, D. Gupta, C. Nagaraju, R. A, A. Khanna, and J. J.
+P. C. Rodrigues, “An Efficient Context-Aware Vehicle Incidents Route
+Service Management for Intelligent Transport System,” IEEE Systems
+Journal, vol. 16, no. 1, pp. 487–498, 2022.
+[23] Y. Gacha and T. Abdellatif, “Oppin: Optimal path intervention for
+emergency response leveraging iot and big data technologies,” IEEE
+Open Journal of Intelligent Transportation Systems, vol. 6, pp. 484–
+502, 2025.
+[24] H. H. Armayau, J. Wu, W. Akbar, S. Li, A. Hussain, I. Ullah, T. Hussain, M. Alam, and W. Jiang, “Dynamic vehicle routing optimization
+for urban distribution under real-time demand fluctuations,” IEEE
+Open Journal of Intelligent Transportation Systems, vol. 7, pp. 313–
+336, 2026.
+[25] L. Wang, R. C.-W. Wong, and C. S. Jensen, “Congestion-Mitigating
+Spatiotemporal Routing in Road Networks,” in 2024 IEEE 40th
+International Conference on Data Engineering (ICDE), 2024, pp.
+4586–4599.
+[26] R. Alms, A. Noulis, E. Mintsis, L. Lücken, and P. Wagner, “Reinforcement learning-based traffic control: Mitigating the adverse impacts of
+control transitions,” IEEE Open Journal of Intelligent Transportation
+Systems, vol. 3, pp. 187–198, 2022.
+[27] D. Amores, E. Tanin, and M. Vasardani, “Flexible Paths: A Path
+Planning Approach to Dynamic Navigation,” IEEE Transactions on
+Intelligent Transportation Systems, vol. 25, no. 6, pp. 4795–4808,
+2024.
+[28] S. Jiang, C. Q. Tran, and M. Keyvan-Ekbatani, “Regional Route
+Guidance with Realistic Compliance Patterns: Application of Deep
+Reinforcement Learning and MPC,” Transportation Research Part C:
+Emerging Technologies, vol. 158, p. 104440, 2024.
+[29] X. Chen, E. Tan, Z. Meng, and X. Ma, “Modeling passenger flow
+congestion propagation in urban rail transit network with an epidemic
+approach,” IEEE Open Journal of Intelligent Transportation Systems,
+vol. 7, pp. 759–770, 2026.
+[30] F. Vitale, R. Niroumand, and C. Roncoli, “Distributed signal-free
+intersection optimization via iterative time slots adjustment for connected and automated vehicles,” IEEE Open Journal of Intelligent
+Transportation Systems, vol. 7, pp. 285–303, 2026.
+[31] W. Han, E. Wang, B. Liu, Z. Liu, X. Shao, L. Wu, and J. Wang,
+“Leveraging CAVs to Improve Traffic Efficiency: An MARL-Based
+Approach,” in 2024 IEEE 44th International Conference on Distributed Computing Systems (ICDCS). IEEE, 2024, pp. 1143–1153.
+[32] H. Yun, E. jin Kim, S. W. Ham, and D.-K. Kim, “Navigating the
+Non-Compliance Effects on System Optimal Route Guidance Using
+Reinforcement Learning,” Transportation Research Part C: Emerging
+Technologies, vol. 165, p. 104721, 2024.
+
+16
+
+VOLUME ,
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+This article has been accepted for publication in IEEE Open Journal of Intelligent Transportation Systems. This is the author's version which has not been fully edited and
+content may change prior to final publication. Citation information: DOI 10.1109/OJITS.2026.3708178
+
+[33] P. Typaldos and A. A. Malikopoulos, “Combining Cooperative
+Re-Routing with Intersection Coordination for Connected and
+Automated Vehicles in Urban Networks,” 2025. [Online]. Available:
+https://arxiv.org/abs/2503.10004
+[34] Q. Xue, S.-T. Zheng, X. Han, and R. Jiang, “A Two-Level Framework for Dynamic Route Planning and Trajectory Optimization of
+Connected and Automated Vehicles in Road Networks,” Physica A:
+Statistical Mechanics and its Applications, vol. 668, p. 130552, 2025.
+[35] R. Du, S. Chen, J. Dong, T. Chen, X. Fu, and S. Labi, “Dynamic
+Urban Traffic Rerouting with Fog-Cloud Reinforcement Learning,”
+Computer-Aided Civil and Infrastructure Engineering, vol. 39, no. 6,
+pp. 793–813, 2024.
+[36] A. Mohanty, A. G. Mohapatra, S. Kumar Mohanty, T. Yang,
+R. Singh Rathore, A. Alkhayyat, and D. Gupta, “Integrating Cognitive
+Intelligence and VANET for Effective Traffic Congestion Detection
+in Smart Urban Mobility,” IEEE Access, vol. 13, pp. 61 538–61 548,
+2025.
+[37] W. Zhang, B. Chen, and X. Liang, “Neural Network Based Route
+Guidance Strategy in Intelligent Transportation Systems,” Physica A:
+Statistical Mechanics and its Applications, vol. 647, p. 129910, 2024.
+[38] X. Ma and X. He, “Providing Real-Time En-Route Suggestions to
+CAVs for Congestion Mitigation: A Two-Way Deep Reinforcement
+Learning Approach,” Transportation Research Part B: Methodological,
+vol. 189, p. 103014, 2024.
+[39] Z. Ke, Q. Zou, J. Liu, and S. Qian, “Real-Time System Optimal
+Traffic Routing under Uncertainties—Can Physics Models Boost Reinforcement Learning?” Transportation Research Part C: Emerging
+Technologies, vol. 173, p. 105040, 2025.
+[40] M. Zhang, H. Ren, and Y. Zhou, “Research on global ship path
+planning method based on improved ant colony algorithm,” IEEE Open
+Journal of Intelligent Transportation Systems, vol. 4, pp. 143–152,
+2023.
+[41] Z. Huang, X. Wang, X. Yuan, X. Guo, and Z. Su, “Synergistic path
+planning of shipborne multi-uav systems for port atmospheric pollution
+monitoring,” IEEE Open Journal of Intelligent Transportation Systems,
+vol. 7, pp. 110–125, 2026.
+[42] M. Haris and H. Nam, “Path planning optimization of smart vehicle
+with fast converging distance-dependent pso algorithm,” IEEE Open
+Journal of Intelligent Transportation Systems, vol. 5, pp. 726–739,
+2024.
+[43] K. Shin, U. Otgonbayar, and Y. Kim, “An enhanced gnn encoder-based
+approach to the vehicle routing problem with task priority and limited
+resources,” IEEE Access, pp. 1–1, 2025.
+[44] X. Huang, D. Wu, and B. Boulet, “Traffic signal control using
+lightweight transformers: An offline-to-online rl approach,” IEEE
+Open Journal of Intelligent Transportation Systems, vol. 7, pp. 396–
+411, 2026.
+[45] D. Saxena, N. Singh, K. Gupta, A. Verma, V. Mishra, J. Kumar,
+I. Gupta, S. Patni, R. Gupta, J. Kumar, and A. K. Singh, “An intelligent
+multi-depot vehicle routing and management model for smart cities,”
+IEEE Transactions on Intelligent Transportation Systems, vol. 26,
+no. 6, pp. 7740–7754, 2025.
+[46] X. Li, J. Gao, and Y. Li, “Multi-agent path finding based on graph
+neural network,” in 2023 42nd Chinese Control Conference (CCC),
+2023, pp. 5458–5463.
+[47] S. Kapoor, “Explainable and context-aware graph neural networks
+for dynamic electric vehicle route optimization to optimal charging
+station,” EXPERT SYSTEMS WITH APPLICATIONS, vol. 283, JUL
+15 2025.
+[48] M. Ye, J. Zhang, Z. Guo, and H. J. Chao, “Path-based graph neural network for robust and resilient routing in distributed traffic engineering,”
+IEEE JOURNAL ON SELECTED AREAS IN COMMUNICATIONS,
+vol. 43, no. 2, pp. 422–436, FEB 2025.
+[49] Y. Gacha and T. Abdellatif, “Oppin: Optimal path intervention for
+emergency response leveraging iot and big data technologies,” IEEE
+Open Journal of Intelligent Transportation Systems, vol. 6, pp. 484–
+502, 2025.
+[50] T. Ding, L. Liu, Z. Yan, X. Lu, and J. Hu, “Federated reinforcement
+learning for intelligent route planning in aerial-terrestrial network,”
+IEEE Internet of Things Journal, vol. 12, no. 21, pp. 43 909–43 921,
+2025.
+[51] Z. Yuan, S. Xu, and M. Zhu, “Federated reinforcement learning for
+robot motion planning with zero-shot generalization,” Automatica, vol.
+
+[52]
+
+[53]
+
+[54]
+[55]
+
+[56]
+
+[57]
+
+166, p. 111709, 2024. [Online]. Available: https://www.sciencedirect.
+com/science/article/pii/S0005109824002036
+S. Tian, C. Wei, Y. Li, and Z. Ji, “Fgrl: Federated growing
+reinforcement learning for resilient mapless navigation in unfamiliar
+environments,” Applied Sciences, vol. 14, no. 23, 2024. [Online].
+Available: https://www.mdpi.com/2076-3417/14/23/11336
+A. W. Mamond, M. Kundroo, S.-e. Yoo, S. Kim, and T. Kim, “Fldqn:
+Cooperative multi-agent federated reinforcement learning for solving
+travel time minimization problems in dynamic environments using
+sumo simulation,” SENSORS, vol. 25, no. 3, FEB 2025.
+H. Wang, J. Li, Q.-Y. Chen, and D. Ni, “Logistic Modeling of
+the Equilibrium Speed–Density Relationship,” Transportation research
+part A: policy and practice, vol. 45, no. 6, pp. 554–566, 2011.
+M. Tang, W. Zhuang, B. Li, H. Liu, Z. Song, and G. Yin, “EnergyOptimal Routing For Electric Vehicles Using Deep Reinforcement
+Learning With Transformer,” Applied Energy, vol. 350, p. 121711,
+2023.
+J. Du, X. Wang, X. Wu, F. Zhou, and L. Zhou, “Multi-Objective Optimization for Two-Echelon Joint Delivery Location Routing Problem
+Considering Carbon Emission under Online Shopping,” Transportation
+Letters, vol. 15, no. 8, pp. 907–925, 2023.
+J. Pan, I. S. Popa, K. Zeitouni, and C. Borcea, “Proactive Vehicular
+Traffic Rerouting for Lower Travel Time,” IEEE Transactions on
+vehicular technology, vol. 62, no. 8, pp. 3551–3568, 2013.
+
+SHUJUAN WANG (Member, IEEE) received the
+B.S., and Ph.D. degrees in biomedical engineering
+and information processing from Beijing Jiaotong
+University, Beijing, China, in 2007, and 2013,
+respectively. She is currently a professor with the
+School of Information Engineering and Automation, Kunming University of Science and Technology, Yunnan, China. Her research interests include intelligent transportation, network communications, and artificial intelligence.
+
+ZIYIN GUO received the B.S. degree in communication engineering from Dalian Minzu University,
+China, in 2021, and the M.S. degree in electronic
+information from Kunming University of Science
+and Technology, China, in 2025. His research
+interests include intelligent vehicular networks and
+related applications in intelligent transportation
+systems.
+
+HAIQU YANG Haiqu Yang received a bachelor’s degree Department of Computer Science and
+Technology, Xihua University, In 2023, Chengdu,
+China. He is currently pursuing a master’s degree
+at Kunming University of Science and Technology.
+His research interests Include traffic flow and time
+series analysis.
+
+VOLUME ,
+
+17
+
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+
+

@@ -1,0 +1,798 @@
+2023 IEEE 26th International Conference on
+Intelligent Transportation Systems (ITSC)
+24-28 September 2023. Bilbao, Bizkaia, Spain
+
+Research on travel paths based on car-hailing services connecting
+with rail transit
+
+2023 IEEE 26th International Conference on Intelligent Transportation Systems (ITSC) | 979-8-3503-9946-2/23/$31.00 ©2023 IEEE | DOI: 10.1109/ITSC57777.2023.10421829
+
+Yajie Song, Zhijian Wang, Ruoyu Wang
+Abstract— Urban rail transit has become the primary mode
+of transportation for most commuters, while car-hailing services
+have gained popularity as a new transportation option in recent
+years. Based on the relatively stable scheduling of subway trains
+and the distribution patterns of car-hailing services, this study
+proposes a combination of car-hailing services and rail transit
+for efficient travel. By analyzing and processing car-hailing
+passenger flow data, extracting origin-destination (OD) pairs,
+and constructing road network information, the study
+determines the attraction areas of rail transit stations. An
+improved Sarsa algorithm is employed to search for optimal
+travel paths based on the principle of connection travel,
+providing passengers with better travel decision-making.
+Compared to the Q-learning algorithm, the Sarsa algorithm
+demonstrates a 35% improvement in convergence speed, an
+11% reduction in optimal path length, and an 8% decrease in
+minimum travel costs. Sarsa exhibits stronger adaptability to
+complex and unknown environments.
+
+I. INTRODUCTION
+Urban rail transit is the preferred mode of transportation
+for most commuters due to its extensive coverage, moderate
+pricing, stable operation, and strong timeliness. Car-hailing
+services have also witnessed significant growth worldwide,
+providing residents with more diverse travel options and
+greatly improving the convenience of their commutes. They
+effectively address the challenges of the "last mile" problem in
+transportation for residents. However, in the current
+transportation system, the existing travel mode still has some
+shortcomings.
+Urban rail transit is unable to cover every corner of the city,
+and a single mode of transportation is insufficient to meet the
+diverse needs of commuters. With the continuous increase in
+the number of motor vehicles, road expansion has failed to
+keep pace with the growing vehicle population, resulting in
+severe congestion problems. Congestion during peak hours is
+particularly evident, significantly reducing the convenience of
+car-hailing services. Moreover, the high cost of car-hailing
+services has an impact on residents' choice of travel mode,
+especially during nighttime travel when additional charges for
+service duration, distance, and other factors come into play.
+Although urban rail transit coexists with multiple
+transportation modes, the lack of effective integration of
+information hinders the seamless connectivity between
+different modes of transportation, thus limiting the
+attractiveness of urban rail transit itself.
+Y. -J. Song, Z. -J. Wang and R. -Y. Wang are with Beijing Key Lab of
+Urban Intelligent Traffic Control Technology, North China University of
+Technology, Shijingshan District, Beijing, CO 100144, P.R.China (e-mail:
+songyajie@mail.ncut.edu.cn).
+
+979-8-3503-9946-2/23/$31.00 ©2023 IEEE
+
+Currently, research on connecting transportation modes
+mainly focuses on the integration of urban rail transit with
+other modes of transportation, while there are few studies on
+the integration of car-hailing services and urban rail transit.
+Chen [1] proposed a calculation model based on IC card data
+to calculate indicators such as the proportion of rail transit
+connecting to buses and the distance of the connection, and
+used this model to calculate the relevant indicators for bus
+connections at rail transit stations in Beijing. Yang et al. [2]
+established a conventional bus connection distance model
+based on the psychological impedance of urban rail transit
+travelers and obtained the average connection distance for
+car-hailing services and non-motorized vehicles. Path
+planning has formed a relatively complete theoretical system
+in uncertain environments. In recent years, data-driven
+simulation environments have been used to design
+reinforcement learning algorithms to solve various
+engineering problems, such as robot control and navigation [3],
+and path optimization. Q-learning proposed by Watkins [4]
+and Sarsa [5] can handle discrete state spaces effectively.
+Although extensive research has been conducted in this field,
+finding the optimal path in complex environments remains a
+challenge. Wen et al. [6] proposed a Multi-Sarsa path planning
+algorithm based on a topological graph. It is well known that
+local Q-learning can lead to suboptimal global behavior. Some
+research has also been done to enhance this aspect of deep
+reinforcement learning. Stuart Russell and Andrew L. Zimdars
+[7] proposed a new approach called Q-decomposition, which
+uses master and sub-agents to construct a new composite agent.
+Each sub-agent has a unique reward function and implements
+its own reinforcement learning process. Zhao Dongbin [8]
+proposed a SARSA-based deep reinforcement learning with
+experience replay method. Ozkan et al. [9] analyzed the entire
+traffic network using the RL-Q learning algorithm to extract
+and rank all paths, capturing the most important route
+selection behavior of traffic flow. Li et al. [10] proposed a new
+action selection strategy that combines greedy strategy and
+Boltzmann probability selection strategy to avoid the standard
+Q-learning algorithm from getting trapped in local optima,
+which has been widely applied and studied in related fields.
+Most of the previous studies have established the urban
+road traffic network at the level of a convergence area (or grid),
+but ignored the physical network topology. Due to the
+characteristics of urban network, the spatial distribution of
+travel demand patterns in the grid may exhibit significant
+heterogeneity. Therefore, based on the relatively stable
+subway train scheduling and the distribution patterns of
+car-hailing services, this study adopts a reinforcement learning
+approach to investigate the travel paths of car-hailing services
+connecting with urban rail transit. Using GPS data from
+
+1686
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:50 UTC from IEEE Xplore. Restrictions apply.
+
+car-hailing services in Beijing, travel information extraction
+and connection path analysis are conducted. The actual road
+network is topologically modeled using SUMO, and the Sarsa
+algorithm is employed to train the agent, searching for the
+optimal paths under different connection modes. This study
+aims to provide differentiated services for passengers, saving
+travel costs while reducing the overall consumption of urban
+transportation resources.
+I. DATA ACQUISITION
+
+Figure 2. After Map Matching
+
+A. GPS Data Preprocessing
+This study mainly includes vehicle GPS data, actual road
+network data, and subway station line data. The vehicle GPS
+data is sourced from Beijing's July 2018 GPS data for
+car-hailing cars, ranging from longitude 116º2644´ to
+116º3376´ and latitude 39º8012´ to 39º8495´. The actual road
+network data includes parameters and connectivity
+information for various roads in Beijing. The subway station
+line data is in the form of a shapefile, containing information
+about subway lines and the locations of subway
+entrances/exits.
+Due to factors such as the accuracy of GPS devices and
+signal transmission, some vehicles may have significant errors
+in their positioning. Therefore, it is necessary to clean the data
+by handling missing values, redundant values, and unrealistic
+data. The extraction and filtering of travel origin-destination
+(OD) pairs are performed based on the following principles:
+•
+
+Selecting data within an appropriate range.
+
+•
+
+Determining passenger boarding and alighting
+locations based on the passenger's occupancy status.
+
+•
+
+Retaining travel data with duration between 5min-2h.
+Discarding data with excessively short travel
+distances.
+
+B. Map Matching
+Due to differences in coordinate systems or limitations of
+GPS data collection devices, the obtained vehicle trajectory
+data may exhibit some coordinate point drift, which does not
+align with the actual road network. Therefore, accurately
+matching the trajectory points to the actual road network can
+significantly improve the data accuracy. In this study, a
+Hidden Markov Model (HMM) is used to match the offset
+data. This model describes a process where a hidden Markov
+chain generates a sequence of states, and the state sequence
+generates the observed sequence. It is possible to associate a
+series of ordered locus points to the actual road network. The
+before and after matching vehicle data are shown in Fig.1 and
+
+Figure 1. Before Map Matching
+
+Fig.2, demonstrating that the trajectory points have been
+accurately matched to the nearby roads, laying the foundation
+for subsequent research.
+C. Analysis of Subway Station Attraction Range and
+Connection Modes
+To explore suitable connection modes for different OD
+pairs, it is necessary to analyze the spatial relationship
+between each OD points and the subway stations within the
+region. Walking is the primary mode for passengers to reach
+subway stations. However, beyond a certain range, walking
+may not be feasible for reaching the subway station. The
+walking distance from the origin to the subway station is an
+important factor influencing passenger travel choices.
+In this study, we propose a fine-grained analysis within the
+regional scope, focusing on the entrances of each metro station
+as the center point. A circular buffer zone is established with a
+certain radius, which should be determined based on the actual
+average distance between subway station entrances in each
+city. Referring to the research conducted by Wang et al. [11]
+on the attraction range of subway stations, this study selects a
+buffer zone radius of 800 meters for subway stations. Based on
+the attraction range of subway stations, OD pairs located
+within the buffer zone are extracted, and the connection modes
+are classified based on the location of the origin point:
+•
+
+Former-Car-hailing: When the origin point is outside
+the buffer zone and the destination point is within the
+buffer zone, passengers take a car-hailing first and
+then transfer to the subway.
+
+•
+
+Latter-Car-hailing: When the origin point is within the
+buffer zone and the destination point is outside the
+buffer zone, passengers take the subway first and then
+transfer to a car-hailing.
+
+II. SARSA REINFORCEMENT LEARNING ALGORITHM
+In this study, based on the principles of Markov Decision
+Process, Sarsa algorithm, and Q-Learning algorithm (QL), an
+improved Sarsa algorithm is proposed. The actual road
+network is used as the foundation, and a road network
+topology model is established, which serves as the search
+environment, and defining the set of available actions for all
+travel points. The algorithm can determine the suitable
+connection mode for any OD pair based on the position
+information of the origin and destination point. With the
+attraction range of each metro station taken into account, it
+recommends with low cost and searches for the optimal path.
+When the algorithm identifies different travel modes, it
+applies corresponding reward mechanisms. It uses the
+
+1687
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:50 UTC from IEEE Xplore. Restrictions apply.
+
+ε-greedy strategy to select the action for the current state and
+progressively searches for the path length, connection mode,
+and optimal path for the given OD pair. By utilizing the Sarsa
+algorithm, this study aims to optimize the selection of travel
+modes for different OD pairs, taking the actual road network
+and metro station attraction ranges into consideration. This
+approach enables the recommendation of travel options with
+minimized costs and the discovery of optimal paths.
+A. Status
+Based on the actual road network, a two-dimensional plane
+map is used to represent the road network as an abstract
+topological network. Road intersections and metro stations are
+abstracted as nodes. The road network is defined as a directed
+graph G = ( J , W , E ) , where J represents the nodes of roads
+and metro stations, E represents the connecting arcs between
+nodes, W represents the physical length between road nodes.
+Road network node and road segment lengths are
+attributes of an undirected graph network that do not change
+over time. The following assumptions are made:
+•
+
+Each car-hailing vehicle on a road can enter and exit
+from both ends of the nodes.
+
+•
+
+Distances for left turns, right turns, going straight, or
+making U-turns can be ignored.
+
+•
+
+When a car-hailing vehicle departs from any position
+on a road, the origin is defined as the nearest road
+network node to that point [12].
+
+The state of the agent is defined as the set of all available
+nodes in the road network:
+
+S = {J 0 , J1 ,..., J n }.
+
+(1)
+
+Where, J i represents all the road nodes in the network.
+B. Action
+The actions consist of the set of available actions that the
+agent can take in the state, which are the valid actions the
+vehicle can choose at each intersection. In a given state, the
+vehicle generally has four possible actions: left turn, right
+turn, go straight, and reverse. In this study, it is assumed that
+when the agent is at any node in the road, it can choose the
+next intersection connected to it as the next action [13]. The
+set of available actions for each point is defined as follows:
+A = { J i : [i → i1 ,..., i → ik ]} .
+(2)
+Where, J i represents the state of the agent, ik represents
+the neighboring nodes in the state J i , and the state and action
+together constitute the environment of the agent.
+
+lead to the best future benefits, and the agent has no
+opportunity to explore better behaviors. To enhance the
+agent's exploration capability in unknown environments, this
+study adopts an ε-Greedy strategy for action selection.[14] It
+combines the randomness of probability to optimize
+exploration and the exploitation of expected reward
+estimation, avoiding being trapped in local optima. At each
+step, the next action is selected with a probability ε, while
+with a probability 1-ε, the action with the highest expected
+reward estimation from past experiences is chosen.
+argmaxa∈AQ(a ), p :1 − ε
+at = 
+(3)
+random_choose, p : ε .
+Where, Q(a ) is the reward estimation value, ε is the
+greedy coefficient. Based on the above action selection
+strategy, the probability of the agent transitioning from state
+to the next state can be expressed as:
+K
+
+P( st | s ) = ∑ P(ak ) P( st | s, ak ).
+
+(4)
+
+k =1
+
+Where, ak is the action chosen by the agent in state, and st
+is the next state.
+D. Reward Mechanism
+The reward mechanism in the Sarsa algorithm is based on
+the Markov Decision Process (MDP) model. In this process,
+the agent interacts with the environment repeatedly and
+receives feedback from the environment, which guides the
+agent on how to optimize its behavior. Therefore, a reward
+function can be defined to indicate the utility obtained by the
+agent in each state, thereby determining whether the action
+receives positive or negative feedback. In different connection
+modes, the rewards from the environment are different. The
+reward function is defined as follows:
+r1 , S next = S nearest _ station
+
+RFT =
+(5)
+ µ r1 , S next ≠ S nearest _ station , d next < d now
+
+ µ r2 , S next ≠ S nearest _ station , d next > d now .
+r1 , S next = Send
+
+(6)
+RLT =  µ r1 , S next ≠ Send , d next < d now
+µ r , S ≠ S , d > d .
+end
+next
+now
+ 2 next
+Where, RFT and RLT represents the reward function for
+the Former- Car-hailing travel mode and the reward function
+for the Latter- Car-hailing travel mode respectively. S next is
+
+the next state of the agent. S nearest _ station is the state of the
+nearest subway station. Send is the destination state of the
+
+C. Action selection policy
+In the Sarsa algorithm, commonly used search decision
+strategies are classified into direct search and indirect search.
+Each state-action pair corresponds to a Q-value, and one
+action selection scheme is to choose the action corresponding
+to the maximum Q-value. However, this action selection
+policy has limitations. If the agent always chooses the action
+with the current maximum Q-value, it may not necessarily
+
+Figure 3. OD distribution
+
+1688
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:50 UTC from IEEE Xplore. Restrictions apply.
+
+travel. d now is the distance from the current point to the
+destination. d next is the distance from the next state to the
+destination. µ is the reward transfer coefficient. r1 is a
+positive constant, and r2 is a negative constant.
+E. Update Rule
+The update rule in this study follows the principles of the
+Sarsa algorithm to update the Q-table. The update mechanism
+is as follows:
+
+Q* ( st , a=
+Q( st , at ) + α [ rt + γ Q( st +1 , a ') − Q( st , at ) ]. (7)
+t)
+Where, Q( st , at ) represents the Q-value for the current state
+and action pair. Q( st +1 , a ') represents the Q-value for the
+next state and action pair. α is the learning rate, and γ is the
+discount factor.
+III. NUMERICAL SIMULATION
+A. Travel Characteristics Analysis
+The study area is the intersection area of Line 4, Line 10,
+Line 13, and Line 16 in Haidian District. We extracted the OD
+data of car-hailing passengers and visualized it as Fig. 3. The
+selected area was divided into grids, and the data volume
+within each grid was aggregated. The heatmap of passenger
+flow data is shown in Fig. 4. The darkness and lightness of the
+colors represent the high and low passenger flow respectively.
+Darker colors indicate areas with higher passenger flow, while
+lighter colors indicate areas with lower passenger flow. We
+can identify the areas with concentrated car-hailing activities
+and observe the distribution of passenger flow.
+Fig. 5 depicts the distribution of car-hailing demand for
+pick-ups and drop-offs during five working days. It is evident
+that the car-hailing demand exhibits periodic variations.
+
+Analyzing it on an hourly basis, the fixed nature of commuting
+during working time results in a certain regularity in
+car-hailing for commuting purposes. It also reflects the
+similarity in the patterns of passengers pick-up and drop-off
+within the same hour, indicating the temporal periodicity of
+car-hailing demand.
+B. Simulation Analysis
+In this study, the actual road network surrounding the
+Haidian District in Beijing is taken as an example to verify the
+effectiveness of the algorithm using car-hailing data from July
+2018. The road network, based on the actual road
+infrastructure, consists of 129 intersections, 17 subway
+stations, and 408 road segments. Using the proposed Sarsa
+learning algorithm, the environment for the agent is
+established as shown in Tab. 1 and Tab. 2.
+• Road impedance matrix
+In the matrix shown in the Tab. 1, 0-128 represents 129
+road nodes, and each road is bidirectional with the same length.
+The numbers between two nodes represent the actual distance
+between them. For example, the distance from node 0 to node
+1 is 191m, and similarly, the distance from node 1 to node 0 is
+also 191m. All the diagonal elements are 0, indicating that
+there is no distance between the same node. Most of the other
+'inf' indicating that the distance between two nodes is infinite,
+which means there is no connecting road between them. For
+example, the distance from node 0 to node 2 is 'inf', indicating
+that there is no feasible route between two points.
+Nodes within the attraction range of subway stations
+points within the buffer zone.
+The road network consists of 17 subway stations, whose
+coordinates are the default coordinates in SUMO. After buffer
+is set, the attraction range of each subway station is 800 meters.
+There’re 79 road nodes located in buffers.
+The experimental analysis was conducted with three
+different values of p and α as Fig.6. The results indicate that
+when p=0.9 and α=0.07, the agent achieves the best
+•
+
+TABLE Ⅰ. ROAD IMPEDAMCE MATRIX
+Road
+impedance
+matrix
+0
+1
+2
+…
+127
+128
+
+Junction ID
+0
+
+1
+
+2
+
+…
+
+127
+
+128
+
+0
+191
+inf
+…
+inf
+inf
+
+191
+0
+434
+…
+inf
+inf
+
+inf
+434
+0
+…
+inf
+inf
+
+…
+…
+…
+0
+…
+…
+
+inf
+inf
+inf
+…
+0
+…
+
+inf
+inf
+inf
+…
+inf
+0
+
+TABLE Ⅱ. POINTS WITHIN THE BUFFER ZONE
+Figure 4. Heat map of passenger flow
+
+Nodes
+within
+buffer
+1
+2
+3
+…
+17
+
+Figure 5. Travel Demand
+
+Attributes
+Metro station
+coordinates
+
+Bagou
+(-280.1, 0.76)
+Beijing University
+East Gate
+(180.23, 304.97)
+Changchun Road
+(-263.76, -285.1)
+…
+Zhongguancun
+(206.27, -154.03)
+
+Attraction area
+of subway
+station
+
+Nodes ID
+within buffer
+
+800m
+
+J62, J63, J67,
+J68,
+…,
+J96,J97
+
+1689
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:50 UTC from IEEE Xplore. Restrictions apply.
+
+TABLE Ⅳ. LATTER CAR-HAILING
+Latter- Car-hailing
+Node ID
+Nearest Metro station
+Distance to Metro
+station(m)
+Optimal path
+Path length
+Price
+
+O2
+
+Junction ID
+
+D2
+
+27
+Zhichunlu Station
+
+3
+Bagou Station
+
+496.8
+
+1515.7
+
+27>28>Line 10 Zhichunlu -> Line 10 Bagou
+Station>20>19>18>17>16>15>14>13>12
+7650
+15
+
+Figure 6. Pathlength of different α
+
+convergence in terms of reward value, path length, and
+learning time. The experimental conditions were set as follows:
+discount factor γ=0.9, p=0.9, learning rate α=0.07, maximum
+greedy coefficient = 0.9, subway station attraction range =
+800m, and training iterations = 200. The simulation
+experiments demonstrate that the Sarsa algorithm exhibits
+strong adaptability in complex environments, enabling
+accurate and efficient path planning in complex environments
+and converging to a more stable state.
+• Former-Taxi travel mode
+For the Former-Taxi travel mode, where the passenger's
+origin is beyond the attraction range of the subway station and
+the destination is within the attraction range, as shown in Tab.
+TABLE Ⅲ. FORMER CAR-HAILING
+Former-Car-hailing
+
+O1
+
+11
+
+Node ID
+Nearest Metro station
+Distance to Metro
+station(m)
+Optimal path
+Path length
+Price
+
+Metro Station
+
+Junction ID
+
+Changchunqiao Station
+1830.25
+
+D2
+
+35
+Wudaokou
+Station
+484
+
+1>12>13>14>15>Line 10
+Changchunqiao>Line 10 Cishousi>Line 6
+Huayuanqiao>Line 6 Chegongzhuang>Line
+13 Chegongzhuang>Line 13 Wudaokou>35
+9180
+18
+
+Sarsa
+
+Q-Learning
+
+Figure 7. Former-Taxi Travel path
+
+Metro Route
+
+Metro Station
+
+Sarsa
+
+Q-Learning
+
+Metro Route
+
+Figure 8. Latterer-Taxi Travel path
+
+3. Sarsa algorithm recommends taking a car-hailing car to
+connect with the subway. The passenger first takes a
+car-hailing to Changchunqiao Station, then takes the optimal
+transfer path by subway to Wudaokou Station, and finally
+walks to the destination, as shown by the red route in Fig. 7.
+• Latter-Car-hailing travel mode
+For the Latter-Car-hailing travel mode, the passenger's
+origin is within the attraction range of the subway station and
+the destination is beyond the attraction range, the Sarsa
+algorithm recommends taking the subway to connect with a
+car-hailing car. The passenger first walks to Zhichunlu Station,
+then takes the optimal transfer path by subway to Bagou
+Station, and finally takes a car-hailing car to the destination, as
+shown by the red route in Fig. 8. The two algorithms provide
+two different routes. Compared to Q-learning algorithm, the
+Sarsa algorithm yields a shorter path length. It demonstrates
+accurate and rapid path planning in complex environments
+and converges to a more stable state. It also exhibits stronger
+exploration capabilities in unknown environments.
+C. Algorithm Comparison
+Comparing Sarsa algorithm and Q-Learning algorithm,
+results of reward value, learning time, total path length and
+travel time of 200 training times are shown in Fig. 9. and Fig.
+10. It can be concluded that Sarsa algorithm has high stability
+and fast convergence speed. For reward value and learning
+time, Sarsa algorithm has a faster convergence speed, which
+reduces 35% training times compared with Q-Learning. The
+initial negative reward of Q-Learning reaches -49414, while
+that of Sarsa algorithm is only -13760. The longest initial
+learning time of Q-Learning is 1200, while the longest
+learning time of Sarsa algorithm is only 514. Moreover, the
+fluctuation is more stable and the performance is better.
+Compared with Q-Learning algorithm, Sarsa can reduce
+the optimal path length by 11% and travel cost by 8%. Sarsa
+algorithm takes the path of subway into account, so it has a
+longer travel time, about 3% increase. However, Q-Learning
+
+1690
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:50 UTC from IEEE Xplore. Restrictions apply.
+
+Figure 9. Reward and Learn-Time
+
+algorithm still has slight fluctuations after convergence. Sarsa
+algorithm has higher stability, stronger exploration ability
+under unknown environment, and certain advantages in travel
+cost. Therefore, Sarsa algorithm is more suitable for the
+research scenario.[15]
+IV. CONCLUSION
+This paper first preprocesses and maps the second-to-real
+travel data, sets the attraction range for the subway station,
+and analyzes the connection. The characteristics of real travel
+OD are analyzed, and the connection mode of travel OD is
+analyzed. Based on reinforcement learning, an algorithm is
+designed to search the short-distance travel routes of online
+car-hailing connecting rail transit. Based on the actual road
+network, Sarsa algorithm is used to establish the road network
+topology model through SUMO, and the optimal routes under
+different connection modes are searched.
+The effectiveness and feasibility of Sarsa algorithm is
+verified in multiple simulation environments with different
+scales, scenarios and characteristics. Compared with the QL
+algorithm, the convergence speed is increased by 35%, the
+optimal path length is reduced by 11%, and the minimum
+travel cost is reduced by 8%. The algorithm has stronger
+adaptability to complex and unknown environments, and
+effectively reduces the number of iterations and time of the
+algorithm. We will continue to study the improvement of the
+algorithm and improve the convergence speed, so that the
+method in this paper can give consideration to the optimality
+of the solution and the rapidity of operation, and minimize the
+travel cost and time.
+
+[2]
+[3]
+
+[4]
+[5]
+[6]
+[7]
+[8]
+[9]
+[10]
+
+[11]
+[12]
+
+[13]
+
+REFERENCES
+[1]
+
+Figure 10. Route Time, Pathlength and Price
+
+X. -B. Chen, et al. “Analysis of connection characteristic between
+subway and bus based on IC card data,” Technology & Economy in
+Areas of Communications, 2021.
+L. Yang, et al. “Transfer Distance of Urban Rail Transit Stations Based
+on KLP Model,” Traffic & Transportation,2023.
+L. Xie, Y. -S. Miao, S. Wang, et al. “Learning with stochastic guidance
+for robot navigation,” IEEE Trans. IEEE Transactions on Neural
+Networks and Learning Systems, 2021, 32(1), pp.166–176.
+
+[14]
+[15]
+
+C. J. C. H. Watkins. Learning from Delayed Rewards. Ph.D. Thesis,
+Cambridge University, Cambridge, UK, 1989.
+R. S. Sutton. “Generalization in reinforcement learning: Successful
+examples using sparse coarse coding,” Advances in Neural Information
+Processing Systems, 1995,8, pp.27–30.
+S. Wen, Y. Jiang, B. Cui, et al. “A Hierarchical Path Planning
+Approach with Multi-SARSA Based on Topological Map,” Sensors
+2022, 22, pp.2367.
+J. S. Russell, A. Zimdars. "Q-decomposition for reinforcement learning
+agents." Proceedings of the 20th International Conference on Machine
+Learning (ICML-03). 2003, pp, 656-663.
+D. Zhao, H. Wang, K. Shao, et al. “Deep reinforcement learning with
+experience replay based on SARSA,” 2016 IEEE symposium series on
+computational intelligence (SSCI). IEEE, 2016, pp. 1-6.
+M.C. Ozkan, T. Cheng. Understanding Route ChoiceBehaviours Using
+Macro-Level Patterns: A Q-LearningApproach. Available at SSRN
+4262015.
+R. -X. Li, L. Fu, L. -L. Wang, et al. “Improved Q-learning based route
+planning method for UAVs in unknown environment,” 2019 IEEE 15th
+International Conference on Control and Automation (ICCA). IEEE,
+2019, pp. 118-123.
+P. Wang, J. -H. Xiao, M. -L. Li. “Analyzing and Predicting Station
+Choice Behavior of Subway Passengers,” Journal of University of
+Electronic Science and Technology of China, 2022, 51(4), pp. 623-629.
+W. Zhang, D. Xia, G. Chang, et al. “APFD: an effective approach to
+taxi route recommendation with mobile trajectory big data,” Frontiers
+of Information Technology & Electronic Engineering, 2022, 23(10),
+pp.1494-1510.
+Z. -J. Wang, J. -P. Yang, Q. Zhang, et al. “Risk-Aware Travel Path
+Planning Algorithm Based on Reinforcement Learning during
+COVID-19,” Sustainability. 2022, 14(20): 13364.
+K. Lei, P. Guo, Q. -X. Wang, et al. “End-to-end deep reinforcement
+learning framework for multi-depot vehicle routing problem,”
+Application Research of Computers, 2022, 39(10), pp. 3013-3019.
+S. Rahili, B. Riviere and S. Olivier, et al. “Optimal Routing for
+Autonomous Taxis using Distributed Reinforcement Learning,” in
+IEEE ICDMW. Singapore, 2018, pp.556-563.
+
+1691
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:50 UTC from IEEE Xplore. Restrictions apply.
+
+

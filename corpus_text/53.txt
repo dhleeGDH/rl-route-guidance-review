@@ -1,0 +1,2640 @@
+Applied Mathematics and Computation 371 (2020) 124895
+
+Contents lists available at ScienceDirect
+
+Applied Mathematics and Computation
+journal homepage: www.elsevier.com/locate/amc
+
+A reinforcement learning scheme for the equilibrium of the
+in-vehicle route choice problem based on congestion game
+Bo Zhou a,b,∗, Qiankun Song a, Zhenjiang Zhao c, Tangzhi Liu b
+a
+
+College of Mathematics and Statistics, Chongqing Jiaotong University, Chongqing 400074, China
+College of Traﬃc and Transportation, Chongqing Jiaotong University, Chongqing 400074, China
+c
+Department of Mathematics, Huzhou University, Huzhou 313000, China
+b
+
+a r t i c l e
+
+i n f o
+
+Article history:
+Received 3 April 2019
+Revised 24 September 2019
+Accepted 27 October 2019
+Available online 13 December 2019
+Keywords:
+Route choice problem
+Congestion game
+Nash equilibrium
+Reinforcement learning
+Learning automaton
+
+a b s t r a c t
+In this paper, the Bush–Mosteller (B-M) reinforcement learning (RL) scheme is introduced
+to model the route choice behaviors of the travelers in traﬃc networks, who aim to seek
+the optimal travel routes that minimize their individual travel time. The optimal route
+choice strategy is presented by the Nash equilibrium of the congestion game. By constructing a novel potential function, the congestion game is transformed into the traﬃc assignment problem (TAP). Then, a distributed algorithm based on B-M RL scheme is devised
+to solve the TAP. Under some mild conditions, the B-M RL solution method is proven to
+converge almost surely to the optimal solution of the TAP. A numerical experiment is conducted based on the Nguyen–Dupuis network, the experimental results not only demonstrate the effectiveness of the theoretical analysis, but also show that the B-M RL-based
+solution method outperforms several existing solution methods.
+© 2019 Elsevier Inc. All rights reserved.
+
+1. Introduction
+1.1. Motivations
+In recent years, wireless communication, on-board computation facilities and advanced sensor techniques have been
+integrated into transportation systems. These new technologies establish information exchange in vehicle-to-vehicle and
+vehicle-to-infrastructure networks, and further enable real-time traﬃc information to be collected, processed, and disseminated among travelers, road infrastructure, as well as traﬃc management centers. Accordingly, a type of well-connected
+and information-rich transportation systems, named connected vehicle system, is under rapid development and is expected
+to be fully implemented in the near future. With the deployment of the advanced technologies, the information-aid route
+guidance systems are developed to assist travelers to make a more suitable decision [1–8].
+Even though connected vehicle system has been granted a great potential to intelligently route travelers, researchers
+have recognized that if each traveler independently chooses the shortest path based on uniformly shared real-time traﬃc
+information, it may only be beneﬁcial when travelers are the minority and their route choices do not impact traﬃc ﬂows
+signiﬁcantly. In fact, travelers may take advantages of the real-time information and ﬁnd shorter paths which non-travelers
+may not be able to recognized. However, as travelers become the majority, their route choices will impact traﬃc ﬂows sig∗
+
+Corresponding author at: College of Mathematics and Statistics, Chongqing Jiaotong University, Chongqing 40 0 074, China.
+E-mail addresses: zhoubocncq@163.com (B. Zhou), qiankunsong@163.com (Q. Song), zhaozjcn@163.com (Z. Zhao), tzliucq@163.com (T. Liu).
+
+https://doi.org/10.1016/j.amc.2019.124895
+0 096-30 03/© 2019 Elsevier Inc. All rights reserved.
+
+2
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+niﬁcantly. Then, current uniform real-time information provision may lead to even worsen traﬃc congestion, given travelers
+still selﬁshly and independently choose their own shortest paths. For example, many travelers sharing uniform information
+are very likely to choose a same link not crowed at the time that route choices are made, and then it becomes highly
+congested when they arrive at the link. It enables us to create distributed but coordinated traﬃc applications to improve
+mobility, safety, environmental friendliness of transportation systems.
+1.2. Related works
+The most relevant research area to the route choice problem is congestion game. It is a branch of game theory [9],
+in which the payoff of each player depends on the resources it chooses and the number of players choosing the same
+resource. Like all types of games, every player in a congestion game tries to minimize his/her own cost and the equilibrium
+point yielded in this way is known as Nash equilibrium [10], which is deﬁned as the action proﬁle of all players where
+none of the players can reduce his/her individual cost by a unilateral move. It is shown in [11] that any congestion game
+is a potential game, and the converse is proved in [12]: for any potential game, there is a congestion game with the same
+potential function. Therefore, congestion game inherits the desirable property of potential game-the existence of at least
+one pure strategy Nash equilibrium. However, it is widely known that Nash equilibria often exhibit suboptimal behavior
+compared with the socially optimal assignment. In the fast-developing society, it becomes increasingly crucial to improve
+the eﬃciency of the Nash equilibrium [13,14]. There has been a multitude of researches on the ineﬃciency of the Nash
+equilibrium. To make the Nash equilibrium achieve the social optimum, distributed methods are proposed in [15–17]. In
+[15], a network optimization framework is formulated to address the traﬃc assignment problem (TAP), in which the route
+choice strategy is determined by a logit formula. In [16], as an extension of the work in [15], a coordinated online in-vehicle
+routing mechanism is proposed, which incorporates the multinomial logit choice model to account for travelers’ behavior,
+and is implemented by a simultaneously-updating distributed algorithm. In [17], the mirror descent algorithm is utilized to
+search Nash equilibrium of the congestion game. In practice, the travelers who are seeking shorter and more comfortable
+travel time always face with the competition for a ﬁnite resource (the roads) among traﬃc ﬂows in traﬃc networks, because
+of the limited capacities of the roads. Then, the social dilemma in traﬃc networks emerges, which describes the situation
+that the Nash Equilibrium of individual vehicles is inconsistent with the social optimal [18]. To investigate whether the
+social dilemma originates from the intentions of vehicles, in [19], several social dilemma structures are detected. The results
+reveal that the information delivered to vehicles is crucial for easing the social dilemma due to urban traﬃc congestion
+when developing technologies to support the intelligent transportation system.
+It is also noteworthy that the works in [15–17] depend on speciﬁc mathematical models, such as logit model, nominal
+logit model. However, in practice, it becomes more and more complicated and costly to accurately model and identify the
+traﬃc ﬂow due to the vast volume of data produced by the traﬃc network, which is accompanied by the lack of an effective
+physical process model that can support model-based algorithm devise [20]. Thus, it is signiﬁcant to develop the modelfree methods. In other words, the route choice behavior is an adpative decision-making process that situated in an intricate
+environment that learns the optimal action through repeated interactions with its environment. Thus, reinforcement learning
+(RL) scheme is adopted to model such decision-making process [21–24], in which the actions are chosen according to a
+speciﬁc probability distribution, which is updated based on the environment responses [25–31]. In [21], the congestion game
+with noisy rewards is considered. The Nash equilibrium is learned through a Q-learning algorithm in the form of  -greedy
+learning policy. In [22], two reinforcement schemes, the IQ-learning and DQ-learning, for solving the route choice problem
+is presented and compared. The former uses an individual reward function, which aims at ﬁnding a policy that maximizes
+the agents’ utility, the latter shapes the agents’ reward based on difference rewards function, and aims at ﬁnding a route
+that maximizes the system’s utility. In [23], the route choice problem is modeled as a multiagent system, where each driver
+is represented by a learning automaton, and learns to choose routes based on past experiences. In [24], the route choice
+behavior is modeled as a multiagent reinforcement learning scheme based on the action regret.
+1.3. Summary of contributions
+Motivated by the above discussions, the paper focuses to devise the RL scheme to model the route choice process in
+traﬃc networks, in which all the travelers aim to seek the optimal travel routes based on the past experiences that minimize
+their individual travel time. The framework of main ideas in this paper is shown in Fig. 1.
+The main contributions are summarized as follows:
+(i). Employing a B-M RL scheme to model the route choice behavior of the travelers in traﬃc networks, in which the
+travelers iteratively update and propose their routing choice priority in responding to their evaluation of near future
+traﬃc condition based on shared traﬃc information among all the travelers through a communication environment.
+(ii). The Nash equilibrium of the congestion game is reformulated as the optimal solution of the TAP, which aims to
+seek the optimal route choice strategy that minimize the total latency of the traﬃc network. Then, the distributed
+algorithm based on B-M RL scheme is utilized to solve the TAP.
+(iii). Providing the convergence analysis of the B-M RL-based solution method, which ensures such solution method
+converges almost surely to the optimal solution of the TAP under some mild conditions. Thus, the B-M RL-based
+solution method is proved to be effective to learn the optimal route choice strategy.
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+3
+
+Fig. 1. Framework of the main ideas in this paper.
+
+Notations: The notations are quite standard. Throughout this paper, R and R≥0 denote the real number set and the set of
+nonnegative numbers, respectively. x denotes the Euclidean norm of a vector x. The superscript “T” represents the vector
+transpose. (, F , P ) denotes a probability space, where  is a sample space; F is a minimal σ -algebra on subsets of ;
+and P is a probability measurement on (, F ). The sample ω denotes an event in the probability space . All subsequent
+random variables will be deﬁned in this space.
+2. Problem formulation
+2.1. Route choice problem in traﬃc networks
+Consider a traﬃc network with multiple origin-destination (O-D) pairs, the origin set is denoted by O = {o1 , o2 , . . . , oko }
+and D = {d1 , d2 , . . . , dkd } denotes the destination set. The topology of the traﬃc network is described by a directed graph
+G = (V , E ), where V is a ﬁnite set of the vertexes, E ⊆ V × V is the set of directed links, in which the links are labeled by
+integers {1, 2, . . . , |E |}. Let N = {1, 2, . . . , N} be the set of all travelers. These travelers are partitioned into M disjoint groups,
+
+
+that is, N = M
+Nm j = ∅ for all mi = mj , where Nm denotes the set of travelers that travel through the
+m=1 Nk with Nmi
+
+same O-D pair (om , dm ). Let Rm , m = 1, 2, . . . , K be the set of routes between O-D pair (ok , dk ). Then, R = Km=1 Rm denotes
+the set of available routes in the traﬃc network.
+ R
+For traveler i ∈ N who want to travel through such traﬃc network, denote Ri  ri,ki i ⊆ R, ki = 1, 2, . . . , Ri be the
+ki =1
+
+set of the available routes. Ri is also called the action set of traveler i. Let i be the route link incidence matrix for traveler
+e is given as follows:
+i, where the element δi,k
+
+
+
+e
+δi,k
+=
+i
+
+i
+
+1,
+
+if e ∈ ri,ki ,
+
+0,
+
+otherwise.
+
+To accomplish the task that travel through the O-D pair, each traveler i should choose a route ri,ki from the action set Ri .
+Thus, the choice of the travelers determines the route load and the link load. Denote ξ = {ξi , ξ−i }, where ξi ∈ Ri stands for
+the route chosen by traveler i, and ξ−i is the set of routes that chosen by the travelers other than i. Then, the load of route
+r is deﬁned as the total mass of travelers who choose it
+
+f˜r =
+
+N
+
+
+I{ξi = r },
+
+i=1
+
+where I{ · } denotes the indicator function. For each link e ∈ E , note that e can be shared by different routes, the link load
+on e is associate with the loads of the routes that utilize e, which is deﬁned as
+
+f˜e =
+
+
+
+r∈R e∈r
+
+f˜r .
+
+4
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+The link load determines the latencies of all travelers, the loss associated to a link e is given by e (fe ). e (·) is called the
+latency function, which is assumed to be nonnegative, strictly increasing, and continuously differentiable for all e ∈ E . Moreover, its derivative e ( fe ) is also strictly increasing.
+The route choice problem considers that there are a large volume of travelers who want to travel through the O-D pairs in
+traﬃc network. At a given short time period, there is a group of travelers which need to make route choice decisions among
+a number of candidate routes, according to the past experiences and real-time traﬃc information. The routing decision is
+made by ﬁrst determining the priorities of candidate routes (a probability distribution), and then picking a route based on
+the priorities. Consider the scenario that the travelers choose the routes from their action sets randomly, according to a joint
+probability distribution p = { pi }N
+, known as mixed strategy, where pi is a |Ri |-dimensional vector, the element pi,ki in pi
+i=1
+R
+denotes the probability of traveler i that chooses the route ri,ki , with k i=1 pi,ki = 1. It is noteworthy that the independency
+i
+
+of the joint probability is reasonable, because the travelers are noncooperative. In the probability sense, let fe be the expected
+load of e, and fi,ki be expected traﬃc ﬂow on route ri,ki of traveler i for all i = 1, 2, . . . , N and ki = 1, 2, . . . , Ri . Then, according
+to the probability distribution pi , it holds that
+
+fi,ki = pi,ki ,
+
+(1)
+
+for all i = 1, 2, . . . , N and ki = 1, 2, . . . , Ri , therefore, sometime they are used exchangeably in this paper. Then, the expected
+traﬃc ﬂow on link e under mixed strategy p is given by
+
+f e (p ) = E
+
+N 
+
+
+fi,ki
+
+i=1 e∈ri,ki
+
+=
+
+Ri
+N 
+
+
+e
+pi,ki δi,k
+,
+i
+
+(2)
+
+i=1 k=1
+
+for all e ∈ E . Moreover, the expected latency on route r that connects the O-D pair can be obtained as
+r
+
+(p ) =
+
+
+
+le ( fe (p )),
+
+(3)
+
+e∈r
+
+for all i = 1, 2, . . . , N and ki = 1, 2, . . . , Ri . In practice, the latency function is of BPR type [32]:
+
+le ( fe ) = te0 1 + α
+
+fe
+Ce
+
+β
+
+
+
+,
+
+for each link e ∈ E , te0 is the free-ﬂow latency, Ce is the link capacity and α , β are constants. Obviously, the BPR type latency
+function le (fe ) is nonnegative, strictly increasing, and continuously differentiable with respect to fe . Moreover, its derivative
+is also strictly increasing. For presentation simplicity, hereafter, fe and r is utilized to instead of fe (p) and r (p), respectively,
+when no confusion occurs.
+In the route choice problem, if there exists a mixed strategy such that no traveler has an incentive to unilaterally deviate,
+that is, no traveler can strictly decrease his individual latency by unilaterally changing his individual strategy, then the Nash
+equilibrium is achieved. Such equilibrium is often called optimal route choice strategy, whose deﬁnition is given as follows.
+Deﬁnition 1. A mixed strategy p∗ is called an optimal route choice strategy, if for all r ∈ R, and all mixed strategies p other
+than p∗ , it holds that
+r
+
+( p∗ ) ≤ r ( p ).
+
+2.2. Learning automaton
+As a kind of machine learning technique, RL combines concepts from stochastic approximation via dynamic programming
+to function approximation. Compared with traditional model-based methods, RL can handle problems with complex transition probabilities. Therefore, it does not need to compute the transition probabilities. RL can also use function approximation
+methods (e.g., linear functions) to approximate the value function with huge state space.
+When employing the RL scheme, a learning automaton is introduced to update the mixed strategy, such that a “good”
+route has a high probability to be selected, while the choice probability of a “bad” route is relatively low. Both the mixed
+strategy and the available information depend on the underlying learning process. To be speciﬁc, at each time stage t ∈
+{1, 2, . . .}, traveler i chooses his route from Ri according to the strategy pti which is updated via the information available
+to traveler i up to time t.
+In the learning automaton, the route of each traveler is modeled by a stochastic variable-structure learning automaton which consists of a simple Markov chain containing only one state (memoryless or static systems) [29]. A stochastic
+automaton operating in a random environment
+At each time stage t, for traveler i, the
+ is an adaptive
+   discrete
+  machine.
+
+learning automaton is described by the tuple
+, {Ri }, ξit , uti , pti , Tti
+, where
+denotes the automaton input bound set; Ri denotes the set of actions of traveler i;
+
+i=1,2,...,N
+ t  t
+ξi , ui are, respectively, sequences of automaton input and
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+
+
+automaton output; and pti = pti,1 , pti,2 , . . . , pti,R
+
+T
+i
+
+5
+
+denotes the strategy of traveler i with Ri = |Ri | represents the number of
+
+possible routes of traveler i. Deﬁne the conditional probability distributions
+
+pti,ki = P
+
+
+
+Ri
+
+ 
+pti,ki = 1,
+ω ∈  : uti = uti (k )Fit−1 ,
+ki =1
+
+
+ t−1  t−1  t−1
+where Fit−1 = σ ξil
+, uli
+, pli
+, i = 1, 2, . . . , N is the minimal σ -algebra generated by all the historical events
+l=0
+l=0
+l=0
+Fit−1 ∈ F ; Tti represents the reinforcement scheme, according to which, the probability vector pti updates to pt+1
+, that is
+i
+
+pt+1
+= pti + γit Tti ,
+i
+
+(4)
+
+ t  t
+
+where γit is a scalar correction factor and Tti  Tti ξil
+, uli
+, pti . At each time stage t, the vector Tti =
+l=0
+l=0
+ t
+T
+Ti (1 ), Tti (2 ), . . . , Tti (Ri ) satisﬁes the following conditions that preserve the probability measure:
+Ri
+
+
+pti (k ) + γit Tti (k ) ∈ [0, 1],
+
+Tti (k ) = 0,
+
+ki =1
+
+for all i = 1, 2, . . . , N. The reinforcement scheme is the core of learning automaton, which will be devised later.
+3. Main results
+This section mainly addresses three problems: (i). The existence and uniqueness of the optimal route choice strategy; (ii).
+The devise of B-M RL scheme based distributed algorithm; (iii). The convergence analysis of the distributed algorithm.
+3.1. Existence and uniqueness of optimal route choice strategy
+This part explores the existence and uniqueness of optimal route choice strategy. The idea can be traced back to Rosenthal’s work [33], in which searching the optimal route choice strategy is equivalently transformed into searching the optimal
+solution of a traﬃc assignment problem (TAP). The TAP is given as follows
+
+(T AP ) : min V (f ) =
+
+
+
+e
+e∈E
+
+Ri
+
+
+fe
+0
+
+(s )ds +
+
+Ri
+N 
+
+
+
+
+
+
+fi,ki ln 1 + fi,ki ,
+
+(5)
+
+i=1 ki =1
+
+fi,ki = 1,
+
+(6)
+
+ki =1
+
+fi,ki ≥ 0,
+
+(7)
+
+where fi,ki (i = 1, 2, . . . , N; ki = 1, 2, . . . , Ri ) is decision variable, and fe =
+
+
+
+fi,1 , fi,2 , . . . , fi,Ri
+
+T
+
+N Ri
+i=1
+
+f δe ,
+k=1 i,ki i,ki
+
+f = ( f1T , f2T , . . . , fNT )T , fi =
+
+. The constraints are standard ﬂow conservation constraints.
+
+Remark 1. In [15], when the route choice strategy obeys the logit distribution, the TAP with following objective function
+was formulated to search the optimal route choice strategy.
+
+V (f ) =
+
+
+
+fe
+e
+
+e∈E
+
+0
+
+(s )ds +
+
+
+
+Ri
+N
+1 
+
+θ
+
+
+
+fi,ki ln fi,ki .
+
+(8)
+
+i=1 ki =1
+
+Furthermore, in [16], the TAP with following objective function was constructed to explore the optimal route choice strategy.
+
+V (f ) =
+
+
+
+fe
+e
+
+e∈E
+
+0
+
+(s )ds +
+
+Ri
+N 
+
+1
+i=1 ki =1
+
+β
+
+i
+
+
+
+
+
+fi,ki ln fi,ki +
+
+Ri
+N 
+
+
+αi
+f .
+β i i,ki
+i=1 k =1
+
+(9)
+
+i
+
+Notice that the objective functions (8) and (9) are not deﬁned at the points with f i,ki = 0 for i = 1, 2, . . . , N, ki = 1, 2, . . . , Ri .
+
+
+
+
+
+Thus, to make the objective functions continuous, the expression f i,ki ln fi,ki is assigned the value zero at fi,ki = 0.
+However,
+ the employed objective function in this paper makes up for this defect. Actually, it also naturally holds that
+fi,ki ln 1 + fi,ki = 0 when fi,ki = 0.
+
+6
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+Remark 2. In [15–17], the travelers update their route choice strategies through logit model, nominal logit model, bulletinboard model and bandit model. In this paper, the route choice strategy is updated according to the RL scheme which is
+independent of any speciﬁc mathematical model.
+Now, we are ready to show the existence and uniqueness of the optimal solution of TAP on the feasible region.
+Theorem 1. Under Assumption 1, the TAP possesses a unique optimal solution on the feasible region.
+Proof. The objective function (5) is rewritten as
+
+V (f ) =
+
+
+
+N R i
+i=1
+
+ki =1
+
+e
+fi,k δi,k
+i
+
+(s )ds +
+
+i
+
+e
+e∈E
+
+0
+
+Ri
+N 
+
+
+
+
+
+
+fi,ki ln 1 + fi,ki .
+
+i=1 ki =1
+
+Obviously, the objective function V(f) of the TAP is continuous on the feasible region. And the feasible region scoped by
+constraints (6) and (7) is compact, hence the TAP has a optimal solution. To show the uniqueness, we will investigate the
+convexity of V(f).
+Label the links in E by {1, 2, . . . , |E |}. The Hessian matrix H(V) of V(f) is that
+
+⎡
+
+H (V )1
+
+⎢
+⎣
+
+H (V ) = ⎢
+
+⎤
+
+H (V )2
+..
+
+⎥
+⎥,
+⎦
+
+.
+H (V )N
+
+where
+
+⎡  R i
+⎢
+⎢
+⎢
+⎢
+H (V )i = i ⎢
+⎢
+⎢
+⎣
+⎡
+⎢
+⎢
+⎢
+⎢
++⎢
+⎢
+⎢
+⎢
+⎣
+
+1
+
+k=1
+
+1
+fi,ki δi,k
+
+
+
+⎤
+
+i
+
+..
+
+.
+
+ R i
+
+k=1
+
+l
+
+l
+fi,ki δi,k
+
+
+i
+
+..
+
+.
+|E |
+
+⎤
+
+2+ fi,1
+(1+ fi,1 )2
+
+..
+
+i
+
+(1+ fi,ki )2
+
+..
+
+.
+2+ fi,R
+
+Ri
+k=1
+
+e (· )
+
+of
+
+e(
+
+i
+
+i
+
+(1+ fi,Ri )2
+
+for i = 1, 2, . . . , N. Since the derivative
+
+|E |
+
+fi,ki δi,k
+
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+
+.
+2+ fi,k
+
+
+
+⎥
+⎥
+⎥
+⎥ T
+⎥i
+⎥
+⎥
+⎦
+
+· ) is strictly increasing. Thus,
+
+
+l
+
+Ri
+f δl
+k=1 i,ki i,ki
+
+
+
+≥ 0 for all l = 1, 2, . . . , |E |.
+
+2+ fi,k
+
+It is easy to see that H(V)i is positive deﬁnite since (1+ f i)2 > 0 for ki = 1, 2 . . . , Ri . Therefore, the objective function V(f)
+i,ki
+is strictly convex on the feasible region, which implies that the TAP possesses a unique optimal solution. The proof is
+completed. 
+Remark 3. In [17], in order to search the optimal route choice strategy of the route choice problem, the TAP with objective
+f
+
+function V (f ) = e∈E 0 e e (s )ds is constructed, which can not guarantee the uniqueness of the optimal solution because
+Hessian matrix of V(f) is positive semi-deﬁnite. In this paper, however, the employed objective function (5) can ensure the
+
+
+ R i
+uniqueness of the optimal solution by introducing the term N
+f ln 1 + fi,ki .
+i=1
+k =1 i,ki
+i
+
+It can be observed from (1) that the optimal solution of the TAP is consistent with the optimal route choice strategy.
+Thus, the optimal route choice strategy can be expressed as the optimal solution of the TAP, in which the objective function
+is convex. In the next part, a B-M RL-based solution method will be presented to solve such a convex optimization problem.
+3.2. Reinforcement learning scheme
+In this part, the learning automaton is introduced to devise the distributed algorithm to learn the optimal solution of
+TAP with incomplete information exchange among the travelers. It is noteworthy that incomplete information exchange is
+more suitable for this TAP, because of the noncooperative nature of the travelers.
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+7
+
+3.2.1. The complete information case
+When the complete information of the expected latencies on routes and the constraints is available, we can employ
+the distributed gradient-like technique to attain the optimal solution based on Lagrange multiplier method. Consider the
+following Largrange function
+
+L ( f, λ ) =
+
+
+
+N Ri
+i=1
+
+ki =1
+
+e
+fi,k δi,k
+i
+
+i
+
+e
+e∈E
+
+0
+
+(s )ds +
+
+Ri
+N 
+
+
+
+
+
+
+fi,ki ln 1 + fi,ki +
+
+i=1 ki =1
+
+N
+
+i=1
+
+λi
+
+Ri
+
+
+!
+
+fi,ki − 1 ,
+
+(10)
+
+ki =1
+
+where λi ∈ R (i = 1, 2, . . . , N ) is Largrange multiplier, λ = (λ1 , λ2 , . . . , λN ) . Then, we can utilize the distributed optimization
+algorithm in [34–39] to explore the saddle point of Largrange function (10), which is given by
+T
+
+⎧ t+1
+t
+g
+= fi,k
+− ηit ∇ f t L(ft , λt ),
+⎪
+i,ki
+i
+⎨ i,ki
+t
+t
+t
+λt+1
+=
+λ
++
+η
+∇
+L(ft , λt ),
+i
+i λi
+i
+⎪
+⎩ f t+1 = gt+1  ,
+i,ki
+
+i,ki
+
+(11)
+
+≥0
+
+where t ∈ {1, 2, . . .} is the time stage, ηit is the searching stepsize, and [ · ] ≥ 0 is the projection operator onto R≥0 . When
+the stepsize ηit (i = 1, 2, . . . , N ) satisﬁes certain conditions, the solution of (11) is coincident with the optimal solution of
+the TAP.
+3.2.2. The incomplete information case
+When dealing with the incomplete information case, that is, only local expected traﬃc ﬂow f i,ki and the latency functions
+e with e ∈ ri,ki are available for traveler i. In this case, the distributed optimization algorithm (11) is no longer applicable,
+since the Largrange function L(f, λ), and the gradients ∇ fi,k L(f, λ ), ∇λi L(f, λ ) are not available for all the travelers. To overi
+
+come this obstacle, the RL scheme is utilized to stochastically approximate the gradients in (11).
+In the RL scheme, the process that the travelers decide their own route choice priorities is treated as a negotiation and
+coordination process among all the travelers. These travelers spontaneously form a routing coordination group according
+to recent route choice decision requests. In the routing coordination group, each traveler acts as a player, seeking to ﬁnd
+the best route choice priority, which leads to the probabilities of choosing the candidate paths with minimum expected
+travel time. The coordinated travelers iteratively update and propose their routing choice priority in responding to their
+evaluation of near future traﬃc condition based on shared traﬃc information among all the travelers through a communication environment. The negotiation process repeats several iterations until all travelers accept and would not change their
+route choice priorities (i.e. optimal route choice strategy). Mathematically, the RL scheme can be performed in the following
+way, at each time stage t ∈ {1, 2, . . .}, according to current individual strategy pti , traveler i chooses an action rit = ri,ki from
+
+
+
+T
+
+
+
+T
+
+t
+his individual action set Ri . Denote by rt = r1t , r2t , . . . , rN
+ r1,k1 , r2,k2 , . . . , rN,kN
+the joint action of the travelers at time
+stage t. Then, according to the RL scheme, traveler i updates his individual strategy based on the expected latency of current
+route ri,ki under the current joint action rt , and obtains pt+1
+. These procedures need to be repeated until the latencies of
+i
+the links cannot be descended. Following this idea, the B-M RL scheme that introduced in [29] will be employed to search
+the optimal solution of TAP.
+
+T
+  
+Let rt = r1,k1 , r2,k2 , . . . , rN,kN
+be the joint action at time stage t, and σi rt = e∈r
+e ( f e ) denote the expected latency
+i,ki
+
+of route ri,ki under the current joint action rt . Actually, σ i (rt ) is a random variable with respect to the route choice of traveler
+i, which is assumed to satisfy the following.
+
+
+
+T
+
+Assumption 1. For the current joint action rt = r1,k1 , r2,k2 , . . . , rN,kN , the conditional expectation of σ i (rt ) and its second
+moment are uniformly bounded by δi,+ < ∞, and i,+ < ∞, respectively, that is,
+
+  t  t−1 t
+
+σi r Fi ∧ ri = ri,ki ≤ δi,+ ,
+  
+
+E σi2 rt F t−1 ∧ rit = ri,k ≤ i,+ ,
+E
+
+i
+
+i
+
+for all i = 1, 2, . . . , N and t = 1, 2, . . ..
+Of note is that the B-M RL scheme requires that the environment responses to belong to the unit interval [0,1], but the
+available observations do not obligatory satisfy this condition. Thus, a normalization procedure is needed when deviseing
+the RL scheme. The B-M RL scheme with normalization procedure is given in Algorithm 1 .
+In Algorithm 1, when learning the optimal solution, the travelers are only aware of their own private information, including the historical choices and current latencies, which means that the B-M RL scheme matches the basic property of route
+choice problem, in which the travelers are noncooperative. On the other hand, the conditional expectation of the auxiliary
+latency is exactly equal to the gradient of V(f) with respect to expected traﬃc ﬂow, that is,
+
+ 
+
+
+
+E σ˜ it Fit−1 ∧ rit = ri,ki =
+
+∂ V (f )
+.
+∂ fi,ki
+
+(15)
+
+8
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+Algorithm 1 B-M RL Scheme.
+Initialization:
+ N
+
+T
+The current mixed strategy pt = pti
+. The current joint action rt = r1,k1 , r2,k2 , . . . , rN,kN . The current expected la-
+
+  N
+
+i=1
+
+ 
+
+
+σ˜ it = σi rti + ln 1 + pti,ki +
+
+pti,k
+
+tency σi rti
+.
+i=1
+Iteration:
+1: Calculate the current auxiliary local latency:
+
+2:
+
+(12 )
+
+i
+
+Normalize the automaton input:
+
+αit σ˜ it + βit
+
+ζit =
+
+pti,k
+
+where αit =
+3:
+
+.
+
+i
+
+1 + pti,k
+
+(13 )
+
+,
+
+i
+
+t 1−it )
+ i(
+,
+δi,+ 2+2(Ri −2 )it
+
+βit =
+
+it (1+ (2Ri −3 )it )
+, and 0 <
+2+2 (Ri −2 )it
+
+Update the route choice strategy:
+
+pt+1
+i
+
+=
+
+pti
+
++γ
+
+t
+i
+
+eRi ,ki −
+
+pti
+
++
+
+
+!
+ζit 1Ri − Ri eRi ,ki
+Ri − 1
+
+where γit ∈ [0, 1] is a scalar, 1Ri = (1, 1, . . . , 1)T , eRi ,ki
+
+&
+
+'(
+
+)
+
+Ri
+
+4:
+
+,
+
+it ↓ 0.
+
+(14 )
+
+⎛
+⎞T
+Ri
+(
+)&
+'
+= ⎝0, . . . , 0, 1, 0 . . . , 0⎠ .
+& '( )
+ki
+
+Generate the new route choice strategy distribution:
+
+
+
+
+
+
+
+p rit+1 = ri,ki Fit = pt+1
+.
+i,k
+i
+
+Remark 4. From [29], we know that the automaton input ζit in (13) belongs to the unit interval, which ensure that the
+individual strategy pti,k ∈ [0, 1] for t ∈ {1, 2, . . .}.
+i
+
+Remark 5. It should be pointed out that the distributed optimization algorithm based on (11) can only be applied if the
+complete information is available for the travelers. However, the B-M RL scheme in this paper only depends on partial
+information.
+3.2.3. Convergence of B-M RL-Based solution method
+In this part, the convergence analysis of the B-M RL-based solution method will be presented.
+
+
+
+∞
+
+Lemma 1. (Robbins & Siegumnd [40]) Let F t
+be a sequence of σ -algebras, and at , bt , ct and dt be F t -measurable nont=1
+negative random variables. And let the following inequalities hold with probability one
+
+
+
+
+
+
+
+
+
+
+
+E at+1 F t ≤ 1 + bt at + ct − dt ,
+and
+∞
+
+
+bt < ∞,
+
+t=1
+
+
+
+
+
+where E at+1 F t
+probability one,
+
+
+
+∞
+
+
+ct < ∞,
+
+t=1
+
+denotes the conditional mathematical expectation for the given ak , bk , ck and dk (k = 0, 1, · · · , t ). Then, with
+
+lim at = a∗ ,
+
+t→∞
+
+and
+∞
+
+
+d t < ∞,
+
+t=1
+
+where a∗ is some random variable.
+Theorem 2. Suppose that Assumption 1 hold. Let the optimal route choice strategy be p∗ = ×i=1,2,...,N p∗i . If the parameter γit
+∞
+∞  t 2
+γi < ∞ for i = 1, 2, . . . , N, then the individual route choice strategy pti converges to
+satisﬁes γit > 0, t=1
+γit < ∞ and t=1
+∗
+the individual optimal strategy pi with probability one as t → ∞.
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+9
+
+Fig. 2. The Nguyen–Dupuis network.
+Table 1
+Link-Route incidence relationship of the Nguyen–Dupuis network.
+O-D pair
+
+Route no.
+
+Links sequence
+
+O-D pair
+
+Route no.
+
+Links sequence
+
+(1,2)
+
+1
+2
+3
+4
+5
+6
+7
+8
+15
+16
+17
+18
+19
+
+1,10,19
+2,6,9,16,19
+2,6,9,15,17
+2,6,14,11,17
+2,5,7,11,17
+1,13,9,16,19
+1,13,9,15,17
+1,13,14,11,17
+4,7,11,17
+3,6,14,11,17
+3,6,9,16,19
+3,6,9,15,17
+3,5,7,11,17
+
+(1,3)
+
+9
+10
+11
+12
+13
+14
+20
+21
+22
+23
+24
+25
+
+2,5,8,12
+2,6,9,15,18
+2,6,14,11,18
+2,5,7,11,18
+1,13,9,15,18
+1,13,14,11,18
+4,8,12
+4,7,11,18
+3,5,8,12
+3,6,9,15,18
+3,6,14,11,18
+3,5,7,11,18
+
+(4,2)
+
+(4,3)
+
+Table 2
+The free latency f e0 and link capacity Ce of the Nguyen–Dupuis network.
+Link no.
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+f e0
+Ce
+Link no.
+fe0
+Ce
+
+7
+300
+11
+9
+500
+
+9
+200
+12
+10
+550
+
+9
+200
+13
+9
+200
+
+12
+200
+14
+6
+400
+
+3
+350
+15
+9
+300
+
+9
+400
+16
+8
+300
+
+5
+500
+17
+7
+200
+
+13
+250
+18
+14
+300
+
+5
+250
+19
+11
+200
+
+9
+300
+
+Proof. Consider the following Lypunov function
+
+.
+
+.2
+
+Wit = . pti − p∗i .
+
+for all i = 1, 2, . . . , N. Then, for any time stage t, it follows from (14) that
+
+Wit+1
+
+where
+
+ti
+
+
+
+.
+
+ !.
+.
+.2
+t
+ζ
+1
+−
+R
+e
+R
+i
+R
+,k
+. t
+.
+i
+i
+i
+i
+= . pi − p∗i + γit eRi ,ki − pti +
+.
+Ri − 1
+.
+.
+.
+
+!
+
+.
+.
+.2
+t
+t
+. t
+.
+
+
+
+
+ζ
+1
+−
+R
+e
+ζ
+1
+−
+R
+e
+R
+R
+2
+T
+2
+i
+i
+R
+,k
+R
+,k
+.
+.
+i
+i
+i
+i
+i
+i
+i
+i
+∗.
+t
+t
+∗
+t
+t
+t
+.
+= pi − pi
++ 2γi pi − pi
+eRi ,ki − pi +
++ γi .eRi ,ki − pi +
+.
+Ri − 1
+Ri − 1
+.
+.
+. t
+.
+.
+.
+
+
+
+
+2
+T
+2
+2
+= . pi − p∗i . + 2γit pti − p∗i ti + γit .ti . ,
+
+= eRi ,ki −
+
+
+
+E Wit+1 Fit
+
+
+
+pti
+
+=
+
++
+
+
+
+ζit 1R −Ri eR ,k
+i
+
+Ri −1
+
+i i
+
+. Taking mathematical expectation with respect to Fit , we obtain that
+
+. t
+.
+
+      /. .  0
+. pi − p∗i .2 + 2γit pti − p∗i T E ti Fit + γit 2 E .ti .2 Fit .
+
+(16)
+
+10
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+100
+
+Route 25
+
+Route 24
+
+Route 23
+
+Route 22
+
+Route 21
+
+Route 20
+
+Route 19
+
+Route 18
+
+Route 17
+
+Route 16
+
+Route 15
+
+Route 14
+
+Route 13
+
+Route 12
+
+Route 11
+
+Route 9
+
+Route 10
+
+Route 8
+
+Route 7
+
+Route 6
+
+Route 5
+
+Route 4
+
+Route 3
+
+0
+
+Route 1
+
+50
+
+Route 2
+
+Traffic FLow on Each Route
+
+150
+
+Fig. 3. Traﬃc ﬂows at equilibrium on each route.
+
+From (13) and Assumption 2, we get that
+
+
+
+
+
+E ti Fit
+
+
+
+=
+
+Ri
+
+
+
+
+
+
+
+
+E ti Fit−1 ∧ rit = ri,ki pti,ki
+
+ki =1
+
+=
+
+Ri
+
+
+eRi ,ki −
+
+pti
+
++
+
+
+!
+χit 1Ri − Ri eRi ,ki
+Ri − 1
+
+ki =1
+
+=
+
+pti,ki
+
+Ri
+
+
+1 
+χit pti,ki 1Ri − Ri eRi ,ki + ςit ,
+Ri − 1
+
+(17)
+
+ki =1
+
+and
+
+E
+
+Ri
+/. .2  0 
+/. .2 
+0
+.ti . Fit =
+E .ti . Fit−1 ∧ rit = ri,ki pti,ki
+ki =1
+
+≤ R2i i,+ ,
+
+(18)
+
+ 
+
+
+R 
+where χit = E ζit Fit−1 ∧ rit = ri,ki , ςit = k i=1 eRi ,ki − pti pti,k .
+i
+
+Substituting (17) and (18) into (16), it yields that
+
+ 
+
+T
+E Wit+1 Fit ≤ Wit + 2γit pti − p∗i
+
+
+i
+
+Ri
+
+
+1 
+χit pti,ki 1Ri − Ri eRi ,ki + ςit
+Ri − 1
+
+!
+
+ t 2
+γi
+
++ ϒi (  i )
+
+ki =1
+
+≤ Wit + 2
+
+γit
+Ri − 1
+
+
+Ri
+
+ki =1
+
+pti − p∗i
+
+T 
+
+
+
+T
+ 2
+R 
+χit pti,ki 1Ri − Ri eRi ,ki + 2γit i pti − p∗i ςit + R2i i γit .
+Ri − 1
+
+(19)
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+11
+
+Fig. 4. The evolutions trajectories of route choice strategies of the travelers on Route 2 for different solution methods. (a). The B-M RL-based solution
+method; (b). The multinomial logit choice model; (c). The improved learning automata; (d). The modiﬁed Q-learning algorithm.
+
+It follows from (13) and (15) that
+
+!
+ 
+
+
+∂ V pt
+t
+α
++ βi
+1Ri − Ri eRi ,ki
+∂
+pti,k
+i
+ki =1
+ 
+= − αit ∇ pt V pt − βit 1Ri .
+i
+
+Ri
+Ri
+
+
+1 
+1 
+χit pti,ki 1Ri − Ri eRi ,ki =
+Ri − 1
+Ri − 1
+ki =1
+
+t
+i
+
+(20)
+
+From the proof of Theorem 1, we know that V(p) is strictly convex, which implies that
+
+
+
+− pti − p∗i
+
+T
+
+ 
+ 
+∇ pti V pt ≤ V (p∗ ) − V pt .
+
+(21)
+
+Combining (19), (20) and (21), it obtains that
+
+
+
+
+
+E Wit+1 Fit
+
+
+
+
+
+≤ Wit − 2γit pti − p∗i
+
+T 
+
+ 
+
+T
+ 2
+R 
+αit ∇ pti V pt + βit 1Ri + 2γit i pti − p∗i ςit + R2i i γit
+
+
+t
+
+ t 
+
+≤ Wit + 2γit αi V (p∗ ) − V p
+
+Ri − 1
+
+
+ 2
+2Ri
+T
++
+γ t pt − p∗i ςit + R2i i γit .
+Ri − 1 i i
+
+An application of vector inequality 2aT b ≤ a2 + b2 , it yields that
+
+
+
+2 pti − p∗i
+
+T
+
+.
+.2 . .2
+ςit ≤ . pti − p∗i . + .ςit . .
+
+(22)
+
+12
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+Fig. 5. The evolutions trajectories of route choice strategies of the travelers on Route 4 for different solution methods. (a). The B-M RL-based solution
+method; (b). The multinomial logit choice model; (c). The improved learning automata; (d). The modiﬁed Q-learning algorithm.
+
+. .
+
+2
+From the deﬁnition of ςit , we have .ςit . ≤ R2i . Hence,
+
+
+
+2 pti − p∗i
+
+T
+
+.
+.2
+ςit ≤ . pti − p∗i . + R2i .
+
+(23)
+
+Then, combining (22) and (23), it obtains that
+
+
+
+
+
+E Wit+1 Fit
+
+
+
+≤
+
+
+
+1+
+
+
+
+Ri
+γ t Wit +
+Ri − 1 i
+
+ 
+
+ 2
+R3i
+γit + R2i i γit
+Ri − 1
+
+  
+
+
+
+− 2γit αit V pt − V (p∗ ) .
+
+It is easy to see that V pt − V (p∗ ) ≥ 0 since p∗ is the optimal route choice strategy. From the conditions
+∞  t 2
+and t=1
+γi < ∞, we know that the conditions in Lemma 1 are satisﬁed. Hence, with probability one,
+
+(24)
+∞
+
+t=1
+
+γit < ∞
+
+lim Wit = Wi∗ ,
+
+t→∞
+
+for i = 1, 2, . . . , N.
+In the following, we will prove that
+
+Wi∗ = 0
+
+(25)
+
+for i = 1, 2, . . . , N. As a matter of fact, if (25) is not true, then there exists some i such that Wi∗ = 0. From the deﬁnition of
+Wit , it obtains that pti converges to certain p∗∗
+and p∗∗
+= p∗i . Let p∗∗ be the stationary mixed-strategy that includes p∗∗
+as a
+i
+i
+i
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+13
+
+Fig. 6. The evolutions trajectories of route choice strategies of the travelers on Route 14 for different solution methods. (a). The B-M RL-based solution
+method; (b). The multinomial logit choice model; (c). The improved learning automata; (d). The modiﬁed Q-learning algorithm.
+
+
+
+part, i.e., pt → p∗∗ as t → ∞. It can be obtained that p∗∗ = p∗ . On the other hand, since p∗∗ is stationary, ∇ pi V (p )
+p∗∗
+
+pi = p∗∗
+i
+
+=0
+
+for i = 1, 2, . . . , N, which means that
+is a local optimal solution of the TAP. However, we know from Theorem 1 that
+the optimal solution of the TAP is unique. Thus p∗∗ = p∗ , which is a contradiction. Hence, Wi∗ = 0 for i = 1, 2, . . . , N, which
+means that pti converges to p∗i almost surely for i = 1, 2, . . . , N. The proof is completed. 
+4. Numerical experiments
+In this section, a numerical example is provided to illustrate the effectiveness of the proposed B-M RL-based solution
+method (Algorithm 1).
+4.1. Experiment conﬁguration
+In the numerical example, the Nguyen–Dupuis network [41] is utilized, which is shown in Fig. 2. It consists of 13 nodes,
+19 links, 25 routes and 4 O-D pairs.
+The incidence relationship of routes and links are shown in Table 1. The following BPR type latency function is employed
+e
+
+( fe ) =
+
+fe0
+
+fe
+1 + 0.35
+Ce
+
+3. 5
+
+!
+
+,
+
+14
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+0.4
+
+0.35
+
+0.22
+0.45
+
+0.2
+
+0.3
+
+0.2
+
+0.1
+
+0.25
+
+0
+1
+
+2
+
+3
+
+4
+
+5
+
+0.2
+
+0.15
+
+0.1
+
+0.05
+
+Route Choice Strategies for Route 19
+
+Route Choice Strategies for Route 19
+
+0.5
+
+0.3
+
+0.4
+0.18
+0.35
+
+0.16
+1
+
+2
+
+4
+
+5
+
+0.25
+
+0.2
+
+0.15
+
+0
+
+0.1
+50
+
+100
+
+150
+
+200
+
+250
+
+300
+
+350
+
+400
+
+450
+
+500
+
+50
+
+100
+
+150
+
+200
+
+Iterations
+
+1.4
+
+400
+
+450
+
+500
+
+0.35
+1.8
+
+0.2
+0.19
+1
+
+2
+
+3
+
+4
+
+5
+
+0.6
+
+0.4
+
+Route Choice Strategies for Route 19
+
+0.21
+
+0.8
+
+350
+
+2
+
+0.22
+
+1
+
+300
+
+(b)
+
+0.23
+
+1.2
+
+250
+
+Iterations
+
+(a)
+
+Route Choice Strategies for Route 19
+
+3
+
+0.3
+
+0.3
+
+1.6
+
+0.25
+
+1.4
+
+0.2
+
+1.2
+
+0.15
+1
+
+2
+
+3
+
+4
+
+5
+
+1
+0.8
+0.6
+0.4
+
+0.2
+0.2
+0
+
+0
+50
+
+100
+
+150
+
+200
+
+250
+
+Iterations
+
+(c)
+
+300
+
+350
+
+400
+
+450
+
+500
+
+50
+
+100
+
+150
+
+200
+
+250
+
+300
+
+350
+
+400
+
+450
+
+500
+
+Iterations
+
+(d)
+
+Fig. 7. The evolutions trajectories of route choice strategies of the travelers on Route 19 for different solution methods. (a). The B-M RL-based solution
+method; (b). The multinomial logit choice model; (c). The improved learning automata; (d). The modiﬁed Q-learning algorithm.
+
+where the free latency fe0 and link capacity Ce for each link are given in Table 2. Both Tables 1 and 2 are adopted from
+the benchmark case in [42]. Initially, the route choice strategy of each traveler are assumed to be uniform, that is, the
+1
+travelers’ available routes have the same probabilities to be chosen. The parameter γit in algorithm is set to be t 1+
+ for all
+i = 1, 2, . . . , N, where  = 10−3 is a small real number. The numerical experiment is implemented by MATLAB R2018a in a
+laptop with processor: Intel (R) Core (TM) i7-3520 CUP @2.9 Ghz and RAM: 4.0 GB.
+4.2. Experimental results
+4.2.1. Comparative analysis under identical traﬃc ﬂows
+In this part, we compare the B-M RL-based solution method with several similar methods from existing works, that is,
+the multinomial logit choice model in [16], the improved learning automata in [23], the modiﬁed Q-learning algorithm in
+[43], in which the traﬃc ﬂows between O-D pair (1,2), (1,3), (4,2), (4,3) are set by 200, 250, 150, 200, respectively. The goal
+here is to compare the eﬃciency of such four solution methods from the perspective of the convergence performance and
+the total travel time.
+The exprimental results are presented in Figs. 3–8. Fig. 3 shows the traﬃc ﬂows at equilibrium on each route under
+B-M RL-based solution method. Figs. 4, ,–7 compare the evolution trajectories of the route choice strategies of the travelers
+for different solution methods on Route 2, Route 4, Route 14 and Route 19, respectively. It can be seen from Fig. 4–7 that
+although initial route choice strategies of the travelers for the same route are identical, their evolution trajectories differs
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+10 4
+
+16
+
+Total traveling time with the four solution methods
+
+15
+
+B-M RL
+Multinomial Logit Choice Model
+Imporved Learning Automata
+Modified Q-Learning
+
+14
+
+12
+
+10
+
+8
+
+6
+
+4
+
+2
+
+0
+0
+
+50
+
+100
+
+150
+
+200
+
+250
+
+300
+
+350
+
+400
+
+450
+
+500
+
+Iterations
+Fig. 8. The evolutions of the total travel times of the travelers in traﬃc networks for the four solution methods. The red line, green line, blue line and dark
+line present the evolutions of the total travel times with the B-M RL-based solution method, the multinomial logit choice model, the improved learning
+automata and the modiﬁed Q-learning algorithm, respectively. (For interpretation of the references to colour in this ﬁgure legend, the reader is referred to
+the web version of this article.)
+Table 3
+Four different cases of traﬃc ﬂows in the Nguyen–Dupuis network.
+
+I
+II
+III
+IV
+
+(1,2)
+
+(4,2)
+
+(1,3)
+
+(4,3)
+
+50
+200
+400
+800
+
+35
+250
+500
+1000
+
+30
+150
+300
+600
+
+50
+200
+400
+800
+
+dramatically for different solution methods: the B-M RL-based solution method converges after 500 times iteration, while
+the others fail to converge within the same time period. Thus, compared with the similar solution methods, the B-M RLbased solution method performs better in convergence performance. Moreover, Fig. 8 shows the evolutions of total travel
+time of the travelers for the four solution methods. It can be seen in Fig. 8 that the total travel time in traﬃc networks
+under B-M RL-based solution method is the lowest among the four solution methods. Thus, we can conclude that the B-M
+RL scheme is more eﬃcient than the other three methods, because it not only provides better convergence performance,
+but also helps reduce the total travel time over entire network.
+4.2.2. Comparative analysis under different traﬃc ﬂows
+In this part, we test the four solution methods under four different types of traﬃc ﬂows, which are listed in Table 3. The
+experimental results are shown in Table 4, Figs. 9 and 10.
+Table 4 and Fig. 9 show the experimental results of B-M RL solution method under the four types of traﬃc ﬂows. As
+we can see from Table 4, from Case I to Case IV, with more and more travelers involved in the Nguyen-Dupuis network,
+the links are becoming congested little by little. In Case I, all the links are smooth; in Case II, there are ﬁve links become
+congested; in Case III, fourteen links are congested; in Case IV, eighteen links are congested, in other words, the traﬃc
+
+16
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+Table 4
+The traﬃc conditions in the Nguyen–Dupuis network for Case I-Case IV. Symbol“S” stands for “Smooth”,
+while symbol “C” stands for “Congested”. A link is smooth, if its traﬃc ﬂow is lower than its capacity,
+and otherwise, it is congested.
+
+I
+II
+III
+IV
+Link no.
+I
+II
+III
+IV
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+S
+C
+C
+C
+11
+S
+C
+C
+C
+
+S
+S
+C
+C
+12
+S
+S
+C
+C
+
+S
+C
+C
+C
+13
+S
+S
+C
+C
+
+S
+C
+C
+C
+14
+S
+S
+S
+S
+
+S
+S
+C
+C
+15
+S
+S
+C
+C
+
+S
+S
+C
+C
+16
+S
+S
+S
+C
+
+S
+S
+S
+C
+17
+S
+S
+C
+C
+
+S
+C
+C
+C
+18
+S
+S
+C
+C
+
+S
+S
+C
+C
+19
+S
+S
+S
+C
+
+S
+S
+S
+C
+
+Case I
+Case II
+Case III
+Case IV
+
+0.9
+0.8
+0.7
+0.6
+0.5
+0.4
+0.3
+0.2
+
+Route 25
+
+Route 24
+
+Route 23
+
+Route 21
+
+Route 22
+
+Route 20
+
+Route 19
+
+Route 18
+
+Route 17
+
+Route 15
+
+Route 16
+
+Route 14
+
+Route 13
+
+Route 12
+
+Route 10
+
+Route 11
+
+Route 9
+
+Route 7
+
+Route 8
+
+Route 6
+
+Route 5
+
+Route 3
+
+Route 4
+
+0
+
+Route 2
+
+0.1
+
+Route 1
+
+The Proportion of travelers who choose the route
+
+1
+
+Fig. 9. The proportion of travelers who choose the routes for Case I-Case IV, in which the red bar, the blue bar, the yellow bar and the dark bar represent
+the proportions for Case I, Case II, Case III and Case IV, respectively. (For interpretation of the references to colour in this ﬁgure legend, the reader is
+referred to the web version of this article.)
+
+network is smooth for Case I, is semi-congested for Case II, and encounters traﬃc jam for Case III and Case IV. Fig. 9 shows
+the proportion of travelers who choose the routes for Case I-Case IV. From Fig. 9, we can see that Route 1, Route 13, Route
+15 and Route 20 have undertaken the most of the traﬃc ﬂow for the four O-D pairs, respectively, regardless of the volume
+of traﬃc ﬂows. Compared with other cases, Case II is more suitable for simulating the route choice behaviors, because
+the semi-congested property is better for showing the effectiveness of the B-M RL-based solution method that faced with
+multiple traﬃc conditions.
+Furthermore, we test the running time of the four solution methods under the four types of traﬃc ﬂows. The experimental results are illustrated in Fig. 10, in which we can observe that the running time of the four solution methods signiﬁcantly
+increases with respect to the increasing traﬃc ﬂows, and the increasing tendencies are nearly identical, which means that
+the four solution methods share the common time complexity, simultaneously, the running time of the B-M RL-based solution method is always the lowest among the four solution methods under ﬁxed traﬃc ﬂows, which means that the B-M
+RL-based solution method is more eﬃcient than the other three solution methods.
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+17
+
+110
+100
+90
+
+B-M RL
+Multinomial Logit Choice Model
+Imporved Learning Automata
+Modified Q-Learning
+
+Runing Time (Seconds)
+
+80
+70
+60
+50
+40
+30
+20
+10
+0
+I
+
+II
+
+III
+
+IV
+
+Case No.
+Fig. 10. The running time of the four different solution methods with respect to the four cases. The red bar, green bar, blue bar and dark bar present
+the running time of the B-M RL-based solution method, the multinomial logit choice model, the improved learning automata and modiﬁed Q-learning
+algorithm, respectively. (For interpretation of the references to colour in this ﬁgure legend, the reader is referred to the web version of this article.)
+
+5. Conclusion
+In this paper, we present a B-M RL scheme to address the route choice problem. The problem is approached from a
+learning automata’s perspective, where travelers learn to choose the optimal route to travel based on their past experience.
+The optimal route choice strategy is presented by the Nash equilibrium of congestion game. We construct a novel potential
+function that transforms the congestion game into the TAP, which aims to seek the optimal route choice strategy, such
+that the total travel time in traﬃc networks can be minimized. Then, the distributed algorithm based on B-M RL scheme
+is devised to solve the TAP. Under some mild conditions, such solution method converges almost surely to the optimal
+solutions of the TAP, which means that the B-M RL-based solution method is effective to learn the optimal route choice
+strategy. In numerical experiments, we show that the B-M RL solution method provides reasonably good solutions, and is
+able to make a more eﬃcient use of the road network. The key advantage of the B-M RL-based solution method is that it
+is independent of any speciﬁc mathematical model, and does not require any central authority assigning the traﬃc data.
+Furthermore, our approach might be potentially implemented as an intelligent mobile service to guide the travelers’ daily
+route choice strategies.
+Acknowledgement
+The authors would like to thank the editor and the reviewers for their valuable suggestions and comments which have
+led to a much improved paper. This work was supported in part by the National Natural Science Foundation of China under Grant 61803056, 61773004, in part by the Basic Research and Frontier Exploration Project of Chongqing under Grant
+cstc2018jcyjAX0365, cstc2018jcyjAX0606, the Program of Chongqing Innovation Team Project in University under Grant
+CXTDX201601022, the Bayu Youth Scholar Project.
+References
+[1] T. Agryzkov, L. Tortosa, J.F. Vicent, A variant of the current ﬂow betweenness centrality and its application in urban networks, Appl. Math. Comput.
+347 (2019) 600–615.
+[2] Z.X. Kang, L. Zhang, K. Li, An improved social force model for pedestrian dynamics in shipwrecks, Appl. Math. Comput. 348 (2019) 355–362.
+[3] R.J. Cheng, H.X. Ge, J.F. Wang, The nonlinear analysis for a new continuum model considering anticipation and traﬃc jerk effect, Appl. Math. Comput.
+332 (2018) 493–505.
+
+18
+
+B. Zhou, Q. Song and Z. Zhao et al. / Applied Mathematics and Computation 371 (2020) 124895
+
+[4] Y. Cheng, X.P. Zheng, Emergence of cooperation during an emergency evacuation, Appl. Math. Comput. 320 (2018) 485–494.
+[5] A.H. Shahpar, H.Z. Aashtiani, A. Babazadeh, Dynamic penalty function method for the side constrained traﬃc assignment problem, Appl. Math. Comput.
+206 (2008) 332–345.
+[6] E. Angelelli, I. Arsik, V. Morandi, M. Savelsbergh, M.G. Speranza, Proactive route guidance to avoid congestion, Transp. Res. Part B: Methodol. 94 (2016)
+1–21.
+[7] C. Pasquale, S. Sacone, S. Siri, B.D. Schutter, A multi-class model-based control scheme for reducing congestion and emissions in freeway networks by
+combining ramp metering and route guidance, Transp. Res. Part C: Emerg. Tech. 80 (2017) 384–408.
+[8] M. Papageorgiou, Dynamic modeling, assignment, and route guidance in traﬃc networks, Transp. Res. Part B: Methodol. 24 (1990) 471–495.
+[9] R. Gibbons, Primer in Game Theory, Harvester Wheatsheaf, New York, NY, USA, 1992.
+[10] J.G. Wardrop, Some theoretical aspects of road traﬃc research, Proc. Inst. Civil Engin. 1 (1952) 325–378.
+[11] R.W. Rosenthal, A class of games possessing pure-strategy Nash equilibria, Int. J. Game Theory. 21 (1973) 65–67.
+[12] D. Monderer, L.S. Shapley, Potential games, Games Econ. Behav. 14 (1986) 124–143.
+[13] H.D. Xu, S.H. Fan, C.Z. Tian, X.R. Xiao, Evolutionary investor sharing game on networks, Appl. Math. Comput. 340 (2019) 138–145.
+[14] Z.B. Li, D.Y. Jia, H. Guo, Y. Geng, C. Shen, Z. Wang, X.L. Li, The effect of multigame on cooperation in spatial network, Appl. Math. Comput. 351 (2019)
+162–167.
+[15] C. Fisk, Some development in equilibrium traﬃc assignment, Transp. Res. Part B: Methodol. (1980) 243–255. 14B
+[16] L.L. Du, L.S. Han, X.Y. Li, Distributed coordinated in-vehicle online routing using mixed-strategy congestion game, Transp. Res. Part B: Methodol. 67
+(2014) 1–17.
+[17] P.A. Chen, C.J. Lu, Generalized mirror descents in congestion games, Artif. Intell. 241 (2016) 217–243.
+[18] J. Tanimoto, K. Nakamura, Social diffusive impact analysis based on evolutionary computations for a novel car navigation system sharing individual
+information in urban traﬃc systems, J. Navigat. 64 (2011) 711–725.
+[19] J. Tanimoto, K. Nakamura, Social dilemma structure hidden behind traﬃc ﬂow with route selection, Physica A 459 (2016) 92–99.
+[20] B. Luo, H.N. Wu, T.W. Huang, D.R. Liu, Data-based approximate policy iteration for aﬃne nonlinear continuous-time optimal control design, Automatica
+50 (12) (2014) 3281–3290.
+[21] A.C. Chapman, D.S. Leslie, A. Rogers, N.R. Jennings, Convergent learning algorithm for unknow reward games, SIAM J. Control Optim. 51 (2013)
+3154–3180.
+[22] R. Grunitzki, G.O. Ramos, A.L.C. Bazzan, Individual versus difference rewards on reinforcement learning for route choice, In: Conf. BRACIS 2014 (2014)
+253–258.
+[23] G.O. Ramos, R. Grunitzki, An improved learning automata approach for the route choice problem, in: Proceedings of the Workshop AVSA, 2014, 2015,
+pp. 56–67.
+[24] G.O. Ramos, A.L.C. Bazzan, B.C.D. Silva, Analysing the impact of travel information for minimising the regret of route choice, Transp. Res. Part C: Emerg.
+Tech. 88 (2018) 257–271.
+[25] S.P. Wen, H.Q. Wei, Z.G. Zeng, T.W. Huang, Memristive fully convolutional network: an accurate hardware image-segmentor in deep learning, IEEE
+Trans. Emerg. Topics Comp. Intell. 2 (2018) 324–334.
+[26] S.P. Wen, S.X. Xiao, Z. Yan, Z.G. Zeng, T.W. Huang, Adjusting learning rate of memristor-based multilayer neural networks via fuzzy method, IEEE Trans.
+Comput. Aided Des. Interg. Circ. Syst., doi:10.1109/TCAD.2018.2834436. In press.
+[27] H.W. Wang, T.W. Huang, X.F. Liao, H. Abu-Rub, G. Chen, Reinforcement learning in energy trading game among smart microgrids, IEEE Trans. Ind.
+Electron. 63 (2016a) 5109–5119.
+[28] H.W. Wang, T.W. Huang, X.F. Liao, H. Abu-Rub, G. Chen, Reinforcement learning for constrained energy trading games with incomplete information,
+IEEE Trans. Cyber. 47 (2016b) 3404–3416.
+[29] B. Luo, D.R. Liu, H.N. Wu, Adaptive constrained optimal control design for data-based nonlinear discrete-time systems with critic-only structure, IEEE
+Trans. Neural Netw. Learn. Syst. 29 (2018a) 2099–2111.
+[30] B. Luo, Y. Yang, D.R. Liu, Adaptive q-learning for data-based optimal output regulation with experience replay, IEEE Trans. Cyber. 48 (2018b) 3337–3348.
+[31] R.S. Sutton, G. Barto, Reinforcement Learning: An Introduction, Cambridge Univ. Press., Cambridge, U.K., 1998.
+[32] Bureau of public roads, Traﬃc assignment manual, U.S. Dept. of Commerce, Washington, DC, USA, 1964.
+[33] R.W. Rosenthal, A class of games possessing pure-strategy Nash equilibria, Internat. J. Game Theory. 2 (1973) 65–67.
+[34] H.Q. Li, Q.G. Lv, T.W. Huang, Distributed projection subgradient algorithm over time-varying general unbalanced directed graphs, IEEE Trans. Autom.
+Control 64 (2019) 1309–1316.
+[35] H.Q. Li, S. Liu, Y.C. Soh, L.H. Xie, Event-triggered communication and data rate constraint for distributed optimization of multiagent systems, IEEE
+Trans. Syst., Man, Cyber. Syst. 48 (2018) 1908–1919.
+[36] X. He, J.Z. Yu, T.W. Huang, C.D. Li, C.J. Li, Average quasi-consensus algorithm for distributed constrained optimization: impulsive communication framework, IEEE Trans. Cyber. (2018), doi:10.1109/TCYB.2018.2869249. In press
+[37] X. He, T.W. Huang, J.Z. Yu, C.J. Li, Y.S. Zhang, A continuous-time algorithm for distributed optimization based on multiagent networks, IEEE Trans. Syst.,
+Man, Cyber.: Syst. (2017), doi:10.1109/TSMC.2017.2780194. In press
+[38] X. Wang, H. Wang, C.D. Li, T.W. Huang, J. Kurths, Consensus seeking in multiagent systems with Markovian switching topology under aperiodic sampled
+data, IEEE Trans. Syst., Man, Cyber.: Syst. (2018), doi:10.1109/TSMC.2018.2867900. In press
+[39] X. Wang, H. Wang, C.D. Li, T.W. Huang, J. Kurths, Improved consensus conditions for multi-agent systems with uncertain topology: the generalized
+transition rates case, IEEE Trans. Netw. Sci. Eng. (2019), doi:10.1109/TNSE.2019.2911713. In press
+[40] B.T. Polyak, Introduction to optimization, Optim. Softw. Inc., New York, 1987.
+[41] S. Nguyen, C. Dupuis, An eﬃcient method for computing traﬃc equilibria in netowrks with asymmetric transportation costs, Transp. Sci. 18 (1984)
+185–202.
+[42] H.L. Xu, Y.Y. Luo, Y.F. Yin, J. Zhou, A prospect-based user equilibrium model with endogenous reference points and its application in congestion pricing,
+Transp. Res. Part B Methodol. 45 (2011) 311–328.
+[43] Y.T. Wang, L. Pavel, A modiﬁed q-learning algorithm for potential games, Proceedings of the IFAC 2014 (2014) 8710–8718.
+
+

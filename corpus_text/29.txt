@@ -1,0 +1,513 @@
+2024 IEEE International Conference on Systems, Man, and Cybernetics (SMC)
+October 6-10, 2024. Sarawak, Malaysia
+
+A Deep Reinforcement Learning Approach for Route Planning of
+Autonomous Vehicles*
+
+2024 IEEE International Conference on Systems, Man, and Cybernetics (SMC) | 978-1-6654-1020-5/24/$31.00 ©2024 IEEE | DOI: 10.1109/SMC54092.2024.10831232
+
+Francesco Paparella, Giuseppe Olivieri, Gaetano Volpe,
+Agostino Marcello Mangini, Senior Member, IEEE, Maria Pia Fanti, Fellow, IEEE
+Abstract— Urban autonomous driving has the potential to
+enhance both safety and efficiency of transportation in environments also in complex traffic conditions. However, new services
+and approaches are necessary to manage Autonomous Vehicles
+in the real traffic. This paper introduces a novel approach to
+optimize routing in the urban settings by Deep Reinforcement
+Learning (DRL) techniques. A modular DRL architecture is
+proposed to obtain a route able to minimize the length of the
+paths, minimize the number of turns during the travel and
+select the dedicated lanes. The proposed DRL is implemented
+on a case study where the agents are trained in a simulation
+environment for the city center of Bari, a town of Southern
+Italy.
+
+I. INTRODUCTION
+With the evolution of the urban autonomous driving, the
+choice of personalized and optimal routes is emerging as
+a crucial element in the context of roadway planning. The
+customized routes is based on the dynamic adaptation of
+pathways in response to urban context variables, such as
+traffic and user preferences. Optimizing routes and travel
+times is a way to reduce congestion, decrease gas emissions
+and contribute to global efforts to mitigate climate change
+[1], [2].
+In the recent years, the research and innovation areas
+focus on Cooperative, Connected and Automated Mobility
+topics and services for managing and controlling autonomous
+driving systems. In particular, the related literature is large
+so that only the most relevant studies are cited here. For
+instance, some novel contributions enlighten that the most
+modern technologies based on Information and communications technologies, such as Connected and Cooperative Services, Artificial Intelligence and Big Data allow to connect
+users, vehicles and infrastructures in an intelligent, efficient,
+safe and sustainable manner [3], [4], [5].
+In the route planning, Ma et al. [6] propose a graph
+convolutional network-based multi-objective meta-deep Qlearning method to efficiently learn a dynamically changing
+This study is a part of the IN2CCAM project that has received funding from the European Union’s Horizon Europe research and innovation
+programme under grant agreement No 101076791 and a part of 6G-TWIN
+project that has received funding from the Smart Networks and Services
+Joint Undertaking (SNS JU) under the European Union Horizon Europe
+research and innovation program under Grant Agreement No 101136314.
+This manuscript reflects only the authors’ views and opinions, neither
+the European Union nor the European Commission can be considered
+responsible for them.
+F. Paparella, G. Olivieri, G. Volpe, A. M. Mangini and M. P. Fanti are
+with the Department of Electrical and Information Engineering,Polytechnic
+University of Bari, 70125 Bari, Italy (f.paparella7@phd.poliba.it;
+g.olivieri@phd.poliba.it;
+gaetano.volpe@poliba.it;
+agostinomarcello.mangini@poliba.it; mariapia.fanti@poliba.it).
+
+978-1-6654-1020-5/24/$31.00 ©2024 IEEE
+
+signalized traffic network and automatically explore ecoroutes based on drivers’ preferences for travel time and fuel
+consumption.
+Sharma et al. [7] propose a Graph Neural Network based
+approach for real-time estimation of traffic speed in sustainable smart cities, which has important implications for
+route planning applications. The authors develop a novel
+Spatio-Temporal Gated Graph Attention Network model that
+captures both spatial dependencies and temporal dynamics
+within the road network graph structure.
+Efficiently matching trip requests and available drivers
+are central operational problems, as pointed out by Qin
+et al. [8]. The authors propose a Reinforcement Learning
+(RL) based approach to tackle the challenge of finding
+an optimal delayed matching policy in a complex ridehailing environment, where the efficiency of matching can be
+substantially improved by adaptively adjusting the matching
+time interval.
+In a comprehensive systematic literature review, Teusch
+et al. [9] provide an in-depth exploration of the diverse
+applications of Machine Learning (ML) techniques in Shared
+Mobility Systems (SMS), offering invaluable insights for service providers seeking to optimize their decision-making processes and enhance daily operations. The review highlights
+the transformative potential of ML as a powerful methodological solution to tackle specific management challenges
+that are pivotal for the efficient and effective functioning of
+SMS.
+Amarnath et al. [10] propose a novel ML-based approach
+to enhance transportation services through route-based user
+segmentation and clustering. The method harnesses real-time
+location data and users’ route preferences to dynamically
+group travelers sharing common routes, facilitating efficient
+communication and information sharing during transit.
+Moreover, some works are oriented to optimize only
+specific features of a scenario or finding the shortest path.
+For instance, paper [11] proposes a generic bi-criteria optimum path-finding framework based on deep reinforcement
+learning (DRL). Simulations are performed to verify the
+effectiveness of the proposed approach, where two criteria
+(i.e., solar radiation and crime risk) are modeled based on
+the real-world data in downtown New York.
+Indeed, DRL is a promising solution especially in the
+domains of driving policy, predictive perception, path and
+motion planning, and low level controller design. Reinforcement learning is still an active and emerging area in realworld autonomous driving applications. Although there are
+
+2047
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:33:16 UTC from IEEE Xplore. Restrictions apply.
+
+a few successful commercial applications, there is very little
+literature or large-scale public datasets available. Open issues
+will include: validating the performance of RL based systems, the simulation-reality gap, sample efficiency, designing
+good reward functions, incorporating safety into decision
+making RL systems for autonomous agents.
+The development of explicitly multi-agent DRL approaches to the autonomous driving problem is an important
+future challenge that has not received a lot of attention [12].
+Some papers use DRL to train a driving agent by using Light
+Detection and Ranging (Lidar), and a camera sensor. For
+example, [13] uses Lidar for path tracking and a combination
+of Lidar and a camera sensor for obstacle avoidance. On
+the contrary, a recent paper [14] proposes an adaptive path
+planning approach of Autonomous Vehicle (AV) established
+multi-light trained RL, aimed to enhance the fuel cost as
+well as AV comfort. However, a path planning that seeks to
+limit safety problems for an AV during its journey, such as
+avoiding left/right turns or using priority lanes, has not been
+proposed.
+This paper aims to address these gaps and considers the
+basic problem of designing suitable routes in the cities for
+AVs by focusing on multi objectives that are the length of
+the routes, the requirements of minimizing the turns during
+the travel and the selection of dedicated lanes. The problem
+is solved by applying a modular DRL model based on the
+training of agents associated with the AVs. Since, considering
+all the possible routes of the cities for completing the training
+is a very time consuming and complex task, we address such
+issue by proposing a modular DRL architecture based on the
+division of the city in a set of zones. A set of agents is trained
+and each agent is associated to routes starting from a zone
+and ending to a different one. The AV will select the route
+that exhibits the best multi-objective strategy enlightened by
+the best value of the reward. The modular approach allows
+us to train the agents in parallel and in limited urban areas.
+The proposed modular DRL based strategy is applied to
+the city center of Bari, a town of Southern Italy and the
+agents are trained in a simulation environment. Some results
+show the advantages of the proposed methodology. Naturally,
+if the city of study changes a new agent training is needed
+to take in account different characteristic as traffic patterns
+and road network.
+The rest of the paper is organized as follows. Section
+II presents the formulation of the problem and Section
+III introduces the used deep reinforcement learning model.
+Moreover, Section IV describes the case study and the
+obtained results. Finally, Section VI draws conclusions and
+future works.
+
+The road network is modeled as a graph G(J, E) where
+the set of nodes J = {j|j = 1, ..., n} is the set of junctions
+or intersections and the set of edges E = {e1 , e2 , ...em }
+denotes the set of the city streets. In particular, it holds that
+an edge ei = (j, r) ∈ E if there exists a street starting
+from j ∈ J and ending to r ∈ J. Moreover, we consider
+a set of edges Ep ⊂ E that are priority edges, i.e., they
+correspond to streets dedicated to the AVs. We consider the
+problem of determining the route that connects a pair of
+edges c = (es , ef ) where es is the starting edge and ef is
+the ending edge. A possible route connecting the pair c =
+(es , ef ) is a path p represented by a sequence of edges p =
+(es , ....ej , .., ef ). The problem to be solved for a given pair
+c = (es , ef ), is determining the optimum path exhibiting
+the minimum path length, the minimum number of right/left
+turns crossed and the maximum number of priority traveled
+routes.
+III. D EEP R EINFORCEMENT L EARNING M ODEL
+The Markov decision processes (MDPs) are considered
+the standard when formalising sequential decision making
+problems involving a single RL agent. A MDP is defined as
+a five-tuple
+< S, A, T, R, γ >
+where S is the set of states, A is the set of actions which
+could change the status, T is the transition function, which is
+the probability of the state change under the certain action, R
+is the reward function, and γ is known as the discount factor,
+which models the importance of the future and immediate
+rewards.
+We model the route planner problem as a MDP, where the
+agents follow a policy π (a|s) in a predetermined environment. More specifically, at each time step t, given the current
+state s(t) ∈ S, each agent chooses an action a(t) ∈ A,
+according to the current policy, transits to the next state
+s(t + 1) and finally receives a reward r(t) ∈ R. The agent
+purpose is to maximize the expectation of the return over
+time that is called thePdiscounted cumulative reward and is
+∞
+defined as G(s(t)) = h=0 γ h r(t + h + 1), where γ ∈ [0, 1]
+is the discount factor.
+For a given couple of source and destination edges c =
+(es , ef ) , in the proposed system an RL agent is associated
+with the AV that chooses the best action to obtain the
+minimum distance, with the minimum number of right/left
+turns and the maximum number of priority edges.
+A. State Space and Action Space
+The state of the agent s(t) ∈ S at time t is the following:
+s(t) = [x(t), ϕv (t), e( t)]
+
+II. P ROBLEM F ORMULATION
+Let us consider an AV that has to travel in the city: the
+problem is to find the optimal path p starting from a generic
+point of the city to a final point with the aim of minimizing
+the length of the route, minimizing the number of right and
+left turns and using the lanes dedicated to the AVs.
+
+where x(t) = (Lat(t), Lon(t)) denotes the latitude Lat(t)
+and the longitude Lon(t) of the position of the AV at time
+t respectively, ϕv (t) represents the heading angle of the AV
+(i.e., the angle of the AV, going clockwise with 0 at the 12’o
+clock position) and e(t) ∈ E is the edge occupied by the AV
+at time t.
+
+2048
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:33:16 UTC from IEEE Xplore. Restrictions apply.
+
+When an AV arrives to a node j ∈ J at time t, it can
+change the edge and can decide among three possible actions:
+A = {Gostraight, T urnright, T urnlef t}.
+B. Multi-objective Reward function
+We define a Multi-objective Reward function composed
+by a reward for shortest path, by left and right turns and
+finally a reward to use a priority path for the AV.
+1) Shortest path: To describe a reward that show how
+the agent moves towards the destination edge, we define the
+distance d(t) between the current edge at time t, and the
+destination edge ef . In case of the current distance d(t) is
+less than the distance d(t−1) at time t−1, then it means that
+the AV moves towards destination, instead if d(t) is higher
+that the distance d(t − 1), then the agent moves far. The
+reward function is defined as follows:
+(
+1
+if d(t) < d(t − 1)
+(1)
+rshortest (t) =
+−0.5 otherwise.
+
+Fig. 1: DRL training considering all possible pairs of (es , ef )
+
+2) Avoiding left/right turns: If the modulus of the difference between the angle at time t ϕ(t) and the angle ϕ(t + 1)
+at time t + 1 is greater than a fixed angle ϕf ixed , then
+we suppose that the AV turns. In such a case the agent is
+penalized:
+(
+−1 if |ϕ(t) − ϕ(t − 1)| ≥ ϕf ixed
+(2)
+rT lT r (t) =
+0
+otherwise.
+3) Priority lanes: For considering the priority lanes, it is
+enough to define a positive reward if at the step t, the current
+edge e(t) ∈ Ep :
+(
+1 if e(t) ∈ Ep
+rpriority (t) =
+(3)
+0 otherwise.
+4) Multi-objective reward: A multi-objective reward function rtot at each time t is formulated as follows:
+rtot (t) = αrshortest + βrT lT r (t) + γrpriority (t)
+
+(4)
+
+where α, β and γ are the weights assigned to each reward
+component.
+C. The Modular DRL Architecture
+The standard training of the DRL model should consider
+all possible pairs of (es , ef ) so as to cover the considered
+map. Such exhaustive approach is depicted in Fig. 1. However, when the cardinality of set E is high, i.e. , when it is
+necessary to deal with big maps with thousand of edges, this
+approach becomes infeasible due to the very long training
+times and high variance of the resulting neural network.
+In this paper, we propose a modular architecture approach
+in which the set E is partitioned in N subsets such that E =
+E1 ∪ E2 ∪ ...EN and Ei ∩ Ej = ∅ ∀i, j = 1, 2, . . . , N and
+i ̸= j. Then, as Fig. 2 shows, we train N agents in a parallel
+fashion, each with a randomly selected pair ci = (es , ef ),
+where es ∈ Ei and ef ∈ Ej ∀i, j = 1, . . . , N .
+
+Fig. 2: Modular DRL training
+
+At the end of the training, we obtain N agents that can
+be used at runtime to calculate N suboptimal paths for a
+specific pair of ci = (es , ef ) requested by an AV. Each agent
+determines a suboptimal path pki that is associated with a
+reward rk , with k = 1, ..., N . At this point the proposed
+strategy chooses the path pmax
+to which is associated the
+i
+highest reward rimax . Hence, the obtained optimal solution
+the path pmax
+is returned to the AV. The modular DRLi
+based route planner scheme is depicted in Fig. 3. Note that
+the agents do not communicate with each other since it is
+the system manger that select the best route.
+In contrast to the exhaustive approach, the advantage of the
+proposed modular strategy is that the main problem is split
+in N smaller sub-problems that cover all different zones of
+the map and can be trained in parallel to reduce complexity
+of the resulting neural networks and reducing training time.
+The number N of the considered subsets should be chosen
+according to the size of the map.
+IV. C ASE S TUDY
+In this section, we implement the proposed modular DRLbased strategy to calculate optimal routes for AVs operating
+in the city center of Bari (Italy).
+A. SUMO Simulation Environment
+We consider a map of the city centre of Bari extracted from
+OpenStreetMap. We import the map in SUMO [15] Simulator
+obtaining a graph network of 3426 edges. Each edge comes
+
+2049
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:33:16 UTC from IEEE Xplore. Restrictions apply.
+
+Fig. 3: Modular DRL-based route planner.
+
+Fig. 4: Map of city centre of Bari, Italy.
+
+with several spatial information such as road segment type,
+allowed maximum speed limits, the number of lanes and the
+number of traffic signs. The map is depicted in Fig. 4.
+The edge set E of the graph modeling the city center is
+partitioned in N = 4 subsets Ei with i = 1, ..., 4.. We use
+a standard passenger car to emulate an AV and we place
+random traffic on the map to make the simulation more
+realistic.
+The modular DRL training is implemented in Python
+language using the RLLib [16] libraries. The Python script
+is continuously connected to the SUMO environment by the
+TraCi interface. After the training, we use a REST-Api that
+exposes the trained agents and allows the AV to dispatch a
+route planning request.
+We run all the simulations by a personal computer
+equipped with Intel(R) Core(TM) i7-8565U CPU and 32 GB
+of RAM.
+B. Modular DRL Training Results
+A PPO-Clip DRL algorithm provided by RLLib is used
+to train the agents. In particular, the discount factor is set to
+
+0.99, the clip parameter to 0.2 and learning rate to 2.5e-4.
+Four random pairs of source and destination edges are
+selected from subsets E1 ,E2 ,E3 and E4 . For each pair, pi =
+(es , ef ) the points es and ef are chosen so that the Euclidean
+distance between the two edges is at least 500 meters.
+After each simulation step t, the AV chooses and executes
+one of the available actions. Then, we use the TraCi interface
+to collect the current position x(t) of the AV on the map, the
+heading angle ϕv (t) and the current edge e(t). The collected
+values are used to calculate the reward rtot (t). In this work,
+we set the weights α = β = γ = 1.
+Each episode terminates when the AV arrives at its destination or if an error occurs in the simulation environment.
+The results of the training are depicted in Fig. 5. In detail,
+Fig. 5a-5d show the mean reward of each episode for the
+four agents. We observe that all the agents converge to a
+mean value of 0 in almost 400k episodes after three hours
+of training.
+We perform the same training using the exhaustive approach described in Section III-C to compare the results.
+
+2050
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:33:16 UTC from IEEE Xplore. Restrictions apply.
+
+(a) Agent 1
+
+(b) Agent 2
+
+(a) Agent 1 (Reward = -9)
+
+(c) Agent 3
+
+(d) Agent 4
+
+Fig. 5: DRL episode mean reward with modular strategy.
+
+In contrast to the proposed method, in this case we use
+only a single agent and we choose a random pair of edges
+c = (es , ef ) for each training episode. As Fig. 6 shows, the
+exhaustive approach converges to a value of -5 after 400k
+episodes and seven hour of training.
+
+(b) Agent 2 (Reward = -49)
+
+(c) Agent 3 (Reward = -6)
+
+Fig. 6: DRL episode mean reward with exhaustive approach.
+Since the mean reward obtained by the four agents is
+greater than the one obtained by the exhaustive approach, it
+is evident that the modular DRL strategy is better in terms of
+performances. Moreover, due to the less complexity of the
+sub-problems compared to the main problem, the training
+time is also much less than the traditional approach.
+(d) Agent 4 (Reward = -12)
+
+C. Modular DRL Route Planner Example
+In this subsection, we show an example of a route planning
+request dispatched by an AV and processed by the agents
+trained in Section IV-B and the architecture described in Fig.
+3.
+More in detail, the AV chooses two edges es and ef as
+origin and destination edge to form the pair c = (es , ef ) and
+sends the request by the REST-Api interface to agents 1, 2,
+3 and 4 and collects the paths and the associated rewards.
+In Fig. 7, the paths returned by the agents are shown.
+We observe that each agent determined a different path for
+the trip from es to ef . The four returned paths p1 , p2 , p3 , p4
+
+Fig. 7: Paths and rewards returned by the Modular DRL
+Route Planner.
+
+received the following rewards: of r1 = −9, r2 = −49,r3 =
+−6 and r4 = −12.
+The path calculated by Agent 1 is shown in Fig. 7a and is
+the shortest path. However, it does not pass by the priority
+edges that are marked in red in Fig. 4 and does not contribute
+to the third component of the multi-objective reward defined
+in Section III-B. On the contrary, Fig. 7b shows that the
+
+2051
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:33:16 UTC from IEEE Xplore. Restrictions apply.
+
+path calculated by Agent 2 passes by the priority edges but
+it is too long and exhibits many turns. Moreover, the path
+returned by Agent 4 is similar to the one of Agent 1.
+Finally, the path calculated by Agent 3 passes by the
+priority edge, includes only one turn and has a total length
+slightly higher than the one calculated by Agent 1. Moreover,
+it passes by the priority edges defined on the map and
+contributes to all the components of the multi-objective
+proposed reward. As expected, this path received the highest
+reward (-6) and is selected as the optimal path by the AV.
+V. C ONCLUSION
+The approach used in this paper highlights the effectiveness of the modular Deep Reinforcement Learning (DRL)
+approach in urban routing optimization. By integrating modular DRL algorithms, we are able to dynamically adapt to
+changing urban traffic conditions and user preferences.
+Training the model on data extracted from the open-source
+platform OpenStreetMap, using diverse urban scenarios diversified with the SUMO simulator, allowed us to optimize
+routes considering factors such as user preferences, costs,
+and utility.
+These findings support the idea that combining artificial
+intelligence with urban planning can lead to smarter and
+more responsive transportation systems in the smart cities
+of the future.
+The future research will integrate the proposed modular
+DRL approach with other technologies such as vehicle-toeverything (V2X) communication in order to enable more
+efficient and safer coordination of urban traffic. Moreover,
+the weights assigned to each reward component and the the
+rules for the map division will be optimized.
+
+[9] J. Teusch, J. N. Gremmel, C. Koetsier, F. T. Johora, M. Sester, D. M.
+Woisetschläger, and J. P. Müller, “A systematic literature review on
+machine learning in shared mobility,” IEEE Open Journal of Intelligent
+Transportation Systems, vol. 4, pp. 870–899, 2023.
+[10] J. Amarnath J, R. S, and K. K. S, “Route-based user segmentation and
+clustering: A machine learning approach for enhanced transportation
+service,” in 2023 Intelligent Computing and Control for Engineering
+and Business Systems (ICCEBS), pp. 1–4, Dec 2023.
+[11] C. Chen, L. Li, M. Li, R. Li, Z. Wang, F. Wu, and C. Xiang,
+“curl: A generic framework for bi-criteria optimum path-finding based
+on deep reinforcement learning,” IEEE Transactions on Intelligent
+Transportation Systems, vol. 24, no. 2, pp. 1949–1961, 2023.
+[12] B. R. Kiran, I. Sobh, V. Talpaert, P. Mannion, A. A. A. Sallab, S. Yogamani, and P. Pérez, “Deep reinforcement learning for autonomous
+driving: A survey,” IEEE Transactions on Intelligent Transportation
+Systems, vol. 23, pp. 4909–4926, June 2022.
+[13] F. Shafique, T. Naeem, and A. H. Farooqi, “Path tracking and obstacle
+avoidance control using deep reinforcement learning for autonomous
+vehicles,” in 2023 17th International Conference on Open Source
+Systems and Technologies (ICOSST), pp. 1–6, 2023.
+[14] B. Durgabhavani, V. B. Reddy Muvva, L. Leo Joseph, D. M. Babu, and
+M. H. T., “Adaptive path planning for autonomous vehicles in complex
+traffic scenarios,” in 2023 International Conference on Evolutionary
+Algorithms and Soft Computing Techniques (EASCT), pp. 1–5, 2023.
+[15] A. Kusari, P. Li, H. Yang, N. Punshi, M. Rasulis, S. Bogard, and D. J.
+LeBlanc, “Enhancing sumo simulator for simulation based testing and
+validation of autonomous vehicles,” in 2022 IEEE Intelligent Vehicles
+Symposium (IV), pp. 829–835, 2022.
+[16] E. Liang, R. Liaw, R. Nishihara, P. Moritz, R. Fox, K. Goldberg,
+J. Gonzalez, M. Jordan, and I. Stoica, “RLlib: Abstractions for
+distributed reinforcement learning,” in Proceedings of the 35th International Conference on Machine Learning (J. Dy and A. Krause, eds.),
+vol. 80 of Proceedings of Machine Learning Research, pp. 3053–3062,
+PMLR, 10–15 Jul 2018.
+
+R EFERENCES
+[1] L. Liang, H. Ye, and G. Y. Li, “Toward intelligent vehicular networks:
+A machine learning framework,” IEEE Internet of Things Journal,
+vol. 6, pp. 124–135, Feb 2019.
+[2] A. Pompigna and R. Mauro, “Smart roads: A state of the art of
+highways innovations in the smart age,” Engineering Science and
+Technology, an International Journal, vol. 25, p. 100986, 2022.
+[3] M. P. Fanti, A. Rinaldi, M. Roccotelli, B. Silvestri, S. Porru, and F. E.
+Pani, “Software requirements and use cases for electric light vehicles
+management,” in 2018 IEEE International Conference on Systems,
+Man, and Cybernetics (SMC), pp. 311–316, 2018.
+[4] M. P. Fanti, A. M. Mangini, M. Roccotelli, B. Silvestri, and S. Digiesi,
+“Electric vehicle fleet relocation management for sharing systems
+based on incentive mechanism,” in 2019 IEEE 15th International Conference on Automation Science and Engineering (CASE), pp. 1048–
+1053, 2019.
+[5] A. M. Mangini and M. Roccotelli, “Innovative services for electric
+mobility based on virtual sensors and petri nets,” IEEE/CAA Journal
+of Automatica Sinica, vol. 10, no. 9, pp. 1845–1859, 2023.
+[6] X. Ma, Y. Xie, and C. Chigan, “Graph convolutional network based
+multi-objective meta-deep q-learning for eco-routing,” IEEE Transactions on Intelligent Transportation Systems, pp. 1–16, 2024.
+[7] A. Sharma, A. Sharma, P. Nikashina, V. Gavrilenko, A. Tselykh,
+A. Bozhenyuk, M. Masud, and H. Meshref, “A graph neural network
+(gnn)-based approach for real-time estimation of traffic speed in
+sustainable smart cities,” Sustainability, vol. 15, no. 15, 2023.
+[8] G. Qin, Q. Luo, Y. Yin, J. Sun, and J. Ye, “Optimizing matching
+time intervals for ride-hailing services using reinforcement learning,”
+Transportation Research Part C: Emerging Technologies, vol. 129,
+p. 103239, 2021.
+
+2052
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:33:16 UTC from IEEE Xplore. Restrictions apply.
+
+

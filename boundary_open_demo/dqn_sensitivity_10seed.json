@@ -1,0 +1,404 @@
+{
+  "episodes": 8000,
+  "seeds": 10,
+  "settings": {
+    "default": {
+      "agent_kw": {},
+      "schedule": {},
+      "cells": {
+        "open aligned": {
+          "completion_mean": 98.6,
+          "completion_sd": 3.7134889255254286,
+          "per_seed": [
+            99.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            99.5,
+            100.0,
+            87.5,
+            100.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "lr 3e-4": {
+      "agent_kw": {
+        "lr": 0.0003
+      },
+      "schedule": {},
+      "cells": {
+        "open aligned": {
+          "completion_mean": 24.5,
+          "completion_sd": 9.252026804976301,
+          "per_seed": [
+            31.0,
+            26.0,
+            20.0,
+            13.0,
+            22.0,
+            41.0,
+            31.5,
+            17.5,
+            10.0,
+            33.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "lr 3e-3": {
+      "agent_kw": {
+        "lr": 0.003
+      },
+      "schedule": {},
+      "cells": {
+        "open aligned": {
+          "completion_mean": 100.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "buffer 5000": {
+      "agent_kw": {
+        "buffer": 5000
+      },
+      "schedule": {},
+      "cells": {
+        "open aligned": {
+          "completion_mean": 99.95,
+          "completion_sd": 0.15000000000000002,
+          "per_seed": [
+            100.0,
+            99.5,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "buffer 50000": {
+      "agent_kw": {
+        "buffer": 50000
+      },
+      "schedule": {},
+      "cells": {
+        "open aligned": {
+          "completion_mean": 94.9,
+          "completion_sd": 6.228161847608008,
+          "per_seed": [
+            90.5,
+            93.5,
+            100.0,
+            100.0,
+            100.0,
+            89.5,
+            95.0,
+            100.0,
+            80.5,
+            100.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "target 50": {
+      "agent_kw": {
+        "target_every": 50
+      },
+      "schedule": {},
+      "cells": {
+        "open aligned": {
+          "completion_mean": 94.65,
+          "completion_sd": 6.205038275466156,
+          "per_seed": [
+            94.5,
+            100.0,
+            100.0,
+            92.5,
+            91.5,
+            84.5,
+            100.0,
+            100.0,
+            83.5,
+            100.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "target 500": {
+      "agent_kw": {
+        "target_every": 500
+      },
+      "schedule": {},
+      "cells": {
+        "open aligned": {
+          "completion_mean": 96.3,
+          "completion_sd": 4.833218389437829,
+          "per_seed": [
+            100.0,
+            100.0,
+            95.0,
+            98.5,
+            100.0,
+            88.0,
+            100.0,
+            94.5,
+            87.0,
+            100.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "batch 128": {
+      "agent_kw": {
+        "batch": 128
+      },
+      "schedule": {},
+      "cells": {
+        "open aligned": {
+          "completion_mean": 98.0,
+          "completion_sd": 2.9068883707497264,
+          "per_seed": [
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            99.0,
+            92.5,
+            95.0,
+            93.5,
+            100.0,
+            100.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "eps floor 0.20": {
+      "agent_kw": {},
+      "schedule": {
+        "eps_floor": 0.2
+      },
+      "cells": {
+        "open aligned": {
+          "completion_mean": 99.9,
+          "completion_sd": 0.30000000000000004,
+          "per_seed": [
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            99.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "eps decay 0.30": {
+      "agent_kw": {},
+      "schedule": {
+        "eps_decay_frac": 0.3
+      },
+      "cells": {
+        "open aligned": {
+          "completion_mean": 95.15,
+          "completion_sd": 6.841235268575405,
+          "per_seed": [
+            100.0,
+            99.0,
+            91.0,
+            96.0,
+            100.0,
+            80.5,
+            85.0,
+            100.0,
+            100.0,
+            100.0
+          ]
+        },
+        "open time_min": {
+          "completion_mean": 0.0,
+          "completion_sd": 0.0,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    }
+  }
+}

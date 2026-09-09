@@ -1,0 +1,14 @@
+{
+ "network": "Anaheim",
+ "nodes": 416,
+ "links": 914,
+ "border_nodes": 95,
+ "destination": 15,
+ "origins": 30,
+ "arrival_reachable": 28,
+ "ceiling_pct": 93.3,
+ "unreachable_origins": [
+  61,
+  216
+ ]
+}

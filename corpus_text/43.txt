@@ -1,0 +1,606 @@
+Agent-Based Route Planning with Deep Q Learning
+
+Ali Osman Köroğlu1, Ali Emre Edem2, Serra Nur Akmeşe3, Özge Elmas4, Ilhan Tunc5 and M. Turan
+Soylemez6
+Control and Automation Engineering Department, Istanbul Technical University, Istanbul, Turkey
+1
+
+koroglu16@itu.edu.tr, 2edem16@itu.edu.tr, 3akmeses16@itu.edu.tr, 4elmasoz17@itu.edu.tr, 5tunc16@itu.edu.tr,
+6
+soylemezm@itu.edu.tr
+
+other studies, route planning with deep Q learning is presented as
+a solution in this article. In particular, a taxi agent makes
+decisions to leave passengers most effectively with the feedback
+it receives from the environment. It is aimed to be able to
+comprehend the actions to be implemented to complete the given
+task most cost-effectively, with deep Q learning, considering
+criteria such as travel time and waiting time for passengers as
+performance criteria in different scenarios. For this purpose, a
+scenario is carried out in the region with active traffic flow,
+consisting of 12 roads.
+The route planning problem is a very important issue,
+especially in sectors such as logistics and transportation.
+Inefficient time spent on the road disrupts transportation and the
+logistics supply chain. Therefore, it will cause undesirable costs
+in terms of economic and environmental pollution.
+Many criteria will affect the performance of the current
+agent for the route planning problem. The agent must learn the
+balance between the shortest path and the fastest path to reach the
+destination. It would be wrong to consider the factors affecting
+performance in some traffic scenarios as choosing only the
+shortest and quickest route. Another factor that affects the time it
+takes to reach the destination is the traffic lights that will restrict
+the movement in the network of roads it will move.
+Understanding the phase sequences of traffic lights with the status
+information it will receive from the environment will be an
+essential criterion for its chosen action on the way to the target.
+In this study, the agent was considered as a taxi in the traffic
+scenario, and its performance is tried to be observed with different
+parameters. The taxi must reach the passengers waiting to get on
+the vehicle from a certain location in the road network and take
+them to the point they want to get off. In the process of learning
+the optimum route, a performance change is observed when
+different state information is trained. In the following sections,
+system overview, deep q learning model and simulation results
+are discussed, respectively.
+
+Abstract
+Solving traffic congestion is one of the most important
+and complex problems, as it causes chaos in metropolitans,
+especially during rush hours. Traditional methods that
+continue to be used have proven to be inadequate, and as a
+result, the developing technology has affected all areas as well
+as the solutions to the traffic control problem. Intelligent
+Transportation Systems have emerged with the development
+of artificial intelligence and communication technologies.
+This study aims to reduce time in traffic by using an agentbased route planning method with deep Q learning. An agent
+which acts as a taxi in the generated traffic flow is also used
+to demonstrate the efficiency of the proposed method in taxi
+service. It is aimed to be able to comprehend the actions to be
+implemented in order to complete the given task in an
+effective way with deep Q learning, considering criteria such
+as travel time and waiting time for passengers as performance
+criteria in different scenarios.
+
+1. Introduction
+One of the most significant problems is traffic congestion in
+metropolitans due to the increasing urban population and
+individual vehicles. Traffic negatively affects human life in many
+instances, especially in terms of cost, loss of time, and climate
+change. About a third of the USA's carbon dioxide (CO2)
+emissions stem from the mobility of people and merchandise [1].
+Considering all these points, it can be said that optimizing traffic
+problems is of capital importance.
+One of the fields that researchers are most interested in on
+the traffic problem is traffic light control. As a matter of fact, with
+fixed-time traffic light control, vehicles wait at traffic
+intersections more than necessary. For this reason, researchers
+and engineers are working on more efficient and technological
+methods. Examples include fuzzy logic [2,3,4], neural networks
+[5], reinforcement learning [6,7,8], and agent-based studies [6],
+[9,10,11,12,13].
+Since traffic control is a problem of sequential decision
+making, it is one of the best suited to the reinforcement learning
+framework, in which agents learn through trial and error as they
+interact with their environment [14]. At this point, considering the
+complexity of traffic control, it would be appropriate to use the
+Deep Q Learning method, which solves more complex problems
+than reinforcement learning. It is known that agent-based studies
+have been applied to traffic lights before [6], [9], [13]. Unlike
+
+2.System Overview
+In the SUMO simulation environment, 12 interconnected
+roads are created. All roads in the system have 4 lanes and there
+are traffic lights at 5 intersections. The length of each road is 450
+meters.
+The traffic scenario is created with a separate file and produces
+a different traffic scenario for each section where learning will
+take place. This is a challenge the requested algorithm to
+overcome while it learns. When creating uncontrolled vehicles, it
+is aimed not to create the same density on every road on the map.
+
+403
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:39:10 UTC from IEEE Xplore. Restrictions apply.
+
+Because with less traffic on some roads, it is aimed for the agent
+to learn that they can go to their destination faster on these roads.
+
+status information to be used should include information such as
+the traffic density on the roads, the location of the target point, the
+location of the agent.
+In this study, the effects of different situational information on
+the learning process are tried to be observed experimentally. In
+this context, 13 status data are used, including six different status
+information containing the position information of the
+neighboring roads, three status information expressing the vehicle
+congestion on the neighboring roads, two coordinate status
+information indicating the location information of the agent, and
+two coordinate data for the position information of the target
+point. A state vector is created. It is observed that the traffic light
+also influences learning. Therefore, the light sequence of the road
+network is tried to be taught to the agent, and its effects on
+learning are observed.
+
+3.1.1 Position Data
+
+Fig. 1. Traffic flow scenario
+
+Each position information will be taken as status information
+in 2D coordinate system.
+The vehicles are produced during the maximum simulation
+period given in the algorithm. A vehicle is randomly generated in
+one of the routes in Fig. 1 with different start times in producing
+these vehicles. Continually producing vehicles on these routes
+ensures that the roads where the arrows pass more often have
+more density than the ones that pass less. For example, the roads
+leading to the intersection in the middle are more crowded than
+the side roads. The agent who learns to prefer the side roads
+reaches its destination faster. Thus, some streets remain relatively
+open, and the learning agent prefers these.
+
+3. Deep Q Learning Model
+Considering the complexity of the system, a 4-layer artificial
+neural network with 400 neurons in each layer is used. This neural
+network model is created using python language with Keras and
+TensorFlow libraries. In the input layer of the artificial neural
+network model, there are as many neurons as the state data in the
+proposed state vector. In the output layer, there are 3 neurons
+since the agent has the right to perform 3 actions. The output of
+these neurons corresponds to the predicted Q value for the
+relevant action. In cases where the agent does not have the right
+to explore, it takes the action corresponding to the largest Q value.
+The ReLU function is chosen as the activation function of
+neurons. Computing costs are considered in this selection. Each
+batch contains 100 state information. Batch learning technique is
+used to accelerate the learning process. In the learning process,
+the reward data collected from the environment during the
+simulation will act as a feedback and train the parameters of the
+deep learning network according to the action required to be
+taught.
+
+Fig. 2. Sample traffic scenario
+An example scenario is given in Fig. 2. The state vector formed
+in this scenario is as follows.
+Table 1. Sample state vector
+State Vector
+1. neighbor x value
+
+-450
+
+1. neighbor y value
+
+0
+
+2. neighbor x value
+
+0
+
+2. neighbor y value
+
+-450
+
+3. neighbor x value
+
+450
+
+3.1. States
+
+3. neighbor y value
+
+0
+
+In the route planning problem, the necessary information for
+the taxi agent to make sense of the environment and choose an
+action is expressed with state vectors. The environment
+information sent to the learning model at any time t should be
+information that can help the agent achieve its goal. For this
+reason, the information that will be obtained from the
+environment is very critical and should be carefully selected.
+In the route planning problem, the taxi agent is planned to
+reach the destination in the shortest time possible. Therefore, the
+
+Agent x value
+
+0
+
+Agent y value
+
+50
+
+Target destination x value
+
+450
+
+Target destination y value
+
+-450
+
+404
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:39:10 UTC from IEEE Xplore. Restrictions apply.
+
+3.1.2 Traffic Density of Neighboring Roads Data
+
+Fig. 5. Actions for a 4-way intersection
+However, in the system shown in Fig. 1, not all intersections
+are four-way. Therefore, the agent is not free to select all the
+elements of the action space when it comes to such intersections.
+
+Fig. 3. Acquisition of traffic density information on
+neighboring roads
+
+Traffic density information on neighboring roads plays an
+important role in the agent's alternative route selections. In Fig.
+3., traffic density information from a sample scenario is shown.
+The length and shortness of the route are not the only factors
+affecting the time to reach the destination. It is affected by also
+how fast it is possible to travel on the route. In order to make sense
+of the relationship between the time to reach the destination and
+the traffic congestion on the neighboring roads, vehicle
+congestion information on the neighboring roads should be added
+to the status vector.
+
+Fig. 6. Actions for a 3-way intersection
+
+3.1.3 Traffic Lights of Neighboring Intersections Data
+
+The Q value corresponding to this action from the deep
+learning network is effective for the agent to choose the action.
+However, since the environment that the agent is simulating is
+wide and open to exploration, it is aimed for the agent to discover
+ways that it has not tried before. Therefore, an adaptive
+exploration-exploitation method was used. A probabilistic
+variable ε is assigned, and its value is decreased in each
+simulation iteration. This means that the agent has the right to
+constantly discover new actions in the environment, up to the last
+simulation, high in the earlier simulations, and low in the later
+simulations. Thanks to the decreasing probability allocated for
+this exploration, it will continue to stay true to the parameters it
+learned in the last simulation iteration, and the final artificial
+neural network parameters will be found. Fig. 5 and Fig. 6 show
+the actions that the agent can choose for different intersection
+points.
+
+Fig. 4. Acquisition of traffic light information at
+neighboring intersections
+
+3.3 Reward
+
+As can be seen from the example scenario in Fig. 4, two pieces
+of data related to the traffic light come from each neighboring
+intersection. These represent what the current traffic light is, and
+the time left to change. The taxi agent generates alternative routes
+by making sense of the traffic light sequences while going to the
+target point.
+
+The agent expects to take the waiting passenger to the desired
+location in the fastest way possible, and therefore, the elapsed
+time will be against the performance. Another performance
+expectation is to get as many passengers as possible to the desired
+location. Considering these performance criteria, a rewardpunishment relation was proposed as in (1).
+
+3.2 Actions
+
+(
+
+There are three basic actions that the taxi agent must decide on
+at each intersection. These are respectively "turn right", “go
+straight” and “turn left”. These are the elements that make up the
+action set and these actions are predefined.
+
+,
+
+road
+
+, )=− −
+
+road:
+
+Travel time of the agent on the current road
+:Simulation time
+: Number of passengers waiting for a taxi
+: Waiting passenger weight coefficient
+: Maximum simulation time
+
+405
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:39:10 UTC from IEEE Xplore. Restrictions apply.
+
+(1)
+
+The reward relation given in equation 1 allows the vehicle to
+perceive the time it will spend on the road as a punishment in the
+learning process and enables the trained model to complete its
+task in the shortest time. Also, the reflection of waiting passengers
+on the reward correlation as a punishment provides feedback for
+the agent to reach the passenger as soon as possible.
+The cumulative reward, on the other hand, proceeds by adding
+the reward value after each decision region and represents the
+reward-punishment value accumulated as a result of a certain
+sequence of actions. The cumulative reward value is updated after
+each decision-making step and stored in memory along with other
+state information to train the neural network model.
+
+4. Simulation Results
+
+Fig. 9. Reward value of the agent for the number of episodes
+
+Fig. 7. shows the starting position of the taxi and the
+passenger's getting on and off points.
+
+As seen in Figure 9, with both techniques, the agent
+successfully completed the learning process and reached the
+maximum reward and minimum penalty level.
+As can be seen from the results in Fig. 8. and Fig. 9., learning
+is faster when traffic light information is included. With traffic
+light information, location and neighbor data become more
+meaningful.
+Two different state vectors are used for the learning process of
+the agent. The optimum route is tried to be taught with the state
+vector given in equation 2 without using the traffic light
+information, and then the optimum route is taught using the traffic
+light information and the state vector given in equation 3.
+In the graph seen in Figure 8, the waiting time of the customers
+is minimized with both state vectors. However, as in the reward
+graph, learning is less oscillating with the state vectors containing
+traffic light information in the waiting time criterion.
+
+Fig. 7. The scenario of route planning
+Within the scenario, there are six passengers, and the taxi
+agent will learn to complete the routine of picking up all the
+passengers and dropping them off in the most optimal way.
+
+⎡
+⎢
+⎢
+⎢
+⎢
+⎢
+⃗
+1 = ⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎣
+
+1
+1
+2
+2
+3
+3
+
+1
+2
+3
+
+ℎ
+ℎ
+ℎ
+
+⎤
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+
+Fig. 8. Passenger average waiting times
+
+406
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:39:10 UTC from IEEE Xplore. Restrictions apply.
+
+(2)
+
+⎡
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⃗2 = ⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎣
+
+1
+1
+2
+2
+3
+3
+
+ℎ
+ℎ
+ℎ
+ℎ
+
+1
+2
+3
+1
+
+ℎ
+
+1
+
+ℎ
+
+2
+
+ℎ
+
+2
+
+ℎ
+
+3
+3
+
+ℎ
+
+⎤
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+
+[3]
+[4]
+
+[5]
+
+(3)
+
+[6]
+[7]
+[8]
+[9]
+
+5. Conclusions
+This paper proposes a deep Q learning method to ensure
+optimum route planning of a fully autonomous taxi agent in an
+active traffic scenario. One of the criteria considered as a
+performance criterion is the reward correlation, which is
+predefined. A balance between the waiting passenger and the
+elapsed time is also tried to be established. The taxi agent, which
+received feedback from the environment through this reward
+correlation, is put into a repetitive learning process in the
+simulation environment, and these simulations are repeated 100
+times. Since another factor affecting the learning process is the
+situation information obtained from the environment, the learning
+performance of the agent was tested with different situation data.
+In this context, in addition to the common location and
+neighboring road status information, the traffic light effect on the
+road network is tried to be taught to the agent. However, to look
+more closely, when traffic light information is added as states data
+in addition to location and neighboring road information, it
+reaches the maximum reward value with a better graph and less
+oscillating characteristic. Another success criterion of the taxi
+agent is to plan the route in a way that minimizes the average
+waiting time of the customers. While repeating each route, the
+penalty value increases in the reward correlation of the waiting
+people with the elapsed time. The taxi agent that learns this
+situation ensures that the waiting people complete their route as
+quickly as possible. Considering all performance criteria; for the
+taxi agent’s optimum route planning learning, it is recommended
+to use state vectors containing traffic light information as well as
+density information of neighboring roads, location information of
+neighboring intersections, location information of the agent and
+destination location information.
+
+[10]
+
+[11]
+
+[12]
+
+[13]
+
+[14]
+
+Electrical and Electronics Engineering, 2019, pp. 830–
+834, doi: 10.23919/ELECO47770.2019.8990632.
+I. Tunc and M. Söylemez, “Intelligent Intersection
+Management using Fuzzy Logic control and PI control,”
+2020.
+Y. Bi, D. Srinivasan, X. Lu, Z. Sun, and W. Zeng,
+“Type-2 fuzzy multi-intersection traffic signal control
+with differential evolution optimization,” Expert Syst.
+Appl., 2014, doi: 10.1016/j.eswa.2014.06.022.
+K. H. Chao, R. H. Lee, and M. H. Wang, “An intelligent
+traffic light control based on extension neural network,”
+Lect. Notes Comput. Sci. (including Subser. Lect. Notes
+Artif. Intell. Lect. Notes Bioinformatics), vol. 5177
+LNAI, no. PART 1, pp. 17–24, 2008, doi: 10.1007/9783-540-85563-7_8.
+M. Wiering, J. Van Veenen, J. Vreeken, and A.
+Koopman, “Intelligent traffic light control,” ERCIM
+News Eur. Res. Consort. Informatics Math., 2004.
+L. Li, Y. Lv, and F. Y. Wang, “Traffic signal timing via
+deep reinforcement learning,” IEEE/CAA J. Autom. Sin.,
+2016, doi: 10.1109/JAS.2016.7508798.
+S. Koh et al., “Real-time deep reinforcement learning
+based vehicle navigation,” Appl. Soft Comput. J., vol. 96,
+p. 106694, 2020, doi: 10.1016/j.asoc.2020.106694.
+V. Hirankitti, J. Krohkaew, and C. Hogger, “A MultiAgent Approach for Intelligent Traffic-Light Control,”
+no. February, 2015.
+A. Doniec, R. Mandiau, S. Piechowiak, and S. Espié, “A
+behavioral multi-agent model for road traffic
+simulation,” Eng. Appl. Artif. Intell., vol. 21, no. 8, pp.
+1443–1454, 2008, doi: 10.1016/j.engappai.2008.04.002.
+P. G. Balaji, G. Sachdeva, D. Srinivasan, and C. K.
+Tham, “Multi-agent system based urban traffic
+management,” 2007 IEEE Congr. Evol. Comput. CEC
+2007, vol. 117576, pp. 1740–1747, 2007, doi:
+10.1109/CEC.2007.4424683.
+A. Y. Yesilyurt, I. Tunc, and M. T. Soylemez, “A
+Reservation Method for Multi-agent System Intersection
+Management
+with
+Energy
+Consumption
+Considerations,” IFAC-PapersOnLine, vol. 54, no. 2,
+pp. 246–251, 2021, doi: 10.1016/j.ifacol.2021.06.050.
+İ. Tunç, Ö. Elmas, A. E. Edem, A. O. Köroğlu, and S. N.
+Akmeşe, “Derin Q Ö ğ renme Tekni ğ i ile Trafik I şı k
+Sinyalizasyonu Traffic Light Signalling with Deep Q
+Learning Technique Derin Q Öğrenme Tekniği ile
+Trafik Işık Sinyalizasyonu Traffic Light Signalling with
+Deep Q Learning Technique Kontrol ve Otomasyon
+Mühendisliği Bölümü,” no. September, pp. 1–7, 2021.
+Y. Xu, Y. Xi, D. Li, and Z. Zhou, “Traffic Signal Control
+based on Markov Decision Process,” IFACPapersOnLine, vol. 49, no. 3, pp. 67–72, 2016, doi:
+10.1016/j.ifacol.2016.07.012.
+
+7. References
+[1]
+[2]
+
+U. Transpor and T. In, “T c g g,” Environ. Res., pp. 2–9.
+I. Tunc, A. Y. Yesilyurt, and M. T. Soylemez,
+“Intelligent Traffic Light Control System Simulation for
+Different Strategies with Fuzzy Logic Controller,” in
+ELECO 2019 - 11th International Conference on
+
+407
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:39:10 UTC from IEEE Xplore. Restrictions apply.
+
+

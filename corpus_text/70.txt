@@ -1,0 +1,586 @@
+2024 Asia-Pacific Conference on Software Engineering, Social Network Analysis and Intelligent Computing (SSAIC) | 979-8-3503-9368-2/24/$31.00 ©2024 IEEE | DOI: 10.1109/SSAIC61213.2024.00176
+
+2024 Asia-Pacific Conference on Software Engineering, Social Network Analysis and Intelligent Computing (SSAIC)
+
+Optimization Path Planning Algorithm Based on
+Deep Reinforcement Learning
+Zhejiang Meng
+Zibo Technician College, Zibo, Shandong, 255000 China
+153397489@qq.com
+long-distance travel route suggestions, and there are many
+factors to be considered, such as road conditions and traffic
+costs[6]. Although the existing research work has made
+some progress in path planning, there are still some
+shortcomings. First of all, the existing research work often
+only focuses on one aspect of short-distance or
+long-distance path planning, without considering the two
+together[7]. Secondly, the existing research work often does
+not fully consider the influence of actual traffic flow on
+path planning, so it can not provide accurate path
+suggestions for users[8].
+
+Abstract—With the acceleration of urbanization and the
+growth of traffic demand, traffic congestion has become more
+and more prominent. In the field of path planning, Deep
+Reinforcement Learning (DRL) can effectively deal with the
+complex traffic environment and learn the optimal path
+selection strategy. This article aims to explore the optimal path
+planning algorithm based on DRL to improve the accuracy
+and efficiency of path planning. The algorithm estimates the
+state function by establishing a deep neural network, and uses
+reinforcement learning to optimize the strategy, so as to fully
+consider the actual traffic flow and provide accurate route
+suggestions for users. The experimental results show that the
+optimized path planning algorithm based on DRL has smaller
+path-finding error and higher path-finding accuracy. After
+many iterations, the routing accuracy of the algorithm can
+even reach more than 96%. Therefore, the optimized path
+planning algorithm based on DRL is an effective path
+planning method, which can deal with complex traffic scene
+information and optimize the path planning effect.
+
+In this article, DRL is applied to the field of path
+planning, and an optimized path planning algorithm based
+on DRL is proposed. The algorithm estimates the state
+function by establishing a deep neural network, and uses
+reinforcement learning to optimize the strategy, so as to
+fully consider the actual traffic flow and provide accurate
+route suggestions for users. The performance and
+superiority of the algorithm proposed in this article are
+verified by experiments, and compared with the traditional
+path planning algorithm, it is found that the method
+proposed in this article has higher efficiency and accuracy
+in finding the optimal path.
+
+Keywords—Deep reinforcement learning, Traffic path
+planning, Traffic flow
+
+I. INTRODUCTION
+With the acceleration of urbanization and the growth of
+traffic demand, traffic congestion has become more and
+more prominent, which has seriously affected people's
+production and life. In order to alleviate traffic pressure and
+improve the efficiency of road network, path planning has
+become an important research field[1]. Traditional path
+planning algorithms are mainly based on mathematical
+models and optimization theory. However, these algorithms
+often do not fully consider the actual traffic flow, so they
+cannot provide accurate path suggestions for drivers[2]. In
+recent years, DRL has made breakthroughs in many fields,
+especially in the fields of games, robots and autonomous
+driving. This article aims to apply DRL to the field of path
+planning and design an optimized path planning algorithm
+that can fully consider the actual traffic flow.
+
+II. THEORETICAL BASIS
+A. DRL
+DRL is a new branch in the field of artificial intelligence.
+It combines the advantages of deep learning and
+reinforcement learning, deals with complex nonlinear
+problems by establishing deep neural networks, and uses
+reinforcement learning to optimize strategies[9]. The core
+idea of DRL is to learn the optimal strategy by interacting
+with the environment, and the agent can update and
+optimize the strategy by constantly trying different actions
+and receiving feedback from the environment.
+B. Traffic path planning
+Traffic path planning is an important research direction
+in the field of path planning, which mainly solves the
+problem of finding the optimal path in complex traffic
+environment[10]. Traditional traffic path planning
+algorithms are mainly based on mathematical models and
+optimization theories, such as Dijkstra algorithm, A*
+algorithm and genetic algorithm. These algorithms often do
+not fully consider the actual traffic flow, so they cannot
+provide accurate route suggestions for drivers.
+
+DRL is a new machine learning method which combines
+deep learning and reinforcement learning. It estimates the
+state function by building a deep neural network and uses
+reinforcement learning to optimize the strategy[3]. In the
+field of path planning, DRL can effectively deal with
+complex traffic environment and learn the optimal path
+selection strategy[4]. In the existing research, the
+application of DRL in path planning mainly focuses on two
+aspects: short-distance path planning and long-distance path
+planning. Short-distance path planning mainly solves the
+problem of real-time path planning in dynamic traffic
+environment, and it needs to provide users with the best
+travel route advice quickly[5]. Long-distance route planning
+is mainly concerned with providing drivers with
+
+979-8-3503-9368-2/24/$31.00 ©2024 IEEE
+DOI 10.1109/SSAIC61213.2024.00176
+
+The performance evaluation indexes of traffic path
+planning algorithm include:
+䐟㻌 㻼㼍㼠㼔㻌 㼘㼑㼚㼓㼠㼔㻦㻌 㼠㼔㼍㼠㻌 㼕㼟㻘㻌 㼠㼔㼑㻌 㼐㼕㼟㼠㼍㼚㼏㼑㻌 㼒㼞㼛㼙㻌 㼠㼔㼑㻌 㼟㼠㼍㼞㼠㼕㼚㼓㻌
+point to the end point, the shorter the better;
+
+872
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:30:39 UTC from IEEE Xplore. Restrictions apply.
+
+䐠㻌 㼀㼞㼍㼢㼑㼘㻌 㼠㼕㼙㼑㻦㻌 㼠㼔㼍㼠㻌 㼕㼟㻘㻌 㼠㼔㼑㻌 㼠㼕㼙㼑㻌 㼞㼑㼝㼡㼕㼞㼑㼐㻌 㼒㼞㼛㼙㻌 㼠㼔㼑㻌
+starting point to the end point, the shorter the better;
+䐡㻌㼀㼞㼍㼒㼒㼕㼏㻌㼏㼛㼚gestion: that is, considering the influence
+of traffic flow on the route, the lower the better;
+䐢㻌 㻾㼛㼍㼐㻌 㼏㼛㼚㼐㼕㼠㼕㼛㼚㻌 㼕㼚㼒㼛㼞㼙㼍㼠㼕㼛㼚㻦㻌 㼀㼔㼑㻌 㼙㼛㼞㼑㻌
+comprehensive, the better, considering the influence of
+real-time traffic condition information on the route.
+C. Application of DRL in path planning
+DRL is more and more used in path planning. It
+estimates the state function by establishing a deep neural
+network, and uses reinforcement learning to optimize the
+strategy [11]. In this way, the agent can choose the optimal
+path independently according to the real-time traffic flow
+information, thus improving the accuracy and efficiency of
+path planning.
+The application of DRL in path planning is mainly
+reflected in the following aspects:
+䐟㻌 㻿㼠㼍㼠㼑㻌 㼞㼑㼜㼞㼑㼟㼑㼚㼠㼍㼠㼕㼛㼚㻦㻌 㼚㼛㼐㼑㼟㻌 㼍㼚㼐㻌 㼑㼐㼓㼑㼟㻌 㼕㼚 the traffic
+network are represented as states, in which nodes are
+represented as road intersections or end points, edges are
+represented as road segments, and information such as
+traffic flow is taken as a part of the state.
+䐠㻌 㻭㼏㼠㼕㼛㼚㻌 㼟㼑㼘㼑㼏㼠㼕㼛㼚㻦㻌 㻿㼑㼘㼑㼏㼠㻌 㼠㼔㼑 optimal action through
+DRL algorithm, that is, the action that can maximize the
+expected return value. In path planning, the optimal action
+usually refers to the path that can reach the destination
+fastest.
+
+Figure 1 Traffic path planning model structure
+
+For the collected original data, data cleaning is carried
+out, including removing duplicate data, processing missing
+values and eliminating abnormal values, so as to ensure the
+quality and reliability of the data. Pre-processing the
+cleaned data, including data standardization and
+normalization, to eliminate the influence of data dimension
+on model training and make the data more comparable and
+interpretable. By adjusting the model parameters and
+improving the model structure, the model is optimized to
+improve the accuracy and efficiency of path planning.
+Through real-time traffic flow information and DRL model,
+the optimal path can be selected in real time, so as to adapt
+to the change of traffic flow.
+
+䐡㻌㻾㼑㼣㼍㼞㼐㻌㼒㼡㼚㼏㼠㼕㼛㼚㻦㻌㼀㼔㼑㻌㼎㼑㼔㼍㼢㼕㼛㼞㻌㼛㼒㻌㼠㼔㼑㻌㼍㼓㼑㼚㼠㻌㼕㼟㻌guided
+and optimized by designing reward function. In path
+planning, the reward function includes the reward of
+reaching the target node, the reward of avoiding congestion
+and so on.
+III. OPTIMAL PATH PLANNING ALGORITHM BASED ON DRL
+In this section, an optimized path planning algorithm
+based on DRL will be introduced. The algorithm combines
+DRL and traffic flow data, estimates the state function by
+establishing a deep neural network, and uses reinforcement
+learning to optimize the strategy. The optimal path planning
+algorithm based on DRL is a method to estimate the state
+function by establishing a deep neural network and optimize
+the strategy by using reinforcement learning. The core idea
+of the algorithm is to learn the optimal strategy by
+interacting with the environment, and the agent updates and
+optimizes the strategy by constantly trying different actions
+and receiving feedback from the environment[12]. In path
+planning, agents need to choose the optimal path to reach
+the target node. In order to achieve this goal, agents need to
+know the structure of traffic network and traffic flow
+information. By establishing a deep neural network, the
+agent can encode each state in the traffic network and take
+the traffic flow information as part of the input. The agent
+also needs to learn a strategy, which indicates the action to
+be taken in a given state. The traffic path planning model
+structure based on DRL is shown in Figure 1.
+
+Traffic flow has strong nonlinearity and noise factors
+under the influence of many factors, and instantaneous
+traffic flow can be expressed as shown in the following
+formula.
+
+q t
+
+q t  D t
+
+(1)
+
+q(t) represents the actual traffic flow
+at the moment t , q t is the current trend traffic flow,
+In the formula,
+
+and
+
+D t
+
+is the noise component. The vehicle occupancy
+
+rate in time unit is:
+
+Ot
+
+1 N
+¦ 'ti (2)
+T i1
+
+In the formula, N represents the total quantity of
+motor vehicles passing through the monitoring time unit;
+
+873
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:30:39 UTC from IEEE Xplore. Restrictions apply.
+
+T is the total length of the monitoring time; 'ti is the
+time required for vehicles to pass through the detection area.
+The traffic load reflects the change characteristics of the
+traffic conditions of the road section with time, and its state
+equation is:
+dxa t
+dt
+
+ua t  va t
+
+In the formula, xa t
+section at time; ua t
+
+dxa t
+dt
+
+ua t  va t
+
+Sk
+
+S k represents the distance between the k
+path points; 1/F represents the distance returned after the
+cleaning is completed; hy  j is the adjustment coefficient
+of the total path; n is the total path index value.
+Where
+
+(3)
+
+Through high-precision maps, GPS, traffic flow sensors
+and other means to collect information such as topological
+structure and traffic flow of traffic network. Nodes and
+edges in the traffic network are represented as states, in
+which nodes are represented as road intersections or end
+points, edges are represented as road segments, and
+information such as traffic flow is taken as a part of the
+state. According to the state representation, a deep neural
+network is established to estimate the state value function.
+The reinforcement learning model is established with
+Actor-Critic structure, which is used to optimize the
+strategy. The deep neural network and reinforcement
+learning model are trained by back propagation algorithm,
+and the model is optimized by reward function. The reward
+function includes the reward of reaching the target node, the
+reward of avoiding congestion and so on. The performance
+of the model is tested by using the test data set, and the
+performance of other path planning algorithms is compared.
+Through real-time traffic flow information and DRL model,
+agents can choose the optimal path in real time, thus
+adapting to the changes of traffic flow. The training process
+of DRL model for traffic path planning is shown in Figure
+2.
+
+is the traffic load on the road
+
+is the quantity of vehicles entering
+
+the road section per unit time; va t
+
+is the quantity of
+
+vehicles leaving the road section per unit time.
+Nonlinear dynamic adaptive inertia weight strategy is
+adopted to improve the performance of the algorithm. Its
+update status is as follows:
+
+w t
+
+wend  wstart  wend
+
+1 § n 1 ·
+¨
+¸ (5)
+F ¨© hy  j ¸¹
+
+2
+§
+§ t · ·
+u exp ¨ k u ¨
+¸ ¸
+¨
+tmax ¹ ¸
+©
+©
+¹
+
+(4)
+
+Among them, k is the control factor; Control the
+smoothness of w and t curves. Calculate the total path
+index:
+
+Figure 2 Training process of DRL model for traffic path planning
+
+The objective function of the shortest path algorithm
+based on DRL is the standard to guide the algorithm to
+learn the optimal strategy. In path planning, it is usually
+desirable to find the shortest path from the starting point to
+the end point. The total error objective function of the
+improved DRL-based shortest path algorithm can be
+expressed as:
+
+m
+
+E k
+
+¦E
+
+p
+
+k
+
+(6)
+
+p 1
+
+Ep k
+
+1
+yd k  y k
+2
+
+T
+
+yd k  y k
+
+874
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:30:39 UTC from IEEE Xplore. Restrictions apply.
+
+(7)
+
+By calculating the partial derivatives of E p k
+I3
+
+I2
+
+information and find a better path. In addition, DRL can
+also process real-time traffic flow information and provide
+accurate route suggestions for drivers.
+
+to the
+
+I1
+
+weights w , w
+and w respectively, the improved
+gradient descent algorithm of the shortest path algorithm
+based on DRL can be obtained:
+
+'wijI 3 K3G i0 x j k
+
+The prediction function of DRL model predicts the
+future state or output of the model based on historical input
+and output information and future input information. This
+mechanism enables DRL model to learn and adapt to
+various dynamic environments, and has good generalization
+performance. In practical application, the DRL model can
+predict the future behavior of the system relatively
+accurately only by providing appropriate historical data and
+future input information. The comparison of path-finding
+errors of different algorithms is shown in Figure 4. The
+comparison of path-finding accuracy of different algorithms
+is shown in Figure 5.
+
+(8)
+
+'wIjq2 K2G jhuq k  1 (9)
+m
+
+'wIjl1 K1 ¦ G i0 wijI 3
+i 1
+
+Where
+
+K1 , K2 , and K3
+
+wx j k
+wwIjl1
+
+are the learning steps of
+
+(10)
+
+wI 1 ,
+
+wI 2 , and wI 3 , respectively.
+IV. RESULT ANALYSIS AND DISCUSSION
+A large quantity of interconnected network structures in
+DRL model can process large-scale data in parallel and use
+high-speed computing power to quickly find the global
+optimal solution. According to the results of Figure 3, the
+following phenomena can be observed: when the amount of
+traffic scene information is small, the time required for path
+planning increases with the increase of the quantity of
+nodes. This may be because increasing the quantity of
+nodes can not effectively improve the efficiency of path
+planning in the case of less traffic scene information. In
+addition, adding nodes will also increase the complexity of
+calculation, which may lead to an increase in planning time.
+With the increase of traffic scene information, the
+advantages of multiple nodes gradually appear. This is
+because, with the increase of traffic scene information,
+considering more nodes can better capture the complexity
+and dynamics of traffic network, so as to find a better path.
+In this case, using multiple nodes for path planning can
+consider the traffic situation more comprehensively and
+avoid the problems of inaccurate planning or long planning
+time caused by insufficient information.
+
+Figure 4 Path-finding errors of different algorithms
+
+Figure 5 Path-finding accuracy of different algorithms
+
+From the results, the path planning algorithm based on
+DRL is superior to other algorithms in path finding error
+and accuracy. Specifically, the error of this algorithm is
+small and the accuracy is excellent. After many iterations,
+its path-finding accuracy can even reach more than 96%.
+This is because DRL model has the ability of self-learning
+and self-optimization, and it can constantly adjust and
+optimize its own strategy through interaction with the
+environment to obtain better performance. This result also
+reflects the importance and advantages of DRL in path
+planning. DRL can handle complex traffic scene
+information and take into account the real-time changes of
+traffic flow, thus providing more accurate and timely path
+planning suggestions.
+
+Figure 3 Time consumption of path planning
+
+The results reflect the key role of DRL in path planning.
+By establishing a deep neural network to estimate the state
+function and using reinforcement learning to optimize the
+strategy, DRL can better handle the complex traffic scene
+
+The path planning algorithm based on DRL has good
+
+875
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:30:39 UTC from IEEE Xplore. Restrictions apply.
+
+prediction ability and optimization performance, and can be
+used for effective path planning under different transaction
+sets. This algorithm can not only reduce the path-finding
+error and improve the accuracy of path planning, but also
+improve the path-finding accuracy and optimize the effect
+of path planning through repeated iterative evolution. The
+application of DRL-based optimized path planning
+algorithm in intelligent transportation system can help
+traffic management departments to better manage and
+dispatch traffic flow, thus alleviating traffic congestion and
+improving the efficiency of road network. By applying the
+DRL-based optimal path planning algorithm to autonomous
+vehicles, vehicles can choose the optimal driving path
+independently, thus driving more safely and efficiently.
+
+development of intelligent transportation system and related
+fields.
+REFERENCES
+[1]
+
+[2]
+
+[3]
+
+[4]
+
+V. CONCLUSION
+[5]
+
+In order to relieve traffic pressure and improve the
+efficiency of road network, path planning has become an
+important research field. Path planning through DRL is an
+effective method, which can provide accurate and optimized
+path suggestions in consideration of real-time traffic flow
+and other complex factors. DRL model can predict the
+future traffic situation through historical data and real-time
+traffic information, and optimize the strategy through
+multiple iterations to achieve the goal of minimizing the
+routing error and maximizing the routing accuracy.
+
+[6]
+
+[7]
+
+[8]
+
+[9]
+
+In practical application, the path planning algorithm
+based on DRL performs well in different transaction sets
+and has great advantages. Compared with other traditional
+path planning algorithms, this algorithm reduces the
+prediction error, improves the accuracy of path planning,
+and has higher accuracy after many iterations, which shows
+that this method has good stability and scalability.
+
+[10]
+
+[11]
+
+To sum up, DRL has great potential in the field of path
+planning. By applying DRL to path planning, complex
+traffic scene information can be effectively processed and
+the effect of path planning can be optimized. In the future
+research, we can further explore the optimization and
+improvement of DRL model and algorithm, as well as its
+extended application in other fields, so as to promote the
+
+[12]
+[13]
+
+Zuo Y, Wu Y, Min G, et al. Learning-based network path planning
+for traffic engineering. Future Generation Computer Systems, vol. 92,
+no. 3, pp. 59-67, 2018.
+Wang H, Xu M, Mao T, et al. Survey of Three-Dimension Traffic
+Animation. Journal of Computer-Aided Design and Computer
+Graphics, vol. 29, no. 2, pp. 211-220, 2017.
+Yang W, Wang H, Wang Z, et al. Optimization Strategy of Electric
+Vehicles Charging Path Based on "Traffic-Price-Distribution" Mode.
+Energies, vol. 13, no. 12, pp. 3208, 2020.
+Al-Mousa A, Sababha B H, Al-Madi N, et al. UTSim: A framework
+and simulator for UAV air traffic integration, control, and
+communication:. International Journal of Advanced Robotic Systems,
+vol. 16, no. 5, pp. 289-294, 2019.
+Wu S, Yao J. Optimization of cold-chain logistics distribution path
+based on dijkstra algorithm. Boletin Tecnico/technical Bulletin, vol.
+55, no. 7, pp. 439-444, 2017.
+Xu G, Li H, Liu S, et al. Efficient and Privacy-Preserving Truth
+Discovery in Mobile Crowd Sensing Systems. IEEE Transactions on
+Vehicular Technology, vol. 68, no. 4, pp. 3854-3865, 2019.
+Zhao N, Li N, Sun Y, et al. 4D Trajectory Planning of Aircraft
+Taxiing considering Time and Fuel. Mathematical Problems in
+Engineering, vol. 2020, no. 2, pp. 1-12, 2020.
+Zhang S, Feng G, Fan Y, et al. Large-scale electric vehicle charging
+path planning based on information interaction. Journal of Tsinghua
+University, vol. 58, no. 3, pp. 279-285, 2018.
+Zhu, Lin, et al. Research on the Energy-Saving Strategy of Path
+Planning for Electric Vehicles Considering Traffic Information.
+Energies, vol. 12, no. 19, pp. 3601, 2019.
+Norouzi A, Kazemi R, Abbassi O R. Path planning and re-planning
+of lane change manoeuvres in dynamic traffic environments.
+International Journal of Vehicle Autonomous Systems, vol. 14, no. 3,
+pp. 239, 2019,.
+Li Y, Zhang J, Wu X, et al. Development of aircraft path planning
+scheme through automatic dependent surveillance broadcast.
+International Journal of Computer Applications in Technology, vol.
+58, no. 1, pp. 55, 2018.
+Li X, Tang B, Ball J, et al. Rollover-Free Path Planning for Off-Road
+Autonomous Driving. Electronics, vol. 8, no. 6, pp. 614, 2019.
+Hu W C, Wu H T, Cho H H, et al. Optimal Route Planning System
+for Logistics Vehicles Based on Artificial Intelligence. Journal of
+Internet Technology, vol. 21, no. 3, pp. 757-764, 2020.
+
+876
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:30:39 UTC from IEEE Xplore. Restrictions apply.
+
+

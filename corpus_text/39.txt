@@ -1,0 +1,1118 @@
+2020 IEEE 17th International Conference on Mobile Ad Hoc and Sensor Systems (MASS) | 978-1-7281-9866-8/20/$31.00 ©2020 IEEE | DOI: 10.1109/MASS50613.2020.00023
+
+*&&&UI*OUFSOBUJPOBM$POGFSFODFPO.PCJMF"E)PDBOE4FOTPS4ZTUFNT ."44
+
+A Data-Driven Reinforcement Learning Based
+Multi-Objective Route Recommendation System
+Ankur Sarker∗ , Haiying Shen∗ and Kamran Kowsari†
+∗ Department
+
+of Computer Science
+of Systems and Information Engineering
+University of Virginia
+Charlottesville, VA, USA
+{as4mz, hs6ms, kk7nc}@virginia.edu
+
+† Department
+
+map routing system not only offers smart, personalized routing
+based on users’ ethnicity [7] but also provides a safer route
+by reducing accident-prone maneuvers [8].
+Several multi-preference routing systems have been proposed [9]–[14], where different attributes (e.g., travel time,
+fuel consumption, charging monetary cost, risks, and so on)
+are considered equally without any consideration of user
+preference. Therefore, these systems cannot take into account
+the user preference in proving the route suggestions. These
+works also do not provide well-balanced routes. Recommending well-balanced routes means no criterion is sacriﬁced
+signiﬁcantly in order to give high priorities to other criteria
+when trying to follow the preference weights given by a
+user. For example, as indicated in [15], by following a user
+preference of 5% travel time, 5% fuel consumption, and 90%
+air quality, the existing systems [9]–[14] may suggest a route
+taking a detour to seek fresh air but cost either higher travel
+time or fuel consumption. However, a well-balanced route
+should include the road segments with fresh air but also
+lower travel time and fuel consumption [15]. An existing
+work [15] proposes a multi-preference route recommendation
+system where a user can input his/her preferred weights of
+travel time, fuel consumption, and air quality while requesting
+a balanced route from source to destination. However, this
+multi-preference route recommendation system requires longer
+time latency to suggest a route due to the usage of conventional
+multi-objective optimization solutions. Therefore, there arises
+a problem: for a given vehicle driving from a source to
+a destination, how to choose a route in a timely manner
+so that the vehicle can successfully arrive at its destination
+considering the driver’s preferred weights on travel time, fuel
+consumption, and air pollutants at the same time?
+In this paper, we propose a novel multi-preference routing
+system to combine different user-preferred routing criteria (i.e.,
+travel time, fuel consumption, and pollution) to ﬁnd an optimal
+source-destination route in a timely manner. First, we build
+and periodically update a road network graph consists of road
+segments and intersections with predicted travel times, fuel
+consumption, and air qualities of all road segments. Second,
+we design an optimal route recommendation system satisfying
+a given user’s preference. We formulate the route recommendation problem as the multi-objective optimization problem
+considering travel time, fuel consumption, and air quality of
+
+Abstract—Driving route recommendation systems have been
+becoming popular due to high demands on such systems and their
+high socio-economic impacts. Existing route recommendation
+systems cannot provide a well-balanced route by considering the
+user preference on multiple criteria or make route recommendation in a short time. This paper presents a multi-objective route
+recommendation system considering three different attributes
+(i.e., fuel consumption, travel time, and air quality). The proposed
+route recommendation system uses the Q-learning based reinforcement learning algorithm to leverage the available datasets
+to make route recommendations in a timely manner. First, we
+build a road network graph using a publicly available map
+service (i.e., OpenStreetMap) and other real-world datasets on
+trafﬁc, weather, and air substances. Second, we utilize the existing
+predictors for air quality, travel time, and fuel consumption
+estimations to update the road network graph periodically. Third,
+we design the route recommendation system using the Q-learning
+reinforcement learning approach considering the given user’s
+preference for travel time, fuel consumption, and air quality.
+To evaluate the proposed approach’s performance, we conduct
+experimental evaluations based on the real-world datasets with
+publicly available map service.
+Index Terms—Vehicle routing; User preferred routing; Multipreference routing; Multi-criteria optimization;
+
+I. I NTRODUCTION
+Driving route recommendation systems have been becoming
+popular due to high demands on such systems and their high
+socio-economic impacts. Currently, different map services
+already provide the source-destination vehicle routing service
+that considers travel distance or travel time [1], [2]. The route
+recommendation systems can consider different attributes. The
+travel time is the most preferred criterion for commuters,
+especially for time-critical tasks such as an ambulance. For
+taxi drivers, fuel consumption is more critical and preferable
+than other attributes. Some people may prefer the air quality
+of the route over other attributes while driving from source
+to destination [3], [4]. Indeed, uncontrolled emissions lead
+to devastating consequences for public health, such as the
+increased risk for cardiovascular diseases [5] and neurological
+issues [6]. A user may be concerned about these health
+issues and wish to both reduce creating pollution and their
+exposure to the pollutants. As a result, it is desired to have a
+route recommendation system that offers routes with multiple
+criteria, in which a user can choose his/her preference while
+driving from source to destination. For instance, the Waze
+
+¥*&&&
+%0*."44
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:34:19 UTC from IEEE Xplore. Restrictions apply.
+
+different road segments. To solve this route recommendation
+problem, we then propose a Reinforcement Learning (RL)
+based routing solution considering user-preferred routing criteria. We use the Q-learning algorithm [16], which is one of the
+RL algorithms. After the training, the Q-learning algorithm
+is able to provide a solution in a timely manner compared
+to other multi-objection solutions as used in the existing
+approaches [9], [10], [13], [15], [17]. In our approach, the
+Q-learning maintains a reward table and Q-value table for
+each pair of nodes from the road network graph. The Qvalue Q(s, a) in Q-learning is an estimate of the value of
+future rewards if the agent takes a particular action a given the
+current state s. The current state s determines an intersection
+or node vehicle traversing, and the action a deﬁnes a chosen
+road segment or edge from all possible edges. The reward table
+is determined by the user preference and different metrics of
+the road segment or edge (i.e., travel time, fuel consumption,
+and air quality). The proposed system builds a table of Qvalues for each environment state and each possible action
+following a certain policy function by exploring the environment. Eventually, the proposed system selects the action with
+the highest Q-value. After the training, the proposed system
+picks all possible edges from a given source to a destination
+node using the Q-value table. Third, we conduct extensive
+experimental studies based on the real-world, geo-tagged data
+sources (trafﬁc, weather, POIs, and GPS traces). From the
+comparative studies with other existing approaches, we verify
+that the proposed Q-learning based routing system suggests
+a route satisfying user preferences on multiple criteria in a
+timely manner.
+The major contributions of this paper are summarized as
+follows:
+•
+
+•
+
+tion studies using real-world data sources. Finally, Section VI
+concludes this paper with remarks on our future work.
+II. R ELATED W ORK
+We classify the existing routing systems into four groups.
+The ﬁrst group [18]–[25] handles a single objective routing
+without using spatio-temporal trafﬁc analysis. The second
+group [4], [20]–[22] handles a single objective routing with
+the utilization of spatio-temporal trafﬁc analysis. The third
+group [9]–[15] handles the multi-preference routing. The
+fourth group [26]–[30] uses RL for the routing recommendation.
+The works in [18]–[25] provide a single objective routing
+recommendation from a source to a destination. Some of these
+works [18], [19], [23] utilize the optimal velocity proﬁles to
+avoid unnecessary braking of the vehicles and increase the
+fuel efﬁciency while routing from a source to a destination.
+Ganti et. al [18] utilized the historical fuel consumption of
+different road segments in designing a fuel-efﬁcient routing
+system. Shang et. al [23] utilized GPS traces of different
+drivers at different road segments to accurately predict the
+fuel consumption at these road segments given the time of day.
+Ding et. al [19] considered different driving behaviors toward
+the fuel consumption of different road segments given the time
+of day. Pessoa et. al [31] presented a branching rule for the
+branch-and-cut solver using the accumulated travel time or fuel
+consumption of the vehicle and used the brunch-and-cut solver
+to solve the single objective routing problem. Macrina et.
+al [24] proposed an energy-efﬁcient path recommendation
+system for a ﬂeet of (electric and conventional) vehicles,
+which uses a metaheuristic neighbor node searching schedule
+in the road network graph to ﬁnd the routes. Wang et. al [25]
+proposed a mixed-integer programming model and developed
+a branch-and-price algorithm to solve the vehicle routing
+problem in the presence of trucks and drones.
+Another set of works [4], [20]–[22] analyze different trafﬁc
+characteristics (e.g., trafﬁc signal, road gradients, point-ofinterests (POIs)) and use the characteristics in solving the
+single objective routing problem, where the objective is to
+either decrease the travel time, fuel consumption, or air pollutant exposure in routing. The existing SignalGuru system [20]
+utilizes the mobile ad-hoc network to predict the volume of
+surrounding vehicles and the duration of the green phase of
+the trafﬁc light. Finally, it calculates the desired speed proﬁle
+to avoid complete stops in front of the trafﬁc lights and offers
+fuel-efﬁcient routing. EcoDrive considers the road gradient of
+speciﬁc intersections and utilizes the dynamic programming
+approach to ﬁnd the optimized speed proﬁle to reduce fuel
+consumption [21]. Kang et. al [22] calculated the optimized
+speed proﬁle of a road section for the electric vehicles based
+on the historical trafﬁc ﬂow and road gradients. Xu et. al [32]
+studied the spatio-temporal trafﬁc analysis on a large road
+network map to suggest routes to reduce travel time and fuel
+consumption as well. Wang et. al [33] developed another realtime route recommendation system, R3, for the routing from
+
+We propose a multi-preference routing system. It uses
+the RL solution of multi-criteria optimization problem
+based on three different cost functions to ﬁnd the optimal
+balanced route (to minimize travel time and fuel consumption and maximize air quality) in a timely manner
+given a user’s preferences on different criteria.
+We conduct extensive experimental evaluations based
+on the real geo-tagged data sources (trafﬁc, weather,
+POIs, and GPS traces). The comparative studies on the
+proposed routing system comparing with other existing
+multi-preference systems verify the proposed routing system’s effectiveness in terms of air quality guarantee, fuel
+consumption reduction, and travel time reduction with
+the consideration of the user’s preferences in a timely
+manner.
+
+Note that though we consider three factors in routing in this
+paper, other factors can be easily added to our consideration
+factor list in the same manner. The rest of the paper is organized as follows. Section II discusses the existing literature.
+Section III presents the basic deﬁnitions and routing problem
+of this paper. Then, Section IV presents the system design
+of the proposed multi-preference route planner. Section V
+evaluates the proposed route planner through extensive simula-
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:34:19 UTC from IEEE Xplore. Restrictions apply.
+
+a source to a destination based on an optimization solution
+and the spatio-temporal trafﬁc patterns of the road network to
+decrease the travel time. These works do not consider users’
+preferences and lack the multiple perspectives in the routing.
+In addition to the above works, Mahajan et. al [4] proposed
+a data-driven clean-air route recommendation system that
+utilizes the interpolation method (i.e., spatio-temporal ordinary
+kriging method) to ﬁnd out the patterns of air participles in
+different roads segments so that the road segments with lower
+air pollutants are chosen to construct a route from the source
+to the destination.
+Recently, multi-preference vehicle routing systems have
+been proposed [9]–[15]. The work in [14] uses the crowdsourcing platform to calculate the quantitative measures of
+different location perceptions with respect to happiness, beauty, and noise of the routes and suggests the routing solution based on the adjacent locations preferable to users.
+EcoSky [12] uses GPS traces to predict the travel time and
+fuel consumption of different roads. It considers either timeefﬁcient, fuel-efﬁcient, or a combination of both factors in
+choosing one route from multiple candidate routes based
+on the user’s preferences and gives a higher priority to the
+routes previously chosen by the user. Hendawi et. al [13]
+proposed a route recommendation system with the goal of
+minimizing travel time and fuel consumption, which uses an
+optimization solution (i.e., dynamic A* algorithm) to ﬁnd
+an optimal path from a source to a destination. Sarker et.
+al [9] proposed a data-driven multi-objective route planner for
+electric vehicles, which ﬁnds a route with low travel time,
+energy consumption, charging cost, and range anxiety using
+the adaptive epsilon constraint optimization method. Sarker et.
+al [15] also proposed a data-driven multi-objective route planner considering air quality, travel time, and fuel consumption.
+The authors utilized the given user preferences in the adaptive
+epsilon constraint optimization solution to retrieve a wellbalanced route concerning all factors. Guo et. al [10] studied
+a dynamic multi-objective vehicle routing problem for a ﬂeet
+of vehicles with hard-time window constraints (i.e., a few to
+thousand minutes). They employed a dynamic particle swarm
+optimization solution that includes a two-phase global routing
+procedure; the ﬁrst phase serves the current routing requests
+and the second phase satisﬁes the randomly appeared routing
+requests promptly. Qi et. al [11] proposed a multi-objective
+evolutionary algorithm with time windows, which decomposes
+a target problem with a novel selection operator into a set
+of scalar sub-problems and optimizes them simultaneously.
+However, these approaches do not observe users’ preferences
+or consider different preferences together (e.g., travel time
+and fuel consumption). The above works also fail to provide
+an optimal route in near real-time due to the longer time
+complexity of the optimization solutions.
+There is another group of works [26]–[30] that use the RL
+algorithms to guide a single-objective shortest path from the
+source to the destination in different environments. Panov et.
+al [26] proposed a Q-learning based shortest path searching
+algorithm for an intelligent agent in a grid-based environment.
+
+Similarly, Han et. al [34] introduced a Q-learning algorithm
+based intelligent routing system for routing autonomous taxis.
+Cao et. al [27] designed a Q-learning algorithm to route a
+vehicle from the source to the destination, in which a dynamic
+neural network is used so that the Q-value table represents
+the actual probabilities of arriving on time at the destination
+and improve routing efﬁciency. Konar et. al [28] proposed
+a deterministic Q-learning based planning algorithm for a
+mobile robot, in which the estimated distances between the
+current state and both the next state and the goal are used
+to update the Q-table and increase the time efﬁciency for the
+path planning algorithm. Xia et. al [29] handled an online
+shortest path problem for an intelligent robot using the Qlearning algorithm, where the traveling distance is considered
+as a probabilistic variable to ﬁnd a probabilistic shortest path
+from the source to the destination. Yu et. al [30] proposed
+a probabilistic shortest path solution using the Q-learning
+algorithm, where an optimal strategy is used in the policy
+function to determine when the path exploration should be
+stopped to ensure the reliable convergence of the Q-learning
+algorithm.
+In our work, we consider a multi-preference routing solution
+where users are able to set different weights in different
+preferences separately, and the suggested route considers different preferences in a balanced manner and requires a short
+computation time.
+III. BACKGROUND AND P ROBLEM S TATEMENT
+In this section, we ﬁrst present the backgrounds. Then, we
+present the problem statement.
+Deﬁnition 3.1 (Road network graph): A road network
+graph consists of a ﬁnite set of intersections or nodes
+N = {n1 , n2 , ..., nt } and a ﬁnite set of road segments or
+edges E = {e1,2 , e2,3 , ..., et−1,t }. An edge ei,j connects of
+two adjacent nodes ni and nj . Each edge ei,j possesses a
+vector of weights wi,j = {ti,j , fi,j , qi,j }, representing the
+cost of travel from node ni to node nj with respect to some
+factors (e.g., travel time, fuel consumption, and air quality).
+Deﬁnition 3.2 (Route): A route τ in the road network is
+deﬁned as a sequence of edges from source node ns to the
+destination node nd .
+Deﬁnition 3.3 (Normalized value): Let us use yi to denote
+the value of an attribute i. We can use the following equation
+to normalized yi :
+yi − y min
+(1)
+ŷi = max i min
+yi
+− yi
+where ŷi is the normalized value of yi , and yimax and yimin are
+the maximum and minimum values of attribute i, respectively.
+Deﬁnition 3.4 (User preferences): A user initially indicates his/her preference weights for different considering attributes (i.e., travel time, fuel consumption, and air quality).
+The given user preferences are then represented as a vector
+of weights, affecting ﬁnding the optimal route. The user
+preference vector Wp is represented as follows:
+Wp = [wt , wf , wq ]
+s.t. wt + wf + wq = 1, 0 ≤ wi ≤ 1
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:34:19 UTC from IEEE Xplore. Restrictions apply.
+
+(2)
+
+'ƌĂƉŚ ŵĂŝŶƚĞŶĂŶĐĞ
+dƌĂǀĞůƚŝŵĞƉƌĞĚŝĐƚŝŽŶ
+&ƵĞů ĐŽŶƐƵŵƉƚŝŽŶ
+ƉƌĞĚŝĐƚŝŽŶ
+ŝƌ ƋƵĂůŝƚǇ ƉƌĞĚŝĐƚŝŽŶ
+
+YͲůĞĂƌŶŝŶŐͲďĂƐĞĚƌŽƵƚŝŶŐ
+hƉĚĂƚĞƚŚĞ
+ĐƵƌƌĞŶƚ
+ƐƚĂƚĞĂŶĚ
+ƌĞǁĂƌĚ
+
+hƉĚĂƚĞƚŚĞƌŽĂĚ
+ŶĞƚǁŽƌŬŐƌĂƉŚ
+
+WŽůŝĐǇĨƵŶĐƚŝŽŶ͕Y
+'ƌĂƉŚƐƚĂƚĞ͕^
+
+•
+
+hƐĞƌ
+ƉƌĞĨĞƌĞŶĐĞ
+
+ĐƚŝŽŶ͕
+ZŽƵƚĞƐĞůĞĐƚŝŽŶ
+
+Fig. 1. The overview of the proposed multi-preference routing system.
+
+where wt , wf , and wq are the weights of the travel time, fuel
+consumption, and air quality. The system normalizes the user
+entered weights so that it can consider multiple preferences at
+the same time.
+Deﬁnition 3.5 (Routing cost): For a given route τ , the total
+routing cost rτ is deﬁned as the summation of different attributes (e.g., travel time, fuel consumption, and air pollutants)
+of all edges belong to that route τ . Therefore, the total routing
+cost rτ can be deﬁned as follows:
+
+rτ =
+{ti,j , fi,j , qi,j }
+(3)
+
+travel time, fuel consumption, and air quality of different
+edges. Then, the proposed system updates each edge’s
+attributes accordingly.
+The Q-learning based routing module. It utilizes the
+updated road network graph to ﬁnd the optimal route
+given the source-destination pair and user preferences on
+different attributes. Here, the proposed system normalizes
+different preference weights to combine them into the
+same feature space to decide each route’s signiﬁcance
+to satisfy user preferences. In the Q-learning algorithm,
+the proposed system traverses each node sequentially
+from the source node where the current node (in the
+path searching process) acts as the current state, and its
+adjacent edges act as the possible actions. Therefore, an
+action is to choose one of the adjacent edges of the
+current node. Finally, a sequence of edges chosen by
+the sequential actions constructs a route from the source
+to the destination. The Q-learning algorithm utilizes its
+policy function to choose a speciﬁc action.
+
+B. Data Description
+We use the followings real-world geo-tagged datasets:
+1) Trafﬁc data: The trafﬁc dataset was collected from the
+Aarhus, Denmark, which consists of 449 observation points
+or intersections. The dataset contains the average velocity between two observation points, the number of vehicles traveled
+between two observation points, and the average (and median)
+travel time for all vehicles between two observation points.
+The data collection frequency was 5 minutes from August 1st,
+2014 until September 31st, 2014 [35].
+2) Air pollution data: The air pollution dataset covers the
+pollution measurements for 449 intermediary points between
+different trafﬁc observation points. Therefore, each pair of
+trafﬁc observation points corresponds to an air quality collection point. The data collection frequency is 5 minutes. The
+data was collected from August 1st, 2014, at 12:05 am until
+September 31st at 11:55 pm. The data contains particulate
+matter measurements, nitrogen dioxide, carbon monoxide,
+sulfur dioxide, and ozone [35].
+3) Roadway characteristics and points of interest: We
+collected different roadway characteristics and information
+about different points of interest (POIs) from the publicly
+available OpenStreetMap service as in [15]. we extracted
+different roadway characteristics (e.g., road segment type,
+corresponding speed limit, road gradients, the number of lanes,
+road segment length, the number of trafﬁc signs and signals,
+and the number of incoming and outgoing road segments) of
+the entire city of Aarhus, Denmark. We also utilized nearby
+POIs (e.g., food store, tourist spots, school, ofﬁce, hospital,
+bank, and airport), which can affect the roadway’s trafﬁc
+volume.
+
+ei,j ∈τ
+
+where ti,j , fi,j , and qi,j are the values of travel time, fuel
+consumption, and air pollutants of edge ei,j .
+Deﬁnition 3.6 (Optimal route): An optimal route τ ∗ consists
+of a ﬁnite set of edges starts from a source node ns to a
+destination node nd , where the total routing costs rτ ∗ of
+different attributes are not imbalanced considering the given
+user preferences on these attributes.
+Problem statement. Given a road network graph G(N, E),
+where each edge ei,j ∈ E has three attribute values for travel
+time, fuel consumption, and air quality and a user’s preference
+Wp on the attributes, the user wants to traverse from source
+node ns to destination node nd , how to ﬁnd an optimal route in
+a timely manner such that the user preference Wp is satisﬁed.
+IV. S YSTEM D ESIGN
+In this section, we ﬁrst present an overview of the proposed multi-preference route recommendation system in Section IV-A. Then, we introduce the real-world datasets used
+in the proposed system in Section IV-B. We also discuss the
+road network graph creation and maintenance procedures in
+Section IV-C. Next, we present the prediction models used in
+the proposed system IV-D. Finally, we present the Q-learning
+based multi-preference routing procedure in Section IV-E.
+A. Overview
+Figure 1 indicates an overview of the proposed multipreference routing system, where there are two main modules
+as follows:
+• The graph maintenance module. It maintains a real road
+network graph where different nodes and edges represent
+the road intersection and road segments for a speciﬁc
+region. The proposed system periodically predicts the
+
+C. Road Network Graph Map Creation and Maintenance
+Here, we describe the road network graph creation and
+maintenance procedures from the publicly available geotagged data sources. First, we extracted a static road network
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:34:19 UTC from IEEE Xplore. Restrictions apply.
+
+information (i.e., the number of vehicles, average speed of
+all vehicles, and their travel time).
+E. Multi-preference Routing Problem
+As in [15], we design three different cost functions for
+travel time, fuel consumption, and air quality. We then design
+the multi-preference routing algorithm as a multi-objective
+optimization problem where the goal is to minimize the
+values of three cost functions.
+k
+We ﬁrst introduce a decision variable zi,j
+to represent if an
+k
+edge ei,j belongs to a route τ starts from the source node ns
+and ends at the destination node nd as follows:
+
+1 if ei,j ∈ τ k
+k
+=
+(6)
+zi,j
+0 if ei,j ∈
+/ τk
+
+Fig. 2. The OpenStreetMap version of the city of Aarhus, Denmark [36].
+
+k
+is 1 when edge ei,j belongs to the path τ k or vice
+where zi,j
+k
+versa. Then, we use this decision variable zi,j
+to represent the
+cost function of each attribute as follows.
+First, we represent the total travel time to traverse a path
+from the source node to the destination node. Let us consider
+tki,j to denote the travel time of the vehicle in the edge eki,j ,
+which is calculated using the edge length di,j and average
+t
+of the edge eki,j (as in Equation (5)). Therefore,
+speed vi,j
+we can represent the total travel time function as the cost
+function g1 as follows:
+
+graph of the Aarhus, Denmark, from the OpenStreetMap service, as shown in Figure 2. Each node in the road network map
+contains the GPS coordinates of the node. We calculated the
+length of each edge from the GPS coordinates. Besides, each
+edge has several static spatial information to represent different edge attributes, such as road segment type, speed limits, the
+number of lanes, the number of trafﬁc signs and signals, and
+the different POIs information. Next, we periodically update
+different edge attributes (i.e., travel time, fuel consumption,
+and air quality) using the different prediction models based
+on historical data sources. We discuss the prediction models
+of different edge attributes in the next section.
+
+k
+g1 = tki,j zi,j
+
+(7)
+
+Second, we represent the fuel consumption cost to traverse
+a speciﬁc path from the source node to the destination
+k
+to express the fuel consumption
+node. Let us represent fi,j
+cost for the edge eki,j , where eki,j ∈ τ k . We calculate fuel
+k
+consumption cost fi,j
+as in Equation (4). Therefore, the total
+fuel consumption cost function g2 for the given path τ k can
+be expressed as follows:
+
+D. Different Prediction Models
+In this section, we introduce the three different prediction
+models (as in [15]) for three different attributes.
+1) Fuel consumption prediction: The fuel consumption
+prediction model ﬁrst estimates the average speed proﬁle
+of an edge using different roadway characteristics, including
+nearby POIs, the number of lanes, the number of incoming
+and outgoing road segments, the number of trafﬁc signs and
+signals, speed limit, and vehicle counts. It then predicts the
+driving force required for a vehicle to travel that edge using
+the predicted speed proﬁle. In summary, we estimate the fuel
+consumption rate fr for each edge:
+(4)
+fr = βFdrive v
+where β is the fuel consumption rate to produce a single unit
+of power, Fdrive is the vehicle driving force, and v is the
+current average speed.
+2) Travel time prediction: We estimate the average speed
+prediction calculated to calculate the travel time of each edge
+at a given time t. The travel time prediction utilizes the length
+of the edge and the average predicted speed as follows:
+d
+(5)
+t=
+v
+where d is the length of the edge and v is the average speed
+of that edge at time t.
+3) Air quality prediction: We use a random forest classiﬁer [37] to predict four air pollutants: particulate matter, carbon
+monoxide, nitrogen dioxide, and sulfur dioxide for each node
+of the road network graph. The inputs are different trafﬁc
+
+k k
+zi,j
+g2 = fi,j
+
+(8)
+
+Third, we consider the overall air quality of a path from the
+source node to the destination node. We use the normalized
+values of different predicted air substances together to reprek
+sent the air quality q as a single criterion. Let us consider qi,j
+k
+to express the overall air substances present in the edge ei,j .
+Therefore, we can formulate the total air quality cost function
+g3 for the given path τ k as follows:
+k k
+zi,j
+g3 = qi,j
+
+(9)
+
+Finally, we formulate a multi-objective optimization problem using three cost functions g1 , g2 , and g3 and the given user
+preferences Wp =[wt , wf , wq ] for three attributes as follows:
+min(g1 · wt , g2 · wf , g3 · wq )
+(10)
+such that:
+
+k
+= {0, 1}, ∀i, j, k
+zi,j
+wt + w f + w q = 1
+
+(11)
+(12)
+
+where Equation (11) represents the decision variable z either
+0 or 1. And, Equation (12) presents that the summation of the
+user preferences for three attributes that should be equal to 1.
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:34:19 UTC from IEEE Xplore. Restrictions apply.
+
+F. Q-learning based Routing System
+To solve the above multi-objective optimization problem, we
+use an RL technique. Speciﬁcally, we employ the Q-learning
+algorithm [16] to ﬁnd the optimal route from the source node
+to the destination node. Compared to the existing conventional
+multi-objective optimization solutions [9]–[11], [15], the Qlearning algorithm is able to provide the optimal solution in a
+timely manner.
+In the Q-learning algorithm, we use the combinations of
+different attributes of each edge along with the user’s preferences on these attributes as well as the edge’s distance to the
+destination as the reward of taking that edge. Let us consider
+that the proposed routing system works as an agent to choose
+the optimal path connecting the source node and destination
+node. At each step l, the agent observers the state sl and
+chooses an action al . As a result, the current state sl changes
+to the next state sl+1 and the agent receives a reward rl based
+on the reward policy. The goal of the algorithm is to maximize
+the expected cumulative reward by maintaining a certain policy
+function, Q(·). During the training time, we build a Q-value
+table with the consideration of current road network map
+and user preference on different edge attributes to store the
+cumulative rewards received by choosing an action dependent
+on its previously foreseen states following the certain policy at
+each state. We present different components of the Q-learning
+algorithm used in the proposed system.
+1) Agent: For a given road network graph and sourcedestination pair, the proposed system works as an RL agent
+to choose the most suitable action (i.e., choosing an edge)
+given the user preferences and predicted edge attributes. After
+sequentially taking a few actions, the chosen edges form the
+optimal route from the source node to the destination node.
+2) Environment: In our scenario, the environment is represented by the updated road network graph, G = (N, E)
+(as in Deﬁnition 3.1), where each edge ei,j has three different
+attributes in the form of [ti,j ·wt , fi,j ·wf , qi,j ·wq ] that denotes
+the predicted travel time, fuel consumption and air quality
+values with the given user preferences Wp = [wt , wf , wq ] in
+a unit time period.
+3) State space (S): In our scenario, the state space represents the ﬁnite set of edges and nodes G = (N, E) with
+all possible values of travel time, fuel consumption, and air
+quality for each edge of the road network.
+4) Action space (A): Action space deﬁnes the set of actions
+the agent can choose given the current state (i.e., node (ni )),
+source-destination pair (i.e., (ns , nd )), and user preferences on
+different edge attributes (i.e., Wp = [wt , wf , wq ]). For example, the agent considers all possible edges ({ei,l , ei,m , ...ei,u })
+from the current node (ni ). The agent then chooses one of
+the edges considering the attribute values of the edges and the
+user’s preference weights Wp .
+5) Immediate reward (R): A reward function deﬁnes the
+immediate reward gained by choosing a speciﬁc action (i.e.,
+an edge ei,j ) from the ﬁnite set of actions. To determine the
+immediate reward of choosing an edge, we combine the given
+user preference and all predicted values of travel time, fuel
+
+consumption, and air quality of the edge, and we also consider
+the direct distance (i.e., length of a straight line) between the
+end of the edge (nj ) and the destination node (nd ) in order to
+ensure that the vehicle drives towards the destination as fast as
+possible. Accordingly, the agent creates a reward table based
+on the road network graph (i.e., G = (N, E)), destination node
+nd , and the given user’s preference (i.e., Wp = [wt , wf , wq ]).
+The reward table is in the form of an adjacency matrix
+R|N |×|N | , where |N | represents the total number of nodes
+in the road network graph G. Each element ri,j in the reward
+table R represents the immediate reward of choosing an action
+(i.e., edge ei,j ) from the current state st (i.e., node ni ) to
+the next state sl+1 (i.e., node nj ). If nodes ni and nj are
+/ E, then the reward is ∞, which
+not connected, i.e., ei,j ∈
+means that there is no such an edge and it will not be chosen.
+Precisely, the immediate reward ri,j is calculated as follows:
+ri,j =
+
+⎧
+ˆ j , nd )
+⎨ −(t̂i,j wt + fˆi,j wf + q̂i,j wq ) + γ d(n
+−∞
+⎩
++∞
+
+if ei,j ∈ E
+/E
+if ei,j ∈
+if nj = nd
+
+(13)
+
+where t̂i,j , fˆi,j , and q̂i,j are the normalized values of travel
+time, fuel consumption, and air quality of edge ei,j as in
+ˆ j , ns ) is the normalized
+Equation (1), nd is the destination, d(n
+direct distance between node nj and the destination nd based
+on the maximum and minimum direct distances of any node
+pairs in the road network map G as in Deﬁnition 3.3), and γ is
+a weight coefﬁcient for this distance. In the Equation (13), the
+ﬁrst condition states that if the chosen edge ei,j is a valid edge
+in the road network graph, then the agent receives a reward
+based on the combination of different attributes and user
+preference on them, and the direct distance to the destination
+node. The second condition states that the immediate reward
+is a considerable negative value if there is no edge between
+node ni and node nj . The third constraint states that if the
+end of the chosen edge ei,j (nj ) is the destination node nd ,
+then the agent receives a considerable positive value as the
+immediate reward.
+6) Policy function (Q): Upon observing the current state sl ,
+the proposed system needs to take the action al of choosing
+a speciﬁc edge given the list of possible edges. We create
+a Q-value table to keep track of the rewards received by
+the policy function during the training time. Like the reward
+table, one Q-value table is created for the present combination
+of the road network graph and given user preferences (as in
+Equation (13)). Using the Q-value table, the proposed system
+later selects an action over all possible actions based on the
+policy function deﬁned as Q : Q(sl , al ). The policy function
+returns the expected future reward due to taking action at at
+the state st [16]. Therefore, the agent selects a speciﬁc action
+that leads to the maximum expected future reward values using
+the following function [16]:
+Q(sl , al ) = Q(sl , al ) + α × [rl+1 + γ
+×maxal+1 Q(sl+1 , al+1 ) − Q(sl , al )]
+
+(14)
+
+where α is a learning rate parameter to accelerate the convergence of the true Q-values in the presence of any noisy or
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:34:19 UTC from IEEE Xplore. Restrictions apply.
+
+stochastic rewards and state transitions, and γ is the discount
+rate that guarantees the updated reward convergence for all
+the future edges from the current node. This policy function is
+used to generate the Q-value table in the training phase. In the
+following, we elaborate the Q-value table creation procedure.
+The agent ﬁrst updates the current road network map and
+the corresponding values of travel time, fuel consumption, and
+air quality for each edge. Given the user preference, the agent
+then updates the immediate reward table using Equation (13).
+The agent creates an adjacency matrix Q|N |×|N | to represent
+the Q-value table where |N | represents the total number of
+nodes. Using the reward table, the agent conducts the training
+phase by deriving the state corresponding to a node and its
+associated edges, and then updates the Q-value table. At each
+iteration of the training phase, the proposed system chooses a
+node randomly and updates the Q-value entry for choosing an
+edge from that node such that the future reward is maximized
+as in Equation (14). Therefore, it checks the current state sl as
+the randomly chosen node and ﬁnds the cumulative maximum
+reward Q(sl , al ) and update the Q-value table for that particular state and chooses action al . It performs the chosen action
+and updated the current state as sl+1 and the immediate reward
+as rl+1 . The agent always chooses an action that contributes
+to the highest Q(sl , al ) value. Eventually, the Q-value table
+represents the future rewards for the edge between two nodes.
+7) Optimal route selection: After the training phase, the
+proposed system utilized the most updated Q-value table to
+select the optimal route from the source node. The proposed
+system keeps choosing a list of nodes and edges from the
+source node until there is a valid route from the source node
+to the destination node. Here, the proposed system chooses
+the edge corresponding to the maximum Q-value from all
+possible edges. Speciﬁcally, it ﬁnds different adjacent nodes
+from the current node, and retrieves the Q-values of these
+edges from the most updated Q-value table. Therefore, the
+multi-preference route selection problem is limited to looking
+up the Q-value table and choosing the node with the highest
+reward. This lookup operation reduces the complexity of the
+multi-objective optimization problem and reduces the problem
+solving time to near real-time.
+
+We implemented all comparative methods using the python
+programming language.
+• Road network graph map. The road network map (see
+Figure 2) was realized using the NetworkX API [38] from
+the osm ﬁle of the city of Aarhus, Denmark. The osm
+ﬁle was generated from the OpenStreetMap service [36],
+and it has more than 233 MB. The road network graph
+consists of 44, 012 nodes and 84, 154 edges. Several roadway
+characteristics, POIs, and other factors affecting a roadway’s
+speed proﬁle were also extracted from the OpenStreetMap
+service. We considered all POIs within 500 meters radius of
+an edge. To calculate the overall inﬂuence of the POIs close
+to an edge, we considered the direct distances between the
+POIs and that edge. Therefore, we considered the POIs closer
+to the edge has a greater inﬂuence on the edge’s average
+speed. We updated the travel time and fuel consumption of
+each edge of the road network map at every 5 minutes and
+updated the air quality of each edge every 60 minutes.
+• The number of routes. We considered 30 randomly chosen
+source-destination pairs from the road network graph to
+conduct all routing experiments. The source-destination pairs
+were chosen so that the direct distance between the pair of
+source and destination is at least 10 km.
+2) Comparison methods: We implemented our system and
+three different comparison methods. We describe our system
+and the comparison systems below.
+• Q-learning. It is our proposed routing system. We used
+50,000 iterations in the training phase to ﬁnalize the Q-value
+table. In each iteration, one source-destination pair and their
+intermediate edges were chosen randomly from the sets of
+nodes and edges to update the Q-value table accordingly.
+During the experimental process, the Q-value table was also
+updated. We set γ = 0.7 and α = 0.6.
+• PreGo [13]. PreGo is a dynamic routing algorithm that uses
+real-time trafﬁc congestion to suggest the optimal route from
+a source to a destination with the goal of minimizing two
+different attributes (i.e., travel time and fuel consumption)
+with equal priority at the same time. PreGo uses the dynamic A* algorithm as the optimization solution to solve
+the multi-preference routing problem. We implemented the
+PreGo using python programming language, and we followed
+steps of the time parameterized multi-preference shortest path
+algorithm as in [13] to implement PreGo.
+• MORP [9]. MORP uses a multi-objective optimization solution to ﬁnd the optimal route from the source node to the
+destination node. It considers travel time, fuel consumption,
+and air quality equally in ﬁnding the optimal route. However,
+MORP does not consider any user preference, and it requires
+a longer time (e.g., several hours depending on the map size)
+to provide the optimal solution due to the multi-dimensional
+hyper-grid search space of the optimization solution.
+• VRT [15]. VRT combines the given user preference into a
+multi-objective optimization solution to generate the optimal
+route satisfying the user preferences. It requires a longer time
+to determine the optimal route due to the multi-dimensional
+hyper-grid searching procedure as in [9].
+
+V. P ERFORMANCE E VALUATION
+In this section, we evaluate the multi-preference route
+recommendation system considering different metrics. First,
+we introduce the experimental settings used to evaluate the
+system (Section V-A). Then, we present the performance of the
+proposed multi-preference routing system compared to other
+existing systems regarding travel time, fuel consumption, and
+air quality (Section V-B).
+A. Experimental Settings
+1) Experimental environments:
+• Computing resources. We conducted all experiments in
+a shared university GPU cluster consisting of four Nvidia
+RTX 2080Ti GPUs with 20 cores and 256 GB memory.
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:34:19 UTC from IEEE Xplore. Restrictions apply.
+
+ϲϬϬ
+
+YͲůĞĂƌŶŝŶŐ
+
+dƌĂǀĞůƚŝŵĞ
+
+WƌĞ'Ž
+
+&ƵĞů
+ĐŽŶƐƵŵƉƚŝŽŶ
+
+DKZW
+
+sZd
+
+dŝŵĞ;ŵŝŶƵƚĞƐͿ
+
+ϭ͘Ϯ
+ϭ
+Ϭ͘ϴ
+Ϭ͘ϲ
+Ϭ͘ϰ
+Ϭ͘Ϯ
+Ϭ
+
+YͲůĞĂƌŶŝŶŐ
+
+dƌĂǀĞůƚŝŵĞ
+
+WƌĞ'Ž
+
+&ƵĞů
+ĐŽŶƐƵŵƉƚŝŽŶ
+
+DKZW
+
+YͲůĞĂƌŶŝŶŐ
+
+WƌĞ'Ž
+
+DKZW
+
+sZd
+
+ϰϬϬ
+ϯϬϬ
+
+ϮϬϬ
+ϭϬϬ
+Ϭ
+
+ŝƌƉŽůůƵƚĂŶƚƐ
+
+^ĐĞŶĂƌŝŽϭ
+
+^ĐĞŶĂƌŝŽϮ
+
+Fig. 5. Total computation time.
+
+Fig. 3. Normalized routing results of different systems in scenario 1.
+
+ϭ͘Ϯ
+ϭ
+Ϭ͘ϴ
+Ϭ͘ϲ
+Ϭ͘ϰ
+Ϭ͘Ϯ
+Ϭ
+
+ϱϬϬ
+
+the consideration of different attributes. We can see that the
+proposed Q-learning based routing system’s results are almost
+similar to MORP and VRT. It means that the proposed Qlearning-based routing system suggests a very similar route to
+the Pareto optimal solution.
+Second, in Figure 4, we can see that the results of PreGO
+and MORP are similar. Both PreGO and MORP do not
+consider any user preference. The proposed Q-learning based
+routing system and the existing VRT system consider the
+given user preference and these methods minimize travel time
+and fuel consumption in scenario 2 based on the given user
+preferences. We can also see that the routing results by Qlearning and VRT for three attributes are similar. It means that
+the proposed Q-learning based route recommendation system
+is able to provide an optimal solution as VRT does.
+2) Total computation time: Figure 5 shows the total computation times of four methods. In scenario 1, the total required
+times of Q-learning, PreGo, MORP, and VRT are 1.29 mins,
+354.54 mins, 453.31 mins, and 453.31 mins, respectively. In
+scenario 2, the total required times of Q-learning, PreGo,
+MORP, and VRT are 1.45 mins, 354.54 mins, 453.31 mins,
+and 396.40 mins, respectively. The total required times of four
+methods follow: Q-learning<<PreGO<VRT≈MORP, where
+we use << to represent signiﬁcantly less. From the above
+results, we can see that the proposed Q-learning based multipreference route recommendation system requires signiﬁcantly
+less time compared with the other three multi-preference routing systems. Due to the quick Q-value table lookup operation
+in the proposed system, the total computing time is negligible.
+The proposed system can provide route suggestions in a timely
+manner. We can see that MORP and VRT cost much time to
+provide the Pareto-optimal solutions.
+3) Discussion: From the above ﬁgures, we can ﬁrst see that
+PreGo suggests routes with higher travel and fuel consumption
+and low air quality. MORP provides the Pareto-optimal routes
+but fails to consider any user preferences on different routing
+attributes. VRT also provides the Pareto-optimal routes, and
+it is able to consider the user preferences on different routing attributes as well. However, MORP and VRT cost very
+high computation time. Finally, we also see that the routes
+suggested by the proposed Q-learning based routing system
+are close to the Pareto-optimal solutions. It can consider user
+preferences for different routing attributes and provides routing
+suggestions in near real-time.
+
+sZd
+
+ŝƌƉŽůůƵƚĂŶƚƐ
+
+Fig. 4. Normalized routing results of different systems in scenario 2.
+
+3) User preferences: We considered two scenarios of user
+preference weights on travel time, fuel consumption, and air
+quality represented by a vector as follows:
+• Scenario 1: [0.33, 0.33, 0.33]. In this user preference scenario, we considered equal weights for travel time, fuel
+consumption, and air quality.
+• Scenario 2: [0.50, 0.50, 0.00]. In this user preference scenario, the user does not have a preference for air quality and has
+equal weights for travel time and fuel consumption.
+4) Evaluation metrics: To illustrate the experimental evaluations using ﬁgures, we ﬁrst normalized the values of travel
+time, fuel consumption, and air quality for better illustration
+(as described in Deﬁnition 3.3). Then, we calculated the
+average of these normalized values to combine the results from
+30 routes to be shown in the ﬁgures.
+To show the total computation time, we calculated the
+average of total computation times for 60 different routes
+without any normalization.
+B. Experimental Results
+1) Multi-preference routing: Figure 3 and Figure 4 show
+the routing results of four methods regarding travel time, fuel
+consumption, and air quality in the two scenarios.
+First, from Figure 3, we can see that PreGo chooses routes
+with higher travel time, fuel consumption, and air pollutants
+than other methods. PreGo suggests a route that is not Paretooptimal since it discards some optimal routes in ﬁnding the
+solution using the dynamic A* algorithm. Therefore, PreGo
+generates higher travel time, fuel consumption, and air pollutants. Both MORP and VRT use the adaptive epsilon constrain
+optimization solution [9], which ensure the Pareto-optimally
+between different attributes and provide an optimal route with
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:34:19 UTC from IEEE Xplore. Restrictions apply.
+
+VI. C ONCLUSION
+
+[12] C. Guo, B. Yang, O. Andersen, C. S. Jensen, and K. Torp, “Ecosky:
+Reducing vehicular environmental impact through eco-routing,” in Proc.
+of ICDE, 2015.
+[13] A. M. Hendawi, A. Rustum, A. A. Ahmadain, D. Hazel, A. Teredesai,
+D. Oliver, M. Ali, and J. A. Stankovic, “Smart personalized routing for
+smart cities,” in Proc. of ICDE, 2017.
+[14] D. Quercia, R. Schifanella, and L. M. Aiello, “The shortest path to
+happiness: Recommending beautiful, quiet, and happy routes in the city,”
+in Proc. of HT, 2014.
+[15] A. Sarker, H. Shen, B. Murphy, R. Wang, M. Devine, and A. J. Rindos,
+“Vehicle routing trifecta: Data-driven route recommendation system,” in
+Proc. of ICCCN, 2019.
+[16] C. J. Watkins and P. Dayan, “Q-learning,” Machine learning, vol. 8, no.
+3-4, 1992.
+[17] Y. Li, H. Su, U. Demiryurek, B. Zheng, T. He, and C. Shahabi, “Pare:
+A system for personalized route guidance,” in Proc. of WWW, 2017.
+[18] R. K. Ganti, N. Pham, H. Ahmadi, S. Nangia, and T. F. Abdelzaher,
+“Greengps: a participatory sensing fuel-efﬁcient maps application,” in
+Proc. of MobiSys, 2010.
+[19] Y. Ding, C. Chen, S. Zhang, B. Guo, Z. Yu, and Y. Wang, “Greenplanner:
+Planning personalized fuel-efﬁcient driving routes using multi-sourced
+urban data,” in Proc. of PerCom, 2017.
+[20] E. Koukoumidis, L.-S. Peh, and M. R. Martonosi, “Signalguru: leveraging mobile phones for collaborative trafﬁc signal schedule advisory,” in
+Proc. of MobiSys, 2011.
+[21] L. Kang, B. Qi, D. Janecek, and S. Banerjee, “Ecodrive: A mobile
+sensing and control system for fuel efﬁcient driving,” in Proc. of
+MobiCom, 2015.
+[22] L. Kang, H. Shen, and A. Sarker, “Velocity optimization of pure electric
+vehicles with trafﬁc dynamics consideration,” in Proc. of ICDCS, 2017.
+[23] J. Shang, Y. Zheng, W. Tong, E. Chang, and Y. Yu, “Inferring gas
+consumption and pollution emission of vehicles throughout a city,” in
+Proc. of SIGKDD, 2014.
+[24] G. Macrina, G. Laporte, F. Guerriero, and L. D. P. Pugliese, “An energyefﬁcient green-vehicle routing problem with mixed vehicle ﬂeet, partial
+battery recharging and time windows,” European Journal of Operational
+Research, vol. 276, no. 3, 2019.
+[25] Z. Wang and J.-B. Sheu, “Vehicle routing problem with drones,”
+Transportation research part B: methodological, vol. 122, 2019.
+[26] A. I. Panov, K. S. Yakovlev, and R. Suvorov, “Grid path planning with
+deep reinforcement learning: Preliminary results,” Procedia computer
+science, vol. 123, 2018.
+[27] Z. Cao, H. Guo, J. Zhang, F. Oliehoek, U. Fastenrath et al., “Maximizing
+the probability of arriving on time: A practical q-learning method,” in
+Proc. of AAAI, 2017.
+[28] A. Konar, I. G. Chakraborty, S. J. Singh, L. C. Jain, and A. K. Nagar, “A
+deterministic improved q-learning for path planning of a mobile robot,”
+IEEE Trans. on Systems, Man, and Cybernetics: Systems, vol. 43, no. 5,
+2013.
+[29] W. Xia, C. Di, H. Guo, and S. Li, “Reinforcement learning based
+stochastic shortest path ﬁnding in wireless sensor networks,” IEEE
+Access, vol. 7, 2019.
+[30] H. Yu and D. P. Bertsekas, “Q-learning and policy iteration algorithms
+for stochastic shortest path problems,” Annals of Operations Research,
+vol. 208, no. 1, 2013.
+[31] A. Pessoa, R. Sadykov, E. Uchoa, and F. Vanderbeck, “A generic
+exact solver for vehicle routing and related problems,” Mathematical
+Programming, 2020.
+[32] J. Xu, Y. Gao, C. Liu, L. Zhao, and Z. Ding, “Efﬁcient route search on
+hierarchical dynamic road networks,” Distributed and Parallel Databases, vol. 33, no. 2, 2015.
+[33] H. Wang, G. Li, H. Hu, S. Chen, B. Shen, H. Wu, W.-S. Li, and K.-L.
+Tan, “R3: a real-time route recommendation system,” Proc. of the VLDB
+Endowment, vol. 7, no. 13, 2014.
+[34] M. Han, P. Senellart, S. Bressan, and H. Wu, “Routing an autonomous
+taxi with reinforcement learning,” in Proc. of CIKM, 2016.
+[35] M. I. Ali, F. Gao, and A. Mileo, “Citybench: A conﬁgurable benchmark
+to evaluate rsp engines using smart city datasets,” in Proc. of ISWC,
+2015.
+[36] OpenStreetMap contributors, “Planet dump retrieved from https://planet.osm.org ,” https://www.openstreetmap.org , 2020.
+[37] L. Breiman, “Random forests,” Machine learning, vol. 45, no. 1, 2001.
+[38] N. Developers, “Networkx,” networkx. lanl. gov, 2010.
+
+We proposed a multi-preference route recommendation system considering user preferences on travel time, fuel consumption, and air quality to choose the optimal route timely.
+Speciﬁcally, we designed a Q-learning-based route recommendation system that utilizes the real network graph created from
+different real-world datasets (i.e., trafﬁc data, air pollution,
+and roadway characteristics). The proposed Q-learning method
+builds a Q-value table using the reward table and given a
+road network map to decide future rewards for choosing a
+sequence of edges from the source to the destination. In
+this way, the proposed route recommendation system is able
+to choose a well-balanced optimal route from the source to
+the destination satisfying user preferences on different edge
+attributes timely. From the experimental evaluations, we found
+that the proposed routing system can provide an optimal route
+timely considering user preferences on different attributes. In
+the future, we will enhance the performance of the proposed
+Q-learning algorithm by incorporating a deep learning network
+to estimate the Q-value table in real-time.
+ACKNOWLEDGMENT
+This research was supported in part by U.S. NSF grants
+NSF-1827674, CCF-1822965, Microsoft Research Faculty
+Fellowship 8300751, and IBM Ph.D. fellowship award 20172018. The authors would like to thank Mr. Tanmoy Sen and
+Mr. Shohaib Mahmud for their valuable suggestions.
+R EFERENCES
+[1] “Google Maps Platform,” https://cloud.google.com/maps-platform/, accessed: 2020-08-15.
+[2] “HERE Maps: Map Data is the foundation of the Reality Index,”
+https://www.here.com/platform/mapping/map-data, accessed: 2020-0815.
+[3] P. Apparicio, J. Gelb, M. Carrier, M.-È. Mathieu, and S. Kingham,
+“Exposure to noise and air pollution by mode of transportation during
+rush hours in montreal,” Journal of Transport Geography, vol. 70, 2018.
+[4] S. Mahajan, Y.-S. Tang, D.-Y. Wu, T.-C. Tsai, and L.-J. Chen, “Car:
+The clean air routing algorithm for path navigation with minimal pm2.
+5 exposure on the move,” IEEE Access, vol. 7, 2019.
+[5] D. Robert, M. Brook, and H. Center, “The global threat of outdoor
+ambient air pollution to cardiovascular health time for intervention,”
+2017.
+[6] M.-A. Kioumourtzoglou, J. D. Schwartz, M. G. Weisskopf, S. J. Melly,
+Y. Wang, F. Dominici, and A. Zanobetti, “Long-term pm2. 5 exposure
+and neurological hospital admissions in the northeastern united states,”
+Environmental health perspectives, vol. 124, no. 1, 2016.
+[7] “Waze Lets Israelis Avoid Palestinian Areas, but Not the Other
+Way Around,” https://motherboard.vice.com/en˙us/article/jpgbg7/wazelets-jewish-israelis-avoid-palestinian-areas-but-not-the-other-way
+-around, 2017.
+[8] “Waze Puts Safety Over Speed by Minimizing Left Turns,”
+https://www.citylab.com/life/2016/06/waze-puts-safety-over-speedby-minimizing-left-turns-in-la/487577/, 2017.
+[9] A. Sarker, H. Shen, and J. A. Stankovic, “Morp: Data-driven multiobjective route planning and optimization for electric vehicles,” Proc.
+of the ACM on IMWUT, vol. 1, no. 4, p. 162, 2018.
+[10] Y.-N. Guo, J. Cheng, S. Luo, D. Gong, and Y. Xue, “Robust dynamic
+multi-objective vehicle routing optimization method,” IEEE/ACM Trans.
+on CBB, vol. 15, no. 6, 2017.
+[11] Y. Qi, Z. Hou, H. Li, J. Huang, and X. Li, “A decomposition based
+memetic algorithm for multi-objective vehicle routing problem with time
+windows,” Computers & Operations Research, vol. 62, 2015.
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:34:19 UTC from IEEE Xplore. Restrictions apply.
+
+

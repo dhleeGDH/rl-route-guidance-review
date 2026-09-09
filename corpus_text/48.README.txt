@@ -1,0 +1,33 @@
+idx 48 = [24] X. Ma, Y. Xie, C. Chigan, "Meta-deep Q-learning for eco-routing," Proc. IEEE CAVS,
+2019, pp. 1-6.
+
+THE ARCHIVED EXTRACTION FOR THIS STUDY IS WRONG AND HAS BEEN SET ASIDE as 48.txt.WRONG_SOURCE.
+It is byte-identical to 65.txt, which is the 2024 T-ITS journal paper by the same authors
+([1122], "Graph Convolutional Network Based Multi-Objective Meta-Deep Q-Learning for Eco-Routing").
+At some point after coding, this file was overwritten with that paper's text.
+
+THE RECORDED CODING FOR idx 48 IS NOT AFFECTED. Eight of its nine source quotations in
+corpus/corpus_v9_coded.csv do not occur anywhere in the 2024 text, which shows the extraction of
+record was read from the 2019 conference paper. The ninth is a network description the two papers
+share. The check is reproducible:
+
+    python3 - <<'PY'
+    import csv,io,re
+    E='experiments/'
+    r={x['idx']:x for x in csv.DictReader(open(E+'corpus/corpus_v9_coded.csv',encoding='utf-8'))}
+    T=re.sub(r'[^a-z0-9]','',io.open(E+'corpus_text/65.txt',encoding='utf-8',errors='replace').read().lower())
+    for k,v in r['48'].items():
+        if k.endswith('_quote') and v.strip():
+            print(k, re.sub(r'[^a-z0-9]','',v.strip()[:70].lower()) in T)
+    PY
+
+The 2019 source PDF is not present in any local store, so the text cannot be regenerated here.
+Found 2026-08-22 by a blind second coder who was given both files and reported them identical.
+
+---
+CORRECTION, 2026-09-09 (T-1945). The sentence above, "The 2019 source PDF is not present in any
+local store", is not true. The paper is at pdfs/pdfs/Meta-deep q-learning for eco-routing.pdf and
+has been there since 2026-06-06. 48.txt was regenerated from it with pdftotext and is the 2019
+conference paper; the wrong extraction is kept beside it as 48.txt.WRONG_SOURCE for the record.
+substrate.py no longer quarantines idx 48 and reads 91 texts, which is the full-text denominator
+the manuscript prints.

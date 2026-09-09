@@ -1,0 +1,733 @@
+2023 IEEE International Symposium on Product Compliance Engineering - Asia (ISPCE-ASIA) | 979-8-3503-6120-9/23/$31.00 ©2023 IEEE | DOI: 10.1109/ISPCE-ASIA60405.2023.10365789
+
+A Joint Design of Path Planning and Lane
+Reservation for Emergency Service in ITS
+Zhaoyang Li, Bingyi Liu, Enshu Wang, Jinfan Wang, Weizhen Han
+
+Abstract—Reaching the accident scene promptly for emergency
+vehicles (EVs) can significantly alleviate the negative impact
+of accidents. However, finding a way to reduce the response
+time of EVs (i.e., the travel time of an EV to reach the rescue
+location) remains a challenge that needs to be addressed. In this
+paper, we design a distributed intelligent transportation system
+(DITS) powered by vehicular fog computing (VFC), which offers
+new possibilities for designing traffic scheduling methods. We
+propose a soft actor-critic-based EV rapid passage approach
+(SACRP) to minimize the response time of EVs. The collaborative
+lane reservation module uses the latest traffic data to create a
+traffic dispatch strategy to reserve empty lane. Subsequently,
+we propose a soft actor-critic-based algorithm as the real-time
+path planning module. The path planning module integrates vital
+road information, such as lane reservation priority, real-time
+road data, EV location, and traffic signal information. The path
+planning module strategically plans the path with the shortest
+response time for the EV. We conduct extensive experiments to
+evaluate the performance of the proposed method, and the results
+show that the response time for EVs could be reduced by 24.6%
+compared to the latest study.
+Index Terms—Emergency vehicle, soft actor-critic algorithm,
+lane reservation, path planning
+
+I. INTRODUCTION
+With the expanding scale of urbanization and rapid economic development, urban population and social production
+activities are highly concentrated, which leads to an increased
+probability of emergencies. Since the social hazards caused
+by emergencies can increase significantly over time, accident
+hazards are difficult to contain once the optimal time for
+rescue is missed [1]. Therefore, shortening the response time
+of emergency vehicles (EVs) is crucial to improve the quality
+of emergency services and reduce the damage caused by
+accidental disasters. As an illustrative example, a fire incident
+can lead to significant economic losses if the fire trucks arrive
+at the scene after the critical extinguishing time, typically 4
+Zhaoyang Li is with the School of Computer Science and Artificial
+Intelligence, Wuhan University of Technology, Wuhan, 430070, China. Emai: lizhaoyang lee@whut.edu.cn.
+Bingyi Liu is with the School of Computer Science and Artificial Intelligence, Wuhan University of Technology, Wuhan, 430070, China, Chongqing
+Research Institute, Wuhan University of Technology, Chongqing, 401120,
+China, and also with Sanya Science and Education Innovation Park of Wuhan
+University of Technology, Sanya, 572025, China. E-mail: byliu@whut.edu.cn.
+Enshu Wang is with the Department of Future Science and Engineering,
+Soochow University, Suzhou, 214998, China. E-mai: eswang@suda.edu.cn.
+Jinfan Wang is with the Institute of Future Networks, Southern University of
+Science and Technology, Shenzhen, 518055, China, and with LINKINSENSE
+Co., Ltd, Hefei, China. E-mai: wangjf@sustech.edu.cn.
+Weizhen Han is with the School of Computer Science and Artificial
+Intelligence, Wuhan University of Technology, Wuhan, 430070, China. E-mai:
+hanweizhen@whut.edu.cn.
+
+to 11 minutes after the fire outbreak [2]. In addition, as urban
+populations grow, the number of car owners increases dramatically. This phenomenon reduces the ability of emergency
+vehicles to travel to the location of an emergency incident,
+especially during rush hour, and delays in EVs will result
+in lower rescue success rates. Besides, in many countries,
+EVs can exceed designated road speeds and cross intersections
+without obeying traffic signals, and other vehicles must yield,
+resulting in a significantly higher accident rate for EVs than
+ordinary vehicles (OVs). Furthermore, it is of great practical
+importance to design an effective dispatching method to help
+EVs reach their destinations faster and more safely.
+Unlike OVs, EVs may not be subject to specific traditional
+road rules, such as going through an intersection at a stoplight
+or speeding. However, numerous OVs may still impede EVs
+on heavy-traffic roads. To solve this problem, one research line
+focused on road-centric approaches [3–7] that aim to improve
+the average speed of EVs by minimizing OV interference to
+EVs through active traffic dispatch. These studies need to
+address the inefficiency of OVs giving way to EV. It is mainly
+due to the lack of real-time traffic data and support for lowdelay scheduling strategies. Furthermore, the dynamic traffic
+situation and the effect of a scheduling strategy on OVs are
+rarely considered in these approaches. Another research line
+resorted to vehicle-centric approaches [8–11] to recommend
+the optimal path for EVs using path optimization techniques
+and time optimization techniques such as the Dijkstra algorithm [8], A* algorithm [9], and evolutionary strategies [10].
+Active traffic scheduling strategies still need to be developed
+for these approaches. They tend to perform better when there is
+less traffic. However, when traffic demand increases, queues
+form, and it becomes challenging for EVs to change lanes
+or overtake due to the absence of active traffic dispatching
+strategies.
+The distributed intelligent transportation system (DITS) collects, processes, and shares urban traffic information through
+vehicles or roadside units (RSUs). This enables the interconnection of vehicle-to-vehicle (V2V), vehicle-to-infrastructure
+(V2I), and vehicle-to-network (V2N) communication, ultimately leading to safer and more intelligent vehicle path
+planning and dynamic traffic scheduling [12]. Nevertheless,
+existing research [13–16] indicates that more than relying
+solely on a single road-centric or vehicle-centric approach
+is required to meet response requirements of EVs. These
+factors motivate us to combine real-time path planning and
+cooperative lane reservation modules to minimize the response
+time of EVs.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:20 UTC from IEEE Xplore. Restrictions apply.
+
+We propose a VFC-driven DITS that supports low-latency
+traffic scheduling and multidimensional real-time traffic information query. With the support of the proposed DITS, we
+propose a soft actor-critic-based EV rapid passage approach
+(SACRP), which aims to reduce the response time of EVs
+by controlling the traffic flow and allowing them to travel
+from empty lanes to high speeds. SACRP includes a collaborative lane reservation module and a real-time path planning
+module. The collaborative lane reservation module considers
+lane assignment, lane capacity, vehicle speed, traffic network
+conditions and traffic signal phase to design an empty lane
+reservation scheme for the road. Subsequently, we model the
+path planning problem of EVs in urban scenarios as a markov
+decision process (MDP) [17]. With the support of the DITS
+and a soft actor-critic-based (SAC-based) algorithm, we use
+dynamic urban traffic information to plan the most efficient
+path with the shortest response time for EVs.
+The main contributions of this paper are as follows:
+1) We propose a VFC-driven DITS system that significantly
+reduces data transmission delays, making it possible
+to design active traffic scheduling strategies for lane
+reservation.
+2) Based on the DITS, our proposed SACRP approach can
+effectively adapt to dynamic traffic flow and minimize
+the EV’s response time in complex urban traffic scenarios.
+3) We build a simulator to verify the performance of
+SACRP in actual metropolitan settings. The results show
+that, for the majority of indicators, the SACRP strategy
+consistently outperforms all baseline methods.
+The remainder of this paper is organized as follows. Section
+II presents the system model of the scheme. The details of
+the SACRP approach are presented in Section III. Section
+IV discusses the experimental performance of the SACRP
+approach. Finally, conclusions and future perspectives are
+presented in Section V.
+
+Cellular BS
+
+Traffic Control Center
+(Cloud Layer)
+
+RSU Area
+
+RSU
+Fig. 1. An example of the VFC-driven distributed intelligent transportation
+system in an urban scenario.
+
+•
+
+•
+
+•
+
+Cloud Layer: The cloud layer can obtain dynamic city
+road information and is mainly responsible for city-level
+monitoring, decision-making, and centralized remote control.
+Cloudlet Layer: It mainly consists of RSUs. RSU is
+deployed at each intersection as the control node of the
+vehicular-fog network.
+Fog Layer: The fog layer includes all the vehicles and
+equipment in the RSUs wireless communication range.
+Due to the sophisticated capabilities of the onboard
+equipment in sensing, computation, communication, and
+storage, this layer is crucial for vehicular fog computing
+(VFC).
+III. DESIGN OF SACRP
+
+This section describes the proposed approach for minimizing the response time of emergency vehicles (EVs) from the
+point of departure to the destination.
+
+II. SYSTEM MODEL
+This section introduces the proposed distributed intelligent
+transportation system, which supports low-latency traffic dispatch and multidimensional real-time traffic information query.
+A. VFC-driven Distributed Intelligent Transportation System
+We propose a vehicular fog computing-driven distributed
+intelligent transportation system (DITS), as shown in Figure
+1, which uses a cloud-fog-vehicle three-layer architecture. The
+system comprises traffic control center (TCC), roadside units
+(RSUs), vehicles, signals, other internet of vehicle infrastructure, and cellular network. DITS, Functionally Specialized
+VFC, has been designed with a dedicated functional application to address the characteristics of the proposed emergency
+vehicle fast-tracking scheme. For example, the lane reservation
+module has high real-time requirements. However, the task
+cannot be offloaded at will due to security requirements, so
+a specialized VFC application is designed to implement the
+requirements.
+
+A. Framework
+The soft actor-critic-based EV rapid passage approach
+(SACRP) contains a cooperative lane reservation module and
+a real-time path planning module that interact with each
+other and iterate through the decisions. The cooperative lane
+reservation module focuses on the traffic information of a
+particular road. At each time interval t, the optimal lane
+reservation scheme is decided based on the real-time road
+information and the EV’s location. Then, the roadside units
+(RSUs) near the road perform traffic scheduling and reserve
+an empty lane for the EV by controlling signals and ordinary
+vehicles (OVs). In the real-time path planning module, we
+propose a soft actor-critic-based (SAC-based) algorithm based
+on EV path planning in dynamic traffic scenarios using global
+information on urban traffic and detailed traffic information
+near EVs. Foremost, we use a markov decision process (MDP)
+to simulate the EV path planning problem. In order to map the
+link between state observation and behavior, a neural network
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:20 UTC from IEEE Xplore. Restrictions apply.
+
+model is then created. The path with the multiple significant
+long-term cumulative benefits is chosen at each time interval
+t based on the traffic patterns near the EV, the current phases
+of the traffic signals, and other factors.
+B. Collaborative Lane Reservation Module
+The cooperative lane reservation module can reserve empty
+lanes for EVs in advance so that EVs can drive on the road
+at maximum speed and minimize the response time of EVs.
+The workflow of the cooperative lane reservation module is
+shown in the Figure 2, specifically:
+• Step 1: Firstly, the RSU on the road obtains real-time
+road information through vehicle-to-everything (V2X)
+communication.
+• Step 2: Then, the module calculates the current road
+carrying capacity C, where the current road carrying
+capacity C is the number of vehicles traveling simultaneously for a standard vehicle length and a standard vehicle
+distance.
+l(vi ,vi+1 )
+C(vi ,vi+1 ) = PV
+·(k(vi ,vi+1 ) −1) (1)
+(vi ,vi+1 )
+lov
+x=1
++ dgap
+V(vi ,vi+1 )
+•
+
+•
+
+•
+•
+
+Step 3: Based on C, determine whether it is necessary to
+perform vehicle clear-out. If not, skip to Step 4. Instead,
+design a specific plan for vehicle clear-out (i.e., Vehicles
+exceeding road capacity need to be directed to other roads
+and diverted in advance).
+Step 4: Determine whether signal preemption needs to be
+executed. Instead, design the signal preemption scheme
+(e.g., the signal in the red light stage needs to be seized
+for the green light). If not, skip to Step 5.
+Step 5: Design a vehicle give way solution.
+Step 6: Set the lane reservation priority for the current
+road based on the above steps.
+
+C. Real-Time Path Planning Module
+Reaching the accident scene promptly for EVs can significantly alleviate the negative impact of accidents. We use the
+TCC as an agent and convert the path planning problem for
+EVs into an MDP to decrease EVs’ response times. The MDP
+is defined as follows:
+• State: State mainly consists of macroscopic global traffic
+data and microscopic perspective EV-related information.
+• Action: In the road network, the reinforcement learning
+agent can go from one state to another by turning left,
+right, around, or straight. Hence, the action space size is
+4, including turning left, straight, right, and around.
+• Reward: The agent aims to minimize EVs’ response time
+on every road segment. The agent’s reward is determined
+by the negative weighted sum of the EV’s travel time,
+time spent preempting the signal, and parking time.
+R = −(Tev + Tdelay + Ddis ),
+where Ddis use Manhattan distance.
+
+(2)
+
+Traffic signal
+preemption ?
+
+Start
+
+N
+
+Y
+Obtaining road traffic
+data
+
+Traffic signal
+preemption solution
+
+Calculate the road
+carrying capacity
+
+Ordinary vehicles give
+way solution
+N
+
+Vehicle clear-out ?
+
+Calculate lane
+reservation priority
+
+Y
+Vehicle clear-out
+solution
+
+End
+
+Fig. 2. Workflow of road execution lane reservation.
+
+The concepts in SAC are defined as follows:
+• Actor Network: Actor Network is responsible for deterministic policy learning; it inputs the current state and
+outputs an action.
+• Critic Network: Critic Network helps evaluate the longterm cumulative rewards of each state-action pair.
+• Target Network: Target Network is a copy of the Critic
+network for stable training.
+• Reply Buffer: Use the experience reply buffer for storing previous experience samples to smooth training and
+reduce sample correlation.
+Figure 3 depicts the SACRP approach’s framework. The
+agent sends the action produced by the actor network to the
+closest RSU of the EV in each step. The vehicles on the
+appropriate road are then controlled by the fog using the
+lane reservation module to reserve an emergency lane for the
+EV. The agent interacts with the environment once the EV
+reaches the predetermined point to determine the observation
+and reward values for the current step. The agent updates the
+actor and critic networks based on the replay buffer method.
+Algorithm 1 describes the whole pseudo-code of the framework for dynamic path planning and traffic scheduling. In Line
+1, we first initialize the actor and critic networks. In Line
+2, we initialize two target networks. In Line 3, we initialize
+the replay buffer. Line 5 creates a random contingency in
+the map and initializes the environment. In Lines 7-10, the
+generated action triggers the execution of the lane reservation
+module, which reserves the lane for EVs through vehicle lane
+changes, vehicle clear-outs, and signal control. EV travels
+at top speed on the designated vacant lane until it moves
+to the next state and receives the reward. The experience is
+stored in the experience replay buffer in Line 10. When the
+buffer data is bigger than the threshold mini-size, a randomized
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:20 UTC from IEEE Xplore. Restrictions apply.
+
+Actor Network
+
+Environment
+
+Action probabilities
+
+Agent
+
+Parameters j
+
+EV
+
+Log
+Energy distribution state
+
+Update
+Minimize
+
+Lane
+reservation
+data
+
+Action
+
+Action
+
+log(p (a|s))
+
+State
+
+Reward
+
+State transtion
+
+Loss
+function
+Minimize
+
+Real-time
+traffic data
+
+Store transitions
+
+Q(s,a)
+
+Critic Network
+
+Critic Network
+
+Action value function
+
+Action value function
+
+Parameters q1
+
+Parameters q2
+
+Energy distribution state
+
+Energy distribution state
+
+Experience Replay
+Minibatch
+
+Sample
+
+log(p (a|s))
+
+Minimize
+Update
+
+Experience pool
+
+Loss
+function
+
+Q(s,a)
+
+Fig. 3. Framework of SACRP.
+
+algorithm samples K experiences in Line 13. The actor and
+critic networks are then updated by the loss function in Lines
+16–18, respectively, before the target network is updated (i.e.,
+Line 18).
+
+•
+
+•
+
+IV. EXPERIMENTAL ANALYSIS
+This section introduces the built path planning and lane
+reservation simulator. Detailed descriptions of baseline techniques and evaluation metrics follow. The performance of the
+suggested emergency vehicle rapid passage approach (SACRP)
+using the simulated regional scenario is then assessed.
+A. Experiment Setting
+We run simulations of our SACRP using the open-source
+simulation software SUMO (Simulation of Urban Mobility).
+SUMO is a flexible, open-source, and portable traffic simulation tool that handles diverse kinds of transportation at a tiny,
+continuous level. It provides auxiliary tools for automating
+basic traffic simulation activities like network construction,
+route planning, visualization, and emissions analysis. As a
+result, SUMO is a good choice for creating traffic control
+models. We use a road network region with 5 km of length
+and 5 km of breadth for our simulation studies. SUMO allows
+us to successfully show the viability and usefulness of our
+suggested strategy in urban road network traffic circumstances
+despite certain simplifications compared to an entirely urban
+scenario.
+B. Performance Evaluation
+In order to evaluate the SACRP approach, the following
+three approaches are proposed for comparison:
+
+•
+
+•
+
+A* algorithm: This approach uses the A* algorithm to
+plan a path for the emergency vehicle (EV) before it
+departs [9].
+PERDQN-PP: This approach uses deep reinforcement
+learning algorithm the prioritized experience replay deep
+Q-network to plan a real-time path for EVs [11].
+CPPTS: This approach for path planning relies on traffic
+data at the time of the EV’s departure, so it does not
+guarantee that the vehicle will take the most optimal path.
+Additionally, this approach reserves lanes according to
+predetermined rules and only notifies ordinary vehicles
+(OVs) if they need to switch lanes. However, it does not
+manage the lane-changing process for OVs [18].
+SACRP: Our approach relies on real-time traffic data and
+uses a soft actor-critic-based (SAC-based) algorithm to
+plan the optimal path for EV continually. We consider
+traffic density, number of vehicles on the road, initial
+state, speed limit, and safety distance limit for lane
+changes.
+
+We use the response time of the EV with a conventional path
+planning algorithm under the A* algorithm as a benchmark.
+When the deep reinforcement learning-based path planning
+algorithm PERDQN-PP is used, the average speed of EV
+in the traffic scenario is increased by 8.8%. It is clear that
+reinforcement learning-based path planning helps EV maintain
+a stable speed and significantly solves the problem of EV
+arrival delay due to deceleration and parking. The average
+speed of EV in our proposed scheduling is significantly
+reduced by 102.4% compared to the above approaches. The
+efficiency improvement implies the value of the proposed
+lane reservation and path planning algorithm. Figure 4 shows
+the EV average speed and the corresponding response time.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:20 UTC from IEEE Xplore. Restrictions apply.
+
+Algorithm 1: SAC-based SACRP Approach
+1
+
+2
+
+3
+4
+5
+6
+7
+8
+
+9
+
+10
+11
+12
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+20
+21
+22
+
+Initialize critic networks Qω 1 (s, a), Qω 2 (s, a), and
+actor network πθ (s) with random parameters
+ω1 , ω2 , θ;
+′
+′
+Intialize target networks Qω 1 (s, a), Qω 2 (s, a) by
+′
+copying parameter ω1′ ← ω1 , ω2 ← ω2;
+Initialize reply buffer R;
+for episode e = 1 to E do
+Initialize s(t);
+for step t = 1 to T do
+Selection action with at = πθ (s);
+Obtain the lane reservation scheme using Lane
+Reservation Module;
+Execute action at and observe reward rt , new
+state st+1 ;
+Store transition tuple (st , at , rt , st+1 ) in R;
+if the replay buffer is full then
+for epoch k = 1 to K do
+Sample mini-batch of N transitions
+(s, a, r, s′ ) from R;
+For each tuple, compute
+′
+yi = ri + γminj=1,2 Qω j (si+1 , ai+1 ) −
+αlogπθ (ai+1 |si+1 ) with the target
+network, where ai+1 ∼ πθ (·|si+1 );
+Both critic networks are updated as
+follows: for j = 1, 2, minimize the
+loss function
+PN
+′
+L = N1 i=1 (yi − Qω j (si , ai ))2 ;
+Use the heavy parameter technique to
+sample action e
+ai , and then use the
+following loss function to update the
+current Actor
+Pnetwork:
+N
+Lπ (θ) = N1 i=1 α log πθ (e
+ai |si ) −
+minj=1,2 Qω j (si , e
+ai );
+Update the coefficient of the entropy
+regularization term;
+Update target network:
+′
+′
+ω1 ← τ ω1 + (1 − τ )ω1 ω2 ,
+′
+′
+′
+τ ω1 + (1 − τ )ω1 ω2 ← τ ω2 + (1 − τ )ω2 ;
+end for
+end if
+end for
+end for
+
+parking under the scheduling of the CPPTS algorithm is 2
+(i.e., waiting for the road ahead to complete lane reservation).
+The number of the EV parking under the scheduling of the
+SACRP algorithm is 1, which greatly ensures the stability of
+EV driving. The results show that the SACRP approach has
+excellent stability.
+
+(a)
+
+(b)
+
+Fig. 4. Comparison of Average Speed, Number of Parking, Response Time
+and Parking Time for EV under different approaches.
+
+In general, there is an apparent correspondence between
+vehicle density and time in urban transportation scenarios. In
+order to obtain the performance of SACRP under different
+vehicle densities and different times of the day, we designed
+24 sets of experiments using time-based units. Figure 5 shows
+EV’s average response time and average travel speed at
+different time for the agreed trips using different path planning
+approaches. Notably, EV has the shortest response times in the
+afternoon and evening (i.e., after 10:00 PM and before 6:00
+AM) and the most extended response times during peak hours
+(i.e., 6:00-8:00 AM and 5:00 - 7:00 PM). It is interesting
+to note that all scheduling strategies perform well at night.
+The city’s traffic density distribution and this occurrence are
+consistent. Expectedly, the average speed of EV has the same
+pattern.
+
+(a)
+The result demonstrates that the EV can smoothly go along
+the path that SACRP has chosen. PERDQN-PP and CPPTS
+final response time are similar, but the average speed differs
+significantly. This is because the planned initial paths become
+less than excellent in complex dynamic traffic scenarios,
+causing the EV to travel different distances. The number of
+the EV parking under the scheduling of the A* algorithm
+is 6. The number of the EV parking under the scheduling
+of the PERDQN-PP algorithm is 4. The number of the EV
+
+(b)
+
+Fig. 5. The illustration of (a) comparison of the average response time
+of the EV using different approaches in the daytime; the illustration of (b)
+comparison of the average speed of the EV in the daytime.
+
+V. CONCLUSION
+In this paper, we have proposed a comprehensive approach
+that integrates path planning and lane reservation to minimize emergency vehicles (EVs) response time during urban
+emergencies. Building upon the distributed intelligent transportation system (DITS) foundation, we have introduced a
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:20 UTC from IEEE Xplore. Restrictions apply.
+
+soft actor-critic-based EV rapid passage approach (SACRP).
+SACRP encompasses a cooperative lane reservation module
+and a real-time path planning module, effectively reducing the
+response time of EVs. The cooperative lane reservation module
+strategically coordinated road reservations by considering realtime road data. Additionally, in the real-time path planning
+module, SACRP has incorporated lane reservation as part
+of the observation in the soft actor-critic-based algorithm.
+Simulation results have shown that the SACRP helps to reduce
+EV’s response time and minimize interference with OVs.
+ACKNOWLEDGMENT
+This work was supported by National Natural Science Foundation of China (No. 62272357), Key Research
+and Development Program of Hubei (No. 2022BAA052),
+Key Research and Development Program of Hainan (No.
+ZDYF2021GXJSO14), Key-Area Research and Development
+Program of Guangdong Province (2020B0101130003), Science Foundation of Chongqing of China (cstc2021jcyjmsxm4262), and Research Project of Chongqing Research
+Institute of Wuhan University of Technology (ZD2021-04,
+ZL2021-05). Jinfan Wang is the corresponding author.
+R EFERENCES
+[1] G. J. Hannoun, P. Murray-Tuite, K. Heaslip, and
+T. Chantem, “Facilitating emergency response vehicles’
+movement through a road segment in a connected vehicle
+environment,” IEEE Transactions on Intelligent Transportation Systems, vol. 20, no. 9, pp. 3546–3557, 2018.
+[2] K. S. Arikumar, S. B. Prathiba, S. Basheer, R. S.
+Moorthy, A. Dumka, and M. Rashid, “V2x-based highly
+reliable warning system for emergency vehicles,” Applied
+Sciences, vol. 13, no. 3, p. 1950, 2023.
+[3] T. Li, N. Wang, B. Jiang, and M. Zhang, “A bi-objective
+lane reservation problem considering dynamic traffic
+flow,” IEEE Transactions on Intelligent Transportation
+Systems, vol. 24, no. 1, pp. 367–381, 2022.
+[4] P. Wu, L. Xu, A. D’Ariano, Y. Zhao, and C. Chu, “Novel
+formulations and improved differential evolution algorithm for optimal lane reservation with task merging,”
+IEEE Transactions on Intelligent Transportation Systems,
+vol. 23, no. 11, pp. 21 329–21 344, 2022.
+[5] B. Liu, W. Han, E. Wang, S. Xiong, L. Wu, Q. Wang,
+J. Wang, and C. Qiao, “Multi-agent attention double
+actor-critic framework for intelligent traffic light control
+in urban scenarios with hybrid traffic,” IEEE Transactions on Mobile Computing, pp. 1–13, 2023.
+[6] M. Guo, P. Wang, C.-Y. Chan, and S. Askary, “A reinforcement learning approach for intelligent traffic signal
+control at urban intersections,” in 2019 IEEE Intelligent
+Transportation Systems Conference (ITSC). IEEE, 2019,
+pp. 4242–4247.
+[7] T. Chu, J. Wang, L. Codecà, and Z. Li, “Multi-agent
+deep reinforcement learning for large-scale traffic signal
+control,” IEEE Transactions on Intelligent Transportation
+Systems, vol. 21, no. 3, pp. 1086–1095, 2019.
+
+[8] B. Yang, Z. Ding, L. Yuan, J. Yan, L. Guo, and Z. Cai,
+“A novel urban emergency path planning method based
+on vector grid map,” IEEE Access, vol. 8, pp. 154 338–
+154 353, 2020.
+[9] N. A. M. Nordin, Z. A. Zaharudin, M. A. Maasar, and
+N. A. Nordin, “Finding shortest path of the ambulance
+routing: Interface of a algorithm using c# programming,”
+in 2012 ieee symposium on humanities, science and
+engineering research. IEEE, 2012, pp. 1569–1573.
+[10] H. Wen, J. Wu, Y. Duan, W. Qi, and S. Zhao, “A
+methodology of timing co-evolutionary path optimization for accident emergency rescue considering future
+environmental uncertainty,” IEEE Access, vol. 7, pp.
+131 459–131 472, 2019.
+[11] L. Yan, P. Wang, J. Yang, Y. Hu, Y. Han, and J. Yao,
+“Refined path planning for emergency rescue vehicles on
+congested urban arterial roads via reinforcement learning
+approach,” Journal of Advanced Transportation, vol.
+2021, pp. 1–12, 2021.
+[12] B. Liu, Y. Sheng, X. Shao, Y. Ji, W. Han, E. Wang, and
+S. Xiong, “Collaborative intelligence enabled routing in
+green iov: A grid and vehicle density prediction-based
+protocol,” IEEE Transactions on Green Communications
+and Networking, vol. 7, no. 2, pp. 1012–1022, 2023.
+[13] M. Rezaei, H. Noori, M. M. Razlighi, and M. Nickray,
+“Refocus+: Multi-layers real-time intelligent route guidance system with congestion detection and avoidance,”
+IEEE Transactions on Intelligent Transportation Systems,
+vol. 22, no. 1, pp. 50–63, 2019.
+[14] Z. Ning, J. Huang, and X. Wang, “Vehicular fog computing: Enabling real-time traffic management for smart
+cities,” IEEE Wireless Communications, vol. 26, no. 1,
+pp. 87–93, 2019.
+[15] K. Liu, C. Liu, G. Yan, V. C. S. Lee, and J. Cao,
+“Accelerating dnn inference with reliability guarantee in
+vehicular edge computing,” IEEE/ACM Transactions on
+Networking, pp. 1–16, 2023.
+[16] X. Shao, G. Hasegawa, M. Dong, Z. Liu, H. Masui, and
+Y. Ji, “An online orchestration mechanism for generalpurpose edge computing,” IEEE Transactions on Services
+Computing, vol. 16, no. 2, pp. 927–940, 2023.
+[17] E. Wang, B. Liu, S. Lin, F. Shen, T. Bao, J. Zhang,
+J. Wang, A. W. Sadek, and C. Qiao, “Double graph
+attention actor-critic framework for urban bus-pooling
+system,” IEEE Transactions on Intelligent Transportation
+Systems, vol. 24, no. 5, pp. 5313–5325, 2023.
+[18] V.-L. Nguyen, R.-H. Hwang, and P.-C. Lin, “Controllable path planning and traffic scheduling for emergency
+services in the internet of vehicles,” IEEE Transactions
+on Intelligent Transportation Systems, vol. 23, no. 8, pp.
+12 399–12 413, 2021.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:20 UTC from IEEE Xplore. Restrictions apply.
+
+

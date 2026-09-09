@@ -1,0 +1,523 @@
+2011 7th International Conference on IT in Asia (CITA)
+
+Route Guidance System Using Multi-agent
+Reinforcement Learning
+Mortaza Zolfpour Arokhlo, Ali Selamat, Siti Zaiton Mohd Hashim, Md Hafiz Selamat
+Faculty of Computer Science & Information Systems
+Universiti Teknologi Malaysia
+81310 UTM Skudai, Johor, Malaysia.
+
+Abstract— Nowadays, the problems of urban traffic in most big
+cities are more complex. Increasing population and road
+requirements has caused the complexity in traffic management
+systems. The main challenge for network traffic is to direct
+vehicles to their destination with the aim of reducing travel
+times and efficient use of available network capacity. This
+paper proposes a new agent model and algorithm based on multiagent reinforcement learning to find a best and shortest path
+between the origin and destination nodes. Furthermore, the
+proposed algorithm is compared with Dijkstra algorithm to find
+optimal solution using some simple real sample of Kuala Lumpur
+(KL) road network map. Experimental results affirmed the same
+results to find the optimal solutions.
+
+I.
+INTRODUCTION
+Multi-agent system is considered as a problem solving
+technique that consists of specific and nearly modular agents
+specialized at solving a particular problem. In multi-agent
+system, agents can be rather diverse. They can be cells in a
+lattice representing pieces of land or representations of human
+behavior [1]. Nowadays, many complex systems can be
+studied, solved, managed and controlled by using multi-agent
+systems [2]. The multi-agent system is gaining more
+importance for software developers to execute tasks in complex
+and dynamic environments. The agent has to adapt with the
+current situation in order to accomplish the pre-programmed
+tasks. The agent should be able to model a new process and
+reinforcement learning, and interact with other agents. This
+paper proposes a method to solve the shortest path problem in
+route guidance systems in terms of accuracy and speed. The
+results obtained from the approach have been compared with
+Dijkstra algorithm [3]. The rest of the paper is organized as
+follows. In Section 2, we describe some related studies on route
+guidance system based on multi-agent reinforcement learning.
+In Section 3, we discuss a proposed multi-agent reinforcement
+learning method to improve the existing shortest path
+algorithm. The simulation results and experimental
+comparisons are discussed in Sections 4 and 5, respectively.
+The conclusions are discussed in Section 6.
+II.
+
+RELATED WORKS
+
+Reference [4] studies the multi-agent system approach for
+modeling of urban traffic systems [5]. From the studies, the
+authors claimed that multi-agent reinforcement learning
+
+approach is best suited for traffic detection and management [6,
+7]. A new approach in which can reserve time and space for
+cars at an intersection or junction is studied in [8]. However,
+most agent based application was concentrated on modeling
+and simulation. Therefore new efforts and researches should be
+done for real world applications. In this research, we present a
+route guidance system framework for solving urban road traffic
+problems.
+III.
+
+PROPOSED AGENT MODEL
+
+The proposed agent model for route guidance system is
+shown in Figure 1. A route guidance system (RGS) calculates
+the shortest path from the current vehicle position to
+destination locations in order to minimize traveling cost or time
+for drivers. We use shortest path computation (SPC) to
+calculate the nearest distance of the destinations with the
+support of installed agent in the RGS. The updated information
+of the vehicle is used by the system to find the shortest path
+from the current vehicle position to the destination zone for
+drivers based on current conditions. We apply the roles of
+agents in route guidance system as follows:
+x
+
+Transferring acquired information through the sensors;
+
+x
+
+Receiving route request from the vehicles;
+
+x
+
+Calculate the shortest path and send it to vehicles
+drivers;
+
+x
+
+Receiving or sending information to other agents
+(collaboration with other agents).
+
+Figure 1. Proposed agent model for route guidance system.
+
+A. Multi-agent Reinformanet Learning
+We model the multi-agent reinforcement learning (MARL)
+approach based on Figure 2. The elements of multi-agent
+reinforcement learning are agent, policy, action, reward and
+model of environment. In addition, the agent distinguishes an
+input state. An action of the agent will be based on a policy
+
+978-1-61284-130-4/11/$26.00 ©2011 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:12:46 UTC from IEEE Xplore. Restrictions apply.
+
+2011 7th International Conference on IT in Asia (CITA)
+function embedded inside the agent that will be used for
+decision making process. For a given state, the multi-agent
+reinforcement learning (MARL) must learn on a stated policy
+to discover the best action. The policy will map the current
+state of agent and what action it will take when the
+environment changes.
+
+Figure 2. The scheme of agent learning system.
+
+The multi-agent reinforcement learning (MARL) finds
+which actions to be taken and which rewards to be given to the
+agents that accomplished the stated actions. Agent
+communication is needed to send actions and receive rewards
+between equipped vehicles and the environment. The agent is
+installed in each intersection that communicates to its
+environment by acquiring a new knowledge about road status
+in that intersection and send road status to equipped vehicles.
+In Figure 3, each agent detector consists of state recognizer
+(1), RGS (2), an action selector (3), and policy (4). Route
+connect in intersection is defined by a set of states which
+s ^s1 , s2 , s3 , s4 ` . The state recognizer distinguishes an input
+state of all routes connected to the current intersection. For a
+given state, the model must learn on a stated policy in order to
+choose the best actions that optimal reward. RGS (Figure 4) is
+able to find the shortest path from the current vehicle position
+to destination zone by the existing road network map. In
+addition, the policy function maps the given state of vehicle
+location and predicts what action it will take when the vehicle
+driver requests a next road status. The installed agent in each
+intersection performs as road status detector in intersection. It
+can communicate with the equipped vehicles in order to send
+and receive environment messages. The multi-agent system can
+report the next road status in order to learn for making decision
+for drivers to select which road to be used so that the journey is
+short. The goal in a reinforcement learning problem is defined
+by the reward function (rt) as shown in (1). The rewards
+function (rt) is used in the literature. A positive reward is given
+for an action that results in a goal, while small negative
+rewards are given when the episode ends unsuccessfully. In
+general, every time a player takes action in state ‘s’ and
+receives reward ‘r’, it broadcasts a message of the form (s, a, r)
+to the team.
+
+Figure 4. Proposed shortest path algorithm for route guidance system.
+
++1 … ℎ    
+=
+−1 … ℎ    
+TABLE I.
+Node
+1
+2
+3
+4
+5
+
+State
+
+
+
+
+
+
+(1)
+
+AGENT COMMUNICATION MESSAGES
+
+Action
+Go straight
+Go straight
+Turn right
+Turn right
+Go straight
+
+Output
+This path is right
+This path is right
+This path has traffic
+This path has traffic
+This path is right
+
+Reward
++1
++1
+-1
+-1
++1
+
+The problem formulation and properties are introduced in
+the next section.
+B. Problem Formulation and Properties
+A road directed graph represented by G = (V,A) is a
+directed dynamic urban road network based on an electronic
+map, a set of ‘N’ nodes (V) and ‘M’ directed edges(A). Each
+R(s,d) edge is a nonnegative number that stands for the cost
+while ‘s’ is a start node and ‘d’ is finish node connected to the
+R(s,d). If S = {s1, s2, s3, …, sn}, D = {d, d, d, … … , d } then
+R (,) = R ( , ) R ( , ) + +… … .. +R ( , ) .
+
+Figure 3. Inter-agent communication structures.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:12:46 UTC from IEEE Xplore. Restrictions apply.
+
+2011 7th International Conference on IT in Asia (CITA)
+R(s,d) consists the sum of all part edge distances (costs) that
+is participating in the network path. According to the trip
+origin (s) node and destination (d) node, this issue can be
+solved as the optimization problem based on real transportation
+network that is introduced as following:
+! = 1 , / 02 3
+45  6 7
+(,) =min∑%#$ ∑"#$ ! &',* - 
+! = 0 , 9ℎ 5
+
+(2)
+
+where
+x
+
+i and j are current state movement into right and
+bottom side directions.
+
+x
+
+R (,) is the shortest path from a origin node, ‘s’ to a
+last node, ‘d’.
+
+x
+
+α is binary digits ( 0 or 1).
+
+x
+
+Links are independent of each other.
+
+The actual travel times can provide dynamic changes in
+travel times at the current time. As mentioned in the previous
+section, real-time information systems can be acquired by
+applying video cameras, by using GPS and other devices on
+transportation routes. In this paper, travel cost and edges
+distance is assumed to be random variable [9, 10]. The route
+Guidance System Algorithm is presented in the next section.
+C. Route Guidance System Algorithm
+Figure 5 shows the road network map of a part of Kuala
+Lumpur (KL), the capital city of Malaysia. A grid network of
+Figure 5 is drawn in Figure 6. The proposed algorithm (Figure
+4) can also be used for finding shortest path from origin node
+(i.e. node 1) to destination node in a road network graph. The
+input of the algorithm consists of distances directed between
+nodes as ‘r’ and a source data from origin and destination paths
+as s, d in the network graph G. If the distance between two
+nodes can be defined as path cost, the total cost of a network
+graph is the sum of all route distance between nodes in a graph.
+
+Figure 6. Optimal path in ideal route status (case 1).
+
+The assumptions considered for the proposed algorithm (Figure
+4) as following:
+x
+
+The road network is one-way and it is from left to right
+and bottom direction.
+
+x
+
+There is the one-way directional connection between
+all nodes.
+
+x
+
+The information of distance routes between all nodes
+are existed before to start
+
+x
+
+The travel based on electronic map.
+IV.
+
+SIMULATION RESULTS AND EXPERIMENTAL
+COMPARISON
+
+In this section, simulation experiments have been carried
+out on different network topologies for road networks that
+consisting of 6 to 30 nodes with different edges (between 10 to
+100 edges). For example, the results of the new approach that
+is described in Section 3 are compared to Dijkstra algorithm
+under the cases of network topologies (e.g. Case 1: with 16
+nodes and 24 routes, and Case 2: with 20 nodes and 31 routes).
+A. Case 1
+1) Network graph source for 16 nodes
+Figure 6 discovers the shortest path from the first node to
+the last the node 16. The shortest path is drawn using Dijkstra
+algorithm in Matlab software. The commands applies Dijkstra
+algorithm as the default to find the optimal solution. The result
+in Figure 6 shows the minimum distance(lowest cost) of the
+graph is 17 and the shortest path from node 1 to node 16.
+
+Figure 5. A part of Kuala Lumpur city road network map.
+
+2) Using the proposed algorithm
+Figure 7 shows the simulation minimum cost (i.e. distance)
+and shortest path results from node 1 and other nodes to the last
+node, 16. The number of node 1 (17) illustrates optimal
+distance network graph from origin to destination node. Figure
+7 shows the unique characteristic of this approach as compared
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:12:46 UTC from IEEE Xplore. Restrictions apply.
+
+2011 7th International Conference on IT in Asia (CITA)
+to other shortest path algorithms. The shortest path or lowest
+cost is calculated and suggested to vehicle drivers in each node
+(intersection). When the agent reports the road traffic or
+blocked in specific location the route of previous shortest path
+to vehicle drivers, the vehicle driver turns to the next shortest
+path priority. The simulation path result is acquired by using
+the shortest path from the first node to node 16. The red
+points of (1,17), (5,12), (9,10), (13,9), (14,5), (15, 1) and
+(16,0) coordinates of the figures which shows the shortest path,
+therefore the graph shortest path is node 1 ė node 5 ė node 9
+ė node 13 ė node 14 ė node 15 ė node 16. Table II shows
+the results obtain by using MARL in experimental cases. The
+total traveling distance of using MARLS (20 vehicles as group
+1) is 380km at average travel time of 1673s. And also group 2
+that did not use the MARL messages, the total traveling
+distance is 1360km at average travel time of 2194s. Therefore,
+the second group obtains 521s as the average delay time and
+the saving time is 23.75%.
+
+Figure 7. minimum costs from each node to destination nodes (case 1).
+
+B. Case 2
+1) Network graph source for 20 nodes
+Figure 8 shows a network graph topology that is used to
+discover the shortest path from the first node to the last node
+20. The shortest path is drawn Dijkstra algorithm in Matlab
+software. Table II shows the results obtain by using MARL in
+experimental cases. The total traveling distance of using
+MARL (20 vehicles as group 1) is 621km at average travel
+time of 2004s. And also group 2 that did not use the MARL
+messages, the total traveling distance is 2160km at average
+travel time of 2245s. Therefore, the second group obtains 241s
+as the average delay time and the saving time is 10.75%.
+2) Using the proposed algorithm
+Figure 9 shows the minimum cost (i.e. distance) from node
+1 and other nodes to last node, 20 are 27 according to proposed
+algorithm in Figure 4. For example, the cost of node 1 to
+destination node is 27. It illustrates an optimal distance from
+first node to last node in network graph. The simulation path
+result in Figure 9 shows the shortest path from the first node to
+node 20. The minimum distance (cost) from node 1 and other
+nodes to node 20 is 27. The number of node 1(27) illustrates
+optimal distance network graph. In addition, the red color
+point shows the shortest path from node1 to node 20 as
+follows: node 1 ė node 2 ė node 6 ė node 7 ė node 11ė
+node 12 ė node 16 ė node 20. The simulation program is
+tested with other network graph information. The acquired
+results affirmed the proposed algorithm results were the
+convergence to acquire the shortest path in each network case.
+Also, the algorithm proposed solution is performed when the
+road network have blocked or congested because of traffic
+congestion or accident. For these types of problems, there is
+need to set for distance routes blocked with infinite value.
+TABLE II.
+
+Case
+1
+2
+
+Route 1-5 only
+Route 2-6, 6-7
+
+Travel
+Distance
+(km)
+380
+620
+
+Average
+Travel
+Time (s)
+1673
+2004
+
+Figure 9. The minimum costs from each node to destination nodes (case 2).
+
+V.
+
+USING MARL EVALUATION
+
+Road Segment &Traffic
+Congestion
+
+Figure 8. Optimal path in ideal route status(case 2).
+
+Saving
+Time (%)
+23.75
+10.75
+
+DISCUSSIONS
+
+A. Ideal Road Network Status
+Figure 6 presents a transportation network which contains
+12 horizontal routes and 12 vertical routes that they create 16
+intersections (node). Intersections are numbered 1 to 16 so that
+node 1 is considered as origin and node 16 is the road network
+destination. The values of distance between each of two
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:12:46 UTC from IEEE Xplore. Restrictions apply.
+
+2011 7th International Conference on IT in Asia (CITA)
+intersections are generated randomly by numbers between 1
+and 10. Also, the weight of node 1 is 17, and the weight of
+node 2 is 12. Finally the weight of node 16 is 0. They are
+calculated from the first part of the proposed algorithm
+procedure. The weight of 17 is the shortest distance from node
+1 to the last node (destination travel). The distance between
+node 1 and node 16 (last node) is 17. Figure 6 presents the
+optimal routes as follows: node 1 ė node 5 ė node 9 ė node
+13 ė node 14 ė node 15 ė node 16.
+B. Blocked Road Status
+The numbers of the following assumptions are considered
+in the proposed model:
+x
+
+If each intersection (node) an agent is installed and can
+show the status of next routes traffic.
+
+x
+
+If one of the paths is blocked because of accident or
+traffic congestion, the agent installed can inform
+vehicle drivers that they are not allowed to use that
+route. After that, the next route connected to node will
+be selected as the prime priority.
+
+Figure 10 shows the route between node 1 and node 5
+which is blocked (let distance = Ğ) because of accident or
+traffic congestion. Therefore, some connected routes are
+removed automatically in the new optimal route computation
+and next route, connected node 1 (i.e. node 2), is selected as
+first choice route in this figure. However, the optimal path in
+the blocked route status (Figure 10) is node 1 ė node 2 ė
+node 6 ė node 7 ė node 11 ė node 15 ė node 16.
+
+Figure 10. Optimal path in blocked route status
+
+the vehicles to their destination. In addition, experimental
+results are compared with Dijkstra algorithm. The proposed
+algorithm is simulated to find the shortest path for many
+network graphs cases from 6 nodes to 30 nodes with variety of
+number of edges (10 to 100 edges) as shown in Figures 6
+and 8. The proposed algorithm and Dijkstra algorithm
+produced the same results in finding the shortest path.
+However, this study is performed based on edge distances (or
+cost) factor in the network graph but independent of time and
+speed of vehicles. The unique characteristic of the proposed
+algorithm as compared to other shortest path algorithms is that,
+the shortest path (or lowest cost) is calculated and suggested to
+vehicle drivers in each node (intersection). Therefore, when the
+agent reports the road traffic (or blocked) in a specific route,
+the vehicle driver turns to the next priority shortest path
+priority.
+ACKNOWLEDGMENT
+Universiti Teknologi Malaysia (UTM) under the Research
+University Funding and Ministry of Higher Education under
+FRGS scheme are gratefully acknowledged for the support of
+the research.
+REFERENCES
+[1]
+
+A. Ligtenberg, “Exploring the use of multi-agent systems for interactive
+multi-actor spatial planning.” Ph.D. dissertation, Wageningen
+University, 2006.
+[2] L. Jiang and D. Y. Liu, “Advances in multi-agent coordination,” Proceedings of 2006 International Conference on Machine Learning and
+Cybernetics, vols 1-7, pp. 125–130, 2006.
+[3] G. Nagib and W. G. Ali, “Network routing protocol using genetic
+algorithms,” International Journal of Electrical & Computer Sciences,
+vol. 10, pp. 40–44, 2010.
+[4] M. Chabrol, D. Sarramia, and N. Tchernev, “Urban traffic systems
+modelling methodology,” International Journal of Production
+Economics, vol. 99, no. 1-2, pp. 156–176, February 2006.
+[5] Z.-S. Y. Chang-Qing CAI, “Study urban traffic management based
+multi-agent system,” in Proceedings of the Sixth International
+Conference on Machine Learning and Cybernetics, Hong Kong, 25-29
+August 2007, Hong Kong, 2007, pp. 25–29.
+[6] B. Chen, Cheng, no.160, H. H., Palen, and Joe, Integrating mobile agent
+technology with multi-agent systems for distributed traffic detection
+and management systems. Kidlington, Royaume-Uni: Elsevier, 2009,
+vol. 17.
+[7] R. L. Q. Shi, “Study on integration of urban traffic control and route
+guidance based on multi-agent technology,” in Intelligent
+Transportation Systems, 2003. Proceedings. 2003 IEEE, vol. 2, 2003,
+pp. 1740 – 1744.
+[8] M. Vasirani and S. Ossowski, “A market-inspired approach to
+reservation-based urban road traffic management,” in AAMAS ’09:
+Proceedings of The 8th International Conference on Autonomous Agents
+and Multiagent Systems. Richland, SC: International Foundation for
+Autonomous Agents and Multiagent Systems, 2009, pp. 617–624.
+[9] Z. L. Zou Liang, Xu Jian-Min, “Application of genetic algorithm in
+dynamic route guidance system,” Journal of Transportation Systems
+Engineering and Information Technology, vol. 7, no. 3, pp. 45–48, 2007.
+[10] X. Shi, J. M. Hu, Y. S. Xu, and J. Y. Song, “A simulation study
+on agent-network based route guidance system,” 2005 IEEE Intelligent
+Transportation Systems Conference (ITSC), pp. 263–268, 2005.
+
+VI. CONCLUSION
+This paper proposed a new algorithm based on MARL
+model for finding shortest and best path in the URN to conduct
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:12:46 UTC from IEEE Xplore. Restrictions apply.
+
+

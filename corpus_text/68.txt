@@ -1,0 +1,2103 @@
+Received 17 February 2026, accepted 21 March 2026, date of publication 25 March 2026, date of current version 30 March 2026.
+Digital Object Identifier 10.1109/ACCESS.2026.3677440
+
+Shortest-Time Path Planning Under Carbon
+Emission Constraints via Reinforcement
+Learning
+YIFAN WANG
+
+1 Graduate
+
+1,
+
+KAIFENG DUAN1 , AND KENETSU UCHIDA
+
+2
+
+School of Engineering, Hokkaido University, Sapporo 060-8628, Japan
+2 Faculty of Engineering, Hokkaido University, Sapporo 060-8628, Japan
+
+Corresponding author: Kaifeng Duan (kaifeng.duan.k5@elms.hokudai.ac.jp)
+
+ABSTRACT With the growing urgency of carbon neutrality, sustainable intelligent transportation systems
+must support green path planning that simultaneously accounts for arbitrary origin–destination (OD) pairs,
+strict emission constraints, and large-scale concurrent requests. To address this challenge, this paper proposes
+a Constrained Reinforcement Learning for Shortest Path (CRL-SP) framework, which generates real-time,
+scalable, and emission-compliant routing solutions under hard carbon constraints. The framework adopts
+a dual-tower Universal Value Function Approximation architecture based on Deep Q-Networks (UVFADQN), integrating topological embeddings with contextual features, and is trained via a progressive strategy
+that combines demonstration-based behavior cloning with interactive reinforcement learning. Numerical
+experiments on benchmark networks demonstrate that CRL-SP consistently recovers optimal or near-optimal
+solutions, achieving path match rates and link overlap ratios typically above 0.85, while relative deviations in
+travel time and emissions remain close to zero. The proposed model preserves this level of performance under
+unseen and sparsely sampled emission budgets, and is able to generate feasible and structurally consistent
+paths even when classical constrained shortest-path algorithms fail due to insufficient budgets. In terms of
+computational efficiency, CRL-SP supports large-scale batch inference with throughput exceeding tens of
+thousands of paths per second, yielding orders-of-magnitude speedups over traditional label-setting methods.
+Overall, CRL-SP provides a practical and scalable learning-based solution for emission-constrained path
+planning in sustainable intelligent transportation systems.
+INDEX TERMS Emissions constraint, reinforcement learning, route planning, traffic network.
+
+I. INTRODUCTION
+
+The global imperative to achieve carbon neutrality has fundamentally reshaped the objectives of Intelligent Transportation
+Systems (ITS). As the transportation sector continues to be
+a major contributor to greenhouse gas emissions, traditional
+path-planning paradigms that focus solely on minimizing
+travel time or distance are no longer adequate. Contemporary climate policies increasingly translate long-term
+sustainability goals into concrete and enforceable operational
+requirements. These are implemented through regulatory
+mechanisms such as fleet-level carbon budgets, emissionbased pricing or charging schemes, and access control
+The associate editor coordinating the review of this manuscript and
+approving it for publication was Yanli Xu
+46714
+
+.
+
+policies tied to environmental performance. Crucially, such
+regulations are typically imposed as hard constraints, under
+which a route is considered viable only if its total estimated
+emissions remain within a predefined and binding budget.
+Consequently, path selection under hard emission constraints
+has emerged as a central computational challenge for
+sustainable intelligent transportation systems.
+The complexity of real-world traffic environments further
+amplifies this challenge. Road networks exhibit substantial
+heterogeneity in capacity, operational efficiency, and emission intensity, leading to pronounced variations in cumulative
+emissions across different paths. Meanwhile, travel demand
+is highly diverse and dynamic. Different vehicle groups
+are subject to distinct emission budgets, which may vary
+continuously in response to fuel consumption characteristics,
+
+2026 The Authors. This work is licensed under a Creative Commons Attribution 4.0 License.
+For more information, see https://creativecommons.org/licenses/by/4.0/
+
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+policy adjustments, prevailing network conditions, or energysupply modes. Moreover, user origins are widely distributed,
+and travel requests may arise randomly at any time and location. As a result, intelligent transportation systems must be
+capable of making routing decisions under arbitrary origindestination (OD) pairs and continuously varying emission
+budgets, while simultaneously handling large volumes of
+concurrent requests. Ensuring both real-time responsiveness
+and system-level efficiency under such conditions poses
+unprecedented challenges and underscores the urgent need
+for dynamic and scalable solutions in modern ITS.
+Within this context, the question of how to achieve
+efficient, scalable, and real-time path decision-making under
+strict emission constraints has emerged as a strategically
+important research issue. Addressing this problem is not only
+essential for reconciling efficiency with regulatory compliance but also critical for advancing green mobility initiatives
+and strengthening low-carbon traffic governance. Therefore,
+developing new approaches that can effectively respond to
+complex real-world demands and dynamic environments
+carries both significant academic value and far-reaching
+practical implications for the sustainable development of
+intelligent transportation systems.
+Path planning algorithms form the cornerstone of optimizing travel efficiency within Intelligent Transportation
+Systems (ITS). Traditional algorithms, such as Dijkstra’s
+algorithm (1959) and the A* algorithm [1], have been
+widely applied for finding shortest paths in network graphs.
+Dijkstra’s algorithm guarantees optimality by exhaustively
+exploring all nodes from a start point, while A* improves
+efficiency through heuristic-guided search towards a goal.
+Subsequent improvements have continued to refine these
+foundational methods for specific applications, such as
+system-level calibration path planning [2]. However, a common characteristic of these traditional approaches is their
+primary focus on metrics like shortest distance or travel
+time [3], which fails to address growing environmental
+imperatives.
+In response to the urgent need for sustainable transportation, research has evolved towards the ‘‘green vehicle
+path problem’’. This shift has led to the development of
+models that incorporate carbon emissions as a key objective.
+For instance, [4] proposed a hybrid robust-stochastic model
+considering cost, time, and emissions under uncertainty,
+while [5] integrated distance, time, and emissions into a
+multi-objective framework. Reference [6] further extended
+this line of inquiry to multimodal transportation planning.
+Nevertheless, a significant disconnect persists between these
+multi-objective optimization paradigms and the practical
+requirements of carbon neutrality policies. Real-world
+regulations often impose absolute emission caps as hard
+constraints—not merely soft objectives for optimization.
+Most existing models treat emissions as one factor to be
+traded off against others, rather than as a mandatory limit
+that must not be violated, thereby limiting their applicability
+in policy-driven contexts. Recent domain-specific methods
+VOLUME 14, 2026
+
+continue to advance emissions-aware routing. For example,
+[16] propose a vehicle routing model that minimizes both
+hot and idle emissions for urban logistics. Reference [15]
+formally establish the Pollution-Routing Problem (PRP),
+a seminal model extending the classical Vehicle Routing
+Problem (VRP) to holistically optimize fuel, emissions, and
+cost rather than distance alone. Reference [17] optimize both
+routes and speeds in time-dependent networks to minimize
+delivery emissions. Empirical tests indicate that substantial
+reductions can be achieved by sequencing customers by
+distance, optimizing inter-stop paths, and maintaining a high
+but controlled driving speed. Reference [18] advance the
+Green Vehicle Routing and Scheduling Problem (GVRSP)
+by formulating a comprehensive mixed integer liner programming (MIP) model that incorporates heterogeneous
+fleets, time-dependent traffic, and load-dependent emissions.
+Nevertheless, real-world regulations often impose absolute
+emission caps as hard constraints—not merely soft objectives
+for optimization. Most existing models treat emissions as
+one factor to be traded off against others, rather than as a
+mandatory limit that must not be violated, thereby limiting
+their applicability in policy-driven contexts.
+The limitations of classical MOO have prompted the
+exploration of data-driven learning methods. Multi-Objective
+Reinforcement Learning (MORL) has emerged as a promising framework for navigating complex trade-offs in transportation systems [19]. MORL algorithms aim to learn a
+policy that captures the Pareto-optimal trade-off between
+competing objectives, such as time and emissions. Reference [20] propose a MOO framework integrating an
+undirected multi-node network and a weighted-sum Qlearning algorithm for routing in multimodal freight transport
+under time uncertainty. The method demonstrates superior
+efficiency and solution quality, significantly outperforming benchmark algorithms in both computational speed
+and Pareto front optimization. Reference [21] introduce a
+multi-objective route recommendation system that employs a
+Q-learning reinforcement learning algorithm to balance user
+preferences for fuel consumption, travel time, and air quality.
+While this represents a significant methodological advance
+over static MOO models by enabling adaptive, context-aware
+decision-making, it inherits the same fundamental stance: it
+treats travel time or emissions as an objective to be balanced,
+not as a hard constraint to be strictly obeyed. Consequently,
+a policy derived from MORL may still generate routes that
+violate a fixed carbon budget, limiting its direct applicability
+in policy-mandated scenarios.
+Furthermore, the prevalent assumption of a homogeneous
+vehicle fleet is a critical oversimplification. The carbon
+footprint of a path is not intrinsic to the road link but
+is a function of the vehicle traversing it. While a private
+car might have low emissions on a segment, a heavy-duty
+truck on the same path could exceed its carbon budget.
+Studies by [7] on multimodal systems and [8] on uncertain
+environments, though valuable, often yield a single, vehicleagnostic ‘‘greenest path,’’ failing to account for this essential
+46715
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+vehicle-infrastructure interaction. This oversight can render
+their solutions suboptimal or even infeasible for heterogeneous fleets.
+Computational limitations further restrict the practicality
+of many existing methods. Enhancements like the weightcontrolled PSO-Dijkstra algorithm [9] or hybrid globallocal planning [10] struggle with the high computational
+cost of exhaustive network traversal in large-scale scenarios. Reference [22] tackle the NP-hard reliable path
+problem in correlated networks by transforming nonlinear
+mean-variance models into globally solvable linear programs via structure-preserving linearization. Although recent
+advances, such as the parallelized bidirectional Dijkstra
+algorithm [11], improve performance, these models typically
+lack the flexibility to handle dynamic conditions, such
+as arbitrary origin-destination (OD) pairs and user-specific
+carbon constraints, which are fundamental to real-world
+logistics operations.
+Given these challenges, Artificial Intelligence (AI), particularly Reinforcement Learning (RL), has emerged as a
+promising alternative for complex path planning. RL agents
+have demonstrated an ability to learn adaptive routing
+policies in structured environments [12], [13]. However,
+existing RL applications in transportation face their own set
+of limitations. Many lack a formal mechanism to incorporate
+hard constraints, such as emission caps [14], and fail to
+model the interactions between heterogeneous vehicle types
+and network attributes effectively. Moreover, they often do
+not support on-demand routing under dynamic, user-specific
+policies, which require generalization across arbitrary start
+points and personalized budgets.
+To address these identified gaps, this study focuses
+on the shortest-time path planning problem under strict
+carbon emission constraints, a challenge that frequently
+arises in real transportation systems with arbitrary OD
+pairs, diverse emission budgets, and large-scale concurrent
+requests. To address this, a Constrained Reinforcement
+Learning-based Shortest Path framework (CRL-SP) is proposed. The framework explicitly embeds carbon emission
+constraints into the decision-making process and employs a
+dual-tower network structure that combines node embedding
+tables with contextual features, thereby enabling unified
+modeling and solution of emission-constrained path planning. A progressive training strategy combining imitation
+learning with reinforcement learning is employed, ensuring
+feasibility and compliance while enhancing adaptability and
+efficiency across different OD pairs and continuous budget
+conditions.
+The main contributions of this study are summarized as
+follows:
+(1) A constrained reinforcement learning framework,
+termed CRL-SP, is proposed for the shortest-time path
+planning problem under strict carbon emission budgets.
+Unlike existing emission-aware routing approaches
+that treat emissions as optimization objectives or
+penalty terms, the proposed framework enforces carbon
+46716
+
+(2)
+
+(3)
+
+(4)
+
+(5)
+
+emissions as hard feasibility constraints that are
+structurally embedded into the decision process.
+A feasibility-aware path construction mechanism is
+developed by integrating global emission reachability
+logic from the classical constrained shortest path problem (CSPP) into a sequential reinforcement learning
+formulation. By incorporating a minimum emission
+lower bound at each decision step, the proposed method
+guarantees both local and global feasibility throughout
+the routing process.
+A unified learning-based policy is trained to generalize across arbitrary origin–destination pairs and
+continuously varying emission budgets within a fixed
+transportation network. This design enables fast batch
+inference and eliminates the need to repeatedly solve
+optimization problems for individual OD–budget combinations.
+A progressive training strategy combining behavior
+cloning pretraining with reinforcement learning is
+introduced to stabilize learning under hard constraints
+and to facilitate early discovery of feasible routing
+behaviors in strongly constrained environments.
+Extensive numerical experiments on benchmark transportation networks demonstrate that the proposed
+approach consistently recovers optimal or near-optimal
+solutions, maintains feasibility under extreme budget
+conditions where classical methods fail, and achieves
+orders-of-magnitude improvements in computational
+efficiency compared with traditional CSPP solvers.
+
+II. METHODOLOGY
+
+In this study, the path planning task is formulated as
+a sequential decision problem under a prescribed carbon
+emission budget. Specifically, in a transportation network, for
+arbitrary origin–destination (OD) pairs and a given emission
+budget, the decision maker incrementally selects adjacent
+links to construct a feasible path from the origin to the
+destination, such that the total travel time is minimized
+while the cumulative emissions do not exceed the budget
+limit. In practical applications, this problem must be solved
+repeatedly under continuously varying OD pairs and emission
+budgets. This setting imposes stringent requirements on
+the decision model, which must not only guarantee strict
+constraint feasibility but also exhibit strong generalization
+capability and computational efficiency.
+To efficiently address the above emission-constrained path
+decision problem, this study proposes the Constrained Reinforcement Learning for Shortest Path (CRL-SP) framework.
+The framework integrates demonstration solutions of the
+constrained shortest path problem with reinforcement learning, enabling generalized decision making across arbitrary
+OD pairs and continuous emission budgets within a unified
+modeling structure. A dual-tower Q-network architecture is
+adopted to fuse embedding representations of network topology and destination information with continuous contextual
+features. During decision making, an explicit feasible-action
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+filtering mechanism is applied to ensure that emission
+constraints are always satisfied. In the training stage,
+demonstration paths generated by a constrained shortest path
+algorithm are first utilized for behavior cloning pretraining
+to establish stable decision preferences. This is followed by a
+reinforcement learning phase, where Double DQN combined
+with multi-step returns and prioritized experience replay
+is employed to further refine policy performance. During
+inference, the resulting end-to-end framework efficiently
+generates near-optimal shortest-time paths while strictly
+respecting carbon emission constraints.
+A. GRAPH REPRESENTATION AND
+EMISSION-CONSTRAINED OBJECTIVE
+
+Consider a directed network G = (N , A), where N denotes
+the set of nodes and A denotes the set of directed links. Each
+link a ∈ A is associated with a nonnegative travel time ta ≥
+0 and an emission cost ca ≥ 0. The travel time ta represents
+the time required for a vehicle to traverse link a under the
+given operating conditions.
+To enable explicit enforcement of hard emission budgets
+during path construction, an additive link-based emission
+representation is adopted. Specifically, the emission cost of
+a link is expressed as:
+ca = EFref · da ,
+
+∀a ∈ A
+
+(1)
+
+where da is the length of link a, and EFref denotes a
+reference emission factor per unit distance under a reference
+operating condition. This linear formulation yields a strictly
+additive emission measure along a path, which supports
+stable aggregation and efficient feasibility checking at the
+path level within a constrained decision process. This
+emission representation is intended as an abstract and generic
+description of link-level emission costs rather than a detailed
+physical emission estimation model. In practical applications,
+the link emission cost may be specified by more refined
+formulations that depend on operating speed, congestion
+level, or vehicle and powertrain characteristics, provided
+that the resulting emissions remain nonnegative and additive
+across links. The proposed framework relies only on these
+structural properties of link emissions and is therefore not
+restricted to the particular functional form adopted here.
+Let I denote the set of OD pairs, with each OD pair denoted
+as i = (oi , di ), where oi ∈ N is the origin and di ∈ N is the
+destination. The feasible path set associated with OD pair i
+is denoted by Ji , and each path is represented as j ∈ Ji . The
+link–path relationship is captured by an indicator variable δaj ,
+which equals 1 if link a belongs to path j, and 0 otherwise.
+The objective of this study is to generalize the solution
+of the emission-constrained shortest-time path problem for
+arbitrary origins o and continuous emission budgets g ∈
+[gmin , gmax ], under a fixed destination d. Specifically, for a
+given triplet (o, d, g), i.e., OD pair i = (o, d) and budget g,
+the problem can be formulated as:
+X
+X
+min
+δaj ta s.t.
+δaj ca ≤ g
+(2)
+j∈Ji
+
+VOLUME 14, 2026
+
+a∈A
+
+a∈A
+
+In this formulation, travel time and emission characteristics
+at the link level naturally aggregate into path-level values
+through δaj , while the budget g restricts the feasible path set.
+The destination d remains globally fixed, whereas the origin
+o and budget g vary continuously within the given range,
+providing a well-defined and standard optimization target for
+subsequent policy learning and generalization.
+From an optimization perspective, the above formulation
+represents a shortest-time path planning problem under
+a carbon emission budget for a given OD pair. This
+problem constitutes a typical instance of the constrained
+shortest path problem (CSPP), in which travel time is
+minimized subject to a path-level resource constraint on
+cumulative emissions. The CSPP has been extensively
+studied in operations research and transportation engineering,
+and a variety of mature solution approaches have been
+developed. Classical methods include label-setting and labelcorrecting algorithms, which maintain Pareto-optimal tradeoffs between travel time and resource consumption at each
+node, together with dominance-based pruning strategies to
+reduce the search space. These approaches provide strong
+optimality guarantees and stable performance when solving
+CSPP instances with fixed OD pairs and prescribed emission
+budgets.
+In addition to path-enumeration and label-expansion methods, the emission-constrained shortest path problem can also
+be reformulated as an integer programming or mixed-integer
+programming problem. By introducing binary decision
+variables to indicate whether a link is selected in the path,
+together with flow conservation constraints and an explicit
+emission budget constraint, the problem can be expressed in a
+standard integer optimization form and solved using generalpurpose solvers. Such formulations offer modeling flexibility
+and theoretical rigor, and are particularly suitable for
+small- to medium-scale networks or single-instance decision
+scenarios.
+Specifically, for a given origin–destination pair i = (oi , di )
+and an emission budget g, a binary decision variable xa is
+defined for each link a ∈ A, where xa = 1 if link a is
+included in the selected path and xa = 0 otherwise. The
+emission-constrained shortest-time path problem can then
+be formulated as the following 0-1 integer programming
+problem:
+min
+{xa }
+
+s.t.
+
+X
+
+ta x a
+
+a∈A
+
+X
+
+ca xa ≤ g
+
+a∈A
+
+X
+
+xa −
+
+a∈δ + (v)
+
+X
+
+xa
+
+a∈δ − (v)
+
+
+
+v = oi ,
+ 1,
+= −1, v = di ,
+
+
+0,
+otherwise,
+
+∀v ∈ N
+
+xa ∈ {0, 1}
+46717
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+where δ + (v) and δ − (v) denote the sets of outgoing and
+incoming links of node v, respectively. This formulation
+enforces path connectivity through flow conservation, while
+explicitly incorporating the emission budget constraint at the
+path level.
+Despite their maturity, both CSPP algorithms and integer
+programming formulations are essentially designed for
+offline solution of individual problem instances with fixed
+OD pairs and single emission budgets. In real transportation
+systems, however, path planning requests are characterized
+by highly diverse OD pairs, continuously varying emission
+budgets, and the need for frequent repeated queries. Under
+these conditions, traditional approaches typically require
+solving a new optimization problem from scratch for each
+OD–budget combination, leading to substantial computational overhead as the number of queries increases. Moreover,
+these methods do not naturally support generalization across
+different OD pairs or budget levels, which limits their applicability in large-scale or real-time decision environments.
+Motivated by these limitations, it becomes necessary to
+adopt an alternative modeling paradigm that can capture the
+underlying structure of emission-constrained path decisions
+within a unified framework, while enabling fast inference and
+effective generalization across diverse OD pairs and continuous budget conditions. To this end, the emission-constrained
+shortest-time path problem is further reformulated in this
+study as a sequential decision process and addressed using
+reinforcement learning, as detailed in the following section.
+B. MDP FORMULATION AND FEASIBLE ACTION
+DEFINITION
+
+To incorporate the emission-constrained shortest-time path
+problem into a reinforcement learning framework, it is first
+necessary to establish a clear correspondence between the
+original optimization formulation and a sequential decisionmaking process. In the classical problem, the objective
+is to minimize cumulative travel time subject to a strict
+emission budget, where path feasibility is governed by a hard
+constraint rather than treated as a trade-off or penalty term.
+Within the reinforcement learning setting, path construction
+is therefore modeled as a stepwise decision process. Travel
+time naturally corresponds to accumulated step costs, path
+continuity is captured by the state transition dynamics, and
+the emission budget is explicitly embedded into the state
+and action feasibility definitions. Under this formulation,
+constraint satisfaction is enforced directly at the decision
+level by restricting the admissible action space, ensuring
+that policy learning is strictly confined to the feasible
+domain. It is important to emphasize that the emission
+constraint is not handled through Lagrangian relaxation or
+expectation-based constraint violation, as in conventional
+Constrained Markov Decision Process formulations that
+enforce constraints in expectation via dual variables. Instead,
+learning and decision-making are conducted entirely within a
+pruned state-action space that respects the hard emission limit
+at all times.
+46718
+
+Based on this correspondence, the emission-constrained
+shortest-time path problem can be formalized as a Markov
+Decision Process (MDP). At each decision step, the agent
+observes the system state defined by its current node and
+remaining emission budget, and determines the feasible
+action set by jointly considering the residual budget and
+the minimum emission lower bound required to reach the
+destination. The agent selects an action exclusively from this
+admissible set. After execution, the agent advances along the
+chosen link, the remaining budget is updated accordingly,
+and the environment returns an immediate reward together
+with the next state. The episode terminates when the
+destination is reached successfully or when no feasible
+action remains due to budget exhaustion or infeasibility.
+Through this construction, the original path-search problem
+is reformulated as a sequential decision process operating
+within an explicitly constrained feasible domain, providing
+a consistent MDP foundation for subsequent value-based
+learning.
+1) STATE
+
+The state consists of the current location node, remaining
+emission budget, and fixed destination, denoted as:
+s = (u, b; d),
+
+(3)
+
+where u ∈ N denotes the agent’s current node, d ∈ N is
+the fixed destination, and b ≥ 0 represents the remaining
+emission budget. Initially, b = g, and it decreases step by step
+as emission costs are consumed along the path. The explicit
+inclusion of b ensures that budget constraints are embedded
+in the state space.
+2) ACTION AND FEASIBLE ACTION SET
+
+In the context of a transportation network, nodes represent
+intersections (or decision points) and links represent road
+segments connecting two nodes. At each node u, the agent
+takes an action by selecting one of the outgoing links. Thus,
+an action can be represented as choosing the link (u → v),
+i.e., moving from the current node u to a successor node v:
+a = (u → v),
+
+v ∈ Out(u),
+
+(4)
+
+where Out(u) denotes the set of successor nodes from
+u. Due to emission constraints, action feasibility requires
+additional checks. To this end, the emission lower bound
+LBemis (u′ → d) is introduced, representing the minimum
+emission required to reach the destination d from any node
+u′ :
+X
+LBemis (u′ → d) = min
+δaj ca ,
+(5)
+j∈Ji=(u′ ,d)
+
+a∈A
+
+where Ji=(u′ ,d) is the feasible path set from u′ to d.
+By definition, LBemis (d → d) = 0. This value can be
+precomputed via a global shortest-path search using emission
+costs ca as edge weights. The lower bound plays a key
+role in enforcing global feasibility under a strict emission
+budget. In this study, carbon emissions are not treated as
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+part of the optimization objective, but are imposed as a
+global feasibility constraint that strictly restricts the path
+search process. Checking only whether the emission cost of
+a single action exceeds the remaining budget is insufficient,
+since a locally admissible action may still lead to a state
+from which the destination is globally unreachable under the
+residual budget. To address this issue, a lower bound on the
+minimum emission required to reach the destination from any
+intermediate node is introduced as a necessary condition for
+global reachability. By comparing the remaining budget with
+this lower bound at the decision stage, actions that are locally
+feasible but globally infeasible can be excluded in advance.
+This mechanism confines the path construction process to an
+emission-feasible action space and provides a principled basis
+for defining the feasible action set.
+At state s = (u, b; d), an action a = (u → v) is feasible if:
+b − ca ≥ 0,
+
+b − ca ≥ LBemis (v → d).
+
+(6)
+
+Thus, the feasible action set is defined as
+A(s) = {(u → v) ∈ Out(u) | b − ca ≥ LBemis (v → d)}.
+(7)
+If A(s) = ∅, the agent cannot proceed, and the episode
+terminates unsuccessfully.
+3) REWARD
+
+The reward function is designed to guide the agent toward
+minimizing cumulative travel time while strictly respecting
+emission feasibility constraints. It is important to emphasize
+that carbon emissions are not incorporated into the reward
+function as an optimization term. Instead, emission feasibility
+is enforced structurally through the admissible action set,
+ensuring that learning and decision-making are confined to
+emission-feasible trajectories. Under this design, the reward
+function focuses exclusively on travel-time efficiency and is
+composed of three components: stepwise rewards for nonterminal transitions, terminal rewards for successful arrivals
+at the destination, and penalties associated with infeasible or
+failed terminations.
+To accelerate learning and encourage time-efficient exploration, a potential-based reward shaping mechanism is introduced. The potential function 8(u) represents the minimum
+remaining travel time from node u to the destination d,
+computed with link travel times as edge weights. These values
+are precomputed offline by a global shortest-path search
+and remain fixed throughout both training and inference.
+As established in the theory of potential-based shaping,
+incorporating the difference in potential values into the
+reward function does not alter the optimal policy of the
+underlying Markov decision process, but provides denser and
+more informative feedback to improve learning efficiency
+during path construction. Formally, the potential function is
+defined as:
+X
+8(u) = min
+δaj ta ,
+(8)
+j∈Ji=(u,d)
+
+VOLUME 14, 2026
+
+a∈A
+
+Based on this design, the reward structure is specified
+separately for non-terminal and terminal transitions. For nonterminal transitions, the immediate reward consists of the
+travel time cost of the selected link combined with the
+difference in potential values before and after the action.
+
+r(s, a) = −ta + k 8(u) − 8(v) ,
+(9)
+where ta denotes the travel time of action a = (u → v),
+and 8(·) is a potential function that represents the minimum
+remaining travel time from a node to the destination. The
+difference 8(u) − 8(v) reflects the reduction in ‘‘distanceto-go’’ induced by the chosen action, thus guiding the agent
+towards time-efficient progress. The parameter k controls the
+relative strength of this shaping term.
+For terminal states, different reward rules are applied
+depending on whether the destination is reached successfully
+or the episode terminates due to infeasibility. This clear
+separation ensures consistent treatment of intermediate decisions, successful path completion, and failure cases within
+a unified reward framework. To clearly distinguish between
+successful and failed outcomes, two constants are introduced.
+The success bonus Rsucc > 0 provides an additional incentive
+for reaching the destination within budget, while the failure
+penalty Rfail > 0 enforces a fixed loss whenever termination
+occurs due to budget violation or infeasibility. Both constants
+are tunable hyperparameters, typically chosen in proportion
+to the average path travel time, to balance stepwise costs and
+terminal outcomes.At termination, different rules apply. If the
+agent successfully reaches the destination d within the budget
+(b ≥ 0), the terminal reward preserves the final step reward
+and additionally grants a success bonus:
+rterm = r(s, a) + Rsucc .
+
+(10)
+
+If termination occurs due to infeasibility (A(s) = ∅) or
+budget violation (b − ca < 0), the step reward is overridden
+by a fixed penalty:
+rterm = −Rfail .
+
+(11)
+
+This design ensures that intermediate steps incur time
+penalties but are simultaneously shaped by the potential function, successful arrivals receive both accumulated rewards
+and a bonus, and failures are uniformly penalized.
+4) TRANSITION AND TRAJECTORY
+
+Upon executing action a = (u → v), the system updates
+according to:
+u ← v,
+
+b ← b − ca .
+
+(12)
+
+The process generates a trajectory step by step. A successful termination occurs when u = d and b ≥ 0; failure occurs
+if A(s) = ∅ or b < 0.
+5) INTERACTION SAMPLE
+
+For training and replay, each step is stored as a tuple:
+{st , at , rt , st+1 , done},
+
+(13)
+46719
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+where done ∈ {0, 1} indicates termination. This structure
+ensures complete representation of the MDP dynamics and
+supports the construction of n-step returns during training.
+
+zpos = [ eu , ev , ed , (eu ⊙ev ), (ev ⊙ed ), (eu ⊙ed ) ],
+
+C. POLICY REPRESENTATION VIA UVFA-DQN
+
+Within the MDP, the agent’s goal is to choose an action a =
+(u → v) from state s to minimize travel time under emission
+constraints. Instead of directly modeling action probabilities,
+a more robust approach is to approximate the state–action
+value function:
+"∞
+#
+X
+∗
+∗
+t
+Q (s, a) = E
+(14)
+γ rt s0 = s, a0 = a, π .
+t=0
+
+where γ is the discount factor. By learning its approximation
+Qθ (s, a), the agent can compare feasible actions in A(s) and
+select:
+a∗ = arg max Qθ (s, a).
+a∈A(s)
+
+(15)
+
+Thus, the strategy generation process is transformed into an
+approximation problem of the value function, and DQN is
+an effective method to achieve this goal through function
+approximators.
+The effectiveness of value-function learning depends
+critically on the representation of state–action pairs. For a
+pair (s, a), the essential factors include the current node u,
+the candidate successor node v, the destination node d, the
+current budget b, and the travel time ta and emission cost ca
+of the selected link. These features collectively determine the
+feasibility and quality of a link under the given constraints and
+are therefore adopted as input variables. To simultaneously
+handle discrete topological features and continuous numerical attributes, a universal value function approximation
+(UVFA) conditioned on the destination and budget is
+constructed. A dual-tower input structure is employed: one
+tower encodes discrete location-related features, while the
+other processes continuous context-related features. These
+are later fused for value estimation. The rationale is that
+positional elements such as nodes and destinations are well
+suited for embedding-based representation learning, whereas
+budget and link costs are better processed as normalized
+numerical inputs.
+Discrete variables (u, v, d) cannot be directly input to
+a neural network because node identifiers are symbolic
+labels without inherent numeric meaning. To address this,
+a learnable embedding table is introduced, where each node
+is assigned a continuous vector representation updated jointly
+with other network parameters via gradient descent. Let
+E ∈ R|N |×de be the embedding matrix, where each row
+corresponds to the embedding of one node. For any node u,
+its embedding is retrieved as:
+eu = ET 1u ,
+
+(16)
+
+where 1u is the one-hot vector of node u. The embedding
+matrix E is initialized with Xavier initialization and optimized through backpropagation, gradually learning semantic
+representations suitable for path planning.
+46720
+
+After obtaining embeddings eu , ev , and ed , interaction
+terms are incorporated to enhance relational representation,
+forming the positional input vector:
+(17)
+
+where [ · ] denotes concatenation and ⊙ denotes elementwise multiplication. This construction enables the network
+not only to distinguish individual nodes but also to explicitly
+capture their pairwise relationships.
+For the context-related continuous features, these include
+the normalized budget and link costs. To mitigate scale differences and ensure stable training, the following normalization
+is applied:
+ca − µc
+ta − µ t
+, ĉa =
+,
+(18)
+b̂ = b/g, t̂a =
+σt
+σc
+where µt , σt are the mean and standard deviation of link travel
+times, and µc , σc are the mean and standard deviation of link
+emissions, computed at the network level. The context input
+vector is then:
+zctx = [ b̂, t̂a , ĉa ].
+
+(19)
+
+The proposed framework adopts a dual-tower architecture for value estimation, designed to separately process
+positional and contextual information before joint integration. Specifically, the positional input vector zpos and
+the contextual input vector zctx are first mapped by two
+independent transformation networks, denoted fpos and fctx .
+Each tower comprises a linear projection followed by a
+stack of residual multilayer-perceptron (MLP) blocks, with
+the canonical structure: LayerNorm → Linear → SiLU →
+Linear → Residual. This produces the intermediate feature
+representations:
+ϕpos = fpos (zpos ),
+
+ϕctx = fctx (zctx ).
+
+(20)
+
+The outputs of the two towers are concatenated and passed
+to a fusion MLP, which outputs the value prediction for a
+given state–action pair:
+
+Qθ (s, a) = ϕ [ϕpos , ϕctx ] ∈ R.
+(21)
+Importantly, this network estimates the state–action value
+rather than producing an explicit policy. During execution,
+the feasible action set A(s) is first determined by the emission
+budget and associated feasibility constraints. The agent then
+selects the action a∗ = arg maxa∈A(s) Qθ (s, a) so that
+decision-making is jointly governed by the learned value
+function and the feasibility mask.
+This design offers two key advantages. First, by embedding
+both destination and budget information at the input level,
+the model realizes universal value-function approximation,
+enabling generalization across different constraints. Second,
+the dual-tower structure allows topological (positional)
+and contextual information to be processed in parallel
+before fusion, thereby enhancing representational capacity. Together, these features enable the agent to achieve
+near-optimal link choices for emission-constrained dynamic
+path planning.
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+insufficient length, truncated samples are stored:
+
+D. PROGRESSIVE TRAINING STRATEGY
+
+In emission-constrained path planning, the training process
+must avoid ineffective exploration in early stages, establish
+stable action ranking, and subsequently refine value estimation to generalize across arbitrary origins and continuous
+budgets. To this end, a progressive training framework
+is adopted: demonstration-guided pretraining followed by
+interactive reinforcement learning.
+For the demonstration-guided pretraining, in the initial
+phase, model parameters are pretrained using demonstration
+paths. Given an origin o, destination d, and budget g,
+the optimal path is obtained by solving the constrained
+shortest-path problem (CSPP) with a label-setting algorithm.
+Each node maintains a label (T , C), denoting cumulative
+travel time and cumulative emissions. When expanding from
+node u via link a = (u, v), a new label is generated as
+(T ′ , C ′ ) = (T + ta , C + ca ).
+
+(22)
+
+A label is retained only if C ′ ≤ g and it is not dominated
+by others. At the destination d, the feasible label with the
+minimum cumulative travel time yields the optimal path:
+X
+π ∗ (o, d, g) = arg min
+ta ,
+(23)
+π∈Pod (g)
+
+(m)
+
+(st , at , Rt , st+m , done = 1),
+
+(m)
+
+Rt
+
+=
+
+m−1
+X
+
+γ k rt+k . (26)
+
+k=0
+
+In the latter case, no bootstrap term is included. This
+sliding-window mechanism ensures that an episode of length
+T yields approximately T training samples, while tail
+flushing guarantees that the last n−1 steps are also included.
+The value update is based on the Double-DQN framework.
+Let θ denote online network parameters and θ − the target
+(m)
+(m)
+network. For a sample ς = (st , at , Rt , st+m , donet ), the
+next action is chosen by the online network:
+a∗t+m = arg
+
+max
+
+a∈A(st+m )
+
+Qθ (st+m , a).
+
+(27)
+
+It is then evaluated by the target network to form the target
+value:
+( (m)
+(m)
+Rt ,
+if donet = 1,
+y(ς) =
+(m)
+(m)
+Rt + γ m Qθ − (st+m , a∗t+m ), if donet = 0.
+(28)
+For prioritized experience replay (PER), let B be the replay
+buffer of size N = |B|. For ς ∈ B, define the TD error as:
+
+a∈π
+
+1(ς) = Qθ (st , at ) − y(ς),
+
+(29)
+
+p(ς) = (|1(ς)| + ε)α ,
+
+(30)
+
+P
+
+where Pod (g) = {π :
+a∈π ca ≤ g}. This path
+is decomposed into state–action pairs (s, a∗ ), forming the
+demonstration set 5∗ = {(s, a∗ )}. Behavior cloning is then
+applied using a softmax loss over the feasible action set:
+LBC
+
+exp(Qθ (s, a∗ )/τ )
+,
+= − log P
+a∈A(s) exp(Qθ (s, a)/τ )
+
+= 0),
+
+(n)
+Rt
+
+=
+
+n−1
+X
+
+p(ς)
+.
+′
+ς ′ ∈B p(ς )
+
+(31)
+
+P(ς ) = P
+
+The importance-sampling weight is computed as:
+w(ς) =
+
+(1/(NP(ς)))β
+.
+maxς ′ ∈B (1/(NP(ς ′ )))β
+
+(32)
+
+Here ε > 0 avoids zero probability, α ∈ [0, 1] controls
+prioritization strength, and β ∈ [0, 1] controls bias correction.
+After each update, priorities are refreshed using the new
+|1(ς)| to maintain buffer consistency.
+The optimization objective is the weighted Huber loss:
+
+LRL = w(ς) lHuber Qθ (st , at ) − y(ς) ,
+(33)
+with
+
+1 2
+x ,
+|x| ≤ κ,
+lHuber (x) = 2
+ κ(|x| − 1 κ), |x| > κ,
+2
+
+(κ = 1).
+(34)
+
+Online parameters are updated by gradient descent:
+γ rt+k .
+k
+
+(25)
+
+k=0
+
+If the trajectory terminates prematurely at step m < n,
+or ‘‘flushes’’ the tail queue at the end of the episode due to
+VOLUME 14, 2026
+
+and the sampling probability
+
+(24)
+
+where a∗ is the demonstrated action and τ is a temperature
+coefficient. This pretraining stage quickly aligns network
+preferences with optimal paths, providing a stable initialization for subsequent interaction-based learning.
+After pretraining, the model enters the reinforcementlearning phase based on temporal-difference updates. At step
+t, the agent executes action at from state st , receives reward
+rt , and transitions to st+1 . Each interaction is stored as a tuple
+{st , at , rt , st+1 , done}, with done = 1 marking termination.
+To enhance long-term estimation stability, a slidingwindow n-step return with tail flushing is adopted. Specifically, a FIFO queue of length at most n is maintained. When
+the queue reaches length n (and no termination occurs inside),
+the oldest element is used to form an n-step sample, after
+which the window slides forward by one step. For a segment
+{st , at , . . . , st+m }, if the segment length reaches m = n
+without termination,
+(n)
+(st , at , Rt , st+n , done
+
+the priority
+
+θ ← θ − η∇θ LRL ,
+
+(35)
+
+and target parameters are synchronized via Polyak averaging:
+θ − ← (1 − ξ )θ − + ξ θ,
+
+0 < ξ ≪ 1.
+
+(36)
+46721
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+TABLE 1. Summary of the CRL-SP training framework.
+
+TABLE 2. Summary of the CRL-SP inference framework.
+
+summarized in Table 1 (CRL-SP training procedure) and
+Table 2 (inference for path construction).
+III. NUMERICAL EXPERIMENTS
+A. SETTINGS
+1) EXPERIMENTAL ENVIRONMENT
+
+All experiments in this study are conducted under the
+following hardware and software environment: the operating
+system is Windows 11, equipped with a 13th Gen Intel®
+Core™ i9-13900H processor, 32 GB RAM, and an NVIDIA
+GeForce RTX 4070 Laptop GPU (8 GB VRAM). The
+experimental framework is implemented in Python 3.12,
+with DQN models developed using PyTorch 2.7.0 and
+CUDA 12.6. All traffic network construction, path planning,
+and related procedures are independently implemented in
+Python without relying on any existing traffic simulation
+platforms, ensuring both flexibility and full control over the
+experimental process.
+2) NETWORK STRUCTURE AND DATA CONSTRUCTION
+
+Only feasible transitions are stored and learned, ensuring
+the experience distribution always respects emission constraints. Through the progressive combination of demonstration guidance and interaction-based optimization, the model
+quickly learns decision preferences aligned with optimal
+paths and gradually refines Q-value estimation through
+continued interactions. Ultimately, the framework yields a
+path-selection policy with strong generalization capability
+under the ‘‘fixed destination + arbitrary origin + continuous budget’’ setting. The complete training framework is
+46722
+
+The classical Sioux Falls network is adopted as the
+experimental testbed in this study. The network consists
+of 24 nodes and 76 directed links and has been widely
+used as a benchmark for path planning and transportation
+network algorithms. The network topology is illustrated
+in Fig. 1. Owing to its moderate scale, well-defined
+connectivity, and heterogeneous link structure, the Sioux
+Falls network provides a representative and reproducible
+structural environment that is well suited for methodological
+evaluation with practical relevance. Link travel times are
+anchored to the free-flow travel time data provided in a
+publicly available dataset,1 ensuring realistic magnitudes and
+structural consistency of the time attributes. To introduce controlled link heterogeneity while avoiding excessive distortion
+of the original benchmark structure, bounded perturbations
+are applied to the baseline travel times to obtain the final
+link travel times. These perturbations capture variations in
+1 https://github.com/bstabler/TransportationNetworks/tree/master/
+SiouxFalls
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+operational efficiency, traffic conditions, and measurement
+uncertainty, while a truncation mechanism is imposed to
+guarantee nonnegativity and to confine the values within
+a reasonable range. Link-level carbon emission costs are
+constructed according to physically interpretable principles
+and are directly related to link length. On this basis, small
+bounded perturbations are introduced to reflect realistic
+factors such as differences in vehicle types and operating
+conditions. This construction preserves the nonnegativity of
+emissions and establishes a meaningful association between
+carbon emissions and both the geometric and operational
+characteristics of the network. The resulting link travel time
+and emission parameters remain fixed throughout the entire
+training and inference process and are fully reported in
+Table 3 to ensure reproducibility and fairness in method
+comparison.
+
+FIGURE 1. The Sioux Falls network.
+
+During the training and evaluation stages, based on the
+fixed network structure and link attributes described above,
+all possible OD pairs in the network are randomly generated,
+and a corresponding carbon emission budget is assigned
+to each OD pair. Specifically, for any given OD pair,
+the minimum feasible emission requirement gmin is first
+computed based on the link emission attributes. This value
+represents the lowest cumulative carbon emission required to
+reach the destination while maintaining network connectivity
+and serves as the lower bound of the emission budget interval,
+ensuring path feasibility under strict constraints. On this
+basis, the upper bound of the carbon emission budget is
+defined as a multiple l · gmin , where l is a prescribed
+scaling factor. This setting covers a wide range of decision
+scenarios, from highly constrained to nearly unconstrained
+VOLUME 14, 2026
+
+TABLE 3. Travel times and emissions of links.
+
+cases. During training, once an OD pair is selected, its
+corresponding emission budget is sampled from this interval,
+thereby exposing the model to path decision problems under
+varying levels of constraint stringency. This design facilitates
+learning across different emission limits and enhances the
+model’s adaptability and stability under diverse constraint
+conditions.
+3) TRAINING CONFIGURATION
+
+The proposed framework adopts a two-stage training strategy
+consisting of a behavior cloning (BC) pretraining phase
+followed by an online reinforcement learning phase. In the
+BC stage, the model is pretrained using demonstration paths
+obtained by solving the constrained shortest-path problem
+(CSPP). Each demonstration path is decomposed into a
+sequence of state–action pairs, which guide the model to
+learn feasible and time-efficient action preferences under
+emission constraints. This stage is conducted for a fixed
+number of training epochs using mini-batch optimization,
+without performance-based early stopping, to provide a stable
+policy initialization for subsequent reinforcement learning.
+46723
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+After BC pretraining, the model proceeds to the online
+reinforcement learning stage based on the Double DQN
+framework, augmented with n-step returns and prioritized
+experience replay (PER). Training in this stage is organized
+in episodes. At the beginning of each episode, an origin–
+destination pair and its corresponding emission budget are
+randomly sampled. The agent then incrementally constructs a
+path on the fixed network until it either reaches the destination
+successfully or terminates due to constraint violation. The
+resulting state transition samples are stored in a replay buffer
+and are sampled according to their assigned priorities for
+parameter updates.
+Exploration is governed by an ε-greedy strategy, in which
+ε is gradually decayed from an initial value to a small
+constant over the course of training, encouraging exploration
+in early stages and promoting convergence in later stages.
+The target network is updated using Polyak averaging to
+improve the stability of value estimation. The reward function
+consists of stepwise travel-time penalties, a terminal reward
+for successfully reaching the destination within the emission
+budget, and a fixed penalty for infeasible termination, thereby
+balancing path efficiency and feasibility.
+The online reinforcement learning stage terminates after
+a predefined maximum number of environment interaction
+steps, and no validation-based model selection or early stopping criteria are employed. The model parameters obtained
+at the end of training are directly used for evaluation to
+avoid additional sources of uncertainty. All hyperparameters
+associated with both training stages, including training
+epochs, interaction step limits, learning rates, batch sizes,
+return structure, and replay-buffer settings, are summarized
+in Table 4.
+
+TABLE 4. Configuration of hyperparameters.
+
+4) BASELINE METHODS
+
+To systematically evaluate the performance of the proposed method for the carbon emission-constrained shortest
+path problem, several representative baseline methods are
+considered for comparison. These baselines correspond to
+three typical solution paradigms, namely exact or near-exact
+optimization, an idealized time-performance reference, and
+a low-complexity heuristic, thereby characterizing different
+performance boundaries of the problem.
+1) CSPP with Label-Setting Algorithm
+A classical label-setting algorithm for solving the
+constrained shortest path problem (CSPP) is adopted
+as the primary optimization baseline. This method
+maintains multiple labels for each node and applies
+dominance-based pruning during the search process,
+enabling the computation of optimal or near-optimal
+paths under emission constraints. It serves as
+an optimality-oriented reference for performance
+comparison.
+2) Emission-Agnostic Shortest Path
+This baseline computes the shortest-time path between
+an origin–destination pair by optimizing travel time
+only and completely ignoring emission constraints.
+46724
+
+A standard shortest path algorithm is used for this
+purpose. Owing to its optimality in terms of travel time,
+this method provides an idealized upper bound on time
+performance, although the resulting paths are generally
+infeasible with respect to emission limits.
+3) Greedy Feasible Heuristic
+A low-complexity feasible heuristic is also included as
+a baseline. This method constructs a path incrementally
+using a myopic greedy rule. At each node, among
+all outgoing links that satisfy the remaining emission
+budget and preserve reachability to the destination (i.e.,
+the link emission cost plus a precomputed emission
+lower bound does not exceed the remaining budget),
+the link with the minimum travel time is selected.
+This heuristic ensures feasibility at each step but does
+not incorporate any global optimization or look-ahead
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+mechanism, and therefore does not guarantee global
+optimality.
+4) Lagrangian Relaxation Reinforcement Learning
+(LR-RL)
+To compare with standard soft-constraint approaches
+in the constrained RL literature, we introduce a
+Lagrangian relaxation RL baseline (LR-RL). This
+method removes the feasible action mask and uses the
+full action space. At each step, the reward includes a
+Lagrangian penalty term based on the emission cost
+of the selected link (−λ · ca ). The multiplier λ is
+selected via grid search on the validation set to achieve
+a reasonable trade-off between travel time performance
+and constraint satisfaction. An episode terminates only
+when the destination is reached or when the number of
+steps exceeds twice the length of the longest acyclic
+path for the current OD pair. The terminal rewards
+for success and failure are kept identical to those in
+CRL-SP.
+5) EVALUATION METRICS
+
+Because the proposed model outputs discrete paths rather
+than continuous-valued scores, direct visual inspection of
+path compositions alone is insufficient for a systematic
+and quantitative performance assessment. To enable a
+comprehensive evaluation, a set of four complementary
+metrics is adopted. These metrics jointly characterize exact
+path recovery, structural similarity between paths, and
+performance deviations with respect to both travel time and
+carbon emissions.
+The Path Match Rate (PMR) evaluates whether the
+predicted path exactly coincides with the CSPP-optimal
+solution, defined as:
+|{ pCRL = p∗CSPP }|
+,
+(37)
+PMR =
+|{ total test cases }|
+where p∗CSPP denotes any optimal path under CSPP. If multiple optimal solutions exist, a predicted path is counted as a
+match if it coincides with any of them.
+To further quantify structural similarity when exact
+matching is not achieved, the Link Overlap Ratio (LOR) is
+introduced:
+|A(pCRL ) ∩ A(p∗CSPP )|
+LOR(pCRL , p∗CSPP ) =
+,
+(38)
+|A(p∗CSPP )|
+where A(p) represents the set of links contained in path p.
+Performance deviation is captured in terms of both travel
+time and carbon emissions. The Relative Time Error (RTE)
+measures the deviation in total travel time as:
+T (pCRL ) − T (p∗CSPP )
+RTE =
+,
+(39)
+T (p∗CSPP )
+where T (p) denotes the travel time of path p.
+In parallel, the Relative Emission Error (REE) captures the
+deviation in total emissions as:
+E(pCRL ) − E(p∗CSPP )
+REE =
+,
+(40)
+E(p∗CSPP )
+VOLUME 14, 2026
+
+with E(p) representing the total carbon emission associated
+with path p.
+B. TRAINING EFFECTIVENESS AND STABILITY
+
+To assess the convergence and stability of the proposed
+reinforcement learning framework, training dynamics are
+analyzed from optimization and decision performance perspectives, as shown in Fig. 2. The upper panel tracks
+temporal difference (TD) loss, which exhibits fluctuations
+due to ϵ-greedy exploration, prioritized experience replay,
+and n-step returns but demonstrates a clear decreasing
+trend and stabilizes at low levels, indicating a progressive
+reduction in the discrepancy between online and target
+value estimates without signs of divergence. The lower
+panel evaluates path decision quality via mean Link Overlap
+Ratio (LOR), computed by averaging LOR values across
+all OD pairs and emission budget scaling factors l ∈
+[1, 1.2] in the fixed benchmark network at each checkpoint
+(with sliding-window averaging to suppress noise). The
+curve rises consistently before reaching a stable plateau
+after approximately 40,000 training steps, demonstrating that
+learned paths increasingly align structurally with optimal
+benchmarks. Together, these trends provide evidence of
+numerical and structural convergence, confirming stable
+training dynamics and convergent path planning performance
+under emission-constrained settings.
+All experiments use a fixed deterministic benchmark
+environment, with network topology, link travel times,
+emission costs, OD pairs, ordering, and budget generation
+rules unchanged throughout. No environmental randomness
+is introduced during training; stochasticity stems solely from
+RL mechanisms, including ϵ-greedy exploration, prioritized
+experience replay, and stochastic gradient updates. Thus,
+training variations reflect intrinsic learning dynamics. Hyperparameter sensitivity analysis examines two key off-policy
+RL parameters: learning rate (governing update magnitude,
+convergence speed, and stability) and n-step return length
+(controlling return horizon and path-level credit assignment).
+Other hyperparameters remain at defaults; each is varied oneat-a-time. Learning rate adjustments span conservative to
+aggressive regimes around the baseline; n-step values cover
+small to moderate ranges to assess horizon effects.
+Figure 3 illustrates the evolution of mean LOR during
+training under variations in key hyperparameters and emission model assumptions. As shown in Figure 3(A), mean
+LOR curves for different learning rates exhibit consistent
+trends: steady improvement after an initial phase, converging
+to comparable levels with minor fluctuations but no systematic instability. This indicates robustness to learning rate
+variations within the tested range, confirming the baseline lies
+in a stable regime. Figure 3(B) presents sensitivity to n-step
+return length. For n = 1, mean LOR remains lower due to
+reliance on single-link rewards, hindering path-level credit
+assignment and coherent structure learning. Moderate values
+(n = 2, 4, 6) show similar convergence speeds and final
+levels, suggesting limited impact within this range. Balancing
+46725
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+FIGURE 2. Training convergence of the proposed model.
+
+stability and efficiency, n = 4 is selected as default.
+Overall, under the deterministic environment, the framework
+demonstrates stable training and consistent convergence with
+respect to these hyperparameters, supporting the adopted
+settings.
+To further evaluate the sensitivity of CRL-SP to realistic
+emission variations, a speed-dependent sensitivity analysis
+is conducted. Emissions in urban networks exhibit a strong
+nonlinear dependence on traffic speed [23]. Accordingly, the
+baseline link emissions in Table 3, originally computed as
+ca = EFref · da , are adjusted to c′a = ca × (m/va +
+n), where va is the realized link speed. The coefficients
+m and n are taken from established emission models such
+as COPERT; following typical passenger-car CO2 profiles
+under mixed urban conditions, the values m = 0.8 and
+n = 0.6 are adopted. The reference speed vref
+a for each
+link is obtained from the Sioux Falls benchmark dataset.
+To incorporate traffic stochasticity, the realized speed is
+generated as va = vref
+a + ϵa , where ϵa ∼ N (0, (CV ·
+2 ), with all speeds truncated to the physically plausible
+vref
+)
+a
+interval [5, 100]. Three levels of traffic uncertainty are
+examined by setting the coefficient of variation (CV) to
+46726
+
+0.1, 0.2, and 0.3. Ensemble-averaged performance metrics
+are reported over 1000 independent Monte Carlo realizations
+for each CV level. Figure 3(C) examines the evolution
+of mean LOR under different speed-dependent emission
+models, including the case without speed variation and three
+levels of traffic uncertainty (CV = 0.1, 0.2, 0.3). The four
+curves exhibit highly consistent overall trends: they rise
+steadily in the early training phase, converge rapidly to a
+high-performance plateau (above 0.90), and maintain stable
+small-amplitude fluctuations thereafter. As CV increases, the
+curves display a mild systematic downward shift (maximum
+separation of approximately 0.08), while convergence speeds
+and fluctuation patterns remain highly similar across all
+cases. These findings indicate that the training dynamics of
+CRL-SP are largely insensitive to nonlinear speed-dependent
+emission adjustments and traffic uncertainty, with minor
+changes in the emission model exerting negligible influence
+on the overall training behavior.
+C. PRECISION ANALYSIS
+
+To systematically evaluate decision paradigms in the
+emission-constrained shortest path problem, this section
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+FIGURE 3. Evolution of mean LOR during training under different hyperparameter settings.
+
+compares the proposed CRL-SP with three representative
+baselines: Greedy Feasible Heuristic (GFH), EmissionAgnostic Shortest Path (EGSP), and Lagrangian Relaxation
+Reinforcement Learning (LRRL), from structural and quantitative perspectives. Figures 4-7 report their performance
+under varying emission budgets, using four metrics: Path
+Match Rate (PMR), Link Overlap Ratio (LOR), Relative
+Travel Time Error (RTE), and Relative Emission Error (REE).
+Results are averaged over multiple origin-destination pairs,
+with error bars denoting 95% confidence intervals.
+Figure 4 shows the performance of CRL-SP across
+emission budgets. CRL-SP achieves high, stable accuracy,
+with PMR and LOR consistently above 0.85, indicating
+close alignment with optimal paths in node sequence and
+structure. Metrics peak in the moderate range (approximately
+1.1 to 1.3), where constraints optimally balance feasibility
+and efficiency. Extreme budgets yield mild degradation and
+wider confidence intervals due to heightened path selection
+VOLUME 14, 2026
+
+uncertainty. Quantitatively, RTE and REE remain near zero,
+confirming negligible deviations in travel time and emissions
+even with minor structural differences. Narrow confidence
+intervals affirm robustness across OD pairs.
+The performance of the Greedy Feasible Heuristic is
+shown in Fig. 5. While GFH is able to produce feasible
+paths under emission constraints, its accuracy deteriorates
+noticeably as the budget is relaxed. Specifically, both PMR
+and LOR decrease with increasing g/gmin , indicating a
+growing structural divergence from the optimal solutions.
+In terms of quantitative performance, GFH exhibits an
+increasing RTE at higher budget levels, while its REE remains
+consistently negative. This pattern suggests that GFH tends to
+conservatively favor low-emission paths, often at the expense
+of longer travel times, even when additional emission budget
+is available. Such behavior is characteristic of myopic greedy
+strategies, which rely solely on local decisions and lack the
+ability to anticipate global trade-offs along the entire path.
+46727
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+FIGURE 4. Accuracy and stability of the proposed CRL-SP method across different emission budget levels.
+
+FIGURE 5. Precision performance of the Greedy Feasible Heuristic under emission constraints.
+
+As a result, GFH fails to adapt effectively to budget-induced
+changes in the structure of optimal solutions.
+Fig. 6 presents the results of the Emission-Agnostic
+Shortest Path method. As expected, EGSP exhibits near-zero
+PMR and very low LOR across all budget levels,
+indicating substantial structural inconsistency with the
+emission-constrained optimal paths. From a quantitative
+perspective, EGSP achieves RTE values close to zero,
+reflecting its time-optimal nature. However, its REE remains
+significantly positive and shows little improvement with
+increasing budget, demonstrating systematic violation of
+emission feasibility. It should be emphasized that EGSP
+is not intended as a feasible competing solution, but
+rather as an idealized time-optimal reference that illustrates the consequences of ignoring emission constraints
+altogether.
+46728
+
+A Lagrangian relaxation RL baseline (LR-RL) is further
+included to benchmark against CRL-SP, following the
+standard soft-constraint paradigm in the constrained RL
+literature. Its precision performance is shown in Figure 7.
+Overall, the performance of LR-RL across emission budgets
+closely mirrors that of CRL-SP. For instance, PMR and LOR
+peak in the moderate budget range (approximately 1.1–1.2)
+and then decline mildly as the budget relaxes, while RTE and
+REE display similar budget sensitivity. This indicates that the
+Lagrangian penalty effectively regularizes model behavior
+without fundamentally altering the learned routing structure.
+Compared with CRL-SP, however, LR-RL shows systematic
+disadvantages across all four metrics: PMR and LOR are
+noticeably lower, reflecting a moderate degradation in path
+structural consistency under soft constraints; RTE is slightly
+higher; and REE is systematically positive, accompanied by
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+FIGURE 6. Behavior of the Emission-Agnostic Shortest Path under varying emission budgets.
+
+FIGURE 7. Precision performance of the Lagrangian Relaxation RL baseline compared to CRL-SP across emission budgets.
+
+a non-zero violation rate (i.e., paths exceeding the emission
+budget). These results illustrate the characteristic behavior
+of Lagrangian relaxation methods: they achieve approximate
+feasibility through expectation-based penalties, yet cannot
+ensure the strict zero-violation guarantees provided by hard
+action masking. This inherent trade-off between expected
+feasibility and strict compliance is a fundamental limitation
+of soft-constraint approaches in resource-constrained path
+planning. In contrast, CRL-SP achieves near-zero REE
+and zero violations through its hard-constraint mechanism,
+further highlighting its advantage in emission-constrained
+routing.
+Taken together, the results in Figures 4-7 reveal fundamental differences among the decision paradigms. CRL-SP consistently delivers high structural consistency and quantitative
+precision while adhering to emission constraints, reflecting
+effective learning of global trade-offs under hard feasibility.
+VOLUME 14, 2026
+
+GFH ensures feasibility but incurs suboptimality from local
+decisions, especially with varying budgets. EGSP optimizes
+travel time but is infeasible in constrained settings. LRRL,
+relying on soft penalties, achieves moderate performance but
+exhibits instability under tight constraints. These findings
+underscore CRL-SP’s superiority in balancing accuracy,
+stability, and compliance, laying a foundation for extensions
+to complex constrained or multi-objective routing.
+D. GENERALIZATION ANALYSIS
+
+To evaluate the generalization capability, emission budgets
+outside the training range are tested, specifically within
+g/gmin = 1.4–2.0. The corresponding results for PMR, LOR,
+REE, and REE are presented in Figure 8. Overall, even under
+budgets far exceeding the training scope, both PMR and LOR
+remain stably within the range of 0.85–0.90, with only a slight
+decline compared to the in-range results. This indicates that
+46729
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+FIGURE 8. Generalization performance under out-of-range emission budgets.
+
+the model maintains strong generalization ability in terms of
+path structure and node consistency. Notably, in the out-ofrange setting, PMR and LOR exhibit smaller fluctuations,
+suggesting that the model not only preserves accuracy but
+also achieves greater stability when confronted with unseen
+budgets. In the interval around g/gmin = 1.5–1.7, both
+indicators display a modest improvement, implying this
+range as the most favorable for generalization. When the
+budget further increases (beyond 1.8), PMR and LOR show a
+slight decrease, accompanied by wider confidence intervals,
+reflecting greater uncertainty under extreme conditions.
+At the same time, RTE and REE consistently remain at very
+low levels, demonstrating that even beyond the training range,
+the paths generated are almost indistinguishable from the
+optimal solutions in terms of both travel time and emissions.
+Moreover, the trends of increasing REE and decreasing REE
+with larger budgets, though less pronounced than within
+the training range, are still observable and align with the
+mechanisms discussed previously. Specifically, these patterns
+are not indicative of insufficient learning but rather reflect
+the natural outcomes imposed by strict budget constraints.
+When the budget is relaxed, the model may retain the previous
+solution instead of switching to the new optimum, leading
+to slightly higher travel times but lower emissions relative
+to the benchmark. This conservative yet constraint-compliant
+behavior underscores the model’s ability to strictly adhere to
+hard constraints while maintaining robustness under unseen
+conditions, thereby reinforcing its stability and reliability.
+In addition to testing budgets outside the training range,
+this section further examines the model’s performance when
+the training samples are sparsified with respect to emission
+budget values. This setting likewise reflects the model’s
+ability to generalize to unseen budgets. Specifically, in the
+original training design, the emission budget values within
+the interval [gmin , 1.4·gmin ] are taken as all integers, whereas
+in the sparsified setting, one value is retained every three
+46730
+
+integers. The results under these two training schemes (intervals of 1 and 3) are presented in Figure 9. Regarding PMR,
+the results within the training range (g/gmin ≤ 1.4) are almost
+identical under both dense and sparse sampling, remaining
+stably between 0.85–0.90. This indicates that even with
+sparsified training samples, the model can reliably output
+paths that are completely identical to the optimal solutions,
+thereby ensuring solution optimality within the observed
+budgets. However, when moving beyond the training range,
+differences become apparent: under sparse sampling, PMR
+drops noticeably, in most cases falling below 0.8, and the
+decline becomes more pronounced as the budget increases.
+This demonstrates that sparse training weakens the model’s
+ability to reproduce the exact optimal path under unseen
+budgets, whereas dense training provides stronger support for
+such exactness and thus yields superior generalization. The
+cumulative distribution of LOR shows a different pattern. The
+curves under dense and sparse training are very similar in
+shape, with both exhibiting a sharp increase near LOR = 1,
+while remaining at low cumulative probabilities beforehand.
+This result indicates that regardless of whether budget values
+are sampled densely or sparsely, the model’s output paths
+are in most cases highly similar to the optimal solution
+paths. In other words, although the solutions are not always
+completely identical, their quality remains very close to the
+optimum, ensuring usability and validity.
+Overall, dense sampling significantly enhances the
+model’s ability to recover the exact optimal path under unseen
+budgets, while sparse sampling leads to some deterioration
+in this regard. Nevertheless, the model still consistently
+produces solutions whose quality remains close to that of the
+optimal path. These findings demonstrate that the model not
+only has the capability to reproduce optimal solutions under
+constraints but also maintains near-optimal solution quality
+when exact reproduction is not achieved, thereby exhibiting
+strong robustness and practical value.
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+FIGURE 9. Impact of budget sampling density on PMR and LOR performance.
+
+FIGURE 10. Model performance under insufficient emission budgets: path feasibility rate, emission overrun rate, and LOR.
+
+E. ROBUSTNESS AND BEHAVIORAL ADAPTABILITY
+
+This subsection examines the robustness of the model
+under insufficient emission budgets, focusing on its ability
+to generate feasible and adaptive paths when traditional
+algorithms fail. The robustness of the model under extreme
+conditions is of particular importance, especially when the
+emission budget g for an OD pair is insufficient to support
+a feasible path to the destination. In such cases, conventional
+label-setting algorithms fail to provide any solution. The ability of the model to plan under inherently insufficient budgets
+therefore has significant implications for practical scenarios
+where constraints are extremely stringent. Figure 10 presents
+the performance of key indicators under these conditions.
+The path feasibility rate represents the proportion of cases
+where the model successfully outputs a path that reaches
+the destination. Since no feasible optimal path exists under
+insufficient budgets, the LOR indicator is defined as the
+similarity between the model-generated path and the optimal
+path obtained under gmin , while the emission overrun rate
+measures the relative extent to which the emissions of the
+model-generated path exceed the given insufficient budget
+g. The results show that when the emission budget is
+within the range [0.95 · gmin , gmin ], the model consistently
+produces feasible paths that reach the destination. As the
+budget decreases further, the feasibility rate declines steadily.
+When the budget is reduced to approximately 0.5 · gmin , the
+feasibility rate drops to around 20%, indicating that the model
+retains some exploratory capacity under severe constraints
+
+VOLUME 14, 2026
+
+but that the probability of finding a feasible solution decreases
+rapidly as the constraint tightens.
+In terms of path similarity, the LOR values increase with
+decreasing budgets. Within the interval of 1 to 0.9 for gmin ,
+the LOR remains below 0.85, indicating that the model does
+not simply fall back to reproducing the gmin optimal path
+but actively explores alternative paths that may better fit the
+current constraint. This exploratory behavior is most pronounced when the budget is only slightly insufficient. As the
+budget decreases further, the LOR gradually approaches 1,
+reflecting the near disappearance of the solution space and
+the tendency of the model to revert to the optimal path under
+gmin . This pattern demonstrates that even under extreme
+conditions, the model maintains strong alignment with the
+optimal solution and exhibits stable behavioral patterns. The
+emission overrun curve reinforces this observation. Near
+gmin , the curve shows a concave shape with a relatively slow
+growth rate, suggesting that the model continues to explore
+and attempts to limit emission overruns. At lower budget
+levels, the curve transforms into a convex shape, indicating
+the shrinking of the feasible solution space and the loss of the
+model’s ability to control the growth of overruns.
+Overall, these findings demonstrate that even under
+inherently insufficient budgets, where traditional algorithms
+cannot operate, the model exhibits exploratory and adaptive
+behavior. It maintains close proximity to the optimal solution
+within the limited solution space. This robustness and
+adaptability highlight the intelligent characteristics of the
+
+46731
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+FIGURE 11. Illustrative paths of two OD pairs under different emission budgets.
+
+TABLE 5. Path planning results of CRL-SP and the baseline algorithm under varying emission budgets.
+
+model in extreme conditions and further support its potential
+value for practical applications.
+In the process of emission budget variation, the ability of
+the model to dynamically adjust path selection and output the
+optimal solution under the current constraint is an important
+manifestation of its adaptive capacity. To illustrate this
+property, one long-distance OD pair and one short-distance
+OD pair are selected as examples. The results are presented
+in Figure 11 and Table 5. Figure 11 shows the changes
+in routes under different emission budgets, while Table 5
+provides the detailed attributes of the corresponding paths.
+Overall, regardless of whether the OD pair is long or short,
+the model tends to select paths with lower emissions but
+longer travel times when the emission budget is limited.
+As the budget increases, the model adaptively switches to
+faster paths with higher emissions. This demonstrates that the
+model can effectively balance between emissions and travel
+time, and consistently output optimal solutions under strict
+constraints. As shown in Table 5, in all given scenarios, the
+outputs of CRL-SP are completely consistent with those of
+the baseline label-setting algorithm in terms of path choice,
+travel time, and total emissions. This indicates that the
+46732
+
+TABLE 6. Runtime comparison of CRL-SP and the baseline method for
+single OD-pair queries across different networks.
+
+proposed model not only satisfies the emission constraints
+but also aligns strictly with the classical optimal solutions,
+thereby validating its correctness and reliability.
+A closer examination of the OD pair (15, 20) highlights the
+model’s sensitivity to constraint variation. When the emission
+budget increases from 60 to 65, the model immediately
+switches from Path 3 to Path 4. Notably, the emissions of Path
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+FIGURE 12. Test networks with different scales and complexities.
+
+TABLE 7. Runtime comparison of CRL-SP and the baseline method for
+batch OD-pair queries in network (c).
+
+4 are almost identical to the upper bound of 65, reflecting
+the model’s strong responsiveness to even minor changes
+in the constraint. This rapid adjustment ensures that the
+most efficient path is selected as soon as additional budget
+becomes available. Such ‘‘dynamic switching’’ illustrates not
+only the model’s robustness at the boundary of feasibility
+but also its adaptive capacity to exploit improved conditions
+and enhance efficiency. In summary, the results confirm
+that the model possesses strong responsiveness to changing
+constraints and adaptive capability in path adjustment. These
+features highlight the model’s potential value for practical
+applications in complex transportation networks with multidimensional constraints.
+F. EFFICIENCY ASSESSMENT
+
+To clearly demonstrate the efficiency advantages of the
+proposed model compared with the traditional label-setting
+algorithm, three networks with different levels of complexity
+are employed for testing. Network (a) consists of 30 nodes
+and 108 links, network (b) contains 50 nodes and 182 links,
+and network (c) is composed of 70 nodes and 284 links,
+as shown in Figure 12. The efficiency evaluation is divided
+into two parts: single OD-pair queries and batch OD-pair
+queries, with the detailed results reported in Table 6 (single
+query) and Table 7 (batch query).
+For single OD-pair queries, Table 6 shows that the absolute
+runtime of CRL-SP is slightly higher than that of the
+baseline across the three networks. However, as the network
+VOLUME 14, 2026
+
+size and complexity increase, the runtime gap between the
+two methods gradually narrows, and in short-path queries
+of network (c), CRL-SP even outperforms the baseline.
+In terms of trends, the runtime of CRL-SP grows almost
+linearly with the number of links in the path, whereas the
+baseline label-setting algorithm exhibits little sensitivity to
+path length within the same network but increases noticeably
+with the overall network size and structural complexity. This
+difference arises from the intrinsic mechanisms of the two
+methods: CRL-SP relies on a single forward pass of the neural
+network, where each step along the path corresponds to one
+forward computation, leading to runtimes that are primarily
+dependent on path length and only weakly related to network
+scale. In contrast, the label-setting algorithm must iteratively
+expand and maintain a large number of feasible labels in
+every query, with computational complexity strongly tied to
+the number of nodes and links in the network. Consequently,
+CRL-SP demonstrates greater stability and scalability in
+large and complex networks, while the baseline suffers from
+rapidly growing runtime. Moreover, in real-world traffic
+systems, many OD pairs correspond to relatively short paths.
+In such cases, CRL-SP can dynamically shorten the runtime
+with reduced path length, whereas the baseline always incurs
+similar computational costs regardless of OD distance. This
+highlights the practical advantage of CRL-SP in complex and
+large-scale networks.
+For batch OD-pair queries on network (c), Table 7
+indicates that CRL-SP significantly outperforms the baseline
+in terms of total runtime, average per-path runtime, and
+throughput. The runtime of the baseline grows almost linearly
+with the number of OD pairs, reflecting its ‘‘independent
+search per query’’ nature. By contrast, CRL-SP achieves
+batch inference through tensorized forward propagation,
+enabling simultaneous computation of multiple OD pairs
+with far less than linear runtime growth. Specifically,
+when the number of OD pairs increases to 2000, the
+CRL-SP throughput exceeds 20,000 paths per second, while
+the baseline remains limited to a few hundred paths per
+second. This results in remarkable marginal effects: the
+46733
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+average runtime per path in CRL-SP decreases sharply
+from 0.00038 seconds to 0.00004 seconds as the batch size
+increases, whereas the baseline remains nearly constant.
+These findings demonstrate that the efficiency advantage of
+CRL-SP becomes increasingly prominent as the batch size
+grows. In practical applications where large numbers of OD
+pairs need to be processed simultaneously, such as large-scale
+demand forecasting or real-time traffic assignment and
+control, CRL-SP offers orders-of-magnitude acceleration
+and thus exhibits strong practical value and deployment
+potential. Overall, these results highlight that CRL-SP not
+only maintains stable performance across different network
+scales but also achieves substantial acceleration in large-scale
+and batch-query scenarios, underscoring its strong potential
+for real-world deployment.
+G. ABLATION OF STRUCTURAL DESIGN
+
+To further investigate the impact of key structural designs on
+the learning process and final performance, targeted ablation
+experiments were conducted to isolate the contributions of
+constraint enforcement mechanisms, architectural variants,
+and training strategies. These experiments systematically
+evaluate the effects of each component on path construction
+stability, convergence efficiency, and solution quality through
+comparative analysis. Specifically, the ablation on constraint
+enforcement mechanisms examines three progressive variants: the proposed hard constraint mechanism based on action
+masking (the main method), a soft constraint scheme that
+allows the full action space and applies a terminal penalty
+upon violation, and the most basic unconstrained pure DQN
+model (using only time-based rewards, without masking or
+penalties). This comparison aims to analyze the role of the
+hard constraint mechanism in path construction stability and
+learning efficiency. The ablation on architectural variants
+focuses on the dual-tower UVFA structure and a simplified
+single-tower DQN scheme, evaluating the contribution of
+topological embeddings and contextual feature fusion to
+representational capacity. The ablation on training strategies
+compares a progressive reinforcement learning framework
+that integrates behavior cloning pretraining with a pure
+reinforcement learning strategy initialized from scratch,
+analyzing the role of behavioral priors in accelerating
+convergence and enhancing stability in strongly constrained
+environments. In all ablation settings, the remaining network architecture, training hyperparameters, and evaluation
+procedures remain identical. To characterize the dynamic
+evolution, key performance metrics (such as mean link
+overlap ratio) are recorded at regular intervals on a fixed
+evaluation set, and the contributions of different components are analyzed through comparisons of their training
+trajectories.
+Figure 13 illustrates the evolution of the path structural
+similarity metric, measured by Mean LOR. The upper
+panel (A) presents the results of the ablation on constraint enforcement mechanisms, while the lower panel (B)
+corresponds to the ablation on architectural variants and
+46734
+
+training strategies. In the upper panel (A), the comparison
+of constraint enforcement mechanisms shows that the hard
+constraint mechanism based on action masking (the main
+method) maintains the highest and most stable Mean LOR
+values throughout the training process. Its performance
+improves rapidly in the early stage and gradually converges
+to a high and stable range in the later stage. In contrast,
+the soft constraint scheme (which allows the full action
+space and applies a terminal penalty upon violation) exhibits
+lower structural similarity in the early stage, followed by
+slower improvement accompanied by noticeable fluctuations;
+even in the later stage of training, its Mean LOR remains
+significantly lower than that of the hard constraint setting.
+The pure DQN model (using only time-based rewards,
+without any masking or penalties) displays the lowest and
+nearly flat curve: a slight initial rise followed by rapid
+stabilization at a low level, reflecting severe degradation of
+path structure under completely unconstrained conditions.
+These comparisons indicate that, in strongly constrained
+path planning problems, reliance on post-hoc penalty signals
+substantially increases exploration noise, whereas the hard
+constraint mechanism, by pre-filtering infeasible actions,
+effectively limits the search space and significantly enhances
+training stability and structural convergence efficiency.
+The results in the lower panel (B) further reveal the
+synergistic effects of architectural variants and training
+strategies. The dual-tower UVFA framework incorporating
+behavior cloning pretraining (the main method) exhibits
+high Mean LOR values from the initial training stage and
+quickly enters a stable improvement regime, demonstrating
+enhanced sample efficiency and improved initial feasibility. The single-tower DQN variant (with removal of the
+independent tower structure) shows a slightly slower ascent
+trajectory and stabilizes at a suboptimal level, indicating that
+the separation and fusion of topological embeddings and
+contextual features make an indispensable contribution to
+representational capacity. In contrast, the pure reinforcement
+learning strategy initialized from scratch (without behavior
+cloning) exhibits lower structural similarity in the early stage
+and a slower improvement rate, but as training progresses,
+its Mean LOR gradually approaches the stable range of the
+main method. This pattern suggests that behavior cloning
+pretraining primarily accelerates early solution discovery
+and convergence by providing a feasible structural prior,
+while architectural simplification introduces a noticeable
+bottleneck in final performance.
+Overall, the results in Figure 13 demonstrate that different
+structural designs play complementary roles in the learning
+process: constraint enforcement mechanisms primarily determine training stability and the effective feasible search space,
+architectural variants directly influence representational
+capacity and final solution quality, and training strategies
+mainly regulate sample efficiency and convergence speed.
+These findings further validate the rationality and necessity
+of the proposed framework for strongly constrained path
+planning tasks.
+VOLUME 14, 2026
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+FIGURE 13. Ablation study on constraint enforcement, architectural variants, and training strategies.
+
+IV. CONCLUSION
+
+This study reformulates emission-constrained shortest-path
+planning as a constrained reinforcement learning problem,
+demonstrating the feasibility of learning-based paradigms
+under stringent operational demands. The proposed CRL-SP
+framework integrates feasibility-aware decision rules with
+data-driven value approximation, enabling rapid adaptation to
+heterogeneous origins and dynamic budgets while ensuring
+strict compliance with hard constraints. This innovation
+bridges the precision of traditional optimization algorithms
+with the flexibility of AI, introducing a mechanism for intelligent response to environmental changes in transportation
+systems.
+Experimental insights reveal that CRL-SP aligns closely
+with CSPP-optimal solutions across diverse budgets, even
+capturing transferable routing patterns in unseen scenarios
+rather than relying on memorized interpolation. This suggests
+that reinforcement learning can implicitly encode global
+trade-offs, surpassing explicit enumeration to provide more
+robust solutions. Notably, under extreme constraints, the
+framework’s conservative behavior, prioritizing feasibility
+over unchecked optimality, underscores its potential as
+a safety net in real-world transportation, where policy
+
+VOLUME 14, 2026
+
+stringency or resource scarcity may render traditional methods ineffective.
+Practical advantages center on computational efficiency:
+through lightweight forward propagation, CRL-SP achieves
+order-of-magnitude throughput gains in batch queries, suitable for real-time dynamic routing and traffic management,
+while potentially reducing computational energy use in
+support of low-carbon objectives. However, limitations
+include reliance on static network attributes, which fail to
+fully capture the stochastic and time-varying nature of actual
+traffic systems; behavior under extreme atypical budgets
+also requires further scrutiny. Future extensions could
+incorporate stochastic settings, large-scale urban networks,
+and advanced representations such as graph neural networks
+or attention mechanisms to handle complex spatiotemporal
+dynamics.
+In summary, CRL-SP strikes a balance among optimality,
+generalization, robustness, and efficiency, offering a scalable
+solution for sustainable intelligent transportation systems. Its
+broader implications lie in advancing AI from micro-level
+path optimization to macro-level carbon neutrality transitions, fostering innovations in multimodal or high-uncertainty
+scenarios to support global green transportation governance.
+
+46735
+
+Y. Wang et al.: Shortest-Time Path Planning Under Carbon Emission Constraints via RL
+
+ACKNOWLEDGMENT
+
+(Yifan Wang and Kaifeng Duan are co-first authors.)
+REFERENCES
+[1] P. Hart, N. Nilsson, and B. Raphael, ‘‘A formal basis for the
+heuristic determination of minimum cost paths,’’ IEEE Trans.
+Syst. Sci. Cybern., vol. SSC-4, no. 2, pp. 100–107, Jul. 1968, doi:
+10.1109/TSSC.1968.300136.
+[2] X. Bai, L. Wang, Y. Hu, P. Li, and Y. Zu, ‘‘Optimal path planning
+method for IMU system-level calibration based on improved Dijkstra’s algorithm,’’ IEEE Access, vol. 11, pp. 11364–11376, 2023, doi:
+10.1109/ACCESS.2023.3240518.
+[3] D. Ding and X. Zou, ‘‘The optimization of logistics distribution route based
+on Dijkstra’s algorithm and C-W savings algorithm,’’ in Proc. Int. Conf.
+Mechatronics, Manuf. Eng. Comput. Sci. (MMEBC), 2016, pp. 956–965,
+doi: 10.2991/mmebc-16.2016.200.
+[4] X. Zhang, F.-Y. Jin, X.-M. Yuan, and H.-Y. Zhang, ‘‘Low-carbon
+multimodal transportation path optimization under dual uncertainty of
+demand and time,’’ Sustainability, vol. 13, no. 15, p. 8180, Jul. 2021, doi:
+10.3390/su13158180.
+[5] X. Liang, X. Liu, L. Mei, and D. Zhang, ‘‘Multi-objective green
+multimodal transport path optimization with the participation of highspeed railway,’’ in Proc. 6th Int. Conf. Transp. Inf. Saf. (ICTIS), Oct. 2021,
+pp. 1072–1077, doi: 10.1109/ICTIS54573.2021.9798582.
+[6] L. Yang, C. Zhang, and X. Wu, ‘‘Multi-objective path optimization of
+highway-railway multimodal transport considering carbon emissions,’’
+Appl. Sci., vol. 13, no. 8, p. 4731, Apr. 2023, doi: 10.3390/app13084731.
+[7] I. Derpich, C. Duran, R. Carrasco, F. Moreno, C. Fernandez-Campusano,
+and L. Espinosa-Leal, ‘‘Pursuing optimization using multimodal transportation system: A strategic approach to minimizing costs and CO2
+emissions,’’ J. Mar. Sci. Eng., vol. 12, no. 6, p. 976, Jun. 2024, doi:
+10.3390/jmse12060976.
+[8] D. Zhu, H. Zhu, and V. E. Arkorful, ‘‘Institutional pressure and
+eco-innovation: The moderating role of environmental uncertainty,’’
+Sci., Technol. Soc., vol. 29, no. 1, pp. 160–182, Mar. 2024, doi:
+10.1177/09717218231201945.
+[9] S. Sundarraj, R. V. K. Reddy, M. B. Basam, G. H. Lokesh, F. Flammini, and R. Natarajan, ‘‘Route planning for an autonomous robotic
+vehicle employing a weight-controlled particle swarm-optimized Dijkstra algorithm,’’ IEEE Access, vol. 11, pp. 92433–92442, 2023, doi:
+10.1109/ACCESS.2023.3302698.
+[10] L.-S. Liu, J.-F. Lin, J.-X. Yao, D.-W. He, J.-S. Zheng, J. Huang, and P. Shi,
+‘‘Path planning for smart car based on Dijkstra algorithm and dynamic
+window approach,’’ Wireless Commun. Mobile Comput., vol. 2021, no. 1,
+Jan. 2021, Art. no. 8881684, doi: 10.1155/2021/8881684.
+[11] T. Tian, H. Wu, H. Wei, F. Wu, and M. Xu, ‘‘An efficient route planning
+algorithm for special vehicles with large-scale road network data,’’ ISPRS
+Int. J. Geo-Inf., vol. 14, no. 2, p. 71, Feb. 2025, doi: 10.3390/ijgi140
+20071.
+[12] N. Peng, Y. Xi, J. Rao, X. Ma, and F. Ren, ‘‘Urban multiple route planning
+model using dynamic programming in reinforcement learning,’’ IEEE
+Trans. Intell. Transp. Syst., vol. 23, no. 7, pp. 8037–8047, Jul. 2022, doi:
+10.1109/TITS.2021.3075221.
+[13] J. Yan, Y. Li, Y. Gao, B. Qu, and J. Chen, ‘‘Q_EDQ: Efficient
+path planning in multimodal travel scenarios based on reinforcement
+learning,’’ Travel Behav. Soc., vol. 39, Apr. 2025, Art. no. 100943, doi:
+10.1016/j.tbs.2024.100943.
+[14] S. Gu, G. Chen, L. Zhang, J. Hou, Y. Hu, and A. Knoll, ‘‘Constrained
+reinforcement learning for vehicle motion planning with topological
+reachability analysis,’’ Robotics, vol. 11, no. 4, p. 81, Aug. 2022, doi:
+10.3390/robotics11040081.
+[15] T. Bektaş and G. Laporte, ‘‘The pollution-routing problem,’’ Transp.
+Res. B, Methodol., vol. 45, no. 8, pp. 1232–1250, Sep. 2011, doi:
+10.1016/j.trb.2011.02.004.
+[16] F.-P. Liu, J.-D. Leu, and A. Krischke, ‘‘Optimizing sustainable city
+logistics: A time window and CO2 emissions-aware vehicle routing
+approach,’’ in Proc. IEEE Int. Conf. Ind. Eng. Eng. Manage. (IEEM),
+Dec. 2023, pp. 0450–0454, doi: 10.1109/IEEM58616.2023.10406620.
+[17] J. Qian and R. Eglese, ‘‘Fuel emissions optimization in vehicle routing
+problems with time-varying speeds,’’ Eur. J. Oper. Res., vol. 248, no. 3,
+pp. 840–848, Feb. 2016, doi: 10.1016/j.ejor.2015.09.009.
+46736
+
+[18] Y. Xiao and A. Konak, ‘‘The heterogeneous green vehicle routing
+and scheduling problem with time-varying traffic congestion,’’ Transp.
+Res. E, Logistics Transp. Rev., vol. 88, pp. 146–166, Apr. 2016, doi:
+10.1016/j.tre.2016.01.011.
+[19] C. Liu, X. Xu, and D. Hu, ‘‘Multiobjective reinforcement learning: A comprehensive overview,’’ IEEE Trans. Syst., Man, Cybern., Syst., vol. 45,
+no. 3, pp. 385–398, Mar. 2015, doi: 10.1109/TSMC.2014.2358639.
+[20] T. Zhang, J. Cheng, and Y. Zou, ‘‘Multimodal transportation routing
+optimization based on multi-objective Q-learning under time uncertainty,’’
+Complex Intell. Syst., vol. 10, no. 2, pp. 3133–3152, Apr. 2024, doi:
+10.1007/s40747-023-01308-9.
+[21] A. Sarker, H. Shen, and K. Kowsari, ‘‘A data-driven reinforcement learning
+based multi-objective route recommendation system,’’ in Proc. IEEE 17th
+Int. Conf. Mobile Ad Hoc Sensor Syst. (MASS), Dec. 2020, pp. 103–111,
+doi: 10.1109/MASS50613.2020.00023.
+[22] K. Uchida, Y. Wang, and R. Tani, ‘‘Reliable pathfinding problems for
+a correlated network: A linear programming problem in a hypergraph,’’
+Eur. J. Oper. Res., vol. 326, no. 2, pp. 234–254, Oct. 2025, doi:
+10.1016/j.ejor.2025.04.046.
+[23] M. Tirico, V. L. Bescond, D. Sengelin, P. Gastineau, and A. Can,
+‘‘Multi-scale comparison of modeling chains for traffic-related air
+pollutant emission assessment,’’ Sustain. Cities Soc., vol. 129, Jul. 2025,
+Art. no. 106354, doi: 10.1016/j.scs.2025.106354.
+
+YIFAN WANG received the B.S. degree in transportation engineering from Jilin University, China,
+in 2020, and the M.S. degree in transportation
+from the University of Bristol, U.K., in 2021.
+He is currently pursuing the Ph.D. degree with
+Hokkaido University, Japan. His research interests
+include the modeling and intelligent optimization
+of complex transportation systems, with an emphasis on enhancing the efficiency and resilience of
+urban traffic networks.
+
+KAIFENG DUAN received the B.S. degree in
+transportation engineering from Shandong Jiaotong University, China, in 2019, the M.S. degree
+in transportation systems engineering from Nihon
+University, Japan, in 2022, and the Ph.D. degree
+in environmental policy and engineering from
+Hokkaido University, Japan. His research interests
+include transportation engineering, traffic state
+estimation, congestion pricing, and transportation
+network design under uncertainties.
+
+KENETSU UCHIDA received the B.S. degree in
+industrial engineering from Kanagawa University,
+Japan, in 1995, the M.S. degree in systems and
+information engineering from Hokkaido University, Japan, in 1997, and the Ph.D. degree in
+urban environmental engineering from the Graduate School of Engineering, Hokkaido University,
+in 2000. From August 2003 to May 2004, he was
+a Research Fellow with the Institute for Transport
+Studies, University of Leeds, U.K., sponsored
+by the Ministry of Education, Culture, Sports, Science and Technology,
+Japan. He joined Hokkaido University, in 2004, where he served as
+an Assistant Professor, from 2004 to 2013, an Associate Professor,
+from 2013 to 2018, and he has been a Professor, since 2018. His research
+interests include transportation planning, traffic engineering, transportation
+network modeling, and the reliability and optimization of transport systems.
+
+VOLUME 14, 2026
+
+

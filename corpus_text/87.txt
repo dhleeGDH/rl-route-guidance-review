@@ -1,0 +1,692 @@
+A Reinforcement Learning-Based Path
+Recommendation Strategy Considering Broadcast
+Disturbance and Behavioral Response
+
+2025 International Conference on Meta-Networking (MEET) | 979-8-3315-7785-8/25/$31.00 ©2025 IEEE | DOI: 10.1109/MEET67398.2025.11335650
+
+*
+
+*
+*
+†
+Junting Gao* , Zhaoyang Du* , Yangfei
+, Lin , Jiale Wu , and Guorong Han
+
+Department of Computer and Network Engineering, The University of Electro-Communications, Tokyo, Japan
+†
+B & S Tech Co., Ltd., Tokyo, Japan
+Email: {k2141014@edu.cc.uec.ac.jp, linyangfei@uec.ac.jp, duzhaoyang@uec.ac.jp,
+g2241007@edu.cc.uec.ac.jp, bstechtokyo@gmail.com }
+
+Abstract—With the development of intelligent transportation
+systems (ITS), providing efficient and robust path coordination
+under complex disturbances has become an urgent challenge.
+Traditional approaches often assume that broadcast instructions
+can be fully received and strictly executed, overlooking the uncertainties introduced by broadcast reception failure and heterogeneous driver behaviors. For the first time, this paper incorporates
+broadcast disturbances and behavioral response mechanisms as
+external control signals into the path recommendation framework.
+Probabilistic models are established to capture the stochasticity
+in instruction reception and execution, while additional delay
+estimation is integrated to construct an expected travel time
+representation. On this basis, a Proximal Policy Optimization
+(PPO)-based reinforcement learning framework is designed, where
+multiple candidate paths together with the option of retaining the
+current path are jointly considered in the action space, enabling
+dynamic path recommendations that balance efficiency and risk.
+Experiments based on real traffic datasets and road networks
+verify the effectiveness of the proposed method, demonstrating
+strong robustness under both peak and off-peak scenarios. The
+results indicate that explicitly modeling broadcast and response
+uncertainties, combined with reinforcement learning optimization,
+provides a more practical and reliable solution for emergency
+scheduling and efficient travel in ITS.
+Index Terms—Path Recommendation, Intelligent transportation
+systems, Reinforcement Learning, Broadcast Disturbance, Behavioral Response
+
+I. I NTRODUCTION
+The continuous growth in urban transportation demand has
+rendered congestion and unexpected incidents critical bottlenecks limiting the operational efficiency of road networks.
+Against this backdrop, coordinated path planning within Intelligent Transportation Systems (ITS) plays a pivotal role
+in enhancing overall travel efficiency [1], [2]. Rather than
+merely identifying the shortest path for individual vehicles, the
+core objective lies in optimizing traffic resource allocation at
+the system level, minimizing global delay, and improving the
+robustness of the transportation network.
+In typical traffic coordination practices, platforms often
+employ broadcast-response mechanisms, such as information
+dissemination and diversion guidance, to steer vehicles and enhance system wide efficiency. However, factors at the physical
+
+communication layer, such as signal attenuation and interferenc,
+may result in instruction delivery failures [3], [4]. Even when
+instructions are successfully received, drivers may reject or delay execution due to distraction, individual risk preferences, or
+other behavioral factors. These issues introduce a gap between
+the theoretically planned model and actual traffic behavior,
+ultimately undermining the effectiveness of the overall system.
+These uncertainties become particularly pronounced in emergency scenarios. Take the example of guaranteeing the passage
+of emergency vehicles such as ambulances or fire engines [5],
+[6]. Even if the dispatch center is able to generate a priority
+route and issue clearance instructions, vehicles ahead may still
+fail to yield in time because of communication failures or
+delayed driver responses. In sudden medical incidents or other
+urgent situations, a common solution is to have traffic police
+clear the way on site. Yet this method lacks a global view of
+the route, works only by gradually dispersing traffic along local
+segments, and depends on manual broadcasting and direction,
+which inevitably slows the response. During peak hours or
+within complex road networks, it often results in additional
+delays. Such systemic breakdowns not only pose direct risks
+to life and property but can also trigger cascading effects
+that worsen local congestion. Therefore, a key challenge for
+intelligent transportation research is how to explicitly model
+the uncertainties arising from communication disruptions and
+heterogeneous driver responses in coordinated path planning.
+Existing research predominantly focuses on deterministic
+path planning algorithms, such as shortest path [7] and dynamic traffic assignment [8], which perform well under ideal
+conditions but struggle with random disturbances. Although
+federated learning and reinforcement learning have recently
+been applied to traffic signal control, path recommendation,
+and flow allocation [9]–[11], most approaches still assume
+full compliance with planned strategies, overlooking uncertainties from communication failures and driver behavior. In
+emergency vehicle routing, prior studies mainly emphasize
+priority scheduling and yielding mechanisms, often relying
+on rule based heuristics or priority schemes, while neglecting
+probabilistic modeling of broadcast disturbances and diverse
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:28 UTC from IEEE Xplore. Restrictions apply.
+
+driver responses. Overall, the lack of systematic integration
+of broadcast disturbances and behavioral response uncertainty
+into coordinated path optimization frameworks significantly
+limits both the robustness and the real-world applicability of
+intelligent transportation systems.
+To address the above challenges, this paper models broadcast
+disturbances and behavioral response uncertainty as an external
+control signal, and explicitly incorporates their stochastic nature
+through probabilistic modeling. Specifically, we not only construct reception probability and response probability models to
+account for communication coverage insufficiency and driver
+behavior differences, but also incorporate the estimation of
+additional delay to build a probability weighted expected travel
+time representation, which more accurately reflects path cost
+under complex traffic conditions. Building on this foundation,
+we further adopt a reinforcement learning approach based on
+Proximal Policy Optimization (PPO). Path switching and path
+continuation are unified as decision options within a single
+action space, enabling robust and risk aware coordination in
+dynamic environments. The main contributions of this work
+are as follows:
+• We explicitly incorporate two critical factors, broadcast
+disturbance and behavioral response uncertainty, into system level path coordination. By integrating traffic observation data with communication characteristics, we establish
+a unified probabilistic model of reception and response
+that captures the heterogeneity of command propagation
+and execution. Unlike methods that rely on rigid prior
+assumptions, our probabilistic modeling directly reflects
+uncertainties in both communication and driver behavior,
+making path coordination closer to real world traffic
+conditions.
+• To address additional delays and tail risks caused by
+disturbances, we design a probabilistic delay estimation
+mechanism. This approach maps uncertainties in message
+reception and driver response into a distribution of additional delays and replaces the conventional mean based
+travel time with a risk sensitive expectation. As a result,
+path cost estimation becomes more realistic and more
+sensitive to extreme outcomes.
+• We propose a PPO based decision framework that integrates path switching and continuation within a single
+action space. This design enables the policy to adaptively
+balance efficiency and risk under dynamic traffic conditions, ensuring both global robustness and local stability.
+The resulting path recommendation strategy provides a
+practical and effective solution for coordinated optimization in intelligent transportation systems.
+II. P ROPOSED M ETHOD
+The proposed path recommendation method consists of three
+core components: traffic feature modeling, disturbance and
+travel time modeling, and risk sensitive policy optimization.
+First, edge level traffic flow features are extracted from real
+
+road networks and sensor data to construct a representation
+of basic traffic conditions. At the disturbance modeling layer,
+uncertainties arising from broadcast disturbances and behavioral responses are explicitly modeled and combined with additional travel time to construct a probability-weighted expected
+travel time representation, thereby quantifying potential delays
+caused by such disturbances. Finally, reinforcement learning
+is employed for coordinated decision making, achieving a
+balance between efficiency and risk in dynamic environments
+and enhancing the robustness of path recommendation.
+A. Traffic Feature Modeling
+To support the optimization of coordinated path planning,
+this paper first formalizes the traffic state by edge wise modeling. Sensor observation data are projected onto road network
+edges e = (u, v) to form a unified feature representation. At
+each time step t, the following feature set is constructed:
+λe,t = {qe,t , ve,t , occe,t , vf f,e , Ce }
+
+(1)
+
+where qe,t , ve,t , and occe,t denote traffic flow, speed, and
+occupancy, respectively. vf f,e is the historical free flow speed,
+and Ce is the designed capacity of the edge.
+To further quantify the traffic state, the actual travel time Te,t
+and the congestion factor ke,t are defined as follows:
+Le
+max(ve,t , vmin )
+Te,t
+vf f,e
+= ff =
+max(v
+e,t , vmin )
+Te
+
+Te,t =
+
+(2)
+
+κe,t
+
+(3)
+
+ff
+where Le is the length of the edge, and Te,t
+= Le /vf f,e
+represents the free flow travel time. The congestion factor with
+larger values indicating more severe congestion.
+To enhance the robustness and risk awareness of the state
+representation, this paper further introduces a position wise
+weighted Travel Time Index (TTI), which integrates both
+flow–capacity ratio and speed deviation information. It is defined as:
+
+β !
+qe,t
+T T Ie,t = θ1 1 + α
++ θ2 · κe,t
+(4)
+Ce
+
+where α and β are empirical parameters, and θ1 , θ2 are
+weighting coefficients.
+Finally, the state sequence over the path T is defined as:
+D = {T T Ie,t | e ∈ E, t ∈ T }
+
+(5)
+
+By performing spatiotemporal alignment between the road
+network topology and sensor monitoring data, this paper constructs a unified edge level representation of dynamic traffic
+states. This representation not only serves as the basic input
+for subsequent path decision making, but also provides the data
+foundation for quantifying probabilistic additional delays in the
+disturbance–travel time model.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:28 UTC from IEEE Xplore. Restrictions apply.
+
+B. Perturbation Probability and Delay Modeling
+In real traffic environments, route planning is not only
+determined by the operating state of the road network itself,
+but is also significantly affected by external control signal
+transmission and differences in driver behavior. Especially in
+information guidance scenarios, even if the planning center
+successfully computes the optimal route, whether vehicles
+can execute the instruction still depends on the reliability of
+broadcasting and the willingness to respond. Therefore, this
+paper explicitly incorporates these two types of uncertainty into
+the modeling framework and further constructs a probabilistic
+travel time representation including additional delay.
+1) Broadcast–Response Probability Modeling: During the
+driving process, whether the driver can successfully receive the
+broadcast instruction and whether to choose to execute it are
+the key factors determining the effectiveness of route planning.
+First, define the reception probability at edge e and time t as:
+Precv (e, t) ∈ [0, 1].
+
+(6)
+
+It mainly depends on communication coverage, signal-tonoise ratio, and traffic operation state factors. Therefore, the
+corresponding probability of missing reception is:
+Pmiss (e, t) = 1 − Precv (e, t).
+
+(7)
+
+The reception probability is estimated through regression
+modeling based on historical communication data and real time
+feedback from traffic sensing devices:
+Precv (e, t) =σ α0 + α1 cove,t + α2 ve,t
+
++ α3 occe,t + α4 spde,t .
+
+(8)
+
+where cove,t denotes coverage, ve,t denotes traffic volume,
+occe,t denotes occupancy, and spde,t denotes speed.
+Even if the broadcast is successfully received, the driver may
+still ignore or misinterpret the information. The probability of
+non-response is defined as:
+Pnorep (e, t) = 1 − Prep (e, t),
+
+(9)
+
+This probability is affected by individual driver heterogeneity
+and traffic conditions, and is also estimated through regression
+modeling:
+Prep (e, t) =σ β0 + β1 lanee + β2 ve,t
+
++ β3 occe,t + β4 spde,t .
+
+(10)
+
+where lanee denotes the lane index.
+2) Expected Travel Time: In cases where reception failure
+or non-response occurs, the situation will lead to incomplete
+execution of driving instructions and result in additional delay
+∆t. Define the additional delay ∆t, where ∆tmiss represents the
+delay under failed reception, and ∆tnorep represents the delay
+under non-response. The travel time of edge e is:
+Le
+ve,t
++ Pmiss (e, t) · ∆tmiss + Pnorep (e, t) · ∆tnorep . (11)
+
+Texp,e (t) = Tfree,e +
+
+Here, Tfree,e denotes the travel time under free-flow conditions, Le is the road length, and ve,t is the traffic flow velocity
+obtained by the sensor within time t.
+By extension, the expected travel time can be expressed as:
+Le
++
+ve,t
+E[∆tmiss ] · Pmiss (e, t) + E[∆tnorep ] · Pnorep (e, t).
+(12)
+
+Texp,e (t) =Tfree,e +
+
+This comprehensive modeling integrates the uncertainty of
+communication transmission and provides a solid basis for
+subsequent reinforcement learning based strategy optimization.
+C. Policy Optimization
+In the path planning problem, the perception state of the
+intelligent agent and the executable actions are the core of
+policy optimization. This paper maps the road network features
+at each time slot t into a state vector. The vector integrates
+edge-level traffic flow, occupancy, speed, and the derived congestion coefficient, while explicitly introducing the broadcast
+reception probability and the driver response probability. This
+state representation can comprehensively reflect the road operation conditions and potential perturbation risks, providing
+the intelligent agent with globally observable information for
+decision-making.
+At the decision-making level, the intelligent agent selects
+one path to execute from K candidate paths from the origin to
+the destination, and the action set is denoted as {1, 2, . . . , K}.
+The action of keeping the current path is defined as the vehicle continuing on the predetermined route, whereas switching
+represents the selection of a new candidate path by the intelligent agent. With the changes in traffic state and perturbation
+feedback, the action set is dynamically adjusted.
+To align the reinforcement learning objective with the optimization goal of route selection, the reward function is defined
+as the comprehensive negative effect of travel time, delay, and
+lane changing cost:
+
+R(st , at ) = − Ttravel (st , at ) + ∆Tdelay (st , at )
+
+(13)
++ λ · Nlanechange (st , at )
+where Ttravel (st , at ) denotes the travel time when action at is
+taken in state st , ∆Tdelay (st , at ) represents the additional delay
+caused by traffic disturbances, and Nlanechange (st , at ) denotes the
+number of lane changes, with λ being the penalty coefficient.
+This design ensures that the agent can simultaneously consider
+traffic efficiency, disturbance impacts, and lane changing penalties during the policy optimization process.
+On this basis, the overall objective of policy optimization is
+expressed as maximizing the cumulative expected reward in the
+long-term interaction process:
+" T
+#
+X
+J(θ) = Eπθ
+γ t R(st , at ) ,
+(14)
+t=0
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:28 UTC from IEEE Xplore. Restrictions apply.
+
+where θ is the policy parameter, γ is the discount factor, and
+πθ is the policy distribution parameterized by θ. To improve
+training stability and sample efficiency, this paper adopts PPO.
+The objective function is defined as:
+h
+LPPO (θ) = Et min rt (θ)Ât ,
+i
+clip(rt (θ), 1 − ε, 1 + ε)Ât .
+(15)
+where rt (θ) =
+
+πθ (at |st )
+πθold (at |st )
+
+denotes the probability ratio of
+
+new and old policies, Ât is the advantage function, and ε is
+the clipping parameter. The advantage function is calculated
+using Generalized Advantage Estimation (GAE):
+Ât =
+
+T
+−t
+X
+
+(γλ)l δt+l ,
+
+(16)
+
+l=0
+
+where δt = rt + γV (st+1 ) − V (st ), V (·) denotes the value
+function, and λ is the adjustment coefficient for balancing bias
+and variance.
+Through the above design, the policy optimization process
+realizes the organic unification from traffic state perception,
+perturbation modeling to risk-aware decision-making, providing
+a stable and efficient reinforcement learning mechanism for
+dynamic path recommendation.
+III. E XPERIMENTS AND R ESULTS
+This section outlines the experimental setup and results analysis, covering the dataset, parameters and evaluation metrics,
+followed by a comparative performance analysis.
+A. Experimental setup
+1) Dataset and Road Network: The experiments are conducted using the publicly available California Performance
+Measurement System (PeMS) dataset, which is widely adopted
+in traffic prediction studies for its ability to capture dynamic
+traffic behavior across various temporal scales. The dataset includes key indicators such as traffic flow, speed, and occupancy,
+exhibiting strong spatiotemporal correlations and fluctuation
+characteristics, making it suitable for congestion prediction and
+path recommendation tasks. The road network is constructed
+based on OpenStreetMap (OSM), and sensor monitoring data
+are spatially matched and mapped to corresponding road network edges.
+2) OD Pair Construction: Based on the constructed road
+network, the experiment first generates origin-destination (OD)
+pairs covering different regions and travel distances. All OD
+pairs are then split into training, validation, and test sets with
+a ratio of 70% : 15% : 15%.
+3) Parameter Settings: For each OD pair, K = 15 candidate
+paths are generated. The main hyperparameters of the PPO
+algorithm are set as follows: learning rate lr = 0.0003,
+γ = 0.99, λ = 0.95, ε = 0.2, and epoch = 200. The reward
+function considers both traffic efficiency and communication
+disturbance. The travel time cost is calculated based on the
+
+expected travel time, while the disturbance term is incorporated by modeling the broadcast reception probability and
+the non-response probability, introducing weighted penalties.
+This ensures the reward signal reflects both efficiency and
+communication stability.
+4) Evaluation Metrics: To comprehensively evaluate the
+performance of the proposed path recommendation method, the
+following metrics are employed.
+• Average Travel Time (ATT, s): Measures the average
+time required for vehicles to complete the task in a given
+scenario, reflecting the overall traffic efficiency.
+2
+• Variance of Travel Time (s ): Represents the dispersion
+of travel times, where a smaller variance indicates more
+stable travel outcomes.
+• Maximum Delay (s): Maximum additional delay relative
+to expected time, indicating worst-case or extreme congestion risk.
+• Switching Frequency: Average number of path changes
+per decision step, used to assess policy stability and
+switching cost.
+• Task Completion Rate: Proportion of trips that reach
+the destination within the allowed time window, indicating
+reachability and reliability.
+• Quantile Travel Time (P50 / P90 / P95 / P99): Corresponds to the travel times at different quantiles. P50
+denotes the median, reflecting typical performance under
+normal conditions, while P90, P95 and P99 are employed
+to evaluate tail performance, capturing travel delays under
+highly congested or abnormal conditions.
+By jointly analyzing the above metrics, this study evaluates
+the proposed method from the perspectives of efficiency, stability, robustness, safety, and reliability, thereby providing a
+comprehensive assessment of its effectiveness under different
+parameter settings.
+B. Experimental results analysis
+1) Peak vs Off-Peaks: Figure 1 presents the performance
+comparison under the Off-peak and Peak traffic scenarios.
+The algorithm is evaluated across five dimensions: ATT, Var,
+Maximum Delay, Switching Frequency, and Task Completion
+Rate.
+First, in terms of traffic efficiency, the average travel time in
+the Peak scenario is significantly higher than that in the Offpeak scenario, indicating that congestion leads to an overall
+decline in efficiency. At the same time, the variance of travel
+time nearly doubles under the Peak condition, suggesting
+greater fluctuations and enhanced uncertainty in travel outcomes. Second, regarding robustness, the maximum delay in
+the Peak scenario reaches 360.65s, approximately three times
+that of the Off-peak scenario, which demonstrates that agents
+may encounter more severe delays under extreme congestion.
+This result reflects the cumulative effect of traffic disturbances
+in peak conditions. In terms of behavioral characteristics, the
+switching frequency during the Peak scenario is about twice
+that in Off-peak, implying that agents adopt more aggressive
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:28 UTC from IEEE Xplore. Restrictions apply.
+
+lane-changing strategies to reduce travel time. however, such
+frequent switching may introduce additional safety risks. Finally, from the perspective of task reliability, the task completion rate remains high in both scenarios, showing that
+the proposed method can consistently accomplish tasks under
+varying traffic conditions, though a slight decrease is observed
+during peak periods, reflecting the potential impact of traffic
+complexity on task success rates.
+Figure 2 illustrates the comparison of travel times at different
+quantiles (P50, P90, P95, P99). It can be observed that, overall,
+the travel times in the Peak scenario are consistently higher
+than those in the Off-peak scenario. From the perspective of
+tail distribution, the increase in travel time between P90 and
+P99 is steeper in the Peak case. The growth from P50 to P99
+is about 40s in the Off-peak scenario, whereas in the Peak
+scenario it exceeds 40s and follows a more linear upward
+trend, indicating that delay risks are more pronounced under
+extreme peak conditions. In addition, the Off-peak curve is
+relatively smooth, suggesting a more concentrated distribution
+of travel times and better system stability, while the Peak curve
+is steeper, implying that vehicles in congested environments
+are more susceptible to random disturbances and thus exhibit
+greater uncertainty.
+In summary, the experimental results demonstrate that the
+proposed system is able to maintain satisfactory travel efficiency and stability under varying traffic conditions. In typical
+scenarios, it effectively reduces travel time, reflecting high
+operational efficiency. Under congested and extreme conditions,
+although efficiency and robustness decline to some extent and
+agents incur higher lane-changing costs to sustain performance,
+the system successfully suppresses excessive tail delays. Moreover, the overall task completion rate remains close to 100%,
+further confirming the adaptability and robustness of the method
+in complex traffic environments.
+
+Fig. 1. Efficiency and Stability Across Scenarios.
+
+Fig. 2. Tail Risk by Scenario.
+
+2) Sensitivity of Key PPO Hyperparameters: We conduct
+a sensitivity analysis in which one factor is varied at a time,
+based on the default configuration of ε = 0.20, γ = 0.99 and
+λ = 0.95. The results are shown in Table I.
+Clipping threshold ε: This parameter primarily affects the
+magnitude of policy updates, essentially balancing learning
+stability and adaptability. The results show that when ε = 0.10,
+the system exhibits better stability with lower variability in
+travel time, but the ATT rises to 115.2s, limiting overall
+efficiency. When ε increases to 0.30, the ATT decreases to
+112.4s, indicating that more aggressive updates improve efficiency. however, the variance and maximum delay increase to
+502.66 and 367.92, respectively, leading to reduced stability. In
+comparison, ε = 0.20 achieves a better trade-off between efficiency and stability, with ATT maintained at 113.9s, variance
+at 489.08, and task completion rate at 99.20%, representing a
+more balanced overall performance.
+Discount factor γ: This parameter determines the degree to
+which the agent values long-term rewards, thus influencing the
+foresight of the policy. Experimental results show that when
+γ = 0.97, the ATT increases and the P95 quantile travel time
+rises to 140.86s, indicating a higher tail-delay risk and weaker
+robustness in congested scenarios. By contrast, γ = 0.99
+demonstrates more balanced performance, not only maintaining
+lower ATT but also effectively suppressing the expansion of tail
+delays, while keeping the task completion rate at 99.20%. This
+suggests that emphasizing long-term returns enhances overall
+performance in path planning tasks, making γ = 0.99 a more
+reasonable configuration.
+GAE parameter λ: This parameter controls the trade-off
+between bias and variance in advantage estimation. The results
+show that λ = 0.90 can keep the maximum delay at 355.47s,
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:28 UTC from IEEE Xplore. Restrictions apply.
+
+TABLE I
+P ERFORMANCE COMPARISON UNDER DIFFERENT PARAMETER SETTINGS IN P EAK SCENARIO
+Peak Settings
+ε = 0.20, γ = 0.99, λ = 0.95
+ε = 0.10, γ = 0.99, λ = 0.95
+ε = 0.30, γ = 0.99, λ = 0.95
+ε = 0.20, γ = 0.97, λ = 0.95
+ε = 0.20, γ = 0.99, λ = 0.90
+ε = 0.20, γ = 0.99, λ = 0.98
+
+ATT
+113.9
+115.2
+112.4
+114.7
+114.3
+113.5
+
+Var (s2 )
+489.08
+476.37
+502.66
+493.25
+482.91
+497.42
+
+Maximum Delay
+360.65
+354.28
+367.92
+362.14
+355.47
+364.81
+
+Switching Frequency
+0.30
+0.25
+0.35
+0.30
+0.30
+0.30
+
+showing relative stability under extreme conditions, but it also
+increases the variability of travel times, with slight declines in
+both efficiency and task completion rate. On the other hand,
+λ = 0.98 leads to a variance increase to 497.42 and higher
+tail delays, reflecting instability caused by excessive variance.
+In comparison, λ = 0.95 demonstrates the most balanced
+performance across multiple metrics, maintaining relatively low
+average travel time while improving the task completion rate
+to 99.20%. This indicates that λ = 0.95 achieves a better
+compromise among efficiency, stability, and robustness, thus
+being the preferred choice.
+C. Summary
+This chapter validates the effectiveness and robustness of
+the proposed strategy under varying traffic conditions through
+comprehensive experiments. By explicitly modeling broadcast
+disturbances and behavioral responses and integrating PPO for
+online decision-making, the system achieves high task completion rates in both off-peak and peak scenarios. At the same time,
+it reduces average travel time and controls tail risks, showing
+strong adaptability to dynamic traffic environments. Although
+peak-hour conditions reduce efficiency and increase delay fluctuations, the overall performance remains stable, indicating
+robust behavior. Sensitivity analysis further reveals that policy
+performance depends on the interaction of speed, horizon, and
+memory, and that appropriate parameter choices can balance
+efficiency and stability. Moderate updates, greater emphasis
+on long-term returns, and intermediate GAE settings yield the
+most consistent results. Overall, the method shifts from mean
+optimality to risk-aware optimization, achieving a good balance
+between efficiency and robustness while supporting deployment
+in complex traffic environments.
+IV. C ONCLUSION
+This paper proposes a reinforcement learning based path
+recommendation strategy that incorporates broadcast disturbances and behavioral responses, addressing the challenges
+of reception uncertainty and driver variability in intelligent
+transportation systems. Communication coverage insufficiency
+and driver compliance are modeled as independent probabilistic
+events, and a risk aware expected travel time is constructed
+to provide a more realistic and robust cost representation
+for path planning. The candidate path set is optimized with
+the PPO algorithm through online learning, enabling efficient
+and resilient decision making under complex disturbances.
+Experimental results show that the proposed strategy effectively
+
+Task Completion Rate
+99.20%
+99.15%
+99.05%
+99.12%
+99.18%
+99.14%
+
+P50
+98.89
+100.31
+97.62
+99.48
+99.12
+98.71
+
+P90
+135.91
+136.74
+134.82
+136.12
+136.02
+135.84
+
+P95
+140.54
+141.08
+139.77
+140.86
+140.67
+140.75
+
+P99
+144.24
+145.02
+143.51
+144.53
+144.29
+144.38
+
+handles diverse traffic loads, improving travel efficiency while
+suppressing tail risks. Future work will explore finely grained
+modeling of driver behavior, multiagent cooperative planning,
+and the transferability of the model to largescale road networks.
+ACKNOWLEDGMENT
+This research was supported in part by JST ASPIRE Grant
+Number JPMJAP2325, and in part by JSPS KAKENHI under
+Grant No. 24K02937.
+R EFERENCES
+[1] F. Gul, I. Mir, L. Abualigah, P. Sumari, and A. Forestiero, “A consolidated review of path planning and optimization techniques: Technical
+perspectives and future directions,” Electronics, vol. 10, no. 18, p. 2250,
+2021.
+[2] S. Danba, J. Bao, G. Han, S. Guleng, and C. Wu, “Toward collaborative
+intelligence in iov systems: Recent advances and open issues,” Sensors,
+vol. 22, no. 18, p. 6995, 2022.
+[3] Z. Du, C. Wu, T. Yoshinaga, X. Chen, X. Wang, K.-L. A. Yau, and Y. Ji,
+“A routing protocol for uav-assisted vehicular delay tolerant networks,”
+IEEE Open Journal of the Computer Society, vol. 2, pp. 85–98, 2021.
+[4] L. Gao, C. Wu, Z. Du, T. Yoshinaga, L. Zhong, F. Liu, and Y. Ji,
+“Toward efficient blockchain for the internet of vehicles with hierarchical
+blockchain resource scheduling,” Electronics, vol. 11, no. 5, p. 832, 2022.
+[5] M. S. Peelam, M. Gera, V. Chamola, S. Zeadally, et al., “A review on
+emergency vehicle management for intelligent transportation systems,”
+IEEE transactions on intelligent transportation systems, 2024.
+[6] M. Humayun, M. F. Almufareh, and N. Z. Jhanjhi, “Autonomous traffic
+system for emergency vehicles,” Electronics, vol. 11, no. 4, p. 510, 2022.
+[7] A. Bybordi, M. DiCicco, A. Raja, and A. L. Bazzan, “Chidyn: a
+clustering-based hierarchical approach for dynamic traffic assignment,”
+Transportation Research Procedia, vol. 78, pp. 63–70, 2024.
+[8] Y. Liu, X. Gao, B. Wang, J. Fan, Q. Li, and W. Dai, “A passage time–
+cost optimal a* algorithm for cross-country path planning,” International
+Journal of Applied Earth Observation and Geoinformation, vol. 130,
+p. 103907, 2024.
+[9] Y. Chen, C. Wu, Z. Du, Y. Lin, S. Djahel, and L. Zhong, “Hier-fedmeta: A
+hierarchical federated meta-learning framework for personalized and efficient iov systems,” in 2024 IEEE 99th Vehicular Technology Conference
+(VTC2024-Spring), pp. 1–5, IEEE, 2024.
+[10] J. Bao, C. Wu, Y. Lin, L. Zhong, X. Chen, and R. Yin, “A scalable
+approach to optimize traffic signal control with federated reinforcement
+learning,” Scientific Reports, vol. 13, no. 1, p. 19184, 2023.
+[11] R. Jaramillo-Martı́nez, E. Chavero-Navarrete, and T. Ibarra-Pérez,
+“Reinforcement-learning-based path planning: A reward function strategy,” Applied Sciences, vol. 14, no. 17, p. 7654, 2024.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:28 UTC from IEEE Xplore. Restrictions apply.
+
+

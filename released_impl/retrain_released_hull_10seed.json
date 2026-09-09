@@ -1,0 +1,152 @@
+{
+ "study": "[25] DRL-Router, released implementation, unmodified",
+ "network": "its own shipped Anaheim, 416 nodes",
+ "border_nodes": 13,
+ "band": 0.0,
+ "destination": 15,
+ "origins": 30,
+ "iterations": 3000,
+ "seeds": 10,
+ "results": {
+  "closed": {
+   "per_seed": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    60.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+   ],
+   "mean": 96.0,
+   "sd": 12.649110640673518,
+   "counts_per_seed": [
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 18,
+     "exit": 0,
+     "stuck": 12
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    }
+   ],
+   "exit_rate": 0.0,
+   "stuck_rate": 4.0
+  },
+  "open": {
+   "per_seed": [
+    40.0,
+    40.0,
+    40.0,
+    40.0,
+    40.0,
+    40.0,
+    40.0,
+    40.0,
+    40.0,
+    40.0
+   ],
+   "mean": 40.0,
+   "sd": 0.0,
+   "counts_per_seed": [
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    },
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    },
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    },
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    },
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    },
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    },
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    },
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    },
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    },
+    {
+     "arrive": 12,
+     "exit": 18,
+     "stuck": 0
+    }
+   ],
+   "exit_rate": 60.0,
+   "stuck_rate": 0.0
+  }
+ }
+}

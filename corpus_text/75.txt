@@ -1,0 +1,680 @@
+2022 IEEE Intl Conf on Dependable, Autonomic and Secure Computing, Intl Conf on Pervasive Intelligence and Computing, Intl Conf on Cloud and Big Data Computing, Intl Conf on Cyber Science and Technology Congress (DASC/PiCom/CBDCom/CyberSciTech) | 978-1-6654-6297-6/22/$31.00 ©2022 IEEE | DOI: 10.1109/DASC/PiCom/CBDCom/Cy55231.2022.9927840
+
+1
+
+Autonomous Vehicles in Smart Cities: a Deep
+Reinforcement Learning Solution
+Francesco Giannini Student Member, IEEE, Giuseppe Franzè Senior Member, IEEE,
+Francesco Pupo Member, IEEE and Giancarlo Fortino Fellow, IEEE
+
+Abstract—In order to alleviate the traffic congestion problem
+in the context of Smart Cities, this paper proposes a new routing
+strategy, based on Deep Reinforcement Learning. The idea is to
+perform Routing actions in real-time while considering the actual
+traffic situation on the overall road network.
+To evaluate the performance of the proposed solution, a
+co-design procedure, involving a microscopic traffic simulator
+and MATLAB environment, is implemented allowing the use of
+complex operating scenarios and the integration of information
+coming from road maps and vehicle state trajectories.
+Finally, some simulations performed considering a real city
+district, show that the proposed algorithm can successfully realize
+real-time routing decisions and improve accumulated waiting
+time although the dynamic changes inside the road environment.
+
+I. I NTRODUCTION
+In the last decades traffic congestion has become a serious
+issue and has led to an urgent need for innovative solutions
+to deal with it. More specifically, Internet of Vehicles (IoV)
+[1] [2] is spreading across all the high-tech roads and will
+soon become the technological paradigm of assisted and
+autonomous driving. In this context, Vehicle Routing Problem
+(VRP) [3] is a well studied topic and several solutions have
+been proposed: starting from classical techniques based on
+optimization theory [4] [5] to the latest solutions based on
+Game Theory [6] and Machine Learning [7] [8] [9].
+In this paper, the application paradigm is sub-microscopictraffic-simulation [10]: each vehicle and its dynamics are
+modeled individually. Therefore we deal with the problem
+of routing and controlling the vehicles while maintaining a
+platoon formation among them. Studies along these lines have
+been presented in [11] and [12]. The context is a Urban Road
+Network (URN), with its real traffic demand [13].
+Our work uses Reinforcement Learning (RL) [14] to deal
+with traffic congestion and to lead the autonomous vehicles
+to their own destinations. RL learns from experience and
+could reconsider its own believes about how to drive over the
+URN, so it always tries to improve what it has learned. More
+Francesco Giannini, Giancarlo Fortino and Francesco Pupo are with
+DIMES, Università della Calabria, Via Pietro Bucci, Cubo 41/42-C, Rende
+(CS), 87036, ITALY, francesco.giannini@dimes.unical.it
+
+{giancarlo.fortino, francesco.pupo}@unical.it
+Giuseppe Franzè is with DIMEG, Università della Calabria,
+Via Pietro Bucci, Cubo 42-C, Rende (CS), 87036, ITALY,
+
+specifically, our solution is based on Deep Q Learning [15],
+therefore we don’t need a traffic evolution model and the Q
+function is a Neural Network.
+In order to simulate the proposed DQL Algorithm in complex environments, we have developed a co-design between
+Simulation of Urban MObility®(SUMO) software [16] and
+MATLAB 2022a®.
+II. N OTATION AND DEFINITIONS
+The vehicles drive within an URN, consisting of M links
+and F junctions:
+Definition 1: A link is defined as a portion of a road between
+two junctions.
+2
+Definition 2: A junction is a point over the URN where a
+routing action is applied.
+2
+Definition 3: Given a road link j, at each time instant t the
+vehicle density ρj (t) is defined as follows:
+µj (t)
+ρj (t) ≜ ¯j j
+d l
+
+(1)
+
+where µj (t) ∈ ZZ+ is the number of vehicles on j at t, d¯j ∈
+IR+ the average road width and lj the road length.
+2
+III. P ROBLEM F ORMULATION
+Let us consider a URN. The vehicle has to choose an action
+when it entries in the ”Decision Zone” (DZ, see figure 1), i.e.,
+when it is near to the next junction. ”Near” can be imposed,
+specifically, by a constant distance or through a function of
+the actual vehicle longitudinal velocity. This decision zone
+has to be formally defined for each link, this translates into
+the following half-space description
+DZ j : H j p > g j , p ∈ IR2 , j = 1, . . . , M
+2
+
+(2)
+
+where H j and g j identify a plane in IR corresponding to the
+decision zone on the j-link. See explanatory example of Fig.
+1.
+By exploiting the decision zone as a threshold, the VRP
+can be easily recast as a path search problem on a fully
+connected graph. For the sake of computational complexity
+savings, the resulting graph can be appropriately pruned to
+reduce as much as possible the research space. For example,
+the district illustrated in figure 2 has been translated into a
+graph and pruned, as illustrated in figure 3.
+
+giuseppe.franze@unical.it
+——————————————————————
+978-1-6654-6297-6/22/$31.00 ©2022 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:51 UTC from IEEE Xplore. Restrictions apply.
+
+2
+
+Fig. 1. Geometric constraints (dashed green zone) due to travel direction and
+center line (dashed red line). Ofj ree is the obstacle-free region on the j-th
+road.
+
+Fig. 3. The graph corresponding to the considered map (illustrated in figure
+2) and its pruned version.
+
+Fig. 2. Selected views on the A. Costa scenario from iTETRIS, [13]
+
+Operating scenario - Our autonomous vehicles operate within
+an URN, and the decision-making process focuses on the
+actual traffic conditions, so the purpose of alleviating traffic
+congestion is achieved by adjusting the vehicles’ route selection during the travel.
+2
+Therefore, given a URN, the problem we want to solve can
+be stated as follows:
+Autonomous Vehicles in Urban Environments (AV-UE):
+Given a team of autonomous vehicles, find the best route in
+order to drive them to their destination and to avoid as much
+as possible traffic congestion.
+2
+In order to solve the AV-UE problem, we made the following assumptions:
+Assumption 1: We assume that there exist at least one path
+between each (start, destination) pair on the URN.
+Assumption 2: Each vehicle on the URN is connected and
+can communicate with another vehicle (V2V communication),
+with the intelligent Road Side Unit (V2R), with the cloud
+(V2C) or with the other connected things, e.g., traffic lights,
+bikes or pedestrians (V2X).
+Assumption 3: The environment informs the vehicle about
+the vehicle densities over the URN edges (by means of a
+server) and gives them the reward (as a broadcast message).
+Assumption 4: The vehicles are equipped with a perception
+
+module capable of detecting obstacles within a pre-specified
+c
+radius R > 0. Let Rmin
+be the minimum curvature radius of
+the given vehicle, then the perception module is such that the
+c
+field of view is 360o and R > Rmin
+. In this respect, the ball
+centered at the current agent planar position B(pi (t), R), ∀i =
+1, . . . , L, represents the detected region.
+A. Proposed Solution: an overview
+The problem has been addressed by means of a distributed
+control scheme properly customized to exploit the capabilities
+of the presented Deep Reinforcement Learning algorithm. In
+particular, the idea we have developed consists in exploiting
+routing decisions, provided by the DRL unit at each junction
+occurrence, as set-point references for the underlying controllers, see figure 4.
+Essentially, it consists of three units: a Path Planner
+based on the DRL algorithm, a Reference Generator and
+a Controller, each one tuned w.r.t. the involved vehicles
+AV i , i = 1, . . . , L.
+At each time instant t, the Path Planner receives the
+measurements of the current position in terms of coordinates
+and corresponding edge and the vehicles’ density on that edge,
+from the generic vehicle AV i at t, and generates the action
+ai (t) to be executed by the vehicle AV i at the next junction.
+The latter translates into the set-point z i (t) for the underlying
+control logic thanks to the Reference Generator unit. Hence,
+the Controller computes an admissible command ui (t).
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:51 UTC from IEEE Xplore. Restrictions apply.
+
+3
+
+where the E[·] is the expected value operator, a(tdec ) ∈ Λ,
+θi ∈ IRW collects all the NN weights, γ ∈ (0, 1) is
+the discount factor and ϕi is the local reward. It is worth
+to underline that the Q-function is initialized with random
+weights under the operating assumption that no information
+are available on the traffic behavior before the NN training.
+Moreover, the greedy action ai (tdec ) should be chosen such
+that
+ai (tdec ) := arg max Qi (σ i (tdec ), a; θi )
+(5)
+a∈Λ
+
+Fig. 4. Distributed control architecture exploiting the DRL algorithm
+
+IV. R EINFORCEMENT LEARNING SCHEME
+This section is devoted to implement a DRL scheme for
+routing decision purposes. By referring to a distributed framework, a Q-learning approach is adopted and the multi-agent
+RL model is the following:
+< V, Σ, Λ, Φ >
+
+(3)
+
+where
+1
+h
+• V = {AV , . . . , AV } accounts for the set of vehicles
+(agents) contributing to the RL task;
+i h
+• Σ := {σ }i=1 is the set of usable edges and related
+distribution densities ρj (t), j = 1, . . . , M ;
+• Λ collects the admissible vehicle actions, e.g. ”turn right”,
+”turn left”, ” straight” (each possible action is labeled
+with an integer number)
+• Φ : Σ × Λ × Σ → IR is the global reward function.
+Notice that the RL is activated whenever the vehicle AV i
+enters the decision zone. From now on, let tdec denote this
+trigger time.
+The Q function Qi : Σ × Λ → IR is expressed as a Neural
+Network (NN) and it is usually indicated as Qi (σ i , ai ; θi )
+where θi indicates the NN weights. The designed NN is
+illustrated in figure 5. The blue blocks are the inputs (the
+upper takes σ i , the other ai ). The two branches contain a Fully
+Connected Layer, an ELU activation function and an other
+Fully Connected Layer. The two branches are added and the
+output entries in an other ELU and in the last Fully Connected
+Layer. In the blocks in figure 5, for each block, the size of
+its output is indicated. Notice that the last block has the aim
+of calculate the Q value, therefore it is reduced to just one
+neuron.
+
+During the training procedure, a trade-off between exploration and exploitation comes out. Hence, such a hitch can
+be overcome by using an epsilon-greedy policy, i.e., the
+probability ϵ(·) of choosing a random action is an inversely
+proportional function of the time.
+Here, the following local reward function has been selected:
+!
+[
+ϕi (tdec + ∆tdec (t)) = Φ
+σ k (tdec + ∆tdec (t)) +
+k
+
+ω i (tdec + ∆tdec (t)), i ∈ V
+(6)
+where ∆tdec (t) := t − tdec with xi (tdec ) ∈ (Xc )ir and xi (t) ∈
+(Xc )is , r ̸= s. Roughly speaking, if the action was ”turn right”,
+the value of (6) can be correctly exploited once the vehicle
+AV i has effectively made such an action. Notice that the two
+components of (6) has the following meaning:
+!
+[
+k
+• the first term Φ
+σ (tdec + ∆tdec (t)) weights the
+k
+
+traffic congestion over the whole URN and it is computed
+by the following formula:
+!
+[
+k
+Φ
+σ (tdec + ∆tdec (t)) =
+k
+M
+X
+
+ρj (tdec ) − ρj (tdec + ∆tdec (t)) =
+
+j=1
+M
+X
+
+µj (tdec ) − µj (tdec + ∆tdec (t))
+
+j=1
+
+d lj
+
+(7)
+
+j
+
+•
+
+Notice that one obtains good rewards (performance) as
+long as the vehicle density decreases.
+the component ω i (tdec +∆tdec (t)) is the total cumulative
+waiting time of the vehicle AV i from the initial time
+instant t0 until tdec + ∆tdec (t). Essentially, it penalizes
+those sequences of actions driving the vehicle to queue
+scenarios.
+
+In order to adequately train the considered NN, the following
+squared loss function is used:
+L(tdec + ∆tdec (t); θi ) :=
+(ϕi (tdec + ∆tdec (t) − ϕ̂i (tdec + ∆tdec (t)))2
+
+Fig. 5. Neural Network Architecture
+
+where the expected reward is
+
+In general, the Q-function is defined as follows:
+Qi"(σ i (tdec ), a(tdec ); θi ) ≜
+#
+∞
+X
+(ν−1) i
+E
+γ
+ϕ (tdec + ν∆tdec (t))
+
+(8)
+
+(4)
+
+ϕ̂i (tdec + ∆tdec (t)) = Qi (σ i (tdec , aik ; θi )−
+γ max Qi (tdec + ∆tdec (t), a; θi )
+a∈Λ
+
+ν=1
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:51 UTC from IEEE Xplore. Restrictions apply.
+
+(9)
+
+4
+
+Proof i
+
+i
+
+i
+
+Q "(σ (tdec ), a(tdec ); θ ) ≜
+#
+∞
+X
+(ν−1) i
+E
+γ
+ϕ (tdec + ν∆tdec (t)) =
+ν=1
+"∞
+#
+X
+(ν−1) i
+i
+ϕ (tdec + ∆tdec (t)) + E
+γ
+ϕ (tdec + ν∆tdec (t))
+ν=2
+
+= ϕi (tdec + ∆tdec (t))
++γQi (σ i (tdec + ∆tdec (t)), a(tdec + ∆tdec (t)); θi ) =
+= ϕi (tdec + ∆tdec (t)) + γ max Qi (tdec + ∆tdec (t), a; θi )
+a∈Λ
+
+2
+Finally, whenever a new reward measurement is useful, a
+gradient descent update is performed:
+θi = θi − α∇θ L(θi )
+
+where the URN junctions (i.e., crossroads, traffic circles, road
+entrances and exits) are the graph nodes while the roads are the
+graph edges, see the explicative Fig. 3. A set of Application
+Programmable Interfaces (APIs) have been then developed
+to get, modify or add information about vehicles within the
+simulation environment. For instance these routines can be
+used to query SUMO where a vehicle is currently moving or to
+obtain data regarding road vehicles density, spatial constraints
+(i.e. road width, length and topology), obstacles and so on.
+As the DQL-Algorithm is concerned, the proposed codesign adapts to new operating scenarios by simply selecting
+a new SUMO xml describing file. In particular, the designed
+APIs allow to compute the local reward (6), while the optimization of NN weights is achieved by means of the MATLAB
+Reinforcement Learning toolbox® [18] and the MATLAB
+Deep Learning toolbox® [19].
+
+(10)
+
+with α ∈ (0, 1) the learning rate.
+All the above developments allow to write down the following
+computable algorithm.
+DQL-Algorithm
+
+VI. S IMULATIONS
+This section aims at highlighting the performance of the
+proposed strategy and the obtained results in a numerical
+scenario built on real traffic data [13].
+
+Initialization
+1: Extrapolate σ i (0), i = 1, . . . , h, from the URN;
+2: Initialize Q(σ i , a; θ), i = 1, . . . , h;
+At each tdec do
+1: Select an admissible action:
+(
+rand(Λ), with probability ϵ(tdec )
+ai (tdec ) =
+arg max Qi (σ i (tdec ), a; θi ), otherwise
+a∈Λ
+
+!
+2:
+
+Observe the global reward Φ
+
+[
+
+k
+
+σ (tdec + ∆tdec (t))
+
+k
+
+and σ i (tdec + ∆Tdec (t)), ∀i = 1, . . . , h;
+3: Compute the local reward ϕi (tdec + ∆Tdec (t)), , ∀i =
+1, . . . , h;
+4: Update θ i , ∀i = 1, . . . , h.
+V. SUMO versus MATLAB CO - DESIGN
+A co-design procedure is outlined in order to allow information sharing between SUMO and MATLAB. Essentially this
+prescribes that, starting from the set of functions provided
+by TraCI4Matlab® [17] that are customized to comply with
+the DQL-Algorithm, the co-design in terms of software communication and data exchange is performed. More in detail,
+the TraCI4Matlab toolbox allows the communication between
+any MATLAB application and the SUMO traffic simulator.
+TraCI application level protocol is based on the client-server
+paradigm and it is built on top of the TCP/IP stack: the
+application developed in MATLAB plays the role of a client
+and it can access and modify the simulation environment
+provided by SUMO that acts as a server. Hence, the proposed
+co-design is in charge of automatically mapping all the URN
+information into properly encoded MATLAB objects. Then, a
+MATLAB graph is obtained by exploiting the SUMO xml files,
+
+Fig. 6. SUMO URN representation with starting and target locations
+
+Some simulations have been conducted by means of a
+platoon of ten autonomous vehicles, inserted in the proposed
+framework in the south-west road in the map and imposing
+them to reach a target location in the south east part, see
+Fig. 6. More precisely, choosing a reference initial position at
+latitude 44◦ 29′ 23.6′′ N and longitude 11◦ 18′ 30.2′′ E, the AVs
+initial positions in a local tangent plane ENU reference frame
+[20] have been set as described in Table I, with zero initial
+velocities.
+The Neural Network architecture described in Fig. 5 has
+been developed in the Matlab Deep Network Designer, see
+figure 7.
+More precisely, each agent is modeled as an ideal point that
+moves on a planar environment according to:
+xi (t + 1) = Ai xi (t) + B i ui (t)
+
+(11)
+
+with the state vector xi (t) = [pi (t)T , ṗi (t)T ]T ∈ R4 ,
+accounting for agent planar position and velocity components
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:51 UTC from IEEE Xplore. Restrictions apply.
+
+5
+
+TABLE I
+P LATOON INITIAL POSITIONS
+Agent
+
+AV 1
+
+AV 2
+
+AV 3
+
+xi1 (0)
+xi2 (0)
+
+70.0195
+386.4212
+
+63.955
+384.082
+
+57.8905
+381.7428
+
+AV 4
+
+AV 5
+
+51.826
+45.7615
+379.4036 377.0644
+
+Fig. 7. Neural Network from MATLAB Deep Network Designer.
+
+respectively, ui (t) = [ui1 (t), ui2 (t)]T ∈ R2 the acceleration
+vector and
+
+
+
+
+Ts2
+I
+T
+I
+2
+s 2
+Ai =
+, B i =  2 I2  , ∀i = 1, . . . , L
+02
+I2
+T sI
+
+AV 6
+
+AV 7
+
+AV 8
+
+AV 9
+
+AV 10
+
+AV 11
+
+39.697 33.6325
+374.7252 372.386
+
+27.568
+370.0468
+
+21.5035
+367.7076
+
+15.439
+365.3684
+
+9.3745
+363.0292
+
+traffic flow on the day one week in prior. The non-autonomous
+vehicles in the URN are described in an aggregated manner:
+the numbers of vehicles to insert are given for certain roads
+located at the network’s border. Following their initial route,
+these vehicles cross routing decision points at which they get
+a new route randomly assigned.
+The proposed DQL-Algorithm is able to deal with actual
+traffic congestion and to learn from vehicles’ experience. More
+precisely, each autonomous agent benefits of an initial Qfunction, pre-trained by means of the built-in routines of the
+MATLAB Reinforcement Learning Toolbox and of the SUMO
+data set related to “Andrea Costa” district. This pre-training
+has been carried out by generating 2000 traffic episodes. Each
+episode is here defined as a finite sequence of time instants
+whose the first one corresponds to the initial position vehicles
+configuration of Table I, while the last to the target xf . Notice
+that during the training, the NN weights are updated according
+to (10). Specifically, the training process evolution is depicted
+in Fig. 8, where the episode reward (the sum of all the rewards
+received from the agent during each episode), the moving
+average reward and the expected episode reward are reported.
+There, it can be observed that the capability of the vehicle
+to select the more adequate decision improves as the training
+process evolves: the average reward (red line) increases, while
+the expected one (orange line) shows an asymptotic convergent
+behavior to the effective reward. The final part of this plots
+illustrate the ϵ-greedy policy: even when the agent knows how
+to obtain the maximum available reward, with a certain small
+probability, try to explore different routing actions, represented
+as the blue peaks, at the end of the plot.
+
+2
+
+where I2 is the identity matrix of order 2 and Ts = 1[s] is
+the sampling time. The autonomous vehicles are subject to the
+input constraints
+∥ui (t)∥2 ≤ 3[m/s2 ], ∀t ≥ 0, ∀i = 1, . . . , L,
+
+(12)
+
+that are concerned with physical limitations on each vehicle
+acceleration, and it is required that the distance between two
+c
+consecutive autonomous vehicles is bounded by αmin
+=
+c
+10[m] and αmax = 25[m].
+The capabilities provided by the developed co-design, have
+been exploited to build a testing simulation environment, based
+on real traffic data, for the DQL algorithm. The real traffic
+data set proposed in [13] has been used. These data include
+representations of the areas around the ”Andrea Costa” district.
+In particular, the traffic data are related to the demand for
+Bologna’s peak hour (8:00 am - 9:00 am) and they have been
+generated considering the higher traffic demand data from
+24 March 2010, when a football match took place, and the
+
+Fig. 8. Training from MATLAB Reinforcement Learning toolbox
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:51 UTC from IEEE Xplore. Restrictions apply.
+
+6
+
+VII. C ONCLUSIONS
+This work studies the Vehicle Routing Problem in the
+context of Internet of Vehicles in order to decrease traffic
+congestion, a issue recently intensified by the rapid growth
+of vehicles number on the roads. In detail, we propose our
+Deep Q Learning architecture with a micro-traffic simulations
+approach.
+The experimental results show that the proposal has good
+performance in real scenario of traffic congestion and can
+effectively reduce the accumulated waiting time. Future work
+will consider how to accelerate distributed learning to get a
+faster vehicle planning decision response and to deal more
+specifically with the control problem.
+
+[17] A. F. Acosta, J. E. Espinosa, and J. Espinosa, “Traci4matlab: Enabling
+the integration of the sumo road traffic simulator and matlab® through a
+software re-engineering process,” in Modeling Mobility with Open Data.
+Springer, 2015, pp. 155–170.
+[18] Reinforcement learning toolbox: User’s guide (r2022a). [Online].
+Available: www.mathworks.com/help/reinforcement-learning/
+[19] Deep learning toolbox: User’s guide (r2022a). [Online]. Available:
+www.mathworks.com/help/deeplearning/
+[20] G. Henderson, “Applied mathematics in integrated navigation systems–
+third edition rm rogers american institute of aeronautics and astronautics,
+1801 alexander bell drive, suite 500, reston, va 20191-4344, usa. 2007.
+408pp. illustrated. 94.95 (non-members). isbn 1-56347-927-3.” The
+Aeronautical Journal, vol. 113, no. 1141, pp. 202–202, 2009.
+
+R EFERENCES
+[1] F. Yang, S. Wang, J. Li, Z. Liu, and Q. Sun, “An overview of internet
+of vehicles,” China communications, vol. 11, no. 10, pp. 1–15, 2014.
+[2] K. Lin, Y. Li, J. Deng, P. Pace, and G. Fortino, “Clustering-learningbased long-term predictive localization in 5g-envisioned internet of
+connected vehicles,” IEEE Transactions on Intelligent Transportation
+Systems, vol. 22, no. 8, pp. 5232–5246, 2020.
+[3] M. W. Ulmer, J. C. Goodson, D. C. Mattfeld, and B. W. Thomas, “On
+modeling stochastic dynamic vehicle routing problems,” EURO Journal
+on Transportation and Logistics, vol. 9, no. 2, p. 100008, 2020.
+[4] P. Toth and D. Vigo, The vehicle routing problem. SIAM, 2002.
+[5] M. Mangeruga et al., “An underwater pathfinding algorithm for optimised planning of survey dives,” Remote Sensing, vol. 12, no. 23, p.
+3974, 2020.
+[6] K. Lin, C. Li, G. Fortino, and J. J. Rodrigues, “Vehicle route selection
+based on game evolution in social internet of vehicles,” IEEE Internet
+of Things Journal, vol. 5, no. 4, pp. 2423–2430, 2018.
+[7] K. Lin, C. Li, Y. Li, C. Savaglio, and G. Fortino, “Distributed learning
+for vehicle routing decision in software defined internet of vehicles,”
+IEEE Transactions on Intelligent Transportation Systems, vol. 22, no. 6,
+pp. 3730–3741, 2020.
+[8] G. Bono, J. S. Dibangoye, O. Simonin, L. Matignon, and F. Pereyron,
+“Solving multi-agent routing problems using deep attention mechanisms,” IEEE Transactions on Intelligent Transportation Systems,
+vol. 22, no. 12, pp. 7804–7813, 2020.
+[9] K. Lin, J. Gao, Y. Li, C. Savaglio, and G. Fortino, “Multi-granularity
+collaborative decision with cognitive networking in intelligent transportation systems,” IEEE Transactions on Intelligent Transportation
+Systems, 2022.
+[10] P. A. Lopez, M. Behrisch, L. Bieker-Walz, J. Erdmann, Y.-P. Flötteröd,
+R. Hilbrich, L. Lücken, J. Rummel, P. Wagner, and E. Wießner,
+“Microscopic traffic simulation using sumo,” in 2018 21st international
+conference on intelligent transportation systems (ITSC). IEEE, 2018,
+pp. 2575–2582.
+[11] F. Giannini, G. Fortino, G. Franzè, and F. Pupo, “Path planning for vehicle platoons under routing decisions: a distributed approach combining
+deep reinforcement learning and model predictive control,” in CoDIT’22,
+Istanbul, Turkey, 2022.
+[12] ——, “A deep q learning-model predictive control approach to vehicle
+routing and control with platoon constraints,” in IEEE 18th International
+Conference on Automation Science and Engineering (CASE), Mexico
+City, Mexico, 2022.
+[13] L. Bieker, D. Krajzewicz, A. Morra, C. Michelacci, and F. Cartolano,
+“Traffic simulation for all: a real world traffic scenario from the city of
+bologna,” in Modeling Mobility with Open Data. Springer, 2015, pp.
+47–60.
+[14] R. S. Sutton and A. G. Barto, Reinforcement learning: An introduction.
+MIT press, 2018.
+[15] J. Fan, Z. Wang, Y. Xie, and Z. Yang, “A theoretical analysis of deep
+q-learning,” in Learning for Dynamics and Control. PMLR, 2020, pp.
+486–489.
+[16] P. A. Lopez, M. Behrisch, L. Bieker-Walz, J. Erdmann, Y.-P. Flötteröd,
+R. Hilbrich, L. Lücken, J. Rummel, P. Wagner, and E. Wießner,
+“Microscopic traffic simulation using sumo,” in The 21st IEEE
+International Conference on Intelligent Transportation Systems. IEEE,
+2018. [Online]. Available: https://elib.dlr.de/124092/
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:51 UTC from IEEE Xplore. Restrictions apply.
+
+

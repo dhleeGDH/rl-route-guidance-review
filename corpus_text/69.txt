@@ -1,0 +1,2566 @@
+DRL Router: Distributional
+Reinforcement LearningBased Router for Reliable
+Shortest Path Problems
+Hongliang Guo*†
+Is with College of Computer Science,
+Sichuan University (SCU),
+Chengdu, Sichuan 610065,
+China. E-mail: scott0793@gmail.com
+Wenda Sheng†
+Is with the University of Electronic
+Science and Technology of China,
+Chengdu 611731, China.
+E-mail: ningenpre@gmail.com
+Chen Gao
+Is with ETH Zurich, 8092
+Zurich, Switzerland.
+E-mail: chengao982@gmail.com
+Yaochu Jin
+Is with Bielefeld University,
+33619 Bielefeld, Germany.
+E-mail: yaochu.jin@uni-bielefeld.de
+
+P
+
+ath planning under uncertainty serves as one of
+the most fundamental services of an intelligent
+transportation system. While the least expected
+time (LET) has been deemed the most popular
+and simplest path planning objective in stochastic
+transportation networks, in reality, a large portion
+of risk-averse travelers prefer a reliable shortest path
+Digital Object Identifier 10.1109/MITS.2023.3265309
+Date of current version: 24 April 2023
+
+(RSP) to a LET one [1]. Many definitions of the path’s
+reliability exist in the RSP community; for example,
+the term reliability in the path planning domain can
+be defined as finding a path or routing policy with the
+1) maximal stochastic on-time arrival (SOTA) probability [2]; 2) minimal travel time subject to a highconfidence constraint (a- RSP) [3]; 3) minimal mean
+and standard deviation combination of travel time
+*Corresponding author. †Cofirst authors.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+
+1939-1390/23©2023IEEE
+
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+91
+
+• SEPTEMBER/OCTOBER 2023
+
+Abstract—This article studies reliable shortest path (RSP) problems in stochastic transportation networks. The term
+reliability in the RSP literature has many definitions, e.g., 1) maximal stochastic on-time arrival probability, 2) minimal travel time with a high-confidence constraint, 3) minimal mean and standard deviation combination, and 4)
+minimal expected disutility. To the best of our knowledge, almost all state-of-the-art RSP solutions are designed to
+target one specific RSP objective, and it is very difficult, if not impossible, to adapt them to other RSP objectives. To
+bridge the gap, this article develops a distributional reinforcement learning (DRL)-based algorithm, namely, DRLRouter, which serves as a universal solution to the four aforementioned RSP problems. DRL-Router employs the DRL
+method to approximate the full travel time distribution of a given routing policy and then makes improvements with
+respect to the user-defined RSP objective through a generalized policy iteration scheme. DRL-Router is 1) universal,
+i.e., it is applicable to a variety of RSP objectives; 2) model free, i.e., it does not rely on well calibrated travel time
+distribution models; 3) it is adaptive with navigation objective changes; and 4) fast, i.e., it performs real-time decision making. Extensive experimental results and comparisons with baseline algorithms in various transportation
+networks justify both the accuracy and efficiency of DRL-Router.
+
+(mean-std shortest path) [4]; and 4) minimal expected disutility (MED) [5]. A brief review of the RSP literature, from
+its objectives and travel time assumptions to its methodologies, is provided in the “Literature Review” section.
+Here, we wish to articulate that, to the best of our
+knowledge, almost all state-of-the-art RSP planning methodologies require at least the first-order and second-order
+statistic information of the transportation network’s travel
+time to be available. Meanwhile, it is very difficult, if not
+impossible, for a specific RSP planning algorithm to apply
+to all RSP objectives. For example, methods targeting the
+SOTA problem cannot be easily adapted to solve the a- RSP
+problem in a straightforward manner. However, in reality,
+users may dictate their path planning objectives at will and
+might shift them during runtime. For example, a traveler
+wants to catch up a flight, and his or her original objective
+is to arrive at the airport before 5:30 p.m. (the SOTA objective). During navigation, he or she finds that the flight’s
+departure time is postponed, and in this case, he or she
+prefers to travel along the cheapest path with high confidence (the a- RSP objective). Therefore, it is desirable to
+design a “universal” and “adaptive” RSP algorithm that
+fits a variety of RSP objectives and adapts smoothly to a
+changed RSP objective.
+To this end, this article proposes a distributional reinforcement learning (DRL)-based method for RSP routing
+(named DRL-Router). When compared with canonical RSP
+planners, DRL-Router possesses the following characteristics: it is 1) “universal,” i.e., it applies to all the aforementioned RSP planning objectives; 2) “model free,” i.e., it does
+not rely on travel time distribution models; 3) “adaptive,”
+i.e., it adapts with user-specific objective changes; and
+4) “fast,” i.e., it makes decisions in real time (within 1 s).
+Specifically, DRL-Router formulates the RSP planning
+problem within the Markov decision process (MDP) framework and employs a DRL method to approximate the full
+travel time distribution of a specific router; it then uses the
+
+generalized policy iteration (GPI) method to update the
+routing policy and, hence, make improvements toward the
+optimal one. With the routing policy’s full travel time distribution, DRL-Router is able to calculate the user-designed
+RSP objective value for each edge and then select the best one
+to execute. Like canonical reinforcement learning methods,
+DRL-Router also requires a prohibitive number of interactions with the environment to reach the optimal decisionmaking policy, which is undesirable. In this article, we
+invent a LET path-induced warm start method to effectively
+initialize the full travel time distribution estimations for all
+state–action pairs and introduce an adaptive double e- greedy
+exploration strategy to better guide the ego vehicle toward
+the destination during the initial exploration phase. With the
+LET path-induced warm start and adaptive double e- greedy
+exploration strategy, DRL-Router is able to converge to the
+optimal decision-making strategy efficiently. We explain the
+details of the two methods in the “Methodology” section.
+Here, we wish to point out that through estimating the
+full travel time distribution, DRL-Router does not necessarily confine its application to the four aforementioned RSP
+problems. In fact, as long as the navigation objective can be
+expressed as a function of the full travel time distribution,
+e.g., a conditional value at risk objective, DRL-Router can
+be employed to solve the problem. This is the reason that we
+characterized DRL-Router as a “universal” RSP solution. The
+contributions of the article are twofold. First, from the transportation application’s perspective, 1) we propose a universal RSP path planner, i.e., DRL-Router, which applies to four
+completely different RSP objectives; 2) DRL-Router adapts automatically with user-specific RSP objective changes; 3) once
+training is finished, DRL-Router’s decision-making time is
+within milliseconds for large-scale transportation networks;
+and 4) DRL-Router is model free and thus does not need well
+calibrated travel time distribution parameters as inputs. Second, from the technology innovation perspective, 1) we introduce a LET path-induced warm start method to effectively
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+92
+
+• SEPTEMBER/OCTOBER 2023
+
+initialize DRL-Router, which greatly
+accelerates the training speed, and
+2) we propose an adaptive double-e
+It is desirable to design a “universal” and “adaptive” RSP
+exploration method to better guide
+the ego vehicle toward the destinaalgorithm that fits a variety of RSP objectives and adapts
+tion during the initial exploration
+smoothly to a changed RSP objective.
+phase. In this way, the learning process of DRL-Router is much stabler
+than the default one.
+The structure of the article’s remaining content is as follows. We present a short literature
+works along the taxonomies of 1) reliable navigation objecreview of RSP and DRL in the “Literature Review” section,
+tives, 2) travel time distribution models, 3) solution methodfollowed by background knowledge, including path planologies, and 4) output formats. Next, we describe the related
+ning basics, RSP problem formulations, and DRL, in the
+content in detail along the four aforementioned directions.
+“Problem Formulation and DRL Background” section. The
+“Methodology” section presents DRL-Router, with training
+RSP Planning Objectives
+time complexity as well as runtime complexity analysis. ExAs we mentioned in the first section, there are many defperimental results, comparisons, and analysis are provided
+initions of reliability against travel time variation in the
+in the “Simulation Results and Comparisons” section. We
+path planning community. We categorize the objectives
+finish the article with concluding remarks and improvement
+of an RSP problem into the following four groups, namely,
+directions in the “Conclusion and Future Work” section.
+1) SOTA, 2) a- RSP, 3) minimal mean-std, and 4) MED.
+The SOTA RSP, first proposed in [2], finds a path with
+Literature Review
+the maximal probability of on-time arrival at the destinaSince this article investigates the RSP problem from the
+tion, with a prespecified deadline. Researchers have proDRL perspective, in this section, we first deliver a brief
+posed various algorithms to target the SOTA problem; see
+literature review of the RSP, from its objectives, assump[7], [8], [9], [10], [11], [12], [13], [14], [15], [16], [17], and [18]
+tions, and methodologies to its output formats, and spefor examples. Recently, there has been an emerging trend
+cifically lay down the differences between DRL-Router
+of incorporating the original on-time arrival objective
+and canonical learning-based RSP planners. Then, we
+with other factors. For example, Manseur et al. propose
+present the recent research trends for DRL toward the
+a novel robust SOTA problem, which takes SOTA as the
+end of the section.
+main objective and considers the alternative path’s SOTA
+­performance when random edge breakdowns happen durA Brief Review of RSP
+ing navigation [6].
+RSP has been a hot research topic in the past few decades,
+The a- RSP, proposed by Chen and Ji, in [3], is to find a
+Table 1 provides a bird’s-eye view of the RSP literature
+path with the minimal high-percentile travel time; i.e., the
+
+Table 1. A summary of the RSP literature.
+Objectives
+
+Travel Time Distribution Assumptions
+
+SOTA [2], [6], [7], [8], [9], [10], [11],
+[12], [13], [14], [15], [16], [17], [18]
+
+Data driven [9], [12], [19],
+[20], [21], [22]
+With/without a
+distribution model
+
+Mathematical programming
+[9], [12], [16], [17], [23], [24]
+
+Full distribution model [8],
+[16], [24], [27], [28], [29]
+
+Spatial distribution
+
+Spatially independent [7], [22],
+[35], [40]
+
+Path-based solution
+[10], [24], [25], [26]
+
+Temporal distribution
+
+Dynamic programming [6],
+[7], [15], [36], [37], [38], [39]
+
+Spatially correlated [14], [16],
+[24], [25], [26], [30], [41]
+Stationary [27], [28], [34], [41]
+
+MED [5], [47]
+
+Output Formats
+
+Distribution model statistics
+[25], [26], [35]
+
+a-RSP [28], [30], [31], [32], [33],
+[34]
+Minimal mean-std [21], [22], [24],
+[25], [26], [35], [39], [41], [42],
+[43], [44]
+
+Methodologies
+
+Time varying [7], [9], [33],
+[47], [48]
+
+Policy-based solution [6],
+[7], [16], [22], [36], [41]
+Genetic programming [3],
+[29], [45], [46]
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+93
+
+• SEPTEMBER/OCTOBER 2023
+
+a priori. Within this group, a few
+researchers presume that the full
+distribution model is available and
+Most research works in RSP can be deemed model-based
+thus propose corresponding methodologies. For example, the (multisolutions in which the description of the underlying transportation
+variate) Gaussian distribution [10],
+network’s travel time distribution is needed a priori.
+[24], [27], [28], [37], [52], (shifted)
+log-normal distribution [29], [53],
+Lévy distribution [8], Burr distribution [54], and Weibull distribution
+path’s realized travel time is shorter than T with a prob[55] are the most commonly used travel time distribution
+ability higher than a; see [18], [30], [31], [32], [33], and [34]
+models (interested audiences are referred to [56] for defor examples. It is worth noting that the LET path can be
+tailed performance comparisons among different distributreated as a special case of the a- RSP, with a = 0.5. This
+tion models). Other researchers require only the first-order
+means that the traveler wants to minimize the path’s 50th
+(mean) and second-order (covariance) statistical informapercentile travel time, which is the expected travel time,
+tion to be available instead of the full distribution model;
+by definition.
+see [25], [26], and [35] for examples. On the other hand, sevThe mean-std shortest path problem is to find a routeral research works in RSP are essentially model free in that
+ing policy with the minimal combination of the mean and
+they do not assume specific distribution models and model
+standard deviation [4]. Since the mean-std RSP directly
+statistics to be available. The related research works typitrades off the mean travel time with its variance, it is fitted
+cally formulate the RSP problem as a data-driven optimizato the risk-averse decision-making domain, and many retion problem and employ off-the-shelf optimization solvers
+searchers have contributed to this research scope [21], [22],
+for an exact or approximate solution [9], [12], [19], [20], [21].
+[24], [25], [26], [35], [39], [41], [42]. Variations of the meanFor the spatial relationship of the travel time distribution,
+std RSP problem include finding a path with 1) the minimal
+some researchers presume independent travel time distribucombination of mean and variance, studied in [43]; 2) the
+tions [7], [22], [35], [40], while others target spatially correminimal mean travel time subject to variance constraints
+lated distributions [14], [16], [24], [25], [26], [30], [41]. For the
+[44]; and 3) only the minimal variance [49], [50].
+travel time’s temporal characteristics, most researchers tarThe MED RSP problem comes from utility theory [51],
+get stationary travel time distributions, where the travel time
+which copes with humans’ decision making against variadistribution does not change with time [27], [28], [41], while
+tions, in general (sometimes, the RSP objective is to find a
+there are some research works specifically dealing with
+path with the maximal expected utility). We denote an ego
+time-varying transportation networks [7], [9], [47], [48], [57].
+path x’s travel time as c x (a random variable) and define
+a disutility function u. Then, the path with the minimal
+RSP Solution Methodologies
+expected value of the disutility function, i.e., E (u (c x)), is
+The methodologies for the RSP problem are roughly didefined as the RSP. Depending on the forms of the disutilvided into three branches, namely, 1) mathematical proity function, different MED RSP problem can be formulatgramming (MP)-based methods, 2) dynamic programming
+ed, e.g., the piecewise linear function [5] and exponential
+(DP)-based methods, and 3) genetic programming (GP)function [47]. It is worth mentioning that the LET path is a
+based methods.
+special case of the MED RSP problem, where the disutility
+MP-based methods usually formulate the RSP problem
+function is the path’s travel time itself; i.e., u(c x) = c x .
+into a mathematical optimization problem, and commercial
+solvers are employed for the optimal solution [9], [12], [23]. For
+Travel Time Distribution Assumptions
+example, Yang formulates the SOTA RSP problem as a mixedWhether and how to describe the stochastic travel time
+integer linear programming problem and invokes CPLEX (a
+distributions of the underlying transportation network
+commercial solver) to solve the problem [9]. The mathematiplays a vital role in designing corresponding algorithms
+cal representation of the RSP problem is succinct and easy to
+for RSP planning. Next, we describe the related studies
+understand, and off-the-shelf solvers are available. However,
+in this taxonomy in terms of 1) model-free/model-based
+the efficiency of the solver is usually not good, as the formumethods, 2) the travel time’s spatial correlation characlated problem almost always falls into the nonlinear integer
+teristic, and 3) the travel time’s temporal distribution
+programming category. Thus, it is very difficult to directly
+characteristic.
+apply MP-based methods to large-scale transportation netMost research works in RSP can be deemed modelworks. Aiming at improving the efficiency of MP-based methbased solutions in which the description of the underlying
+ods, various approximation algorithms are proposed [11],
+transportation network’s travel time distribution is needed
+[19], [25], [26], [30]. The approximation algorithms ­usually
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+94
+
+• SEPTEMBER/OCTOBER 2023
+
+make use of the superefficiency of
+computing a LET path and use the
+Lagrangian relaxation method to
+DRL has been shown to be superior to canonical reinforcement
+decompose the originally complex
+mathematical problem into several
+learning methods in scenarios where the return’s entire
+easy-to-solve LET path problems.
+distribution plays an important role in decision making.
+DP-based methods try to approximate the solution to the RSP
+problem from the DP perspective
+and apply label correction and/or
+path pruning techniques to gradually update each node’s
+and policy-based solutions [6], [7], [16], [22], [36], [41], [59].
+value based on the last-step estimated neighbor node valPath-based solutions yield a nonadaptive path to the ego
+ues [6], [7], [8], [14], [15], [36], [37], [38], [52]. For example,
+vehicle, while policy-based solutions reach an adaptive
+Prakash proposes a decreasing order of time (DOT) aprouting policy, which points out merely the next node at
+proach to recursively update a node’s on-time arrival probeach junction point and defers the path selection process
+ability. Based on DOT, a pruning technique is proposed to
+thereafter to the time point when the ego vehicle actually
+calculate the a priori SOTA path.
+reaches the next node. Normally, policy-based solutions
+GP-based methods use GP, or evolutionary algorithms, to
+need the RSP algorithm to make decisions in real time, i.e.,
+solve the RSP problem [3], [29], [45], [46]. Since GP is derivain less than 1 s, in that the ego vehicle cannot bear to wait
+tive free, the computational complexity depends only on the
+too long during navigation.
+number of seeds per generation and the number of offspring
+layers. With this kind of method, one can easily start with a
+DRL
+feasible solution and gradually improve toward the optimal
+In canonical reinforcement learning, the agent interacts
+one through evolutionary algorithms. Chen et al. propose a
+with the environment, estimates the expected return of
+moment matching-based hybrid genetic algorithm to search
+a given policy, and makes improvements toward the optifor the a- RSP in stochastic transportation networks with
+mal policy which, by definition, maximizes the expected
+link correlations [28]. The proposed algorithm is validated
+return [60], while in DRL, the agent estimates the entire
+with real traffic data in Beijing, China.
+distribution of the return instead of its expectation [61].
+Besides the three aforementioned main branches of RSP
+With that, the DRL agent is able to make more informed
+solution methodologies, there is a recent emerging trend
+decisions. DRL has been shown to be superior to canoniof applying learning-based methods to solve a specific RSP
+cal reinforcement learning methods in scenarios where
+problem. Cao et al. formulate the SOTA problem within the
+the return’s entire distribution plays an important role in
+MDP framework and propose a practical Q-learning (PQL)
+decision making.
+method, which uses a multilayer perceptron to approxiThe pioneering work of DRL was proposed in [61], in
+mate reinforcement learning agent’s Q values, i.e., the corwhich the authors used sampling-based methods to estiresponding nodes’ on-time arrival probabilities [18]. Guo
+mate the full distribution of the return. The distributional
+et al. propose a cascaded temporal difference (CTD) method,
+Bellman equation was established, and a fixed number of
+which simultaneously estimates the mean and standard deintervals (51 in the paper) were used to approximate the
+viation of a given routing policy [22] and thereby solves the
+return’s distribution in a discrete manner. In the following
+mean-std shortest path problem. Zhou et al. apply a learnyears, researchers made improvements over the original
+ing-based method to solve the path following of an underDRL methods by 1) using an adjustable length of intervals
+actuated unmanned surface vehicle with state constraints
+to approximate the return’s distribution [62], 2) estimat[58]. The authors employ a critic neural network to estimate
+ing the return’s distribution through implicit quantile netthe cost function, and the dynamic controller improves its
+works [63], 3) fully parameterizing the return distribution
+reliability performance by considering the event-triggered
+through quantile functions [64], and 4) incorporating an
+condition. DRL-Router also belongs to the learning-based
+actor–critic network for DRL application in the continuous
+method for RSP solutions. However, it employs DRL to esaction application domain [65].
+timate the full distribution of a given routing policy and
+hence applies to a variety of RSP objectives, including but
+Problem Formulation and DRL Background
+not limited to SOTA, a- RSP, and the mean-std shortest path.
+In this section, we first introduce the notations used throughout the article and then formulate the four RSP planning
+RSP Planning Output Formats
+problems into mathematical optimization forms. Since we
+In general, there are two kinds of solution formats to the
+use DRL as a universal solution for the listed RSP problems,
+RSP problem, namely, path-based solutions [10], [24], [26]
+we introduce the basics of DRL toward the end of this section.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+95
+
+• SEPTEMBER/OCTOBER 2023
+
+Notations
+
+The SOTA Problem
+
+In this article, we represent the transportation network
+as a connected and directed graph G = (V, E ), where
+V (; V ; = n) refers to the set of vertices and E (; E ; = m)
+refers to the set of edges. Assume that the travel time c ij of
+edge ij ! E is a random variable with mean n ij $ 0 and
+standard deviation v ij . Let (o, d) be a user-specified origin-destination (OD) pair, and a path is represented by an
+incidence vector x ! {0, 1} m . We denote the complete set of
+feasible paths connecting o to d as Pod . A list of major notations used in this article is in Table 2.
+
+The objective is to find a routing policy that maximizes the
+probability of reaching the destination node within the given
+budget T. The mathematical problem can be formulated as
+
+Problem Formulation
+This article aims at proposing a universal solution for all four
+of the aforementioned RSP planning problems; thus, we present the respective problem formulations of 1) SOTA, 2) a- RSP,
+3) the mean-std shortest path, and 4) MED in the following.
+
+maximize
+P (c x # T )
+x
+
+subject to x ! Pod
+
+(1)
+
+where T is the user-specified path planning budget, c x is
+the total travel time of path x, and Pod refers to the total set
+of paths connecting o with d.
+
+The a -RSP Problem
+The objective is to find a path that minimizes the travel
+time at a given confidence level a. The confidence level indicates that the path has a probability of arriving on time.
+The problem is formulated as
+minimize T
+x, T
+
+subject to P (c x # T ) $ a, 
+x ! Pod
+
+Table 2. The primary notations used in this article.
+Notation
+
+Description
+
+G (V, E)
+
+Transportation network with vertices V and edges E
+
+V
+
+Set of vertices, | V | = n
+
+E
+
+Set of edges, | E | = m
+
+i, j, o, d
+
+Vertex index, with o representing the origin and d
+representing the destination, i, j, o, d ! V
+
+ij, kl
+
+Edge index, i j, kl ! E
+
+c ij
+
+Travel time of edge ij (a random variable)
+
+μij/vij/xij
+
+Mean/standard/variance of edge ij’s travel time
+
+c, μ, v, x
+
+Vector whose elements are cij, μij, vij, and xij
+
+x ! {0, 1} m
+
+Incidence vector denoting a path
+
+cx
+
+Total travel time of path x (a random variable)
+
+nx / vx / xx
+
+Mean/standard/variance of path x’s travel time
+
+Pod
+
+Set of all feasible paths connecting o to d
+
+T
+
+Path planning budget
+
+a
+
+Confidence level
+
+g
+
+Reliability coefficient
+
+u(c)
+
+Disutility function over the path’s travel time
+
+X, A
+
+State space and action space in MDP
+
+P
+
+State transition function in MDP
+
+sk, ak, rk
+
+State, action, reward at time k; s k ! X, a k ! A
+
+Q r (s, a )
+
+Expected return of policy π starting at (s, a)
+
+Z r(s, a )
+
+Full distribution of policy π’s return staring at (s, a)
+
+a0
+
+Learning rate at time step t
+
+N
+
+Number of basis for Z r approximation
+
+K
+
+Number of travel time samples per edge
+
+(2)
+
+where a is the user-specified confidence level.
+
+The Minimal Mean-Std Problem
+The objective is to find a path with the minimal mean-std
+combination with respect to the travel time. The problem
+is formulated as
+minimize
+n x + gv x
+x
+
+subject to x ! Pod
+
+(3)
+
+where g is the reliability coefficient and n x /v x is the
+mean/std of path x’s travel time.
+
+The MED Problem
+In this problem, the traveler specifies a disutility function
+over the path’s instantiated travel time, i.e., u (c x), and the
+objective is to find a path with the minimal expected value
+of the disutility function. The problem is formulated as
+minimize
+E (u (c x))
+x
+
+subject to x ! Pod
+
+(4)
+
+where E (X) refers to the expectation of random variable
+X. Many forms of the disutility function can be defined,
+and the most commonly used ones are the piecewise linear
+function [5] and exponential disutility function [47].
+
+DRL
+DRL, originally proposed in [61], is a special form of reinforcement learning. In DRL, the underlying environment
+is also modeled as an MDP (X, A, R, P, c), with X and
+A representing the state space and action space, respectively. Here, R is the reward function; P is the state action
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+96
+
+• SEPTEMBER/OCTOBER 2023
+
+to n
+­ ext-state transition kernel P (. ; s, a), and c ! [0, 1] is
+the discount factor. A DRL agent interacts with the environment in the standard fashion: at each step k, the agent
+selects an action a k ! A based on its current state s k ! X,
+to which the environment responds with a reward rk + 1 and
+the next state s k + 1 ! X.
+Different from the canonical reinforcement learning algorithms, which evaluate the expected value of the
+return under a given policy r, i.e., V r (s), Q r (s, a), DRL
+proposes a distributional Bellman equation and targets
+estimating the full distribution of a given policy’s return,
+i.e., Z r (s), Z r (s, a). The distributional Bellman equation
+is represented as follows:
+Z r (s k, a k) = rk + 1 + cZ r (s k + 1, a k + 1). (5)
+The equal sign in (5) requires that the two distributions
+are “equivalent” to each other. In DRL, the Wasserstein
+distance [66] is usually used to describe the distance between the two distributions. In implementation, Z r (s, a)
+is, in most cases, approximated by a multinomial distribution with a prefixed set of intervals [61], [63]. The objective
+is to find the best parameter configurations to minimize
+the Wasserstein distance between the two distributions,
+and the authors of [61] prove that (5) is a contractive operation, and hence, the related algorithms implementing (5)
+converge to the optimality.
+
+Methodology
+In this section, we present DRL-Router, which serves as a
+universal learning-based solution for the RSP problem. We
+first reformulate the RSP planning problem from the MDP
+framework perspective, then present the two interactive
+modules within DRL-Router, namely, 1) policy evaluation
+and 2) policy improvement. DRL-Router’s algorithm flow
+process, computational complexity, and runtime complexity
+are presented and analyzed toward the end of this section.
+
+RSP Problem Reformulation Within the MDP Framework
+DRL-Router formulates the general RSP problem as a sequent ial decision-mak i ng problem w it hi n t he M DP
+framework, instead of treating it as monolithic nonconvex mathematical optimization problems as presented in
+(1)–(4). The key to formulate the RSP planning problem
+within the MDP framework is to properly map the MDPrelated elements, e.g., X, A, R, P, and c, into the path
+planning-related variables and express the RSP objective
+with MDP terminologies.
+The mapping process is as follows: 1) the state of the
+vehicle (s t ! X ) is the vehicle’s located vertex, e.g., vertex i, and the absorbing state is vertex d; 2) the action of
+the vehicle (a t ! A) is the edge that the vehicle takes,
+e.g., edge ij; 3) the immediate reward rt + 1 is the sampled
+travel time of edge ij, i.e., c ij; 4) the state transition func-
+
+tion P is a deterministic function, which transits the vehicle to the end node of the current executing link, e.g.,
+s t + 1 = j, where j ! V ; and 5) the discount factor c = 1
+in RSP planning. A routing policy r determines, possibly probabilistically, the next-executing edge (a t) of the
+vehicle given its current state (s t), e.g., a t = r (s t). (The
+absorbing state in reinforcement learning refers to the
+state that ends the episode, and it corresponds to the destination (vertex d) in the path planning domain.) The return of policy r starting at (s, a), i.e., Z r (s, a), is the total
+travel time distribution of policy r, starting at (s, a). Similarly, Z r (s) is the total travel time distribution of policy
+r, starting at state s.
+Depending on specific RSP objectives, e.g., SOTA,
+a-RSP, mean-std, and MED, we can transform the full
+travel time distribution Z r (s) to the corresponding scalar values (denoted as obj) representing the policy’s
+performance metric: 1) for SOTA, obj = P (Z r (s) # T );
+2) for a-RSP, obj = T, where P (Z r (s) # T ) $ a; 3) for
+mean-std, obj = E (Z r (s)) + gv (Z r (s)); and 4) for MED,
+obj = E (u (Z r (s))). So far, we have formulated the RSP planning problem within the MDP framework; the objective is
+the find the best routing policy r ), which maximizes/minimizes the corresponding performance metric value obj. (For
+SOTA, the objective is to maximize obj; for all the other RSP
+objectives, the objective is to minimize obj.) In the following two sections, we present the two modules in DRL-Router,
+namely, 1) policy evaluation, which estimates Z r (s) for a
+given policy r, and 2) policy improvement, which updates
+policy r toward r ) .
+
+Policy Evaluation for DRL-Router
+The policy evaluation model in DRL-Router is to estimate
+the full travel time distribution for all the state–action
+pairs for a given policy r. The straightforward approach
+is to run the policy for all the state–action pairs multiple
+times and use the sampled return (the total travel time)
+values to approximate the distribution. However, the approach is inefficient in terms of both sampling complexity
+and computational complexity.
+We employ the TD learning [60] scheme to estimate the
+return distribution of one state–action pair from the bootstrapped distribution estimates of another state–action
+pair. Note that in reinforcement learning, there are altogether three schemes to estimate the return’s distribution,
+namely, DP, Monte Carlo, and TD. First, DP requires the
+full travel time distribution model to be available, which
+restricts its application to model-free use cases. On the
+other hand, although Monte Carlo is indeed a model-free
+solution, it needs to wait until the end of an episode for the
+estimation’s update, which is quite inefficient. In practice,
+we need an algorithm that is able to update the distribution estimates based on bootstrapped estimates from the
+past. This is exactly what the TD method does for the full
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+97
+
+• SEPTEMBER/OCTOBER 2023
+
+travel time distribution update. Therefore, we select the
+TD method to estimate the return distribution.
+When given a specific transition sample, (s, a, r, sl , al ),
+the update target for Z r (s, a) is r + Z r (sl , al ). Here, we
+wish to note that throughout this article, when we add a
+scalar to a vector, we mean that the scalar is added elementwise to the vector, and the result is also a vector. We have
+Z rt + 1 (s, a)
+
+r + Z tr (sl , al ). (6)
+
+Since Z r (s, a) is a distribution rather than a scalar, it
+is not straightforward to apply the TD update method directly. In this article, we adopt and revise the C51 method, originally proposed in [61], to perform updates for Z.
+Specifically, we divide the full range of Z values for all
+the state–action pairs into a fixed number (N ) of intervals
+(named basis) and use the categorical distribution to approximate Z. Then, the objective is to minimize the Wasserstein distance between Z rt + 1 (s, a) and r + Z rt (sl , al ). We
+compute the gradient with respect to the Wasserstein distance [66], and Z rt + 1 (s, a) can be updated as
+Z rt + 1 (s, a) = Z rt (s, a) + a 0 (T (r + Z rt (s, a)) - Z rt (s, a))  (7)
+where 0 # a 0 # 1 is the learning rate and T (r + Z r (sl , al ))
+is a function that transforms the discrete distribution representation of (r + Z r (sl , al )) to fit the distribution basis
+of Z r (s, a) and hence makes the addition of two distributions possible. Note that, in essence, (7) is to calculate the
+summation of two vectors, and the plus symbol in (7) is an
+element-wise summation between the two vectors.
+So far, we have presented a TD-like policy evaluation
+method for the full travel time distribution 6Z r (s, a)@ estimation. For its application in the path planning domain, we
+make improvements along two aspects: 1) where to start
+the distribution basis of Z r (s, a) and 2) involving more
+than one travel time sample for the update process in (7).
+Since the reward [r(s, a)] is an instantiated travel time
+sample of the traversal link, it must have a lower bound. In
+this case, Z r (s, a) also has the absolutely smallest value
+[denoted as z rmin (s, a)], which is the summation of all the
+traversal link’s minimal travel time, under policy r until
+the vehicle reaches the destination vertex d. In this case,
+one can start the distribution basis of Z r (s, a) at z rmin (s, a),
+which is reasonable because there is zero probability that,
+under policy r, the vehicle arrives at the destination with
+a shorter travel time than z rmin (s, a) .
+Another characteristic in path planning is that, for each
+link, one can collect multiple travel time samples. For example, with K travel time samples of a given edge, one can improve the computational process of (7) to the following form:
+Z rt+1 (s, a) = (1 - a 0) Z rt (s, a)+
+
+a0
+
+K
+
+K
+
+/ T (rk + Z t (sl , al )) . (8)
+
+k=1
+
+r
+
+Through (8), the policy evaluation process converges faster
+because more travel time samples are involved in the travel time distribution update process.
+
+Policy Improvement for DRL-Router
+In the preceding section, we introduced the policy evaluation module for DRL-Router. The next question is how
+to improve the policy toward the optimal one for the RSP
+planning problem. We follow the GPI scheme proposed
+in [60] to improve policy r toward r * . As we stated in the
+“RSP Problem Reformulation Within the MDP Framework”
+section, with Z r (s, a), one is able to calculate a performance metric value (obj) for a specific RSP problem, e.g.,
+SOTA and a 0- RSP. Depending on the specific RSP problem,
+we can update the policy toward the one that maximizes/
+minimizes the value of obj.
+In the following, we first describe how to calculate obj for any
+given state–action pair for the four RSP problems and then present the policy update process. For the SOTA problem, we have
+obj (s, a) = P (Z r (s, a) # T) . (9)
+For the a- RSP problem, we have
+obj (s, a) = T (10)
+where
+P (Z r (s, a) # T) $ a.
+For the mean-std problem, we have
+obj (s, a) = E (Z r (s, a)) + gv (Z r (s, a)) (11)
+and for the MED problem, we have
+obj (s, a) = E (u (Z r (s, a))) . (12)
+With obj values for all the state–action pairs, we can update policy r to rl in the following way: 1) for the SOTA
+problem,
+rl(s) = arg max obj (s, a) (13)
+a
+
+and 2) for the a- RSP problem, minimal mean-std problem,
+and MED problem,
+rl(s) = argmin obj (s, a) . (14)
+a
+
+This is a greedy approach to update r; however, in
+reinforcement learning, due to various sources of uncertainties, one needs to balance exploitation (select the best
+action based on current estimates) and exploration (explore other action options). In DRL-Router, since the main
+focus is to propose DRL for the RSP problem, for now, we
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+98
+
+• SEPTEMBER/OCTOBER 2023
+
+do not delve deep into the exploration strategies inside the
+reinforcement learning process and use only the simplest
+exploration strategy, i.e., e- greedy, to foster exploration. At
+each time step, the ego vehicle will select the best action,
+i.e., a = rl(s), with probability 1 - e and select any other
+action with equal probabilities. Note that we introduce
+an improved exploration strategy for DRL-Router, namely, adaptive double e- greedy, in the “Adaptive Double eGreedy Exploration” section.
+
+LET Path-Induced Warm Start of DRL-Router
+We have introduced the policy evaluation module and
+policy improvement module for DRL-Router in the previous two sections, respectively. Theoretically, DRL-Router
+works with random initialization of the policy and its corresponding travel time distribution Z. However, with random initialization, the ego vehicle needs quite a number
+of episodes for exploration in DRL-Router’s initial phase.
+Thus, it is better to endow DRL-Router with a good starting point for both the policy r and its corresponding travel
+time distribution Z r .
+With modern sensing and communicating technologies,
+it is easy to construct a database storing real travel time
+samples of all the edges in the transportation network.
+Then, the sample mean of the travel time can be easily obtained. In this way, we initialize DRL-Router’s policy r as
+the LET path from the given vertex to the destination vertex (d), which means that at any vertex s, policy r will select the edge that is contained in the LET path from s to d.
+With the initialized policy r, we can assign Z r (s, a) as the
+corresponding LET path’s travel time distribution, which
+is approximated with the database of travel time samples.
+The reason we select a LET path to initialize the travel
+time distribution estimates is that, in reality, a LET path, in
+most cases, behaves quite well for any RSP problem. Therefore, using the LET-path induced distribution as the initial
+travel time distribution estimation is a very good starting
+point. Moreover, calculating a LET path as well as the corresponding travel time distribution is very easy with the
+A* and Dijkstra algorithms. In this case, we use the LETpath induced policy to initialize the travel time distribution
+estimation and then employ the GPI scheme to gradually
+update the policy toward the optimal one.
+
+Adaptive Double e– Greedy Exploration
+In the “Policy Improvement for DRL-Router” section, we
+introduced the policy improvement procedure for DRLRouter. The canonical e- greedy exploration strategy is
+employed for exploration. However, we observe that in the
+initial training stages, with the canonical e- greedy exploration strategy, the ego vehicle tends to fall into a loop,
+e.g., traveling back and forth between intermediate nodes,
+which is meaningless. In view of that, we invent an adaptive double e- greedy strategy, which has e 1 probability of
+
+selecting the LET routing policy-referred action, e 2 probability of selecting the reliability metric-guided action, and
+1 - e 1 - e 2 probability of selecting the action at uniform
+randomness. We set e 1 = 0.9 and e 2 = 0.05 and gradually
+decrease e 1 and increase e 2 as the training episodes increase, e.g., e 1 = e 1 # 0.99 Epi, where Epi refers to the number of training episodes. Similar but twisted mechanisms
+can be applied to update e 2 . We verify the effectiveness of
+the adaptive double e- greedy exploration strategy in the
+“Simulation Results and Comparisons” section.
+
+Algorithm Flow Process
+With the policy initialization, policy evaluation, and policy
+improvement modules of DRL-Router, we are ready to deliver DRL-Router’s algorithm flow process, which is displayed
+in Algorithm 1. Note that DRL-Router is a universal solution for the RSP problem, but the user still needs to specify
+the type of RSP problem, e.g., SOTA and a- RSP, and corresponding parameters, e.g., path planning budget T and user
+confidence level a. Depending on the type of RSP problem,
+one of the equations from (9) to (12) will be invoked for the
+performance metric (obj) computation, and DRL-Router
+will perform the policy update thereafter. DRL-Router is
+essentially looping from the policy evaluation module (line
+4 to line 6) to the policy iteration module (line 7 to line 10).
+In Algorithm 1, we let the ego vehicle “stick” with the current policy for the entire episode and perform the policy evaluation and policy improvement thereafter. This is because we
+Algorithm 1. DRL-Router’s Algorithm Flow Process.
+Input: 1) destination d; 2) RSP problem-specific parameters
+T / a / g /u (c ); 3) DRL-Router parameters a 0, e, number of
+training episodes Tmax, and number of intervals/basis N; and
+4) database of travel time samples c ij ;
+Output: optimal routing policy r ) and full travel time distribution
+Z ) (s, a) corresponding to r );
+Init: 1) policy r, 2) Z r(s, a), 3) counter ! 0, and 4) rl ! r;
+1 while counter # Tmax do
+2	  Update r as adaptive double e- greedy with respect to rl ;
+3	  t ! 0;
+4	  s t ! RandomChoice (V );
+5	  while s t ! d do
+6	   get an action a t using r;
+7	   get the edge index (ij) corresponding to (s t , a t );
+8	   query the database to get K - 1 travel time samples
+9	  
+update Z r(s t , a t ) through (8) with the K - 1 database samples
+and rt + 1;
+10	  
+update policy rl according to either (13) or (14);
+s t +1 = P (s t , a t );
+11	  
+12	   t ! t + 1;
+13	  counter ! counter + 1;
+14 r ) ! rl ;
+15 Z )(s, a) ! Z r(s, a);
+16 Final.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+99
+
+• SEPTEMBER/OCTOBER 2023
+
+Memory Complexity Analysis
+Analyzing Algorithm 1, we can see
+that it requires computer memories
+There is a recent emerging trend of applying learning-based
+to store the values, such as Z r, c ij,
+obj, and r (s) . Here, we analyze the
+methods to solve a specific RSP problem.
+main components’ storage requirement. For Z r (s, a), in essence, we
+need to store only Z values for all
+want DRL-Router’s runtime decision-making process to be
+the edges; therefore, the total number of Z values is m, and
+“lightweight” in terms of the computational load and, hence,
+for each Z value, we need to store N intervals/basis; thus,
+react in real time. We postpone the policy update and imthe required memory space is O (mN) . For the travel time
+provement process to the end of the episode, where the whole
+database, we have m edges, and each edge is assumed with
+process can be done offline, with enough computation time.
+K travel time samples; thus, the memory space is O (mK) .
+For the obj value, it is a scalar for each edge; thus, the memDRL-Router Complexity Analysis
+ory space is O (m) . For policy r, it stores the decisions for
+This section analyzes the computational complexity, memeach vertex; thus, the required memory space is O (n) .
+ory complexity, and runtime decision-making complexity
+Summing up, we have the space complexity of DRL-Router,
+of DRL-Router. The computational cost of an algebraic opat O (m (N + K + 1) + n) .
+eration is expressed as the number of floating-point operations (flops). A flop is defined as a subtraction, addition, or
+Runtime Computational Complexity Analysis
+multiplication of two floating-point numbers [67]. To evalWhen deploying DRL-Router for real navigation services,
+uate an algorithm’s computational complexity, one needs
+it is important to analyze its response time to the user’s
+to count the total number of flops, express it as a polynomirequest. During deployment, it is not necessary for DRLal function of the dimensions of the involved matrices and
+Router to update and improve the routing policy. Instead,
+vectors, and simplify the expression by ignoring all terms
+the ego vehicle needs only to make real-time decisions
+except the leading terms.
+based on the currently estimated full travel time distribution, i.e., Z * (s, a) . The key part is to calculate the correComputational Complexity Analysis
+sponding obj (s, a) values for the current state and select
+Examining Algorithm 1, we can see that the key computhe action/edge with the maximal (for the SOTA problem)
+tational load happens within the “while” loop (the initialand minimal (for other RSP problems) obj values. Calcuization phase can be done offline.). With the inner “while”
+lating the obj values through one of the equations from
+loop, lines 6 to 8 essentially perform a query over a set of
+(9) to (12) has the computational complexity of O (N) .
+Meanwhile, for most real-world applications, there are, on
+| E | = m edges, whose computational complexity is O (m);
+line 9 updates Z r (s t, a t) through (8), whose computational
+average, four or five edges connected with the current vercomplexity is O (KN) . Supposing that the inner “while” loop
+tex. Thus, the runtime computational complexity of DRLexecutes H times, from line 6 to line 12, the total computaRouter is O (4N), which means that DRL-Router’s runtime
+tional complexity is O (mH + KNH) . The outer “while” loop
+reaction time depends solely on the number of intervals/
+involves updating r to rl for all the edges based on Z r (s, a)
+basis for Z distribution approximation.
+and then deciding the best action. Examining (9) to (12), the
+calculation process of each obj value has a computational
+Simulation Results and Comparisons
+complexity of O (N), and there are altogether m obj values
+In this section, we evaluate DRL-Router’s performance for
+to calculate; hence, the total computational complexity is
+the four aforementioned RSP planning objectives in a range
+O (Nm) . Thus, the total computational complexity for one
+of transportation networks and make comparisons with
+execution of the outer “while” loop is O (Nm) .
+state-of-the-art RSP planning algorithms. Since state-ofSumming up the computational complexity for both the
+the-art RSP planning algorithms usually target specific RSP
+inner and outer “while” loops, and noting that the outer
+problems, we lay down the different sets of benchmark al“while” loop operates Tmax times, we have DRL-Router’s
+gorithms for different RSP objectives in Table 3. Note that in
+computational complexity, at O ((mH + KNH + 2mN) Tmax) .
+Table 3, PQL [20] is the application of the canonical reinforceFrom the computational complexity analysis process, we
+ment learning algorithm to the SOTA problem, and CTD [22]
+can see that DRL-Router scales roughly linearly with 1) the
+is a newly proposed reinforcement learning algorithm for the
+size of the graph (m), 2) the number of intervals/basis (N)
+mean-std shortest path problem. Therefore, PQL and CTD
+in the Z r representation, 3) the required number of travel
+serve as the two most recently proposed reinforcement learntime samples per edge (K), and 4) the total number of training algorithms for the RSP problem. Meanwhile, we also aping episodes ^Tmax h .
+ply the canonical reinforcement learning algorithm, namely
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+100
+
+• SEPTEMBER/OCTOBER 2023
+
+QL [68], to the RSP problem as one of the reinforcement learning baseline algorithms for comparison purposes.
+In the following sections, we first construct a very
+simple test network to evaluate DRL-Router’s correctness, applicability to different travel time distributions,
+and parameter sensitivity and then compare DRL-Router’s
+performance and efficiency with state-of-the-art algorithms in four realistic transportation networks, namely,
+the Sioux Falls Network (SFN), Anaheim Network (AN),
+Winnipeg Network (WN), and Barcelona Network (BN).
+Finally, we showcase DRL-Router’s adaptability to userchanged RSP objectives. Table 4 summarizes the related
+algorithms’ parameter configurations. Note that the value
+inside the brackets (d = 1) refers to DOT’s parameter setup
+for the AN, WN, and BN.
+All the algorithms are implemented in Python 3.7, and
+we conduct the experiments on a 3.6-GHz, AMD Ryzen 5
+3600, six-core desktop processor with the 64-b version of
+Windows 10 and 16 GB of random-access memory. The
+source code of DRL-Router as well as the related state-ofthe-art algorithms is publicly available at https://github.
+com/YoZo-X/DRL-Router.
+
+figurations, i.e., N and a 0, on DRL-Router’s performance;
+2) evaluate DRL-Router’s “correctness,” i.e., whether DRLRouter converges to the true travel time distribution of a
+given routing policy; and 3) test DRL-Router’s applicability
+to different travel time distribution models. Note that we do
+not investigate the influence of the number of travel time
+samples (K) because K is subject to the travel time sample
+availability, and DRL-Router simply performs better with
+larger K values, almost without incurring additional computational cost. The test network, as shown in Figure 1(a),
+consists of five vertices (o = 1, d = 5), and four edges, each
+of which follows a different travel time distribution, as given in Figure 1(b).
+
+Learning Rate ^a 0h
+
+We first investigate the influence of learning rate a 0 with
+a fixed N, and Figure 2 details the convergence process of
+different learning rates. From the figure, we can see that
+with larger a 0 values, DRL-Router converges faster on
+Table 4. The algorithm parameters.
+Parameter
+
+Description
+
+Algorithm
+
+Value
+
+N
+
+Number of basis
+
+DRL-Router
+
+51
+
+a0
+
+Learning rate
+
+DRL-Router, CTD, PQL
+
+0.1
+
+K
+
+Travel time samples
+
+DRL-Router
+
+5
+
+Table 3. The benchmark algorithms.
+
+Tmax
+
+Maximum number
+of episodes
+
+DRL-Router, CTD, QL
+
+2,000
+
+RSP Objective
+
+Benchmark Algorithm
+
+MaxIt
+
+PLM [11]
+
+OS-MIP, PLM, GP3
+LR, SP, MOM
+
+200
+
+SOTA
+
+Maximum number
+of iterations
+
+h
+
+Duality gap
+
+SP, LR, GP3
+
+0.01
+
+S
+
+Number of travel
+time samples
+
+OS-MIP, PLM, SP
+
+50
+
+d
+
+Time window
+duration
+
+DOT
+
+0.01 (1)
+
+j
+
+Accuracy threshold
+
+FMA
+
+0.05
+
+Design Parameter and Algorithm Correctness Study
+In this section, we construct a very simple test network to
+1) investigate the influence of different parameter con-
+
+DOT [7]
+OS-MIP [9]
+PQL [20]
+FMA [17]
+QL [68]
+a-RSP
+
+LR [30]
+MOM [28]
+Edge 1
+
+E-PA [32]
+Minimal mean-std
+
+2
+
+1
+
+ILA [35]
+SP [26]
+
+Edge 2
+
+3
+
+Edge 4
+
+4
+
+(a)
+
+GP3 [24]
+
+MED
+
+Edge 3
+
+CTD [22]
+
+Edge
+
+Mean
+
+Standard
+
+Distribution
+
+QL [68]
+
+1
+
+10
+
+1
+
+Normal
+
+2
+
+10
+
+1
+
+Lognormal
+
+3
+
+10
+
+1
+
+Gamma
+
+4
+
+10
+
+1
+
+Weibull
+
+Relax-1 [5]
+Algorithm CD-Path [47]
+
+PLM: partial Lagrangian method; OS-MIP: one-stage mixed-integer programming; FMA: fourth
+moment approach; LR: Lagrangian relaxation method; MOM: moment matching method; E-PA:
+extended pulse algorithm; ILA: iterative labeling algorithm; SP: subgradient projection; GP3:
+Gaussian process path planning; Relax-1: relaxed pruning.
+
+(b)
+FIG 1 The (a) test network and (b) network information.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+101
+
+• SEPTEMBER/OCTOBER 2023
+
+5
+
+The Number of Basis (N)
+
+Correctness Evaluation
+We evaluate DRL-Router’s correctness and applicability to
+different travel time distribution models. Figure 4 presents
+a representative Z r evolution process, with Figure 4(e)
+showing the “true” travel time distribution (estimated
+from the Monte Carlo estimation method). From the figure, we can see that DRL-Router evaluates the given policy’s travel time distribution “correctly” [in terms of the
+distribution similarity between Figure 4(d) and (e)], and it
+applies to different kinds of travel time distribution models (we test four different distribution models, namely,
+normal, log normal, gamma, and the Weibull distribution,
+in the test network).
+
+0.2
+
+0.8
+
+0.15
+
+0.6
+L2 Distance
+
+L2 Distance
+
+Next, we investigate the influence of the number of basis
+(N ). DRL-Router’s performance with different N values is
+illustrated in Figure 3, from which we can see that the L 2
+distance (a commonly used metric to gauge the dissimilarity between two distributions [69]) between the converged
+Z r values and the true travel time distribution decreases
+as N increases, in general (we observe that when N 1 10,
+the converged L 2 values are too large and even random;
+
+thus, there is no such apparent decreasing trend.) However, the needed computation time increases. Balancing
+accuracy (a short L 2 distance) with efficiency (low computation time), we set N = 51 for the remaining experiments.
+
+0.1
+
+0.25
+
+0.15
+
+0.4
+0.2
+
+0.05
+
+0.2
+
+N = 51 Time = 0.1323
+
+N = 51 L2 = 0.03
+
+0.1
+
+Computation Time (s)
+
+average but with higher variations (larger shaded areas)
+during learning. Considering the tradeoff between convergence speed and variance, we select a 0 = 0.1 (as listed
+in Table 4) for the remaining experiments. Note that for
+a 0 = 0.1 and a 0 = 0.5, the curves coincide with each other
+after 150 training episodes; the underlying reason is that
+both a 0 values converge to the same performance metric
+after 150 episodes.
+
+0.05
+0
+0
+
+100
+
+200
+300
+Episode
+(a)
+
+400
+
+25
+50
+75
+Number of Basis: N
+
+500
+
+(a)
+
+0.125
+
+0.8
+
+L2 Distance
+
+L2 Distance
+
+0.1
+0.075
+0.05
+
+0.6
+
+1.25
+1
+
+N = 51 Time = 0.6741
+
+0.75
+
+0.4
+0.2
+
+N = 51 L2 = 0.0046
+
+0.025
+
+100
+
+α0 = 0.01
+
+200
+300
+Episode
+(b)
+α0 = 0.05
+
+400
+
+25
+
+500
+
+0.5
+0.25
+
+0
+
+0
+0
+
+100
+
+Computation Time (s)
+
+0
+
+50
+
+75
+
+100
+
+Number of Basis: N
+(b)
+L2 Distance
+Computational Time
+
+α0 = 0.5
+
+FIG 2 DRL-Router’s convergence process for different learning rates. The
+y-axis refers to the L2 distance between DRL-Router’s estimated distribution
+when the ego vehicle starts at node 1 in Figure 1(a) and the true distribution
+(estimated from the Monte Carlo estimation method). Shaded areas indicate
+the standard deviations of the estimation. (a) N = 31. (b) N = 51.
+
+FIG 3 DRL-Router’s performance (accuracy and efficiency) for different
+N values; (a) and (b) are results when we terminate the program at
+100 episodes and 500 episodes. Shaded areas show the standard
+deviation of the performance indicators, i.e., the L2 distance and
+computation time. (a) Epi = 100. (b) Epi = 500.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+102
+
+• SEPTEMBER/OCTOBER 2023
+
+Performance and Efficiency Comparison in
+SFN, AN, WN, and BN
+This section evaluates and compares DRL-Router’s performance and efficiency with the state of the art in a range
+of realistic transportation networks, namely, the SFN, AN,
+WN, and BN. The test transportation network details, e.g.,
+the number of vertices and edges, are presented in Table 5.
+The edges’ mean travel times of all four transportation
+networks are publicly available [70], and we adopt the same
+method as used in [25] to generate the standard deviation
+value of each edge in the corresponding network. Specifically, we set v ij = Uniform (0, l) n ij, where l = 0.4. In the
+simulation setup, we assume that the edges’ travel time
+follows a normal distribution. For the performance evaluation, we randomly generate 50 OD pairs with rejection (reject the OD pairs that are too near each other) for the AN,
+WN, and BN and five OD pairs for the SFN since it is a relatively small network, with the fewest number of nodes and
+edges. Then, we evaluate and compare the performance
+of DRL-Router with respective state-of-the-art algorithms
+for the four aforementioned RSP objectives, namely, SOTA,
+a- RSP, the mean-std shortest path, and MED. Specifically,
+for the SOTA objective, we set three types of path planning budget T for evaluation, namely, 1) the tight budget:
+T = 0.975 # t LET, where t LET refers to the LET path’s mean
+travel time; 2) exact budget: T = t LET; and (3) loose budget:
+
+T = 1.025 # t LET . For the a- RSP objective, we select three
+representative a values, namely, 1) risk averse: a = 0.9,
+2) risk neutral: a = 0.5, and 3) risk seeking: a = 0.1. For
+the mean-std objective, we select three representative g
+values as follows (the selection falls in the range of g values used in [35]): 1) g = 1, 2) g = 10, and 3) g = 40. For the
+MED objective, we use the exponential disutility function,
+with a ! {0.01, 0.05, 0.1}, which conforms to the parameter configurations used in [47]. To eliminate performance
+randomness, for each parameter configuration, we rerun
+DRL-Router 50 times and report the average performance.
+Note that to compare the solution quality of each algorithm to each RSP problem in a unified view, we bring about
+a new concept of the optimality index (Opt), defined as
+Opt =
+
+Table 5. The test network details.
+Test Network
+
+Number of Edges (m)
+
+Number of Vertices (n)
+
+SFN
+
+76
+
+24
+
+AN
+
+914
+
+416
+
+WN
+
+2,836
+
+1,052
+
+BN
+
+2,522
+
+1,020
+
+0.2
+
+0.2
+
+0.2
+
+0.15
+
+0.15
+
+0.15
+
+0.1
+
+0.1
+
+0.1
+
+0.05
+
+0.05
+
+0.05
+
+0
+
+0
+
+10
+
+20
+30
+Travel Time
+(a)
+
+40
+
+50
+
+0
+
+0
+
+10
+
+20
+30
+Travel Time
+(b)
+
+0.2
+
+0.2
+
+0.15
+
+0.15
+
+0.1
+
+0.1
+
+0.05
+
+0.05
+
+0
+
+0
+
+10
+
+20
+30
+Travel Time
+(d)
+
+40
+
+50
+
+falg - fLET
+# 100%(15)
+fLET
+
+0
+
+0
+
+40
+
+10
+
+50
+
+0
+
+0
+
+20
+30
+Travel Time
+(e)
+
+10
+
+40
+
+20
+30
+Travel Time
+(c)
+
+40
+
+50
+
+50
+
+FIG 4 A representative evolution process of Z r (the “true distribution” is estimated from the Monte Carlo method). (a) Epi = 20. (b) Epi = 50.
+(c) Epi = 100. (d) Epi = 500. (e) The true distribution.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+103
+
+• SEPTEMBER/OCTOBER 2023
+
+Opt = -
+
+falg - fLET
+# 100%(16)
+fLET
+
+for the other three RSP problems. In (15) and (16), falg refers to the evaluating algorithm’s average resulting RSP
+objective value; e.g., for SOTA, falg refers to the ego algorithm’s average SOTA probability, and for mean-std, falg
+refers to the ego algorithm’s average mean-std combination value. In addition, fLET refers to the LET path’s corresponding average RSP objective value; e.g., for SOTA,
+fLET refers to the LET path’s average SOTA probability.
+The reason we flip the sign between (15) and (16) is that
+for SOTA, the objective is to maximize the objective value,
+while for the other three RSP problems, the objective is to
+minimize the objective value. Through flipping the sign,
+the algorithm’s Opt value is always better when it is larger,
+and it refers to the performance increase percentage with
+
+Performance Increase (Opt)
+
+25%
+20%
+
+DOT
+PQL
+FMA
+QL
+
+DRL-Router
+OS-MIP
+PLM
+
+15%
+10%
+5%
+
+respect to the LET path, which serves as the baseline performance indicator.
+Figure 5 displays the comparative results of DRLRouter with the related baseline algorithms for the SOTA
+problem and the mean-std shortest path problem in the
+SFN, AN, WN, and BN. Note that we skip the performance
+and efficiency comparisons for the a- RSP problem and
+MED problem, as the figures are quite similar to the
+ones presented in Figure 5, and report the detailed performance metric comparisons per network and per parameter configuration in “Quantitative Comparison With
+Other RSP Objectives”.
+In Figure 5(a) and (c), we can see that DRL-Router
+achieves the top two performance metrics when compared
+with the respective set of benchmark algorithms in the
+four test networks. Note that for each evaluating network,
+we have already averaged three cases of T values for the
+SOTA problem and g values for the mean-std problem, respectively. For the computational efficiency comparison, it
+
+15
+10
+Planning Time/log(s)
+
+for the SOTA problem and as
+
+DOT
+PQL
+FMA
+QL
+
+DRL-Router
+OS-MIP
+PLM
+
+5
+0
+–5
+
+0%
+SFN
+
+AN
+
+WN
+
+–10
+
+BN
+
+SFN
+
+AN
+
+(a)
+
+2%
+
+10
+Planning Time/log(s)
+
+Performance Increase (Opt)
+
+GP3
+CTD
+QL
+
+DRL-Router
+ILA
+SP
+
+4%
+
+GP3
+CTD
+QL
+
+DRL-Router
+ILA
+SP
+
+5
+0
+–5
+
+0%
+–2%
+
+BN
+
+15
+
+8%
+6%
+
+WN
+(b)
+
+SFN
+
+AN
+
+WN
+
+BN
+
+–10
+
+(c)
+
+SFN
+
+AN
+
+WN
+
+BN
+
+(d)
+
+FIG 5 The performance and efficiency comparison of DRL-Router with baseline algorithms in the SFN, AN, WN, and BN for the SOTA problem and meanstd shortest path problem. [The units of the y-axis of (b) and (d) are logarithm values in seconds.) (a) The SOTA performance. (b) The SOTA efficiency.
+(c) The mean-std performance. (d) The mean-std efficiency.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+104
+
+• SEPTEMBER/OCTOBER 2023
+
+Quantitative Comparison With Other RSP Objectives
+This sidebar presents detailed quantitative comparisons of the distributional reinforcement learning (DRL)-based algorithm DRL-Router with
+the baseline algorithms for the remaining two reliable shortest path
+problems, i.e., the high-confidence constraint (a) and minimal expect-
+
+ed disutility (MED) path, for four realistic networks. For Tables S1
+and S2, we report the algorithm’s Opt value, which is the relative performance increase/decrease percentage with respect to the least
+expected time path’s performance.
+
+Table S1. The a-reliable result of the four networks.
+Performance Increase
+
+Planning Time/Log (s)
+
+Network
+
+a
+
+DRL
+
+LR
+
+MOM
+
+E-PA
+
+DRL
+
+LR
+
+MOM
+
+E-PA
+
+SFN
+
+0.9
+
+2.17%
+
+−17.87%
+
+−2.63%
+
+−2.63%
+
+−7.02
+
+−4.11
+
+0.46
+
+−5.91
+
+0.5
+
+0%
+
+−7.7%
+
+−7.7%
+
+−5.1%
+
+−7.12
+
+−3.98
+
+0.48
+
+−5.68
+
+0.1
+
+1.06%
+
+−2.18%
+
+1.54%
+
+−9.23%
+
+−7.2
+
+1.05
+
+0.47
+
+−4.84
+
+0.9
+
+8.25%
+
+8.12%
+
+8.26%
+
+0.04%
+
+−6.78
+
+1.67
+
+2.83
+
+−0.56
+
+0.5
+
+8.29%
+
+8.26%
+
+8.32%
+
+0.04%
+
+−6.88
+
+1.67
+
+5.24
+
+−0.56
+
+0.1
+
+9.66%
+
+8.31%
+
+8.35%
+
+0.02%
+
+−6.99
+
+1.67
+
+5.24
+
+−0.57
+
+0.9
+
+19.44%
+
+17.66%
+
+18.69%
+
+4.16%
+
+−6.5
+
+2.91
+
+2.1
+
+1.36
+
+0.5
+
+21.99%
+
+20.04%
+
+20.05%
+
+3.93%
+
+−6.49
+
+2.92
+
+2.11
+
+1.36
+
+0.1
+
+24.9%
+
+21.96%
+
+21.62%
+
+5.16%
+
+−6.88
+
+4.46
+
+2.1
+
+1.44
+
+0.9
+
+51.57%
+
+51.53%
+
+51.59%
+
+7.71%
+
+−6.69
+
+2.7
+
+2.05
+
+1.2
+
+0.5
+
+51.07%
+
+51.06%
+
+51.07%
+
+4.84%
+
+−6.62
+
+6.58
+
+2.06
+
+1.23
+
+0.1
+
+50.4%
+
+50.01%
+
+50.38%
+
+16.64%
+
+−5.38
+
+6.58
+
+2.05
+
+1.2
+
+AN
+
+WN
+
+BN
+
+LR: Lagrangian relaxation method; MOM: moment matching method; E-PA: extended pulse algorithm; SFN: Sioux Falls Network; AN: Anaheim Network; WN: Winnipeg Network;
+BN: Barcelona Network.
+
+Table S2. The MED result of the four networks.
+Performance Increase
+
+Planning Time: Log (s)
+
+Network
+
+a
+
+DRL
+
+Relax-1
+
+Alg-CD
+
+DRL
+
+Relax-1
+
+Alg-CD
+
+SFN
+
+0.01
+
+0.12%
+
+0%
+
+−0.4%
+
+−8.5
+
+1.04
+
+−4.59
+
+0.05
+
+1.65%
+
+−0.35%
+
+−0.98%
+
+−8.43
+
+1.03
+
+−4.53
+
+0.1
+
+7.5%
+
+−1.05%
+
+−4.31%
+
+−8.5
+
+1.04
+
+−4.59
+
+0.01
+
+0.02%
+
+0.36%
+
+−0.5%
+
+−8.43
+
+1.94
+
+−0.58
+
+0.05
+
+0.14%
+
+0.11%
+
+−2.82%
+
+−8.46
+
+1.94
+
+−0.58
+
+0.1
+
+0.11%
+
+0.02%
+
+−3.17%
+
+−8.41
+
+1.94
+
+−0.59
+
+0.01
+
+0.03%
+
+0.02%
+
+−0.23%
+
+−7.07
+
+3.72
+
+4.76
+
+0.05
+
+0.05%
+
+0.05%
+
+−3.55%
+
+−7.04
+
+3.72
+
+4.81
+
+0.1
+
+0.02%
+
+−0.25%
+
+−12.85%
+
+−7.08
+
+3.73
+
+5.09
+
+0.01
+
+0.01%
+
+0.01%
+
+−0.3%
+
+−7.33
+
+3.5
+
+2.69
+
+0.05
+
+0.02%
+
+−0.05%
+
+−0.93%
+
+−7.34
+
+3.5
+
+2.6
+
+0.1
+
+0.13%
+
+−0.11%
+
+−2.78%
+
+−7.33
+
+3.5
+
+2.93
+
+AN
+
+WN
+
+BN
+
+Relax-1: relaxed pruning; Alg-CD: Algorithm CD-Path.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+105
+
+• SEPTEMBER/OCTOBER 2023
+
+v­ alues as specified in the previous
+section (T = 0.975 # t LET, T = t LET,
+and T = 1.025 # t LET) but suppose
+In practice, we need an algorithm that is able to update the
+that the user switches his or her
+objective to the mean-std shortest
+distribution estimates based on bootstrapped estimates
+path objective, with g = 1, 10, 30.
+from the past.
+How does the pre-trained DRLRouter for the SOTA problem behave in the mean-std setup? First,
+it is straightforward to apply the
+can be seen from Figure 5(b) and (d) that for both the SOTA
+pretrained SOTA DRL-Router, as it also offers a full disproblem and the mean-std shortest path problem, and for
+tribution for a given routing policy. However, one cannot
+all four transportation networks, DRL-Router is much faster
+guarantee its optimality since it is trained with respect
+than all the other benchmark algorithms by at least an orto the SOTA objective rather than the mean-std objective.
+der of magnitude (10 times faster). Note that in Figure 5(c),
+We still deploy the pretrained DRL-Router to the mean-std
+both ILP and SP exhibit quite good performances for the
+setup and evaluate its performance by calculating its Opt
+mean-std shortest path problem, and thus, the performance
+value with respect to the LET path’s performance as stated
+increases with respect to the LET path are similar between
+in (15) or (16).
+DRL-Router, ILP, and SP. For DRL-Router, the advantage
+Table 6 lists the adaptation score matrix for the SFN,
+is to have a “universal” solution applicable to all four RSP
+which is a 4 × 4 matrix, with element ij corresponding to
+problems and to be fast in terms of the decision-making
+the performance increase of DRL-Router when trained
+time. Therefore, similar performance with the state of the
+with the ith RSP objective and deployed with the jth RSP
+art for one specific RSP problem is quite acceptable.
+objective. For example, in the first row, second column, the
+In summary, DRL-Router achieves the top two perforelement value of 0.38% means that when we train DRLmance metrics in all the evaluated RSP problems, which
+Router for the SOTA objective and deploy it for the a- RSP
+shows its universal application characteristic, and its
+problem, the performance increase (Opt) with respect to
+decision-making time is at least an order of magnitude
+the LET path is 0.38%. In Table 6, we can see that DRL(10 times) faster than the related benchmark algorithms,
+Router exhibits great adaptation ability, with all the elewhich shows that it is fast.
+ments being positive. Note that the values in the main
+diagonal of the adaptation score matrix refer to the averDRL-Router Adaptability Evaluation
+age performance increase of DRL-Router when it is trained
+In the previous section, we showed DRL-Router’s universal
+and deployed with respect to the same RSP objective.
+and fast characteristics. This section evaluates its characteristic of being adaptive, i.e., how DRL-Router reacts in
+Conclusion and Future Work
+real time to a user-changed objective. Since, to the best
+This article presented DRL-Router, a universal learningof our knowledge, no state-of-the-art RSP solution offers
+based solution for the RSP problem. Different from stateadaptability to the switched-RSP objective, we do not lay
+of-the-art algorithms, DRL-Router 1) does not rely on
+down quantitative comparisons.
+pregauged travel time distribution models; 2) applies to
+The term adaptability is quantified as the perforall the prevailing RSP objectives, e.g., SOTA, a- reliable,
+mance increase (or decrease) of DRL-Router with respect
+mean-std, and MED; 3) is able to make decisions in real
+to the LET path’s performance when we train DRL-Routtime; and 4) adapts smoothly with user-switched RSP ober for one specific RSP objective, e.g., SOTA, but deploy
+jectives. We analyzed the computational complexity and
+it to another RSP objective, e.g., a- RSP. For example, we
+runtime complexity of DRL-Router, and demonstrated the
+train DRL-Router for the SOTA problem with three T
+universal applicability of DRL-Router to different RSP objectives in a range of transportation networks.
+Currently, DRL-Router offers an “all-to-one” service,
+Table 6. The adaptation score matrix for the SFN.
+which means that the well-trained DRL-Router is able to
+provide RSP routing services from “all” origin nodes to one
+SOTA
+Alpha
+Mean-Std
+MED
+fixed destination node. DRL-Router has to be trained comSOTA
+6.33%
+0.38%
+0.09%
+2.73%
+pletely separately for different destinations, which prohibits
+DRL-Router’s generalization ability to multiple destinaAlpha
+3.3%
+1.06%
+0.06%
+3.31%
+tions. In the future, we would like to incorporate the mulMean-std
+1.1%
+0.82%
+0.2%
+3.08%
+titask learning paradigm into DRL-Router, which would
+MED
+3.3%
+0.08%
+0.08%
+3.09%
+endow its generalization ability. Meanwhile, we are keen
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+106
+
+• SEPTEMBER/OCTOBER 2023
+
+on applying modern DRL techniques, e.g., the quantile regression deep Q-network [62], to increase the generalization ability of DRL-Router.
+
+About the Authors
+Hongliang Guo (guo_hongliang@i2r.a
+-star.edu.sg) earned his Ph.D. degree
+from the Stevens Institute of Technology, Hoboken, NJ, USA. He was a postdoc t ora l r esea r cher i n A l mende,
+Nanyang Technological University and
+the Singapore-MIT Alliance for Research and Technology, respectively. Starting in 2023, he
+has been serving as an associate professor at College of
+Computer Science, Sichuan University (SCU), Chengdu, Sichuan 610065, China. His research interests include reliable path planning and learning under uncertainties as
+well as multirobot efficient search.
+Wenda Sheng (ningenpre@gmail.com)
+earned his B.S. degree, with first-class
+honors, in 2020 from the University of
+Electronic Science and Technology of
+China, Chengdu 611731, China, where
+he is pursuing his M.S. degree in control science and engineering. His research interests include distributional reinforcement
+learning for autonomous navigation in dynamic environments and multirobot reliable search with factorized multiagent reinforcement learning.
+Chen Gao (chengao982@gmail.com)
+earned his B.S. degree, with firstclass honors, from the University of
+Electronic Science and Technology of
+China in 2020. He is pursuing his M.S.
+degree at ETH Zurich, 8092 Zurich,
+Switzerland. His research interests
+include integrating planning and learning, with applications to robotics and autonomous vehicles in unstructured environments.
+Yaochu Jin (yaochu.jin@uni-bielefeld.
+de) earned his Ph.D. degree from Zhejiang University, China, and Dr.-Ing. degree from Ruhr University Bochum,
+Germany. He is an Alexander von Humboldt Professor for Artificial Intelligence at Bielefeld University, 33619
+Bielefeld, Germany. His research interests include datadriven evolutionary optimization and multiobjective reinforcement learning. He is a Fellow of IEEE, the president-elect
+of the IEEE Computational Intelligence Society, and a member of Academia Europaea.
+
+References
+
+[1] D. Brownstone, A. Ghosh, T. F. Golob, C. Kazimi, and D. Van Amelsfort, “Drivers’ willingness-to-pay to reduce travel time: Evidence
+from the San Diego i-15 congestion pricing project,” Transp. Res. A,
+Policy Pract., vol. 37, no. 4, pp. 373–387, May 2003, doi: 10.1016/S09658564(02)00021-6.
+[2] H. Frank, “Shortest paths in probabilistic graphs,” Oper. Res., vol. 17,
+no. 4, pp. 583–599, Aug. 1969, doi: 10.1287/opre.17.4.583.
+[3] A. Chen and Z. Ji, “Path finding under uncertainty,” J. Adv. Transp.,
+vol. 39, no. 1, pp. 19–37, Jan. 2010, doi: 10.1002/atr.5670390104.
+[4] T. Uchida and Y. Iida, “Risk assignment: A new traffic assignment
+model considering the risk of travel time variation,” in Proc. Transp.
+Traffic Theory, 1993, pp. 89–105.
+[5] I. Murthy and S. Sarkar, “Stochastic shortest path problems with piecewise-linear concave utility functions,” Manage. Sci., vol. 44, no. 11-part-2,
+pp. S125–S136, Nov. 1998, doi: 10.1287/mnsc.44.11.S125.
+[6] F. Manseur, N. Farhi, C. N. Van Phu, H. Haj-Salem, and J.-P. Lebacque,
+“Robust routing, its price, and the tradeoff between routing robustness and travel time reliability in road networks,” Eur. J. Oper. Res.,
+vol. 285, no. 1, pp. 159–171, Aug. 2020, doi: 10.1016/j.ejor.2018.10.053.
+[7] A. Arun Prakash, “Algorithms for most reliable routes on stochastic
+and time-dependent networks,” Transp. Res. B, Methodological, vol.
+138, pp. 202–220, Aug. 2020, doi: 10.1016/j.trb.2020.05.013.
+[8] A. Agafonov, V. Myasnikov, and A. Maksimov, “Approximation of the
+road segments travel time using Lévy distributions in the reliable
+shortest path problem,” J. Phys., Conf. Ser., vol. 1368, no. 3, Nov. 2019,
+Art. no. 032008, doi: 10.1088/1742-6596/1368/3/032008.
+[9] L. Yang and X. Zhou, “Optimizing on-time arrival probability and
+percentile travel time for elementary path finding in time-dependent
+transportation networks: Linear mixed integer programming reformulations,” Transp. Res. B, Methodological, vol. 96, pp. 68–91, Feb.
+2017, doi: 10.1016/j.trb.2016.11.012.
+[10] L. Shen, H. Shao, L. Zhang, and J. Zhao, “The global optimal algorithm of reliable path finding problem based on backtracking method,” Math. Problems Eng., vol. 2017, pp. 1–10, Oct. 2017, doi: 10.1155/
+2017/4586471.
+[11] Z. Cao, H. Guo, J. Zhang, D. Niyato, and U. Fastenrath, “Improving the
+efficiency of stochastic vehicle routing: A partial Lagrange multiplier
+method,” IEEE Trans. Veh. Technol., vol. 65, no. 6, pp. 3993–4005, Jun.
+2016, doi: 10.1109/TVT.2015.2480964.
+[12] Z. Cao, H. Guo, J. Zhang, D. Niyato, and U. Fastenrath, “Finding the
+shortest path in stochastic vehicle routing: A cardinality minimization
+approach,” IEEE Trans. Intell. Transp. Syst., vol. 17, no. 6, pp. 1688–
+1702, Jun. 2016, doi: 10.1109/TITS.2015.2498160.
+[13] G. Sabran, S. Samaranayake, and A. Bayen, “Precomputation techniques for the stochastic on-time arrival problem,” in Proc. Meeting
+Algorithm Eng. Exp. (ALENEX), Society for Industrial and Applied
+Mathematics, 2014, pp. 138–146.
+[14] Y. M. Nie and X. Wu, “Shortest path problem considering on-time arrival probability,” Transp. Res. B, Methodological, vol. 43, no. 6, pp.
+597–613, Jul. 2009, doi: 10.1016/j.trb.2009.01.008.
+[15] Y. Fan, R. Kalaba, and J. Moore, “Arriving on time,” J. Optim. Theory Appl.,
+vol. 127, no. 3, pp. 497–513, Dec. 2005, doi: 10.1007/s10957-005-7498-5.
+[16] C. Gao, H. Guo, and W. Sheng, “GP4: Gaussian process proactive path
+planning for the stochastic on time arrival problem,” IEEE Trans.
+Veh. Technol., vol. 70, no. 10, pp. 9849–9862, Oct. 2021, doi: 10.1109/
+TVT.2021.3109169.
+[17] H. Guo, Z. He, C. Gao, and D. Rus, “Navigation with time limits in
+transportation networks: A fourth moment approach,” IEEE Trans.
+Intell. Transp. Syst., vol. 23, no. 12, pp. 23,781–23,796, Dec. 2022, doi:
+10.1109/TITS.2022.3189865.
+[18] Z. Cao et al., “Improving the performance of transportation networks:
+A semi-centralized pricing approach,” IEEE Trans. Intell. Transp.
+Syst., vol. 22, no. 10, pp. 6353–6364, Oct. 2021, doi: 10.1109/TITS.
+2020.2991759.
+[19] Z. Wang, K. You, S. Song, and Y. Zhang, “Wasserstein distributionally
+robust shortest path problem,” Eur. J. Oper. Res., vol. 284, no. 1, pp.
+31–43, Jul. 2020, doi: 10.1016/j.ejor.2020.01.009.
+[20] Z. Cao et al., “Using reinforcement learning to minimize the probability of delay occurrence in transportation,” IEEE Trans. Veh.
+Technol., vol. 69, no. 3, pp. 2424–2436, Mar. 2020, doi: 10.1109/TVT.
+2020.2964784.
+[21] T. Xing and X. Zhou, “Finding the most reliable path with and without link travel time correlation: A Lagrangian substitution based approach,” Transp. Res. B, Methodological, vol. 45, no. 10, pp. 1660–1679,
+Dec. 2011, doi: 10.1016/j.trb.2011.06.004.
+[22] H. Guo, X. Hou, and Q. Peng, “CTD: Cascaded temporal difference
+learning for the mean-standard deviation shortest path problem,”
+IEEE Trans. Intell. Transp. Syst., vol. 23, no. 8, pp. 10,868–10,886, Aug.
+2022, doi: 10.1109/TITS.2021.3096829.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+107
+
+• SEPTEMBER/OCTOBER 2023
+
+[23] Y. Pan, “A nonlinear mixed integer programming method to find the
+reliable shortest path in a stochastic network,” in Proc. 16th COTA Int.
+Conf. Transp. Prof., 2016, pp. 71–77, doi: 10.1061/9780784479896.007.
+[24] H. Guo, X. Hou, Z. Cao, and J. Zhang, “GP3: Gaussian process path
+planning for reliable shortest path in transportation networks,” IEEE
+Trans. Intell. Transp. Syst., vol. 23, no. 8, pp. 11,575–11,590, Aug. 2022,
+doi: 10.1109/TITS.2021.3105415.
+[25] Y. Zhang and A. Khani, “An algorithm for reliable shortest path problem with travel time correlations,” Transp. Res. B, Methodological, vol.
+121, no. C, pp. 92–113, Oct. 2019, doi: 10.1016/j.trb.2018.12.011.
+[26] Y. Zhang, Z.-J. M. Shen, and S. Song, “Lagrangian relaxation for the
+reliable shortest path problem with correlated link travel times,”
+Transp. Res. B, Methodological, vol. 104, pp. 501–521, Oct. 2017, doi:
+10.1016/j.trb.2017.04.006.
+[27] Q. Tu, L. Cheng, T. Yuan, Y. Cheng, and M. Li, “The constrained reliable shortest path problem for electric vehicles in the urban transportation network,” J. Cleaner Prod., vol. 261, Mar. 2020, Art. no. 121130,
+doi: 10.1016/j.jclepro.2020.121130.
+[28] P. Chen, R. Tong, G. Lu, and Y. Wang, “The a- reliable path problem in
+stochastic road networks with link correlations: A moment-matchingbased path finding algorithm,” Expert Syst. Appl., vol. 110, pp. 20–32,
+Nov. 2018, doi: 10.1016/j.eswa.2018.05.022.
+[29] P. Chen, R. Tong, B. Yu, and Y. Wang, “Reliable shortest path finding
+in stochastic time-dependent road network with spatial-temporal link
+correlations: A case study from Beijing,” Expert Syst. Appl., vol. 147,
+Jun. 2020, Art. no. 113192, doi: 10.1016/j.eswa.2020.113192.
+[30] W. Zeng, T. Miwa, Y. Wakita, and T. Morikawa, “Application of Lagrangian relaxation approach to a-reliable path finding in stochastic
+networks with correlated link travel times,” Transp. Res. C, Emerg.
+Technol., vol. 56, pp. 309–334, Jul. 2015, doi: 10.1016/j.trc.2015.04.018.
+[31] F. Guerriero and P. Beraldi, “The a-reliable shortest path problem,”
+Algorithmic Oper. Res., vol. 3, no. 1, pp. 59–66, Mar. 2008.
+[32] D. Corredor-Montenegro, N. Cabrera, R. Akhavan-Tabatabaei, and A.
+L. Medaglia, “On the shortest a-reliable path problem,” J. Spanish Soc.
+Statist. Oper. Res., vol. 29, no. 1, pp. 287–318, Mar. 2021, doi: 10.1007/
+s11750-021-00592-3.
+[33] S. Biswal, G. Ghorai, and S. Mohanty, “ a-reliable shortest path problem
+in uncertain time-dependent networks,” Int. J. Appl. Comput. Math.,
+vol. 8, no. 4, pp. 1–12, Aug. 2022, doi: 10.1007/s40819-022-01351-z.
+[34] M. Ruß, G. Gust, and D. Neumann, “The constrained reliable shortest
+path problem in stochastic time-dependent networks,” Oper. Res., vol.
+69, no. 3, pp. 709–726, Apr. 2021, doi: 10.1287/opre.2020.2089.
+[35] A. Khani and S. D. Boyles, “An exact algorithm for the mean–standard
+deviation shortest path problem,” Transp. Res. B, Methodological, vol.
+81, pp. 252–266, Nov. 2015, doi: 10.1016/j.trb.2015.04.002.
+[36] Y. Liu, S. Blandin, and S. Samaranayake, “Stochastic on-time arrival
+problem in transit networks,” Transp. Res. B, Methodological, vol. 119,
+pp. 122–138, Jan. 2019, doi: 10.1016/j.trb.2018.11.013.
+[37] B. Y. Chen, C. Shi, J. Zhang, W. H. Lam, Q. Li, and S. Xiang, “Most
+reliable path-finding algorithm for maximizing on-time arrival probability,” Transportmetrica B, Transport Dyn., vol. 5, no. 3, pp. 248–264,
+Jun. 2017, doi: 10.1080/21680566.2016.1169953.
+[38] B. Y. Chen, W. H. Lam, and Q. Li, “Efficient solution algorithm for finding spatially dependent reliable shortest path in road networks,” J. Adv.
+Transp., vol. 50, no. 7, pp. 1413–1431, Sep. 2016, doi: 10.1002/atr.1408.
+[39] H. Guo, R. Shi, D. Rus, and W.-Y. Yau, “Dual dynamic programming
+for the mean standard deviation Canadian traveller problem,” IEEE
+Trans. Veh. Technol., vol. 71, no. 11, pp. 11,465–11,479, Nov. 2022, doi:
+10.1109/TVT.2022.3191490.
+[40] Y. Fan and Y. Nie, “Optimal routing for maximizing the travel time reliability,” Netw. Spatial Econ., vol. 6, nos. 3–4, pp. 333–344, Sep. 2006,
+doi: 10.1007/s11067-006-9287-6.
+[41] X. Hou, H. Guo, and Y. Zhang, “Adaptive reliable shortest path in
+Gaussian process regulated environments,” in Proc. IEEE/RSJ Int.
+Conf. Intell. Robots Syst. (IROS), Oct. 2020, pp. 6819–6825, doi: 10.1109/
+IROS45743.2020.9341736.
+[42] M. Shahabi, A. Unnikrishnan, and S. D. Boyles, “An outer approximation
+algorithm for the robust shortest path problem,” Transp. Res. E, Logistics
+Transp. Rev., vol. 58, pp. 52–66, Nov. 2013, doi: 10.1016/j.tre.2013.07.002.
+[43] S. Sen, R. Pillai, S. Joshi, and A. K. Rathi, “A mean-variance model for
+route guidance in advanced traveler information systems,” Transp.
+Sci., vol. 35, no. 1, pp. 37–49, Feb. 2001, doi: 10.1287/trsc.35.1.37.10141.
+[44] R. A. Sivakumar and R. Batta, “The variance-constrained shortest
+path problem,” Transp. Sci., vol. 28, no. 4, pp. 309–316, Nov. 1994, doi:
+10.1287/trsc.28.4.309.
+[45] M. Rajabi-Bahaabadi, A. Shariat-Mohaymany, M. Babaei, and C. W.
+Ahn, “Multi-objective path finding in stochastic time-dependent road
+networks using non-dominated sorting genetic algorithm,” Expert
+Syst. Appl., vol. 42, no. 12, pp. 5056–5064, Jul. 2015, doi: 10.1016/j.
+eswa.2015.02.046.
+
+[46] Z. Ji, Y. S. Kim, and A. Chen, “Multi-objective a-reliable path finding in stochastic networks with correlated link costs: A simulationbased multi-objective genetic algorithm approach (SMOGA),” Expert
+Syst. Appl., vol. 38, no. 3, pp. 1515–1528, Mar. 2011, doi: 10.1016/j.
+eswa.2010.07.064.
+[47] H. Huang and S. Gao, “Optimal paths in dynamic networks with dependent random link travel times,” Transp. Res. B, Methodological, vol.
+46, no. 5, pp. 579–598, Jun. 2012, doi: 10.1016/j.trb.2012.01.005.
+[48] S. Gao and I. Chabini, “Optimal routing policy problems in stochastic
+time-dependent networks,” Transp. Res. B, Methodological, vol. 40, no.
+2, pp. 93–122, Feb. 2006, doi: 10.1016/j.trb.2005.02.001.
+[49] H. Hu and R. Sotirov, “On solving the quadratic shortest path problem,” INFORMS J. Comput., vol. 32, no. 2, pp. 219–233, Spring 2020, doi:
+10.1287/ijoc.2018.0861.
+[50] B. Rostami et al., “The quadratic shortest path problem: Complexity,
+approximability, and solution methods,” Eur. J. Oper. Res., vol. 268, no.
+2, pp. 473–485, Feb. 2018, doi: 10.1016/j.ejor.2018.01.054.
+[51] A. Caplin and J. Leahy, “Psychological expected utility theory and anticipatory feelings,” Quart. J. Econ., vol. 116, no. 1, pp. 55–79, Feb. 2001,
+doi: 10.1162/003355301556347.
+[52] S. Lim, H. Balakrishnan, D. Gifford, S. Madden, and D. Rus, “Stochastic
+motion planning and applications to traffic,” Int. J. Robot. Res., vol. 30,
+no. 6, pp. 699–712, May 2011, doi: 10.1177/0278364910386259.
+[53] K. K. Srinivasan, A. Prakash, and R. Seshadri, “Finding most reliable paths on networks with correlated and shifted log-normal travel
+times,” Transp. Res. B, Methodological, vol. 66, pp. 110–128, Aug. 2014,
+doi: 10.1016/j.trb.2013.10.011.
+[54] S. Susilawati, M. A. Taylor, and S. V. Somenahalli, “Distributions of
+travel time variability on urban roads,” J. Adv. Transp., vol. 47, no. 8,
+pp. 720–736, 2013, doi: 10.1002/atr.192.
+[55] E. Wong and A. Khani, “Transit delay estimation using stop-level automated passenger count data,” J. Transp. Eng. A, Syst., vol. 144, no. 3,
+pp. 2473–2907, Mar. 2018.
+[56] M. Aron, B. Neila, and Y. Guessous, “Estimating travel time distribution for reliability analysis,” in Proc. Transport Res. Arena, Jan. 2014,
+pp. 1–10.
+[57] G. Li, L. Boukhatem, and J. Wu, “Adaptive quality-of-service-based
+routing for vehicular ad hoc networks with ant colony optimization,”
+IEEE Trans. Veh. Technol., vol. 66, no. 4, pp. 3249–3264, Apr. 2017, doi:
+10.1109/TVT.2016.2586382.
+[58] W. Zhou, J. Fu, H. Yan, X. Du, Y. Wang, and H. Zhou, “Event-triggered
+approximate optimal path-following control for unmanned surface vehicles with state constraints,” IEEE Trans. Neural Netw. Learn. Syst.,
+vol. 34, no. 1, pp. 104–118, Jan. 2023, doi: 10.1109/TNNLS.2021.3090054.
+[59] H. Song, J. Bai, Y. Yi, J. Wu, and L. Liu, “Artificial intelligence enabled
+internet of things: Network architecture and spectrum access,” IEEE
+Comput. Intell. Mag., vol. 15, no. 1, pp. 44–51, Feb. 2020, doi: 10.1109/
+MCI.2019.2954643.
+[60] R. S. Sutton and A. G. Barto, Reinforcement Learning: An Introduction.
+Cambridge, MA, USA: MIT Press, 2018.
+[61] M. G. Bellemare, W. Dabney, and R. Munos, “A distributional perspective on reinforcement learning,” in Proc. Int. Conf. Mach. Learn.
+(ICML), PMLR, 2017, pp. 449–458.
+[62] W. Dabney, M. Rowland, M. Bellemare, and R. Munos, “Distributional reinforcement learning with quantile regression,” in Proc. 32nd
+AAAI Conf. Artif. Intell. (AAAI), 2018, pp. 2892–2901, doi: 10.1609/aaai.
+v32i1.11791.
+[63] W. Dabney, G. Ostrovski, D. Silver, and R. Munos, “Implicit quantile
+networks for distributional reinforcement learning,” in Proc. Int. Conf.
+Mach. Learn. (ICML), PMLR, 2018, pp. 1096–1105.
+[64] D. Yang, L. Zhao, Z. Lin, T. Qin, J. Bian, and T.-Y. Liu, “Fully parameterized quantile function for distributional reinforcement learning,”
+in Proc. Adv. Neural Inf. Process. Syst. (NeurIPS), Curran Associates,
+Inc., 2019, vol. 32, pp. 6161–6170.
+[65] X. Ma, Q. Zhang, L. Xia, Z. Zhou, J. Yang, and Q. Zhao, “Distributional
+soft actor critic for risk sensitive learning,” 2020, arXiv:2004.14547.
+∙
+[66] R. Peyre, “Comparison between W2 distance and H −1 norm, and localisation of Wasserstein distance,” in Proc. ESAIM, Contr., Optim. Calculus Variations (ESAIM: COCV), 2018, pp. 1489–1501.
+[67] S. Boyd and L. Vandenberghe, Convex Optimization. Cambridge, U.K.:
+Cambridge Univ. Press, 2004.
+[68] C. J. C. H. Watkins and P. Dayan, “Q-learning,” Mach. Learn., vol. 8,
+nos. 3–4, pp. 279–292, May 1992, doi: 10.1007/BF00992698.
+[69] J. Chung, P. Kannappan, C. T. Ng, and P. Sahoo, “Measures of distance
+between probability distributions,” J. Math. Anal. Appl., vol. 138, no. 1,
+pp. 280–292, Feb. 1989, doi: 10.1016/0022-247X(89)90335-1.
+[70] H. Bar-Gera. “Transportation network test problems.” GitHub. Accessed: Nov. 28, 2022. [Online]. Available: https://github.com/bstabler/
+TransportationNetworks
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:48:02 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+108
+
+• SEPTEMBER/OCTOBER 2023
+
+

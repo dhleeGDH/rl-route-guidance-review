@@ -1,0 +1,741 @@
+2014 Brazilian Conference on Intelligent Systems
+
+Individual Versus Difference Rewards on Reinforcement
+Learning for Route Choice
+Ricardo Grunitzki, Gabriel de O. Ramos, Ana L. C. Bazzan
+Instituto de Informática/PPGC
+UFRGS, Brazil.
+Email: {rgrunitzki, goramos, bazzan}@inf.ufrgs.br
+Abstract—In transportation systems, drivers usually choose their
+routes based on their own knowledge about the network. Such a
+knowledge is obtained from drivers’ previous trips. When drivers are
+faced with jams they may change their routes to take a faster path.
+But this re-routing may not be a good choice because other drivers can
+proceed in the same way. Furthermore, such behavior can create jams
+in other links. On the other hand, if drivers build their routes aiming
+at maximizing the overall travel time (system’s utility), rather than their
+individual travel time (agents’ utility), the whole system may beneﬁt.
+This work presents two reinforcement learning algorithms for solving
+the route choice problem in road networks. The IQ-learning uses an
+individual reward function, which aims at ﬁnding a policy that maximizes
+the agents’ utility. On the other hand, DQ-learning algorithm shapes the
+agents’ reward based on difference rewards function, and aims at ﬁnding
+a route that maximizes the system’s utility. Through experiments we show
+that DQ-learning is able to reduce the overall travel time when compared
+to other methods.
+
+I.
+
+shaping the agents’ reward. This reward function provides a reward
+that is aligned with the overall system’s reward, thus allowing agents
+to maximize the global system’s reward instead of individual agents’
+reward.
+In this paper, agents make decisions dynamically using their
+experience, which is acquired through their interaction with the
+environment. The environment is a road network that abstracts some
+real-world characteristics, such as vehicle movement along roads,
+allowing us to focus on the main subject, which is to discover
+the route choice mechanism that maximizes the system’s utility
+(in this case the overall travel time). Results show that the DQlearning improves the travel time in all cases evaluated in this work,
+when compared against IQ-learning, successive averages, incremental
+assignment, and all-or-nothing assignment. Comparing DQ-learning
+and IQ-learning we show that DQ-learning has better performance
+because the reward alignment to the system’s utility provided by
+difference rewards function can distribute the agents over the network
+in a better manner than IQ-learning.
+
+I NTRODUCTION
+
+Trafﬁc and mobility present challenging issues to authorities,
+trafﬁc engineers, and researchers. This is due to the demand for
+mobility in societies that has grown more than the investments in infrastructure (supply). To deal with the increasing demand, employing
+techniques and methods to optimize the use of existing road networks
+is attractive, since these methods mitigate the need for expensive and
+environmental-impacting changes on the infrastructure.
+
+In the next section we review the basics concepts of road trafﬁc
+modeling (Sect. II-A), reinforcement learning (Sect. II-B), and difference rewards functions (Sect. II-C). Section III presents the related
+work. Section IV presents our reinforcement learning approach (Sect.
+IV-A), reward functions (Sect. IV-B), and route choice mechanism
+(Sect. IV-C). Section V presents the scenario where the approaches are
+evaluated, the parameters choice and implementation, and discusses
+the results. Section VI concludes the paper and presents opportunities
+for further investigation.
+
+Trafﬁc assignment (or, alternatively, route assignment or trip
+assignment) is largely used for trafﬁc modeling in transportation
+system. Trafﬁc assignment methods select routes and attribute them
+to travelers aiming at connecting their individual origins with their
+individual destinations. The output describes the state of a transportation system, which is a relevant input for evaluating the consequences
+of changes in the infrastructure.
+
+II.
+A. Road Trafﬁc Modeling
+
+There are many works presenting trafﬁc assignment approaches to
+model the interaction between the trafﬁc system and drivers decision
+making. However, approaches such as [1], [2], depend on a central
+authority to assign a speciﬁc route for each driver and do not consider
+the behavior of the drivers along the trips. The main challenging in
+modeling and controlling transportation systems is the difﬁculty (if
+not impossibility) of a system manager to directly control the behavior
+of the drivers in terms of their route choices.
+
+A road network can be modeled as a graph, with a set of nodes
+n ∈ N that represent intersections, and set of links j ∈ J between
+these nodes, which represent the roads sections. The weight of a link
+represents a form of cost associated with the link. For instance, the
+cost can be travel time, fuel spent, or length.
+The road network contains origins and destinations nodes that are
+subsets of the set of nodes (OD-pairs). A driver’s trip consists of a set
+of links, forming a route between his origin and destination nodes. In
+a commuting scenario there are repeated trips, e.g., as drivers going
+from home to work approximately in the same hour of the day during
+the workdays.
+
+In this work, we apply multiagent reinforcement learning to
+simulate the effects of the agents’ route choice based on two reward functions, and apply them using the reinforcement learning
+(RL) algorithm Q-learning. The ﬁrst model, here called IQ-learning
+(Individual Q-learning), shapes the agents’ reward based on partial
+environment perception (current link), and aims at maximizing the
+individual agents’ utility. The second model, DQ-learning (Difference
+Q-learning), uses the difference rewards function, proposed by [3], for
+978-1-4799-5618-0/14 $31.00 © 2014 IEEE
+DOI 10.1109/BRACIS.2014.53
+
+BACKGROUND
+
+Drivers traveling through the road network generate trafﬁc ﬂow.
+The simulation of this trafﬁc ﬂow can be done in macroscopic models,
+which are faster to calculate and run, besides abstracting elements
+not relevant for this problem (lanes changes, heterogeneous vehicles’
+253
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:39:11 UTC from IEEE Xplore. Restrictions apply.
+
+position and etc.). These models need a suitable cost function that
+relates trafﬁc ﬂow and link’s attributes (such as capacity) to freeﬂow travel time. In this work, we use a function proposed by [4,
+Exercise 10.1]:
+tj (v) = fj + 0.02 ∗ v
+(1)
+
+reinforcement learning agents aim to maximize their own rewards,
+a critical task is to create “good” agents’ rewards, or rewards that
+when pursued by the agents lead to good overall system performance.
+System’s utility is a function G (z) that rates the performance of the
+full system, where z depends on the movement of all agents.
+
+where, tj is the travel time on link j applied to the number of vehicles
+(v), and fj is the free-ﬂow travel time on link j. This abstract function
+increases tj by 0.02 of a minute for each vehicle/hour of ﬂow.
+
+Difference rewards are functions proposed by [3] which aim
+to provide a reward that is both sensitive to the agents’ actions
+and aligned with the overall system reward. Consider the difference
+rewards as in Eq. 4, where zi is the action of the agent i. All
+components of z that are affected by agent i are replaced with the
+ﬁxed constant ci .
+
+B. Reinforcement Learning
+Reinforcement learning deals with the problem of making an
+agent learn a behavior by interacting with the environment. Usually,
+the RL problem is modeled as a Markov Decision Process (MDP),
+which is composed by a set of environment states S, a set of actions
+A, a state transition function T : S × A → Π (S), where Π (S) is a
+probability distribution over S, and a reward function R : S ×A → 
+that returns the reward R (s, a) after a given action a ∈ A has been
+taken in state s ∈ S. The functions T and R can be deﬁned as the
+environment model.
+
+Di ≡ G (z) − G (z − zi + ci )
+
+Using a null vector in ci is equivalent to taking agent i out of
+the system. Intuitively this causes the second term of the difference
+rewards to evaluate the performance of the system without i and,
+therefore, D evaluates the agent’s contribution to the system’s performance. According to [3], there are two advantages using Eq. 4
+for D. First, the second term removes a signiﬁcant portion of the
+impact of the other agents in the system and provides an agent with
+a “cleaner” signal than G. This beneﬁt has been dubbed “learnability”
+in previous work [7], [8]. Second, because the second term does not
+depend on the actions of agent i, any action by agent i that improves
+Di , also improves G. In other words, any action taken by agent i
+that improves D, also improves G. This term measures the amount
+of alignment between two rewards has been dubbed “factoredness”
+in previous work [7], [8].
+
+The learning job in an MDP is to ﬁnd a policy π : S → A
+that maximizes the agent’s future reward. To maximize the reward
+received throughout all interactions, the agent must select each action
+according to a strategy that balances exploration (gain of knowledge)
+and exploitation (use of knowledge). At each state the agent must
+choose whether to exploit an already known action, or explore the
+new alternative and potentially discover a more beneﬁcial action.
+When exploiting, the agent must occasionally take random actions
+to learn their reward, and potentially discover if they lead to states
+of higher reward. According to [5], the balancing of exploration
+and exploitation is a key design decision when implementing a RL
+solution. One known exploration strategy is -greedy, which consist in
+choosing random actions (exploration) with probability  = [0, 1] or
+choosing best actions (exploitation) with probability 1 − . This way,
+in the beginning,  has a high exploration, and decreases exponentially
+for each episode λ ∈ Λ according to Eq. 2, where Δ represents the
+epsilon decay rate in the interval [0, 1].
+λ =  ∗ (Δ)λ
+
+Difference rewards can be applied to any linear or nonlinear
+system’s utility function. However, its effectiveness depends on the
+domain, and on the interaction among the agents’ utility function [3].
+III.
+
+Q-learning is an algorithm that converges towards the optimal
+policy, given certain conditions [6]. Its update rule is shown in Eq. 3,
+where < s, a, s , R > is an experience tuple, meaning that the agent
+performed action a in state s, reaching s , and receiving reward R.
+Action a is one of the possible actions on s , α ∈ (0, 1] is the
+learning rate, and γ ∈ (0, 1] is the discount factor. Q (s, a) is an
+entry indexed by state s and action a in the Q-table, which stores
+the values (called Q-values) of each state-action pair. The Q-value
+Q (s, a) is the expected discounted reward for executing action a at
+state s and following the policy π thereafter. A complete description
+of Q-learning can be found in [6].
+
+
+
+
+
+a
+
+
+
+RELATED WORK
+
+Several approaches have been proposed to solve route choice
+problems, many of them considering abstract trafﬁc scenarios. In
+[9], a two-route scenario was studied to test the effect of realtime information sharing in drivers’ behavior. Such approach uses
+reinforcement learning to reproduce human decision-making in a
+commuting scenario with 45 agents. The results present relevant
+aspects of the agents’ decision-making process, even though only
+binary route choice scenarios were studied. In the present work, the
+interest is in the evaluation of the route choice problem in a more
+complex network, and with a higher number of agents than in [9].
+In addition, instead of using a predeﬁned number of routes, in this
+paper the routes are built dynamically along the episodes, i.e., during
+the trip (en-route learning).
+
+(2)
+
+Q (s, a) → (1 − α) Q (s, a) + α r + γ max
+Q s , a 
+
+
+(4)
+
+In [10] the authors applied multiagent reinforcement learning and
+difference rewards functions to alleviate the trafﬁc congestion. They
+proposed two reward functions, the ﬁrst one aiming to maximize
+the individual agents’ reward, and the second aiming to maximize
+the system’s utility. Although the results shown that the second
+approach is more efﬁcient, the authors applied their algorithms to a
+stateless abstract scenario, where there is only one OD-pair, and nine
+independent routes. That problem is easier to be solved because there
+is no shared link among routes, and the route choice process does
+not change during the trip. Furthermore, the impact of an increased
+number of agents was left aside.
+
+(3)
+
+C. Difference Rewards
+The right selection of the reward structure for the learning agents
+is an important step during the development of reinforcement learning
+mechanisms. Most direct approaches let each agent receive the system
+performance as its reward. However, according to [3], in many
+domains such reward structure leads to slow learning. Given that
+
+Multiagent reinforcement learning was applied for the route
+choice problem in [11]. The authors use a re-routing mechanism that
+
+254
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:39:11 UTC from IEEE Xplore. Restrictions apply.
+
+needed because, in scenarios such as transportation systems, there is
+a large number of agents interacting with the environment, and the
+use of joint action learners is infeasible, as remarked in [12].
+
+enables agents to change their routes dynamically during the trip. The
+authors conclude that this approach is useful to compensate the lack of
+adaptivity regarding trafﬁc management. They use 700 learning agents
+in the problem to evaluate the approach in an abstract trafﬁc network
+in format of a 6 × 6 grid. The reinforcement learning algorithm used
+was the Q-learning.
+
+The MDP model for this problem is as follows. An agent’s state is
+the node at which it is located. The set of the actions are the outbound
+links from the nodes of the network. In this approach, the agents do
+not have a set of predeﬁned routes - from their origin to destination
+-, the route is built dynamically during the episodes’ steps based on
+their MDP (as described in Sect. IV-C). We refer to this approach
+as en-route learning hereafter. The reinforcement learning algorithm
+used is the Q-learning [6], and the exploration/exploitation policy
+used is -greedy, with  decreasing exponentially.
+
+In addition to the approaches based on reinforcement learning
+algorithms cited before, there are centralized trafﬁc assignment approaches for assigning routes to vehicles [1], [2]. The most relevant
+approaches are presented below. For an extensive explanation, please
+refer to [4, Chapter 10], as shown next.
+A simplest trafﬁc assignment method, called all-or-nothing assignment, is presented by [4, Section 10.3]. This method assigns all
+trips to the route with the minimum cost. It assumes that there are
+no congestion effects, that all drivers consider the same attributes
+for route choice and that they perceive and weigh them in the same
+way. No feedback loop is assumed between route selection and costs.
+These assumptions are reasonable in sparse and uncongested networks
+where there are few alternative routes and they are very different in
+cost. If we assume congested networks this approach may not be a
+good choice. For this kind of problem, trafﬁc assignment approaches
+are proposed, as shown next.
+
+Here we present two reinforcement learning approaches to solve
+the route choice problem. Both of them, IQ-learning and DQlearning, use the same conﬁguration. However the reward functions
+are not the same. The IQ-learning uses the individual reward function (described in Sect. IV-B1) whereas the DQ-learning uses the
+difference rewards function (described in Sect. IV-B2).
+B. Reward Functions
+This section presents the functions used in this work for shaping
+the reinforcement learners’ reward.
+
+An incremental assignment method is presented by [4, Section 10.5.3]. In this process, fractions of trafﬁc volume are assigned
+in steps. At each step, each link’s travel time is recalculated based
+on its occupation. When many steps are performed, the ﬂows may
+represent an equilibrium assignment. However, this method may not
+yield an equilibrium solution.
+
+1) Individual Reward Function: This reward function is used by
+the IQ-learning and is given in Eq. 5, where tj is the travel time
+function given in Eq. 1 applied to the number of vehicles vj on link
+j. The reward increases as travel time decreases, thus drivers will
+strive to maximize their individual travel times.
+R = −tj (vj )
+
+Iterative algorithms as the method of successive averages [4,
+Section 10.5.4] were developed, at least partially, to overcome the
+problem of allocating too much trafﬁc to low-capacity links. The algorithms ﬁnd an equilibrium assignment assuming inﬁnite iterations.
+The load is determined using a repeated all-or-nothing assignment in
+which costs are determined anew by mean trip distributions over all
+previous iterations. The convergence may be very slow.
+
+In this work, we call this reward function individual reward because it
+is based just on the agents’ current state, which represents the system
+portion where the agents have perception (considering they are not
+receiving information from somebody).
+2) Difference Rewards Function: The difference rewards function
+is calculated as in Eq. 4. In this case, G (z) is calculated by Eq. 6.
+G (z−i ) is calculated by Eq. 7, and ji represents the link where the
+agent i is. Here, the term ci from Eq. 4 is removed because we used
+a “null” value for it.
+
+An approach which incrementally loads the trafﬁc demand onto
+the network, and updates the trafﬁc conditions dynamically is proposed by [1]. The travel time depends of the shortest path algorithms
+which determines the path with minimum cost for each OD-pair.
+This method is applied to solve the dynamic solution of the problem
+incrementally. However, the method depends on a central authority
+assigning the route for each driver, without the driver learning or
+adapting to the problem.
+
+G (z) =
+
+
+
+−tj (vj )
+
+(6)
+
+j∈J
+
+G (z − zi ) =
+
+
+
+−tj (vj )
+
+(7)
+
+j∈J\i
+
+A genetic algorithm is proposed in [2] for solving the trafﬁc
+assignment problem. In this approach, each vehicle has k available
+routes generated by the Dijkstra algorithm. The vehicles’ route are
+encoded as chromosomes in the algorithm genetic population. A
+drawback in this approach is that vehicles are not able to change
+their route during the trip. However, such approach is able to solve
+problems with millions of trips and thousands nodes and links.
+IV.
+
+(5)
+
+This way, the reward function is given by R = Di , which is
+calculated based on the inﬂuence of the agent i in the system’s utility
+G (z). In other words, it is analogous to agents knowing their actions’
+inﬂuence over the other agents of the system.
+C. Route Choice Mechanism
+In this approach, the agents do not choose one path from their
+origin to their destination. The route is built dynamically along their
+interactions with the environment. Compared to implementations like
+[9], [10], [13], which use a pre-established number of precomputed
+routes, this problem is harder to be solved. In this work, the number
+of valid routes for one OD-pair grows with the size of the network,
+and if we consider that the agents can drive in loops, the number of
+
+APPROACH AND SCENARIO
+
+A. Reinforcement Learning Algorithm
+In the present work, the agents (vehicles/drivers) are implemented
+as independent learners, which ignore the existence of other agents.
+In other words, joint actions are not modeled in their MDP. This is
+
+255
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:39:11 UTC from IEEE Xplore. Restrictions apply.
+
+256
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:39:11 UTC from IEEE Xplore. Restrictions apply.
+
+TABLE II.
+
+T RAVEL TIMES IN MINUTES AND STANDARD DEVIATION PER OD- PAIR FOR THE COMPARED METHODS .
+OD-pair
+AL
+AM
+BL
+BM
+Overall
+
+Trips
+600
+400
+300
+400
+1700
+
+DQ-learning
+79.07 (0.27)
+64.41 (0.31)
+76.43 (0.44)
+61.80 (0.33)
+71.09 (0.13)
+
+IQ-learning
+81.25 (0.23)
+67.86 (0.35)
+78.56 (0.25)
+64.32 (0.40)
+73.64 (0.23)
+
+Method
+Inc. Assignment
+96.20
+83.80
+93.40
+79.80
+88.93
+
+route for their OD-pair, that is the fastest route. In the IQ-learning the
+agent’s reward is aligned to the agent’s utility. It means that a learned
+policy may be attractive to the agent but not for the system’s utility.
+On the other hand, in the DQ-learning method the agents’ reward is
+aligned to the system’s utility. In short, we intend to discover if these
+reward alignment implies in the quality of the solutions reached by Qlearning algorithm, in a dynamic route choice problem, with inﬁnite
+possible routes and many agents.
+
+Suc. Averages
+101.20
+86.36
+97.72
+82.88
+92.78
+
+All-or-nothing
+138.00
+97.00
+128.00
+87.00
+114.59
+
+600
+ 500
+
+D
+
+I
+
+80
+
+
+
+ 400
+
+
+
+The results presented in Table II show that DQ-learning yielded
+better results for all OD-pairs compared to the other methods. The IQlearning was better than incremental assignment, successive averages
+and all-or-nothing assignment for all OD-pairs. The incremental
+assignment method was better than successive averages and all-ornothing assignment. Obviously, the all-or-nothing assignment is not
+the best method because in this scenario congestion arise in some
+links due to too many drivers preferences for them. However, it can
+be considered as a baseline for comparing against other methods.
+
+75
+
+300
+ 200
+
+O
+
+70
+50
+
+100
+
+150
+
+100
+0
+0
+
+50
+
+E 
+
+100
+
+150
+
+Fig. 3. Convergence times and standard deviation along the episodes (main)
+and in ﬁnal episodes (inset).
+
+Compared with other methods, Q-learning-based approaches
+present results signiﬁcantly better. In addition, they are independent,
+and drivers do not depend on a central authority assigning their routes,
+as occurs in successive averages, incremental assignment, and allor-nothing methods. In RL approaches, the agents are able to adapt
+their routes dynamically according to the network conditions, whereas
+in the other methods drivers’ route is known to the trafﬁc assigner,
+which interfere on agents’ privacy. Furthermore, the implementation
+in real world implies in communication between agents and the
+central authority, which is not trivial.
+
+
+
+:
+9/
+.*
+
+
+,&
+*+
+&*
+
+J
+H
+
+
+
+
+
+
+
+
+
+
+
+D. Individual Versus Difference Rewards: Convergence Time
+
+()'
+&%
+
+In order to understand the effects of the reward alignment along
+the simulation, for the reinforcement learning approaches, we also
+evaluated the convergence time by means of the overall travel time.
+Fig. 3 shows the convergence time and standard deviation for 30 runs.
+Results show that the convergence times in main plot are very similar;
+However, the inset plot shows that DQ-learning is able to reach better
+solutions than IQ-learning. More speciﬁcally, from episode ≈ 75
+onwards (the point at which the exploration ends) IQ-learning stops
+converging to better solutions, whereas DQ-learning keeps improving
+the overall travel time.
+
+$ 
+;!<="#<># <?#@ABC >F@A#
+<" != #GC!@B?!<
+
+
+
+
+
+
+ !"#
+
+
+
+
+
+Fig. 4. Conﬁdence interval of d along the episodes (main) and in ﬁnal
+episodes (inset).
+
+In order to show the improvement provided by DQ-learning
+over IQ-learning is statistically signiﬁcant, we present the following
+comparison test. Assuming the results reached by DQ-learning and
+IQ-learning in Fig. 3 at each point are independents, its values, qd and
+qi , respectively can be deﬁned by Gaussian distributions. Thus, the
+difference d = |qd − qi | is also deﬁned as a normal distribution. Fig.
+4 shows the conﬁdence interval of d. In cases where the conﬁdence
+interval does not contain the zero value it means that the results
+are signiﬁcantly different (considering a conﬁdence level of 95%)
+and consequently DQ-learning overcame IQ-learning at those points
+(episode). As we can see in Fig. 4, the signiﬁcant results reached by
+DQ-learning are more prevalent after the end of exploration.
+
+Assuming that in RL methods the learning process is iterative
+and needs a signiﬁcant number of episodes for the exploration period,
+to consider these initial episodes to deﬁne the methods’ performance
+may not be a good choice. Thus, for the interval conﬁdence presented
+in Fig. 4, we evaluated for groups of 5 episodes the percentage times
+in which DQ-learning is statistically better than IQ-learning along
+the episodes, as shown in Fig. 5. In the initial episodes nothing can
+be concluded about the algorithms performance because the agents’
+have a high probability to behave randomly. However, after the end
+of exploration DQ-learning overcomes IQ-learning more often. As
+we can observe, at the ﬁnal episodes the algorithms’ performance
+
+257
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:39:11 UTC from IEEE Xplore. Restrictions apply.
+
+utility. Even though indirectly, in DQ-learning there is cooperation
+among the agents to improve the system’s performance, whereas in
+IQ-learning each agent behaves to improve its own performance.
+Despite this, IQ-learning reached better solutions when compared to
+other methods.
+In a future work, we shall consider evaluating the effect of
+heterogeneous learners (different learning algorithms) interacting in
+the same environment. Moreover, due to the large number of episodes
+needed for the route choice mechanism, knowledge-based algorithms
+may be applied to speed up the learning process using the two reward
+functions in the same agent.
+ACKNOWLEDGMENTS
+Ricardo Grunitzki and Ana L. C. Bazzan are partially supported
+by CNPq and FAPERGS. All three authors are partially supported by
+ITL. Jorge L. A. Samatelo has helped in data analysis.
+R EFERENCES
+
+Fig. 5. Percentage time for groups of 5 episodes in which DQ-learning
+overcome IQ-learning.
+
+[1]
+
+stabilizes. It means that the ﬁnal learned policies by DQ-learning
+improve the system’s performance when compared to IQ-learning.
+
+[2]
+
+This experiment showed that both methods presented equivalent
+performance during the exploration period in the evaluated scenario. It occurs because Q-learning handles very well this kind of
+domain. Furthermore, during the exploration period, drivers’ may
+behave randomly. However, after the exploitation period, DQ-learning
+reaches results statistically better than IQ-learning. The performance
+improvement provided by the difference rewards is equivalent to
+an average reduction of ∼
+= 3.46% in travel time of all trips. It is
+equivalent to a reduction of 2 minutes 44 seconds in drivers’ travel
+time.
+VI.
+
+[3]
+
+[4]
+[5]
+[6]
+[7]
+
+CONCLUSIONS
+
+In this work we used a difference rewards function to shape
+the agents’ reward and applied it on Q-learning algorithm to solve
+the route choice problem. Here we call this approach DQ-learning.
+The results obtained were compared against IQ-learning, in which
+the reward function is based on agent’s utility. When the difference
+function is applied to Q-learning, the learning process ﬁnds a policy
+that maximizes the system’s utility, as opposed to IQ-learning, which
+aims to maximize the agent’s utility.
+
+[8]
+
+[9]
+
+[10]
+
+In the experiments we evaluate the proposed approaches in a route
+choice problem and compared them with three trafﬁc assignment
+methods: all-or-nothing assignment, successive averages and incremental assignment. In the abstract scenario tested, the DQ-learning
+was 3.46% better than IQ-learning. Compared to incremental assignment, successive averages, and all-or-nothing assignment, the DQlearning was between 20% and 40% better. For this same experiment
+we evaluated the convergence time for Q-learning approaches. Results
+showed that DQ-learning overcomes IQ-learning in convergence time
+because the reward alignment to the system’s utility provided by
+difference rewards is able to keep improving the agents’ solution
+along the episodes, whereas IQ-learning stops improving agents’
+solution at the beginning of exploitation period.
+
+[11]
+
+[12]
+
+[13]
+
+Shaping agents’ reward with difference utility function makes all
+agents with a common objective, that is to maximize the system’s
+
+C. Tong and S. Wong, “A predictive dynamic trafﬁc assignment model
+in congested capacity-constrained road networks,” Transportation Research Part B: Methodological, vol. 34, no. 8, pp. 625 – 644, 2000.
+L. S. Buriol, M. J. Hirsh, P. M. Pardalos, T. Querido, M. G. Resende, and
+M. Ritt, “A biased random-key genetic algorithm for road congestion
+minimization,” Optimization Letters, vol. 4, pp. 619–633, 2010.
+K. Tumer and A. Agogino, “Distributed agent-based air trafﬁc ﬂow
+management,” in Proceedings of the 6th international joint conference
+on Autonomous agents and multiagent systems. New York, NY, USA:
+ACM, 2007, pp. 1–8.
+J. Ortúzar and L. G. Willumsen, Modelling Transport, 3rd ed. John
+Wiley & Sons, 2001.
+R. Sutton and A. Barto, Reinforcement Learning: An Introduction.
+Cambridge, MA: MIT Press, 1998.
+C. J. C. H. Watkins and P. Dayan, “Q-learning,” Machine Learning,
+vol. 8, no. 3, pp. 279–292, 1992.
+A. Agogino and K. Tumer, “Multi–agent reward analysis for learning
+in noisy domains,” in AAMAS ’05: Proceedings of the 4th International
+Joint Conference on Autonomous Agents and Multiagent Systems,
+F. Dignum, V. Dignum, S. Koenig, S. Kraus, M. P. Singh, and
+M. Wooldridge, Eds., vol. II. New York, NY: ACM Computing Press,
+July 2005, pp. 81–88.
+K. Tumer and D. Wolpert, “A survey of collectives,” in Collectives
+and the Design of Complex Systems, K. Tumer and D. Wolpert, Eds.
+Springer, 2004, pp. 1–42.
+E. Ben-Elia and Y. Shiftan, “Which road do I take? A learningbased model of route-choice behavior with real-time information,”
+Transportation Research Part A: Policy and Practice, vol. 44, no. 4,
+pp. 249–264, 2010.
+K. Tumer, Z. T. Welch, and A. Agogino, “Aligning social welfare and
+agent preferences to alleviate trafﬁc congestion,” in Proceedings of the
+7th Int. Conference on Autonomous Agents and Multiagent Systems,
+L. Padgham, D. Parkes, J. Müller, and S. Parsons, Eds.
+Estoril:
+IFAAMAS, May 2008, pp. 655–662.
+A. L. C. Bazzan and F. Klügl, “Re-routing agents in an abstract trafﬁc
+scenario,” in Advances in artiﬁcial intelligence, ser. Lecture Notes in
+Artiﬁcial Intelligence, G. Zaverucha and A. L. da Costa, Eds., no.
+5249. Berlin: Springer-Verlag, 2008, pp. 63–72. [Online]. Available:
+www.inf.ufrgs.br/maslab/pergamus/pubs/BazzanKluegl.pdf.zip
+A. L. C. Bazzan, “Opportunities for multiagent systems and multiagent
+reinforcement learning in trafﬁc control,” Autonomous Agents and
+Multiagent Systems, vol. 18, no. 3, pp. 342–375, June 2009. [Online].
+Available: http://www.springerlink.com/content/j1j0817117r8j18r/
+A. R. Tavares and A. L. C. Bazzan, “Independent learners
+in abstract trafﬁc scenarios,” Revista de Informática Teórica e
+Aplicada, vol. 19, no. 2, pp. 13–33, 2012. [Online]. Available:
+http://seer.ufrgs.br/rita/article/view/rita v19 n2 p13/23741
+
+258
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:39:11 UTC from IEEE Xplore. Restrictions apply.
+
+

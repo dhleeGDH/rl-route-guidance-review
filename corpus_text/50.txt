@@ -1,0 +1,2096 @@
+Transportation Research Part C 158 (2024) 104440
+
+Contents lists available at ScienceDirect
+
+Transportation Research Part C
+journal homepage: www.elsevier.com/locate/trc
+
+Regional route guidance with realistic compliance patterns:
+Application of deep reinforcement learning and MPC
+Shang Jiang, Cong Quoc Tran, Mehdi Keyvan-Ekbatani ∗
+Complex Transport Systems Lab, Department of Civil & Natural Resources Engineering, University of Canterbury, Christchurch, New Zealand
+
+ARTICLE
+
+INFO
+
+Keywords:
+Route guidance
+Network macroscopic fundamental diagram
+Model predictive control
+Deep reinforcement learning
+Data-driven
+
+ABSTRACT
+Solving link-based route guidance problems for large-scale networks is computationally challenging and faces practical issues, such as spatial–temporal data coverage. Thus, regional route
+guidance has emerged as a promising strategy, which utilizes regional approaches (i.e., networklevel macroscopic traffic models) to capture traffic dynamics. Existing regional route guidance
+models have mainly focused on macroscopic flows and aggregated splitting rates, employing
+uniformly sampled vehicles as controllable targets. These models, however, overlook the
+inherent nature of individual drivers’ compliance. It may deteriorate the guidance performance
+as existing route guidance models cannot effectively generate customized route plans for
+compliant vehicles. This paper aims to introduce a regional route guidance framework with the
+utilization of different solution approaches, i.e. model-based and data-driven, considering the
+compliance pattern. In particular, MPC-based and deep reinforcement learning-based schemes
+are proposed for the information service provider to send customized route plans to compliant
+individuals. Within each solution approach, different route guidance strategies are developed
+for specific purposes and evaluated through numerical experiments under low- and highcongestion scenarios. Besides, the trade-off between total travel time and average trip length
+is studied, wherein the balance reward in a deep reinforcement learning-based approach
+enables controllable agents to reduce trip costs while compromising partial system utility. The
+findings indicate the effectiveness of the proposed strategies in alleviating network congestion.
+Additionally, multi-agent approaches outperform single-agent ones, highlighting the benefits of
+cooperative decision-making in traffic management.
+
+1. Introduction
+Due to rapid urbanization, metropolitan areas are facing significant traffic pressure in terms of congestion, air pollution, and
+safety issues. To sustain and improve the efficiency of urban traffic systems, a number of traffic management measures, i.e. traffic
+signals control, real-time information, congestion pricing and route guidance, can be deployed in the networks. Real-time information
+and route guidance can be applied via variable message signs or by exchanging information directly with equipped vehicles by
+vehicle-to-infrastructure systems. In terms of mitigating traffic congestion, route guidance (RG) plays an essential role in demand
+management by providing travellers with ‘‘optimal’’ routes from their origins to corresponding destinations. By optimal here,
+depending on the specific requirement of applications, we mean the minimal individual travel time or total traffic throughput
+of the entire network. Accordingly, RG systems are able to provide a means for influencing travellers’ route choices to optimize
+network-wide performance.
+
+∗ Corresponding author.
+E-mail address: mehdi.ekbatani@canterbury.ac.nz (M. Keyvan-Ekbatani).
+
+https://doi.org/10.1016/j.trc.2023.104440
+Received 30 March 2023; Received in revised form 24 November 2023; Accepted 26 November 2023
+Available online 5 December 2023
+0968-090X/© 2023 The Author(s).
+Published by Elsevier Ltd.
+This is an open access article under the CC BY license
+(http://creativecommons.org/licenses/by/4.0/).
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Most RG models are based on real-time or predicted traffic information at link-level (Wang and Niu, 2019). However, linkbased RG would suffer from the curse of dimensionality in large-scale urban road networks. By contrast, utilizing the Network
+Macroscopic Fundamental Diagram (NMFD or MFD) gives a new direction to RG research by simplifying the dynamism of urban
+traffic systems (Daganzo, 2007; Geroliminis and Daganzo, 2008). An NMFD describes the relationship between traffic density and
+traffic flow in a network as a macroscopic representation of traffic behaviour that captures the collective interaction of vehicles in
+the network. The NMFD has provided a macroscopic way of understanding and modelling regional traffic behaviours, enabling the
+development of various sophisticated regional traffic management algorithms and techniques (Johari et al., 2021). Thus, designing
+regional RG with a relatively low computational cost becomes possible.
+Nevertheless, existing NMFD-based RG models for system optimality consider only the macroscopic compliance ratio rather
+than the compliance of an individual vehicle (Sirmatel and Geroliminis, 2017; Yildirimoglu et al., 2018; Menelaou et al., 2023),
+which could be possible in an autonomous/automated vehicle setting but unrealistic in a hybrid or human-driving environment.
+Furthermore, one of the key challenges of implementing RG is to reallocate trips efficiently without considerably violating the
+individual driver’s travel cost. Ignoring the driver’s sacrifice may reduce the compliance willingness to follow the system-utility
+guidance, as user optimality and system optimality do not coincide most of the time in reality (Du et al., 2015). With these concerns,
+this study aims to address the regional RG problem via different approaches, i.e., model-based and deep reinforcement learning,
+utilizing NMFD information.
+Adopting the model predictive control (MPC) — which has been studied extensively in transportation-related literature (Hegyi
+et al., 2005; Núñez et al., 2014; Jiang and Keyvan-Ekbatani, 2023) — this study presents a triad of novel strategies tailored
+for addressing the regional RG to mitigate network congestion. These strategies encompass a single-agent method, a multi-agent
+method and a congestion map-based method. Additionally, leveraging the deep reinforcement learning, three reward functions are
+designed for the regional RG, i.e., user-oriented RG for minimizing private travel costs of road users, system-utility RG for maximizing
+traffic throughput in the entire network, and a balance RG for the balance between extra user trip length and system optimality. A
+comprehensive literature review and more detailed contributions of the paper are presented in the following sub-sections.
+1.1. Literature review
+Route guidance (RG) is the provision of navigation instructions to assist travellers in finding the most efficient and effective
+path to their destination. Generally, existing RG strategies can be categorized into user-oriented and system optimality. In which
+user-oriented RG focus on finding a specific route (i.e., a deterministic ordering of nodes or links from an origin to a destination) in
+a manner that minimizes expected travel time (Miller-Hooks and Mahmassani, 2000; Gao and Chabini, 2006) or maximizes on-time
+arrival probability (Fan et al., 2005). The most widely used techniques to find shortest routes are the Dijkstra algorithm (Dijkstra
+et al., 1959) and the A* algorithm (Hart et al., 1968), where the A* algorithm is favoured for real-time use due to its better
+performance in large-scale networks compared to the Dijkstra algorithm (Rosyidi et al., 2014). Besides, the A* algorithm has also
+been adapted in dynamic networks considering time-dependent travel time in the studies of Chabini and Lan (2002) and Huang
+et al. (2007).
+Besides those techniques, deep reinforcement learning (DRL) can be applied to RG by training an agent to learn optimal decisionmaking policies for navigating a road network (Koh et al., 2020). While non-DRL methods could address these concerns with
+well-tuned parameters, DRL uniquely allows for dynamic learning from experience. Instead of relying on predefined rules, such
+as A* or Dijkstra algorithms, DRL allows the agent to learn from experience and make decisions based on observed states and
+rewards. The use of reinforcement learning-based algorithms and big data has led to a recent trend in using machine learning for
+traffic management, including RG. Reinforcement learning or DRL models and algorithms applied to traffic signal control could be
+found in the studies of Yau et al. (2017), Chu et al. (2019) and Rasheed et al. (2020). Besides, Ji et al. (2020) used a DRL approach
+to solve the dynamic taxi route recommendation problem. Considering the driving environments with connected and autonomous
+vehicles, Fu et al. (2021b) proposed an autonomous RG strategy based on DRL and expert systems to increase the accuracy and
+efficiency of routing decisions.
+The primary innovation of this DRL-based RG research lies in its ability to establish a direct association between the actions
+undertaken by individual vehicles and the allocation of regional routes, predicated upon the adherence of each vehicle. This
+critical linkage, which has not yet been comprehensively realized in prior regional route guidance studies, resonates with link-level
+approaches. Yet, few of these link-level studies extend to system-wide route guidance for congestion alleviation, such as Rezaei et al.
+(2019) and Tang et al. (2020). Notably, many congestion studies avoid specifying individual routes, opting for weight-assigned road
+segments, guiding vehicle routes. These methods often deploy decision tree techniques (Rezaei et al., 2019), potentially veering from
+optimality-based principles, yielding sub-optimal results. Despite limited learning-based efforts to optimize the road weights (Tang
+et al., 2020), these methods rely on weights and disjointedly assign routes, hindering collaboration. In light of these shortcomings,
+multi-agent deep reinforcement learning (MADRL) emerges as a fitting choice. MADRL effectively orchestrates individual vehicles,
+enabling collective decision-making. This cooperative paradigm can lead the system towards near-optimal congestion management.
+Integrating predictive information into RG can also improve decision-making (Wang and Niu, 2019). To improve routing
+reliability in stochastic networks, some researchers have developed approaches for increasing on-time arrival probability (Nie and
+Wu, 2009) or considering the influence of traffic control, e.g. adding signal control into the management framework (Chai et al.,
+2017). Besides focusing on travel time, there are other studies on RG for energy-efficient (Chang et al., 2013), limited travelling
+range (Chen and Nie, 2015), users’ preference (Hayes et al., 2020) and risk-averse (Bell, 2009). Generally, user-oriented RG is
+computationally efficient and does not require complete network knowledge. However, user-oriented guidance information tries to
+2
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+assist travellers in finding the optimal route without considering the interests of others. Hence, applying user-oriented guidance can
+lead to the user equilibrium state (Leclercq et al., 2021).
+Compared to user-oriented RG, system optimality RG aims to drive travellers in a network from their origins to corresponding
+destinations to improve the overall traffic system efficiency rather than considering the needs of the individual travellers. In
+this type of guidance, travellers may compromise their benefit by cooperatively performing actions to optimize the system’s
+performance (Bagloee et al., 2017). Static studies on system-utility RG usually use fixed information, e.g. historical data collected
+during a specified period (Song and Wang, 2010). However, this information may not be relevant in the long term. Therefore,
+dynamic RG methods using real-time information from data collection systems are developed (Lin et al., 2016). Connected and
+autonomous vehicles often rely on this type of RG to find optimal routes (De Souza et al., 2020). Since the traffic information in the
+entire network is essential for system-utility RG strategies, centralized frameworks are also adopted in many studies (Jeong et al.,
+2015; Shen et al., 2017; Tseng and Ferng, 2021). However, the high computational demands involved in these centralized methods
+make them inefficient for large-scale networks.
+To address the computational challenges, there are two approaches that can be found in the literature. To reduce the
+computational demands in centralized methods, researchers have developed distributed systems, which focus only on the shortrange communication between local agents (Yao et al., 2017). Despite their promise, this approach raises concerns as each agent
+has limited network knowledge, potentially leading to sub-optimal performance for the overall network (Al Mallah et al., 2017; De
+Souza et al., 2016; Guo et al., 2018; Wedde and Senge, 2013). Considering the communication challenges, distributed RG systems
+may perform differently in real-world scenarios. To overcome these limitations, hybrid methods that incorporate both centralized
+and distributed methods have been suggested as more promising solutions (Rezaei et al., 2019). Some examples of such approaches
+can be seen in the studies of Farver and Chabini (2003) and Osanaiye et al. (2017).
+Note that the challenges associated with implementing link-based models extend beyond computational demands. In such
+systems, users often find themselves needing to make route deviations from congested bottlenecks much earlier than what would
+be advised by a real-time routing system (Leclercq et al., 2021). Also, link-based models typically depend on traffic data for road
+segments across the network, yet data coverage, in terms of spatial–temporal granularity, is often limited (Leduc et al., 2008). This
+potentially causes drivers to divert from their planned routes either too early or too late. In contrast to link-level models, region-level
+models can be well informed by reduced information, i.e. with very few probe vehicles or loop detectors in the regions (Gayah and
+Dixit, 2013; Du et al., 2016). Thus, regional traffic management (e.g. NMFD-related traffic management) can be used to exploit the
+potential improvement of RG at the network level.
+The existence of the NMFD was empirically verified by Geroliminis and Daganzo (2008) and inspired researchers to develop
+innovative descriptions of traffic dynamics such as the accumulation-based network transmission model (Aboudolas and Geroliminis,
+2013; Yildirimoglu and Geroliminis, 2014), the trip-based network transmission model (Mariotte et al., 2017; Mariotte and Leclercq,
+2019), and the M-model (Lamotte et al., 2018; Sirmatel et al., 2021; Hryhoryeva and Leclercq, 2023). These new models have
+facilitated the development of regional congestion treatment strategies/policies, including perimeter control (Keyvan-Ekbatani et al.,
+2012, 2021; Haddad, 2017; Ren et al., 2020), departure management (Balzer et al., 2023; Menelaou et al., 2023), and congestion
+pricing (Zheng and Geroliminis, 2016), ultimately contributing to more efficient and sustainable urban transportation systems.
+Recent works on DRL-based traffic control leveraging the NMFD can be found in the literature. Zhou and Gayah (2021) introduced
+a DRL-based framework utilizing NMFDs for perimeter control in two-region urban networks. However, the centralized control
+paradigm impedes optimal exploration and learning by agents, thus limiting their utility in multi-region perimeter control scenarios.
+Besides, the action space designs also lack the adaptability to capture dynamic traffic conditions inherent to multi-region urban
+networks. To address these limitations, Zhou and Gayah (2023) advanced a multi-agent DRL methodology for scalable multi-region
+perimeter metering control within urban networks. Similarly, Chen et al. (2022) presented an integral reinforcement learning-based
+framework to understand macroscopic traffic dynamics for adaptive optimal perimeter control. On the other hand, Su et al. (2023)
+proposed a bi-level control framework, with an upper level employing a reinforcement learning model to grasp and react to traffic
+dynamics while the lower level manages traffic flow distribution within the core network.
+With the development of NMFDs, RG becomes a helpful tool for maintaining even (in space) and consistent (in time) distributions
+of regional traffic congestion (Leclercq and Geroliminis, 2013). Current attempts on NMFD-based RG aim to reduce traffic
+heterogeneity among different sub-regions of a network (Yildirimoglu and Geroliminis, 2014). Accordingly, drivers are advised
+to follow regional routes (Knoop et al., 2012). Regional route guidance provides a broader, higher-level view of the route. It is
+well-suited for longer-distance travel among city regions, guiding users along regional routes without specifying every local turn.
+By focusing on regional routes, it reduces the amount of information needed for route calculation. Thus, compared to link-level
+route guidance, regional route guidance may require fewer data updates and recalculations, resulting in lower data consumption
+and potentially saving computational power.
+Another widely solution approach for addressing regional RG is the utilization of model predictive control (MPC) (Hajiahmadi
+et al., 2013; Sirmatel and Geroliminis, 2017). These studies usually rely on nonlinear NMFD-based models (Yildirimoglu et al., 2018).
+For example, Ramezani and Nourinejad (2018) proposed a taxi travel planning system to mitigate traffic congestion while improving
+service quality. Alternative models, such as coloured Petri Nets (Fu et al., 2021), are also adopted for routing in multi-region NMFD
+systems. Ding et al. (2017), Menelaou et al. (2021) and Hou and Lei (2020) integrated control into RG to improve the management
+effectiveness. Recently, Leclercq et al. (2021) proposed a new concept that keeps vehicle trips outside of some protected networks
+via an avoidance map, thereby facilitating practical routing applications.
+It is important to note that the regional RG studies outlined above assume that the compliance ratio is constant between successive
+guidance actions. Then, uniformly selected individual vehicles can be guided based on the average compliance ratio. However,
+3
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+solving the optimal routing problem not only demands substantial computational resources but also poses practical challenges, such
+as real-time data collection, especially the knowledge of user destinations. Privacy concerns could arise when central intelligence
+collects such data for efficient traffic management without considering individual drivers’ willingness to comply. This explains why
+optimal collective route guidance strategies remain unimplemented in practice. Instead, drivers who confirmed to follow the RG
+(e.g., autonomous vehicles) are more likely to travel via the route provided by the service provider. Therefore, it is vital to propose
+a regional RG framework to capture this phenomenon.
+1.2. Objective and contributions
+Taking into account the research gaps mentioned above, the main objective of this study is to develop a framework for solving
+the regional route guidance problem with realistic compliance based on different approaches. Particularly, this paper contributes to
+the route guidance methodology in the following aspects.
+• A conceptual framework for regional route guidance is introduced to effectively bridge the research gaps pertaining to realistic
+driver compliance. Under the proposed framework, three MPC-based regional route guidance strategies (i.e., single-agent,
+multi-agent, and congestion level-based strategies) are developed to minimize total travel time within the network. A tripbased transmission model is employed to simulate a multi-region system, serving as the predictive model for our MPC-based
+approach.
+• In addition, the present study further contributes to the regional route guidance literature by leveraging a DRL-based
+approach. This approach has the potential to enhance the effectiveness of the proposed MPC-based methods, leading to a
+more collaborative, dynamic, and efficient traffic management strategy. Specifically, the regional route guidance problem with
+realistic compliance patterns is formulated as a Markov process. Leveraging NMFD information and employing multi-agent
+deep Q-learning, travel cost and difference rewards are designed to solve the problem for both user-oriented and system-utility
+purposes, respectively. Considering the conflict between the user and system optimality in the context of realistic driver
+compliance, a balance reward is also designed to balance vehicles’ extra trip length and the total travel time.
+• In a simulation environment, a comparative analysis is undertaken to assess the performance of single-agent and multi-agent
+strategies under varying traffic conditions, spanning from light to severe traffic congestion. This analysis contributes valuable
+insights into the respective strengths and weaknesses of different route guidance strategies.
+The remainder of this paper is organized as follows. Section 2 presents the general conceptual framework of the route guidance
+system. Subsequently, Sections 3 and 4 detail the MPC-based and DRL-based solution approaches in the proposed framework.
+Following this, the numerical experiments in Section 5 demonstrate: (i) the total travel time and total travel distance performance
+of different routing strategies, (ii) the impact of severe traffic congestion on the performance of the methods, and (iii) the effect of
+varying trade-off parameters on the proposed multi-agent reinforcement learning method’s performance. Finally, Section 6 concludes
+the paper and highlights future research directions.
+2. Conceptual framework
+This section aims to introduce the general conceptual framework of the route guidance system with realistic compliance. The
+proposed framework is depicted in Fig. 1, which showcases the routing process and information flow between the systems providing
+routing services to drivers. The key components of this framework are:
+(1) Traffic monitoring system: This component collects real-time traffic data such as vehicle speed, traffic counts, and location, and
+aggregates the information from multiple sources to provide a comprehensive view of the traffic situation, thereby supporting
+effective macroscopic traffic management.
+(2) Information service provider: This component receives the aggregated traffic information from the Traffic Monitoring System and
+adapts the traffic path plans by coordinating instant routing through real-time message communication to disseminate guidance
+information to drivers. Note that, compared to a model-based approach, a data-driven approach requires well-trained models
+to conduct route calculation.
+(3) Set of vehicles or users: Users confirm the trip plans and travel through the network following the guidance information provided
+by the Information Service Provider.
+The proposed framework aims to offer an efficient routing solution to drivers by effectively utilizing real-time traffic information.
+It is noted that users of the route selection support service are assumed to be the same class of vehicles. Besides, considering that
+telecommunication devices may not be available to all road users, it is assumed that telecommunication devices are available for
+travellers who express a willingness to adhere to the provided guidance information, acknowledging that not all travellers may have
+access to such devices. This enables manageable individuals to have real-time communication capability to receive en-route route
+guidance from the routing service systems. The compliance ratio is assumed to be less than 1, and the vehicle that has confirmed
+to follow the guidance is a compliant vehicle. All controllable users are assumed to absolutely follow the trip plans provided by the
+route advisor. Note that non-controllable traffic participants always exist in a traffic system. The background traffic has potential
+impacts on the travel cost of every vehicle, thereby affecting the potential route selection of compliant vehicles.
+4
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 1. Conceptual regional RG framework.
+
+Also note that, to have the sub-regions for these approaches, it is necessary to consider a larger network that contains a higher
+proportion of relatively uncongested sub-regions, compared to congested sub-regions. This is particularly important in the case of
+demand-side traffic management, where vehicles may need extra spaces to detour to avoid congested zones.
+Regarding the communication process, users receive requests from the service centre asking for compliance via the vehiclebased telecommunication device (e.g. phone application) when entering the service area. After users confirm the compliance
+request for route guidance, the vehicle’s traffic information will automatically be sent to the traffic monitoring system. Then, the
+information service provider requests the traffic monitoring system, asking for real-time traffic conditions and vehicular transit
+schedule information.
+The traffic monitoring system is focused on data collection and raw data processing, providing ready-to-use data for the
+information service provider. After obtaining the personal information (i.e. vehicle location and destination), the zipped data is
+sent to the information service provider to respond to the request. The zipped data is used as the input of the routing algorithms
+for the vehicle’s route selection. Once the information service provider sends the trip plan, the user can travel based on the plan.
+The core structure of the routing support is a function mapping from the inputs onto the route selection for each vehicle. The
+function here is estimated either by the proposed MPC or the DRL approaches. After the information service provider receives a
+confirmation from vehicles, The instant traffic condition will be taken as an input to calculate the route plan. With dynamic routing
+information, vehicles will be guided until they reach their destinations. The proposed framework with MPC-based and DRL-based
+approaches are presented in more detail in Sections 3 and 4, respectively.
+Assumptions in this study are listed as follows:
+• Speed-NMFD can be well defined in sub-regions. The shape of an NMFD is closely tied to the homogeneity of the network, as
+detailed in Johari et al. (2023). A homogeneous network leads to a well-defined NMFD, while network heterogeneity causes
+pronounced scattering in the NMFD shape. Suitable network decomposition can produce several homogeneous sub-regions,
+each characterized by well-defined NMFDs.
+• The compliance ratio is assumed to be less than 1. This can be attributed to two primary factors. Firstly, achieving a 100%
+penetration rate of on-board RG devices in practice is often challenging. Secondly, certain drivers may have established daily
+5
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+•
+
+•
+
+•
+
+•
+
+commuting routes and may choose not to adhere to RG recommendations. A compliance ratio below 1 signifies a realistic
+voluntary compliance case.
+All users are considered to belong to the same vehicle class. Assuming single-class vehicles in RG studies simplifies the
+modelling process and ensures computational efficiency without ignoring the dominant traffic dynamics in a network. While
+it may not account for all traffic complexities, it aligns with the system’s intended application and objectives, making it a
+reasonable simplification in many traffic-related studies, e.g. Geroliminis et al. (2013), Mariotte et al. (2020) and Sirmatel and
+Geroliminis (2017).
+Telecommunication devices are assumed to be available to all travellers who express a willingness to adhere to the provided
+guidance information. This is because communication with the central intelligence system, which provides RG information, is
+exclusively feasible for travellers equipped with telecommunication devices. Consequently, in our simulation, all vehicles that
+are labelled as ‘controllable’ are presumed to possess the capability to establish communication with the central intelligence
+system.
+Compliant vehicles are assumed to be able to know the state of the network via information communication. As previously
+assumed, it is posited that telecommunication devices have been preinstalled on all compliant vehicles, thereby enabling them
+to receive information disseminated by the RG service centre. Therefore, this information can encompass network state data,
+facilitating decentralized route calculations by individual vehicles.
+All controllable users are expected to strictly follow the trip plans provided by the route advisor. This simplifies the
+modelling and optimization process, allowing for more predictable traffic conditions. While real-world behaviour may vary,
+this assumption serves as a practical starting point for RG development. This is implicitly adopted in many studies, e.g. Wang
+and Niu (2019), Nie and Wu (2009) and Bagloee et al. (2017).
+
+The used notations and abbreviation are summarized in Tables A.2 (Appendix A) and B.3 (Appendix B) for the discussion
+convenience. Additional symbols with a narrower scope, if any, will be defined in the sections where they are used.
+3. MPC-based approach
+This section introduces the MPC-based solution approach for the proposed regional RG framework. The prediction model of the
+MPC (i.e., trip-based network transmission model in a multi-region system) is described in Section 3.1, while three regional RG
+strategies for mitigating network congestion are proposed in Section 3.2. Finally, Section 3.3 presents some potential limitations of
+the MPC-based approach.
+3.1. Prediction model
+With the existence of a speed-NMFD 𝑣(𝑁(𝑡)), the trip-based model can be established to track the trace of each individual vehicle
+in a multi-region system (Arnott, 2013; Leclercq et al., 2017), enabling to model driver’s realistic compliance patterns. Assume a
+vehicle 𝑥 enters the system at time 𝑡0,𝑥 and exits the system at time 𝑡𝑥 , the distance travelled by vehicle 𝑥 can be calculated by:
+𝑡𝑥
+
+𝐿𝑥 =
+
+(1)
+
+𝑣(𝑁(𝑡))𝑑𝑡
+
+∫𝑡0,𝑥
+
+The above single-region model can be extended to a multi-region model with macroscopic centroids, which represent the centre
+of mass or the average position of traffic flow. Consider a multi-region network with the speed-NMFD for each region 𝑐 ∈ C is
+𝑣𝑐 (𝑁𝑐 (𝑡)). The vehicle travelled from region 𝑐 to a downstream region 𝑐 + can be simplified as the trip from the centroid 𝑐 ∗ to the
+downstream centroid 𝑐 +∗ . Accordingly, the trip length of vehicle 𝑥 travelled from region 𝑐 to region 𝑐 + is then written as:
++
+
+∗ ,𝑐 +∗
+
+𝐿𝑐,𝑐
+= 𝐿𝑐𝑥
+𝑥
+
+𝑡𝑐𝑐
+𝑥
+
+=
+
+∫𝑡𝑐 ∗
+𝑥
+
++∗
+
++
+
+𝑡𝑐𝑥
+
+𝑣𝑐 (𝑁𝑐 (𝑡))𝑑𝑡 +
+
+∫𝑡𝑐𝑐 +
+
+(2)
+
+𝑣𝑐 + (𝑁𝑐 + (𝑡))𝑑𝑡
+
+𝑥
+
+where 𝑐𝑐 + represents the boundary between 𝑐 and 𝑐 + for the trip with the direction from 𝑐 to 𝑐 + .
+Considering representing the path of vehicle 𝑥 as a sequential list P𝑥 , the trip of vehicle 𝑥 is:
+(−2)
+
+P𝑥
+
+𝐿𝑥 =
+
+∑
+
+𝐿𝑐,𝑐
+𝑥
+
++
+
+(3)
+
+(1)
+
+𝑐=P𝑥
+
+where P𝑥(1) is the first element in the path list P𝑥 , which denotes the origin region of vehicle 𝑥; P𝑥(−2) is the second last element in
+the path list P𝑥 , which denotes the upstream region of the destination region of vehicle 𝑥. Note that, apart from the last element
+in P𝑥 , 𝑐 is followed by 𝑐 + for 𝑐 ∈ P𝑥 .
+In accumulation-based models, the outflow rate is usually defined by the outflow-NMFD. However, in the trip-based model, the
+outflow expression depends not only on the current states but also on the previous dynamics (Lamotte and Geroliminis, 2018).
+There is difficulty in analytically describing the outflow of each region due to mathematical advances (Arnott, 2013; Arnott and
+Buli, 2018). Alternatively, the outflow 𝐻𝑐 (𝑡) of region 𝑐 at time 𝑡 can be determined by the collection of the number of vehicles that
+exit region 𝑐 at time 𝑡 using simulation. As known, the exiting time of vehicle 𝑥 is implicitly restricted by the constraints (2)–(3).
+6
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Considering a time period between 𝑚 and 𝑡, the vehicles that entered region 𝑐 at time 𝑚 have travelled a certain distance at
+𝑡
+time 𝑡. We define the part of the vehicles that have left the network at time 𝑡 as 𝐹 (∫𝑚 𝑣𝑐 (𝑁𝑐 (𝑘))𝑑𝑘), where 𝐹 (.) is the cumulative
+𝑡
+distribution function of trip length. 𝐹 (∫𝑚 𝑣𝑐 (𝑁𝑐 (𝑘))𝑑𝑘) is a fraction that ranged between 0 and 1. If the demand 𝐷𝑐,𝑗 (𝑚) from the
+origin of region 𝑐 with destination to region 𝑗 ∈ C at any time 𝑚 < 𝑡 is known, we can obtain the accumulation in region 𝑐 at time
+𝑡:
+)(
+(
+( 𝑡
+))
+𝑡
+∑
+∑
+̂
+𝑁𝑐 (𝑡) =
+𝐷𝑐,𝑗 (𝑚) +
+𝐻𝑐 − ,𝑐 (𝑚)
+1−𝐹
+𝑣 (𝑁 (𝑘))𝑑𝑘
+𝑑𝑚
+(4)
+∫0
+∫𝑚 𝑐 𝑐
+−
+𝑐 ∈H𝑐
+
+𝑗∈C
+
+where
+is an upstream region of 𝑐, H𝑐 is the set of neighbouring regions of 𝑐, 𝐻̂ 𝑐 − ,𝑐 (𝑚) is the transfer flow from region 𝑐 − to region
+𝑐 at time 𝑚. The transfer flow 𝐻̂ 𝑐 − ,𝑐 (𝑡) is constrained by the remaining space of region 𝑐 at time 𝑡, written as:
+𝑐−
+
+𝐻̂ 𝑐 − ,𝑐 (𝑡) = 𝑚𝑖𝑛(𝐻𝑐 − ,𝑐 (𝑡), 𝑆𝑐,𝑐 − (𝑡))
+
+(5)
+
+where 𝐻𝑐 − ,𝑐 (𝑡) is the outflow rate from region 𝑐 − to region 𝑐, 𝑆𝑐,𝑐 − (𝑡) is the space of region 𝑐 for the vehicles from the upstream
+region 𝑐 − . Note that 𝐻𝑐 − ,𝑐 (𝑡) is known as a function of time, and is obtained from simulations in this study.
+If 𝑆𝑐,𝑐 − (𝑡) < 𝐻𝑐 − ,𝑐 (𝑡), the part of vehicles that cannot enter region 𝑐 would be queued at the boundary. Since the trip-based
+model traces individual vehicle paths, it suggests that any one vehicle is indivisible. In the case that 𝑆𝑐,𝑐 − (𝑡) is not enough for one
+vehicle, the remaining space for all incoming directions will be combined and given to a random vehicle in the remaining queues.
+∑
+𝑆𝑐 (𝑡) = 𝑐 − ∈H𝑐 𝑆𝑐,𝑐 − (𝑡) is estimated from the NMFD, as:
+⎧ 𝑣𝑐 (𝑁𝑐 (𝑡)) ,
+⎪
+𝐿(𝑐)
+𝑆𝑐 (𝑡) = ⎨
+𝑣cri,𝑐 (𝑁cri,𝑐 )
+⎪
+,
+⎩
+𝐿(𝑐)
+
+𝑁cri,𝑐 ≤ 𝑁𝑐 (𝑡) ≤ 𝑁jam,𝑐
+(6)
+0 ≤ 𝑁𝑐 (𝑡) ≤ 𝑁cri,𝑐
+
+where 𝑣cri,𝑐 , 𝑁cri,𝑐 , 𝑁jam,𝑐 , and 𝐿(𝑐) are the critical speed, the critical accumulation, the gridlock accumulation, and the average trip
+length of region 𝑐, respectively. Thus,
+𝑆𝑐,𝑐 − (𝑡) = ∑
+
+𝐻𝑐 − ,𝑐 (𝑡)
+𝑐 − ∈H
+
+𝑐
+
+𝐻𝑐 − ,𝑐 (𝑡)
+
+(7)
+
+𝑆𝑐 (𝑡)
+
+Eq. (4) can be differentiated to create the following conservation equation:
+∑
+𝑑𝑁𝑐 (𝑡) ∑
+=
+𝐷𝑐,𝑗 (𝑡) +
+𝐻̂ 𝑐 − ,𝑐 (𝑡)
+𝑑𝑡
+𝑗∈C
+𝑐 − ∈H𝑐
+(
+) (
+)
+𝑡
+𝑡
+∑
+∑
+− 𝑣𝑐 (𝑁𝑐 (𝑡))
+𝐷𝑐,𝑗 (𝑚) +
+𝐻̂ 𝑐 − ,𝑐 (𝑚) 𝑓
+𝑣𝑐 (𝑁𝑐 (𝑘))𝑑𝑘 𝑑𝑚
+∫0
+∫𝑚
+−
+𝑗∈C
+
+(8)
+
+𝑐 ∈H𝑐
+
+where 𝑓 (.) is the corresponding probability density function of 𝐹 (.).
+As the model is applied using simulations in this study, we also provide a discretized version of (8), as:
+∑
+∑
+𝛥𝑁𝑐 (𝑡) =
+𝐷𝑐,𝑗 (𝑡) +
+𝐻̂ 𝑐 − ,𝑐 (𝑡)
+𝑐 − ∈H𝑐
+
+𝑗∈C
+
+− 𝑣𝑐 (𝑁𝑐 (𝑡))
+
+𝑡
+∑
+𝑚=0
+
+where
+
+𝑓 ′ (.)
+
+(
+
+∑
+𝑗∈C
+
+𝐷𝑐,𝑗 (𝑚) +
+
+∑
+
+)
+
+(
+
+𝐻̂ 𝑐 − ,𝑐 (𝑚) 𝑓 ′
+
+𝑐 − ∈H𝑐
+
+𝑡
+∑
+
+)
+
+(9)
+
+𝑣𝑐 (𝑁𝑐 (𝑘))
+
+𝑘=𝑚
+
+represents the stochastic version of probability density function corresponding to 𝑓 (.).
+
+3.2. Route guidance strategies and objective formulation
+In this sub-section, we devise three RG strategies with the aim of mitigating the network congestion, namely single-agent MPC
+method (S-MPC), cooperative MPC method (C-MPC), and congestion level-based MPC method (CL-MPC). The definition of the three
+strategies and the corresponding objectives are described as follows.
+S-MPC: the single-agent MPC method is simply defined as an approach that uses the trip-based model to predict future system states
+and optimize the route for a single agent over a finite prediction horizon. The model forecasts the aggregate traffic states of the
+system affected by the device-bearing agent, treating the remaining agents as background traffic.
+Consider agent 𝑖 as the device-bearing agent, the action of agent 𝑖 is signified by 𝑎𝑖 , defining a path P𝑐𝑖 ,𝑗 from the current
+location 𝑐𝑖 to its destination region 𝑗. Consider a finite horizon 𝛺, such control problem has an objective function as:
+J S = 𝑚𝑖𝑛
+
+P𝑐𝑖 ,𝑗
+
+𝛺+𝑘−1
+∑
+
+∑
+
+𝑘
+
+𝑐∈C
+
+(10)
+
+𝑁𝑐 (𝑘)
+
+The objective function is subject to the constraints that consider all the trip dynamics in (1)–(9). Each specific action P𝑐𝑖 ,𝑗 is sampled
+from the action pool P̄ 𝑐𝑖 ,𝑗 that involves 𝜅-shortest routes for agent 𝑖. The initial state is taken from the plant, including all variables
+7
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+(i.e., the current location of each vehicle, the destination region of each vehicle, and the remaining travel distance of each vehicle
+to the downstream region) and demands during the prediction horizon. The pseudo-code of this algorithm is shown in Algorithm 1.
+C-MPC: Similar to the S-MPC approach, the cooperative approach uses the trip-based model to predict future system states and
+optimize the routes for several agents over a finite prediction horizon. The model predicts the influence of collaborative route
+selections made by agents carrying devices. The objective function is also similarly defined as:
+J C = 𝑚𝑖𝑛
+
+𝛺+𝑘−1
+∑
+
+∑
+
+𝑘
+
+𝑐∈C
+
+P𝒊′
+
+(11)
+
+𝑁𝑐 (𝑘)
+
+where P𝒊′ is the combination of path selections of the group of vehicles that request route information, and 𝒊 is the set of the group
+of vehicles. Each action P𝒊′ is sampled from the action pool P̄ 𝒊′ , which combines all the vehicle-corresponded 𝜅-shortest routes.
+The constraints and the initial state are obtained using the same way as in the S-MPC approach. The pseudo-code of this algorithm
+is shown in Algorithm 2.
+Under the assumption that vehicles can have information of the entire network via the service centre, the S-MPC approach allows
+vehicles to find routes independently for a system optimality goal. However, due to simultaneous route calculations in a distributed
+manner, the S-MPC strategy cannot account for the routes of other compliant vehicles. Alternatively, these vehicles are considered
+to follow their shortest paths or historical paths during the prediction horizon.
+In contrast to the S-MPC strategy, the C-MPC strategy explicitly collaborates the routes of other compliant vehicles by computing
+cooperative routes. Consequently, although the S-MPC and C-MPC strategies have similar objective functions, variations may arise
+in vehicle prediction and route suggestion.
+CL-MPC: In this method, the actions are not directly defined as the routing information for vehicles. Instead, road users are provided
+with congestion level information of each region, which is obtained based on the MPC method. A congestion level index denotes the
+congestion level information of each region. With the indexes of all regions in the network, the users are informed by a congestion
+map. Then, each agent can select the shortest route based only on the congestion map.
+Let 𝐺𝑐 (𝑡) denote the index of congestion level of region 𝑐 at time 𝑡. The value range of the index 𝐺𝑐 (𝑡) is set as [0, 1]. The travel
++
++
+cost 𝐺̃ 𝑥𝑐,𝑐 (𝑡) of vehicle 𝑥 on a link 𝑙𝑥𝑐,𝑐 between two regions 𝑐 and 𝑐 + where vehicle 𝑥 would go through can be defined as:
++
++ 𝑐
++ ,𝑐 + 𝑐 +
+𝐺̃ 𝑥𝑐,𝑐 (𝑡) = 𝐿𝑐,𝑐𝑐
+𝐺 (𝑡) + 𝐿𝑐𝑐
+𝐺 (𝑡)
+𝑥
+𝑥
+
+𝑐,𝑐𝑐 +
+
+(12)
+
+𝑐𝑐 + ,𝑐 +
+
+𝑐,𝑐 +
+
+where 𝐿𝑥
+and 𝐿𝑥
+are the lengths of the link portions of 𝑙𝑥 in region 𝑐 and region 𝑐 + , respectively. With the cost, each
+compliant vehicle 𝑖 can select its individual shortest route, according to the trip cost:
+∑
++
+𝑐 ,𝑗
+𝐺̃ 𝑥𝑥 (𝑡) =
+𝐺̃ 𝑥𝑐,𝑐 (𝑡)
+(13)
+𝑐∈P𝑐𝑥 ,𝑗
+
+𝐺𝑐 (𝑡)
+
+is obtained by solving an MPC problem with the objective function:
+J CL = 𝑚𝑖𝑛
+𝑮
+
+𝛺+𝑘−1
+∑
+
+∑
+
+𝑘
+
+𝑐∈C
+
+(14)
+
+𝑁𝑐 (𝑘)
+
+where 𝑮 is the set of the indexes of congestion levels in the network, 𝑮 = {𝐺1 , 𝐺2 , … , 𝐺𝑐 , … , 𝐺|C | }. Note that the congestion level
+index demonstrates an inverse relationship with the projected traffic for the subsequent time interval. Specifically, an elevated index
+value indicates diminished desirability for accommodating increased vehicular flow in the region. The congestion information would
+be updated every 𝜓 min, where 𝜓 should not be too small to avoid drivers’ confusion caused by frequent information changes. The
+constraints and the initial state are obtained using the same way as previous approaches. The pseudo-code of this algorithm is shown
+in Algorithm 3.
+Algorithm 1 Single-agent MPC for RG
+Require: agent set {1, 2, 3, ..., 𝐼}, action pool P̄ 𝑐𝑖 ,𝑗 , prediction horizon 𝛺
+1: Initialize agent dictionaries
+2: 𝑡 ← 0
+3: for 𝑡 = 1 to max simulation length do
+4:
+for agent 𝑖 = 1 to 𝐼 do
+5:
+Find optimal P𝑐𝑖 ,𝑗 according to Eq.(10)
+6:
+Execute action 𝑎𝑖
+7:
+end for
+8:
+𝑡←𝑡+1
+9: end for
+8
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Algorithm 2 Cooperative MPC for RG
+Require: agent set {1, 2, 3, ..., 𝐼}, action pool P̄ 𝒊′ , prediction horizon 𝛺
+1: Initialize agent dictionaries
+2: 𝑡 ← 0
+3: for 𝑡 = 1 to max simulation length do
+4:
+Find optimal P𝒊′ according to Eq.(11)
+5:
+for agent 𝑖 = 1 to 𝐼 do
+6:
+Execute action 𝑎𝑖
+7:
+end for
+8:
+𝑡←𝑡+1
+9: end for
+
+Algorithm 3 Congestion level-based MPC for RG
+Require: agent set {1, 2, 3, ..., 𝐼}, prediction horizon 𝛺, information update period 𝜓
+1: Initialize agent dictionaries
+2: Initialize the congestion level index for each region
+3: 𝑡 ← 0
+4: for 𝑡 = 1 to max simulation length do
+5:
+if 𝑡 mod 𝜓 = 0 then
+6:
+Find optimal 𝑮 according to Eq.(14)
+7:
+for agent 𝑖 = 1 to 𝐼 do
+8:
+Find the shortest path as the action 𝑎𝑖 based on the trip cost Eq.(13)
+9:
+Execute action 𝑎𝑖
+10:
+end for
+11:
+end if
+12:
+𝑡←𝑡+1
+13: end for
+
+3.3. Potential limitations
+The S-MPC approach calculates the optimal route based on real-time decisions made by individual vehicles, a process that can
+result in non-cooperative actions among these vehicles. This is because each vehicle independently optimizes its route without
+considering the actions of other compliant vehicles, potentially leading to sub-optimal traffic situations.
+The C-MPC approach incorporates a cooperative mechanism that encourages vehicles to consider the route plans of other
+compliant vehicles in the prediction for the system’s benefit. However, its performance is constrained by the absence of an en-route
+routing mechanism. Without the ability to dynamically adjust routes while en-route, C-MPC may struggle to adapt to changing
+traffic conditions or unexpected events, limiting its ability to fully optimize traffic flow and minimize total travel costs.
+Similar to S-MPC, while the CL-MPC approach does incorporate an en-route routing mechanism, it is essential to note that vehicles
+under this strategy do not actively consider collaboration when making route choices based on congestion levels. In other words,
+while en-route adjustments are possible, these adjustments are primarily driven by individual vehicles’ response to the obtained
+congestion level index, rather than a coordinated effort to optimize traffic flow through collaboration.
+These concerns highlight a potential area for improvement within these approaches in achieving more cooperative, dynamic and
+efficient traffic management. Consequently, in the following section, we introduce a multi-agent deep Q-learning method for route
+guidance, potentially addressing the aforementioned concerns raised in the MPC-based methods.
+4. MADQL-based approach
+4.1. Markov decision process
+As mentioned in Section 2, the RG problem is to provide travellers with information that helps them choose the optimal
+path according to a given objective, whether it is user-oriented or system-utility. The concept is similar to the principles of user
+equilibrium and system optimum traffic assignment. However, the demand information is usually unknown in the context of RG,
+which poses a challenge for the guidance system. Unlike traffic assignment models, the RG system must provide deterministic
+routes to compliant vehicles based on available information without assuming knowledge of future conditions. As vehicles follow
+their routes, the traffic environment evolves, leading to the formation of traffic evolution dynamics with the routing service. This
+process can be modelled as a Markov game, which is a generalization of a multi-agent system.
+An agent refers to an intelligent entity or system that interacts with an environment to learn and make decisions in order to
+maximize its long-term cumulative reward. The agent typically employs deep neural networks to approximate value functions or
+policy functions, allowing it to learn complex patterns and strategies from raw sensory input. Through trial-and-error interactions
+9
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+with the environment, the agent aims to optimize its actions to achieve the highest possible reward or reach a specific goal. In the
+proposed multi-agent framework, vehicles that confirm trip plans are considered agents, which are indexed by 𝑖 ∈ {1, 2, … , 𝐼}.
+Each agent departs from a regional origin 𝑐 o to a regional destination 𝑐 d . An agent selects the optimal outboard region at every
+intermediate macroscopic node according to the corresponding maximum return. Hence, agents’ actions affect the traffic dynamics
+of the traffic system. With the traffic evolution, the action is identified by the current vehicles’ observation. When the end condition
+of an episode is met (e.g. the maximum time step of an episode), the system is ended and restarts the next episode. After rewards
+are converged and close to a maximum, the optimal policy can be used for guiding vehicles.
+Besides, compliant vehicles are assumed to be able to know the state of the network via information communication. The
+communication mechanism among agents enables them to exchange information, coordinate actions, and share learned knowledge to
+improve overall performance. In this framework, we adopt centralized communication in training. Agents indirectly communicate
+with each other by exchanging messages or information via the centralized intelligence. Therefore, agents can learn to improve
+the system performance by cooperatively selecting the optimal routes via the mutual interaction of the compliant vehicles, the
+background vehicles and their built environment. It is noted that all agents observe the current state of the environment, share
+necessary information, and then select their actions concurrently (e.g., synchronous decisions). The actions of all agents are applied
+simultaneously, and the environment transitions to the next state based on these actions.
+The deep Q-learning approach (Sutton and Barto, 2018) is built on a Markov decision process (Puterman, 2014), which can be
+characterized by a tuple (, , , 𝑃 , 𝛾). In which, , , , 𝑃 , 𝛾 denote the environment state space, the action space, the reward
+function, the state transition probability, and the discount factor, respectively. The process keeps going according to the probability
+𝑃 (𝒔′ |𝒔, 𝑎), where 𝒔, 𝒔′ ∈  are specific states and 𝑎 ∈  is the corresponding action. To be specific to the routing problem, 𝑃 (𝒔′ |𝒔, 𝑎)
+can be explained as the probability of the state transition to a new traffic state 𝒔′ from the old traffic state 𝒔 influenced by the route
+selection 𝑎.
+Similarly, in multi-agent cases, the environment is partially observable for each agent; thus, the system can be formulated by a
+tuple (, 1 , 2 , … , 𝐼 , 1 , 2 , … , 𝐼 , 1 , 2 , … , 𝐼 , , 𝑃 , 𝛾). In which, 𝑖 , 𝑖 and 𝑖 are the observation space, action space and
+reward function of agent 𝑖 ∈ , respectively.  is the set of agents. From individual drivers’ perspective, the environment state
+𝒔 ∈  is not fully observable. However, under the assumption that the communication system is well built, an individual agent can
+observe the environment state 𝒔.
+Main components of the multi-agent deep Q-learning framework and the presentation of the training method in the proposed
+framework are presented in the following sub-sections.
+4.2. Environment state and private observation
+The environment state 𝒔 refers to network information obtained via the traffic monitoring system. In the RG context, state 𝒔
+consists of the regional speed 𝑽 and the current inflow 𝑫. In detail, the regional speed state is the macroscopic speed in every
+reservoir, and the current inflow state denotes the vehicles entered into the network during the last time step. In general, predicting
+future traffic states requires an understanding of potential flows. However, demand information is difficult to be predicted precisely.
+Instead, by considering that traffic demand is approximately stable in a short-term period, the current inflow can be used instead
+of the future demand.
+Besides the environment state, the observable states also include the private observation 𝒐𝑖 of agent 𝑖. Including private
+observations in the observable states provides each agent with more information to make informed decisions and can lead to more
+effective policies. This current work considers the current location, destination region, and trip length as the private observation of
+agent 𝑖. The extra trip cost ratio 𝜁𝑖 is devised for assessing how the trip length affects the driver, which is defined as the ratio of
+the trip length travelled 𝑇 𝐿𝑇𝑖 to the shortest trip length 𝑆𝑇 𝐿𝑖 of agent 𝑖. This provides the agent with a hint of the historical track.
+Accordingly,
+𝜁𝑖 =
+
+𝑇 𝐿𝑇𝑖
+𝑆𝑇 𝐿𝑖
+
+(15)
+
+4.3. Action
+Once a vehicle is involved in the traffic system, driver behaviour can affect the system performance, making traffic prediction
+difficult, especially if the vehicle does not comply with route guidance. The unknown routing actions of vehicles reduce the accuracy
+of predicting long-term traffic states, which negatively impacts finding the optimal route. Compared to long-term prediction, shortterm prediction is more reliable. Therefore, rather than giving a complete route to each agent, the action here is selecting an outgoing
+macroscopic link to a neighbouring region.
+Let 𝑎𝑖 = 𝑙𝑐,𝑐 + denote the deterministic action of agent 𝑖, where 𝑙𝑐,𝑐 + is the macroscopic link between the current region 𝑐 and a
+neighbouring region 𝑐 + . Note that the action dimension is changeable (i.e. the optional number of outbound links may vary from
+region to region). Therefore, each agent’s action space is discrete and limited by the maximum number of allowable outbound links.
+In the used MADRL framework, all agents actuate their actions to trigger the transit of states. During this process, all agents can
+interact with each other. Thus the actions are a joint action 𝒂 = (𝑎1 , 𝑎2 , … , 𝑎𝐼 ).
+10
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+4.4. Transition probability
+The transition probability is an essential component of Markov decision processes, which is a measure of the likelihood of moving
+from one state to another state given an action. The transition probabilities provide information about the uncertainty in the system
+and how it affects future outcomes. Let 𝑃 (𝒔′ |𝒔, 𝒂) denote the transition probability of state 𝒔′ given state 𝒔 and joint action 𝒂. More
+particularly, it is the probability of the agents reaching a new state 𝒔′ = (𝑽 ′ , 𝑫 ′ ) from the old state 𝒔 by taking joint action 𝒂.
+Accordingly, 𝑃 can be treated as an experience gained by interacting with the environment repeatedly.
+4.5. Reward
+A reward in reinforcement learning is a scalar value that represents the immediate benefit or penalty that an agent receives
+for taking a particular action in a particular state of the environment. After joint action 𝒂 triggers a state transition, the system
+returns a reward 𝑟(𝒔, 𝒂, 𝒔′ ). In this work, we propose three types of rewards, i.e. user-oriented, system-utility, and balance rewards,
+to investigate different RG schemes.
+In the user-oriented RG, each road user aims to minimize their own travel cost/time, leading to user equilibrium. Hence, the
+private cost reward is typically set as negative travel costs (Mao and Shen, 2018; Zhou et al., 2020) corresponding to the state
+transition to have the lowest private travel time for each vehicle. The user-oriented reward received by agent 𝑖:
+(16)
+
+𝑟uo,𝑖 = −𝑢𝑖
+
+where 𝑢𝑖 indicates the travel cost of agent 𝑖 during the period of state transition. This reward can be seen as a penalty that discourages
+agents from staying in the network based on the amount of time they spend in the network. Consequently, road users strive to
+minimize their time spent in the network, resulting in trips with minimal private cost.
+On the other hand, system-utility reward aims to achieve the best global return by performing the collaborative route selection.
+Global rewards, such as total traffic throughput or average vehicle speed, typically have low learnability in multi-agent reinforcement
+learning schemes (Matignon et al., 2012). For this reason, we adopt a difference reward-based system-utility reward for pursuing
+system optimality. The difference reward is defined as the difference between a global reward and a global reward without the
+influence of agent 𝑖:
+𝑟dif,𝑖 = 𝐺(𝒔′ ) − 𝐺(𝒔′ − 𝑖)
+𝐺(𝒔′ )
+
+(17)
+𝒔′ ,
+
+𝐺(𝒔′ − 𝑖)
+
+𝒔′
+
+where
+is the global reward of the system at state
+and
+is the global reward at state without the influence of agent
+𝑖.
+Particularly, 𝐺(𝒔′ ) is the weighted average speed, and 𝐺(𝒔′ − 𝑖) is estimated from the NMFD, as:
+[
+]
+∑
+1
+𝑖
+𝑖
+′
+𝑁𝑐 𝑣𝑐 (𝑁𝑐 ) + (𝑁𝑐 − 1)𝑣𝑐 (𝑁𝑐 − 1)
+(18)
+𝐺(𝒔 − 𝑖) = ∑
+𝑐∈𝑪 𝑁𝑐 − 1 𝑐∈𝑪 −
+where 𝑐 is a region, 𝑪 − is the set of regions without the region where vehicle 𝑖 is located, 𝑁𝑐 is the accumulation of region 𝑐; 𝑣𝑐 (.)
+is the speed-NMFD in region 𝑐, 𝑁𝑐𝑖 is the region where vehicle 𝑖 is located.
+The second term ignores some impacts of the other agents on agent 𝑖, thereby removing a considerable noise from 𝑖’s reward.
+In addition, using the difference reward has the advantage that any action that improves the difference reward can also improve the
+global reward since it does not depend on the agent’s state. Besides, the impact level on the traffic network condition of one vehicle
+also depends on the number of existing vehicles in the network. When the vehicle number is small in the network, the difference
+reward may exaggerate the influence of an individual vehicle. Thus, the difference reward is weighted by the total number of vehicles
+𝑁 in the network:
+𝑟dif,𝑖 = 𝑁 ⋅ [𝐺(𝒔′ ) − 𝐺(𝒔′ − 𝑖)]
+
+(19)
+
+Difference rewards have been successfully used in packet routing (Wolpert et al., 2000), air traffic flow management (Tumer
+and Agogino, 2007), and traffic assignment (Grunitzki et al., 2014). However, applying only the difference reward in the specific
+route guidance problem cannot ensure the optimal system utility. This is because agents may travel in loops to reach the global
+goal, sacrificing the travel costs of some agents. Therefore, extra penalties should also be added. In the current work, we consider
+two types of penalties, i.e. fairness limit (𝑟fair,𝑖 ) and stay penalty (𝑟stay,𝑖 ). The fairness limit penalty is conditionally applied when
+the distance that agent 𝑖 travelled is too long, while the stay penalty punishes those who have not finished their trip. They can be
+written as:
+(20)
+
+𝑟fair,𝑖 = −𝜌1
+𝑟stay,𝑖
+
+𝜌2
+=−
+𝑉 𝑎𝑟(𝑵)
+
+(21)
+
+where 𝜌1 is the fairness parameter for punishing vehicles with unnecessarily long distance travelled, 𝑉 𝑎𝑟(𝑵) is the variance of the
+1
+regional accumulation set 𝑵, the 𝜌2 is a parameter that scales 𝑉 𝑎𝑟(𝑵)
+up or down to a comparable level to the difference reward.
+𝑟stay,𝑖 gives a slight stay penalty to agent 𝑖 when the network is highly heterogeneous and a large stay penalty when there is no need
+11
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 2. MADRL-based approach with decentralized execution and centralized training.
+
+to increase the trip length of agent 𝑖 to reduce the heterogeneity level. A large stay penalty can guide agent 𝑖 to complete its trip as
+soon as possible. The reward for the system utility is then written as:
+{
+𝑟dif,𝑖 + 𝑟stay,𝑖
+if 𝜁𝑖 ≤ 𝜁max,𝑖
+(22)
+𝑟su,𝑖 =
+𝑟dif,𝑖 + 𝑟stay,𝑖 + 𝑟fair,𝑖
+otherwise
+where 𝜁max,𝑖 is the maximum extra trip cost ratio of 𝑖.
+A route provided by system-utility RG may be unacceptably long for a road user, leading to a low compliance ratio. Hence,
+a balance reward is designed to balance the users’ extra trip costs and the system benefit to reduce the potential number of
+non-compliance vehicles.
+(23)
+
+𝑟to,𝑖 = 𝛽1 𝑟uo,𝑖 + 𝛽2 (1 − 𝛽1 )𝑟su,𝑖
+
+where 𝛽1 ∈ [0, 1] is a trade-off parameter, and 𝛽2 is a hyper-parameter that can scale 𝑟su,𝑖 up or down to a similar level as 𝑟uo,𝑖 .
+4.6. Discount factor
+In most traffic settings, the current reward taken from one transition should not be the only consideration of the return because
+travellers are often seeking to optimize their behaviours over a longer horizon rather than simply maximizing their immediate
+reward. Indeed, we also have to consider the future rewards, which are potentially affected by the current action. The return in
+reinforcement learning is often defined as the cumulative discounted reward to account for future rewards. The future rewards
+are discounted by a factor that decreases as the rewards become further in the future. The discount factor takes into account the
+trade-off between immediate and future rewards.
+Let 𝛾 ∈ [0, 1] denote a discount factor, indicating the importance of future rewards. Larger 𝛾 places greater emphasis on future
+∑𝑡𝑖
+rewards. The cumulative reward of agent 𝑖 can be signified as 𝒓𝑖 = 𝑡=𝑡
+𝛾 𝑡−1 𝑟(𝒔, 𝒐𝑖 , 𝑎𝑖 , 𝒔′ , 𝒐′𝑖 ), where 𝑡𝑖 is the trip ending time of agent
+𝑐
+𝑖, 𝑡𝑐 is the current time. The discounted cumulative reward 𝒓 is maximized to optimize a route selection policy 𝜋. For the current
+route guidance task, the discount ratio is constantly set to 1, as a route guidance task is accomplished by a sequence of actions. The
+actions in the sequence are equally important.
+4.7. Cooperative multi-agent learning
+Inspired by the value decomposition algorithm (Sunehag et al., 2017), the cooperative multi-agent learning architecture aims
+to learn a joint action-value function based on decentralized observations. This is achieved by the multi-agent deep Q-learning
+approach with centralized training and decentralized execution, see Fig. 2. Centralized training and decentralized execution refers
+to the process in which a central intelligence trains a model using data from various sources, but the model is then distributed and
+executed independently by individual devices without centralized control during operation (Lowe et al., 2017; Wang and Sun, 2020;
+Ying et al., 2022).
+In this structure, observations and actions are represented as 𝐼-dimensional tuples, and are distributed across 𝐼 agents. For each
+agent 𝑖, we associate it with a decentralized state–action value function as:
+[
+]
+𝑄𝜋𝑖 (𝒔, 𝒐𝑖 , 𝑎𝑖 ) = E𝒔′ ,𝒐′ ∼𝑃 (.|𝒔,𝒐𝑖 ,𝒂) 𝒓𝑖 (𝒔, 𝒐𝑖 , 𝑎𝑖 , 𝒔′ , 𝒐′𝑖 )
+(24)
+𝑖
+
+where 𝜋𝑖 denotes the policy which is parameterized by 𝜃𝑖 in deep reinforcement learning.
+12
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+𝑄𝜋𝑖 (.) is the neural network that estimates the Q value of the action of agent 𝑖, giving the local Q value for agent 𝑖. 𝑄𝜋𝑖 depends on
+̃ the policy that considers vehicle
+the environment state and each agent’s observations and its action. Through the average value 𝑄,
+collaboration can be learnt implicitly. The corresponding Q value 𝑄̃ 𝑖 for agent 𝑖 is formulated as:
+𝐼
+∑
+̃ 𝒐, 𝒂) = 1
+𝑄𝜋𝑖 (𝒔, 𝒐𝑖 , 𝑎𝑖 )
+𝑄̃ 𝑖 = 𝑄(𝒔,
+𝐼 𝑖=1
+
+(25)
+
+While the training process requires centralization, the learned agents can be deployed independently by applying its local Q
+value generated from 𝑄𝜋𝑖 . Since each agent selects the action associated with its maximum Q value in a greedy manner, the average
+value 𝑄̃ is essentially the result of agents collectively opting for their respective maximal local Q values.
+Given the state 𝒔 and observation 𝒐𝑖 at each time step 𝑡, the Q value is calculated by each Q network 𝑄𝜋𝑖 of agent 𝑖 for generating
+actions. Taking the joint action, the environment returns immediate rewards of each action. Once the current step is finished, the
+newly obtained transition tuple (or experience tuple) (𝒔, 𝒔′ , 𝒐𝑖 , 𝒐′𝑖 , 𝑎𝑖 , 𝑟𝑖 ) for each agent 𝑖 are collected and restored into the replay
+memory.
+For each agent 𝑖, a mini-batch of transitions are sampled from the newly updated replay buffer R𝑖 using prioritized experience
+replay method, see Schaul et al. (2015). This method is usually employed to improve the sample quality. Note that a mini-batch is
+a randomly selected subset of data samples used for iterative training in machine learning, balancing computational efficiency and
+stochastic updates during model optimization (Masters and Luschi, 2018). With the mini-batch, the parameters 𝜽 = (𝜃1 , 𝜃2 , … , 𝜃𝐼 )
+for each agent network can be trained.
+To update the learnable parameters 𝜽, we minimize the following temporal-difference loss function:
+[
+]
+L̃ (𝜃𝑖 ) = ER𝑖 (𝑦̃𝑖 − 𝑄̃ 𝑖 )2
+(26)
+R𝑖 is the replay buffer (or experience replay memory) of agent 𝑖 where the transition tuples of agent 𝑖 are restored,
+𝑦̃𝑖 =
+
+𝐼
+1∑
+𝑟 + 𝛾 𝑄̃ −
+𝑖
+𝐼 𝑖=1 𝑖
+
+(27)
+
+𝜋𝑖 − of agent 𝑖, which refers
+is the one-step target (Sutton and Barto, 2018) and 𝑄̃ −
+𝑖 is the target value given by the target network 𝑄
+to a separate neural network that is used to estimate the target values during the training process (Mnih et al., 2015). The weight
+parameters in the target networks are updated according to a smoothing parameter 𝜏, written as:
+
+𝜃𝑖− ← 𝜏𝜃𝑖 + (1 − 𝜏)𝜃𝑖−
+
+(28)
+
+𝜃𝑖−
+
+where 𝜃𝑖 and
+are the weight parameters of the agent network and target network of agent 𝑖, respectively. This enables to stabilize
+the learning process when learning from a noisy environment.
+To avoid the overestimation of Q values, we employ the Double Q-learning technique to generate the actions (Van Der Pol,
+2016). With this technique, the target network 𝑄𝜋𝑖 − (𝒔′ , 𝒐′𝑖 , 𝑎𝑖 ) of agent 𝑖 is replaced with 𝑄𝜋𝑖 − (𝒔′ , 𝒐′𝑖 , 𝑎𝑟𝑔𝑚𝑎𝑥𝑎𝑖 𝑄𝜋𝑖 (𝒔′ , 𝒐′𝑖 , 𝑎𝑖 )), and (27)
+can be rewritten as:
+𝑦̃𝑖 =
+
+𝐼
+(
+)
+1∑
+𝑟 + 𝛾𝑄𝜋𝑖 − 𝒔′ , 𝒐′𝑖 , 𝑎𝑟𝑔𝑚𝑎𝑥𝑄𝜋𝑖 (𝒔′ , 𝒐′𝑖 , 𝑎𝑖 )
+𝐼 𝑖=1 𝑖
+𝑎𝑖
+
+(29)
+
+The agent parameters 𝜽 are then updated based on the errors estimated in the same sample batch by:
+⎧𝜃 = 𝑎𝑟𝑔𝑚𝑖𝑛L̃ (𝜃 )
+𝑖
+⎪ 𝑖
+𝜃𝑖
+⎪
+𝐵
+⎨
+∑
+[
+]
+̃ 𝑏 , 𝒐𝑏 , 𝒂𝑏 )2
+⎪L̃ (𝜃𝑖 ) = 1
+𝑦̃ − 𝑄(𝒔
+𝐵 𝑏=1 𝑖,𝑏
+⎪
+⎩
+
+(30)
+
+where 𝑏 is the index of a Markov tuple in the sample batch, 𝐵 is the size of a mini-batch. Updating the agents’ parameters can follow
+a stochastic gradient descent optimization, ADAM (Kingma and Ba, 2014), with step learning rate 𝜂. Note that 𝜂 determines the step
+size for adjusting a model’s weights during training, while gradually reducing the learning rate over episode allows for smoother
+convergence. To obtain the optimal policy 𝜋𝑖∗ , updating the agents would continue until reaching the maximum number of episodes
+𝐸.
+To balance the exploration for new actions and the exploitation for known actions, the 𝜖-greedy method can be adopted to
+provide a systematic way to achieve this balance by randomly selecting exploratory actions with a certain probability (𝜖). 𝜖 normally
+decays with episode growth, according to a decaying schedule. In this study, we adopt an exponential decay schedule in which the 𝜖
+exponentially decreases over episode as training progresses. This scheduling strategy has been widely recognized for its effectiveness
+in guiding the training process. This method can be written as a selection process:
+⎧ 𝜉
+⎪𝑎𝑖 ,
+𝑎𝑖 = ⎨
+𝑎𝑟𝑔𝑚𝑎𝑥𝑄𝜋𝑖 (𝒔, 𝒐𝑖 , 𝑎𝑖 ),
+⎪ 𝑎𝑖
+⎩
+
+𝜉≤𝜖
+(31)
+
+𝜉>𝜖
+
+where 𝑎𝜉𝑖 ∼ 𝑖 is a randomly sampled action from the stochastic action space 𝑖 of agent 𝑖, 𝜉 is randomly generated from range
+[0, 1] for each action selection.
+The pseudo-code of this algorithm is shown in Algorithm 4.
+13
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Algorithm 4 Deep Q-learning for RG
+Require: agent set {1, 2, 3, ..., 𝐼}, learning rate 𝜂, greed parameter 𝜖, smoothing parameter 𝜏
+Ensure: 𝜋𝑖∗
+1: Initialize agent network 𝑄𝜋𝑖 and target network 𝑄𝜃𝑖 − for each agent 𝑖
+2: Initialize experience replay memory R𝑖 for each agent 𝑖
+3: Initialize agent dictionaries
+4: 𝑒𝑝𝑖𝑠𝑜𝑑𝑒 ← 0
+5: while 𝑒𝑝𝑖𝑠𝑜𝑑𝑒 ≤ 𝐸 do
+6:
+Initialize a random process for the initial environment state 𝒔0
+7:
+for agent 𝑖 = 1 to 𝐼 do
+8:
+Initialize 𝒐𝑖
+9:
+end for
+10:
+𝑡←0
+11:
+for 𝑡 = 1 to max episode length do
+12:
+for agent 𝑖 = 1 to 𝐼 do
+13:
+Generate action 𝑎𝑖 based on the 𝜖-greedy method
+14:
+Execute action 𝑎𝑖
+15:
+end for
+16:
+Measure 𝒔′ from the environment
+17:
+for agent 𝑖 = 1 to 𝐼 do
+18:
+Measure 𝒐′𝑖 from the environment
+19:
+Receive 𝑟𝑖
+20:
+end for
+21:
+for agent 𝑖 = 1 to 𝐼 do
+22:
+if Do cooperative multi-agent learning then
+∑𝐼
+23:
+Store experience tuple (𝒔, 𝒔′ , 𝒐𝑖 , 𝒐′𝑖 , 𝑎𝑖 , 𝐼1 𝑖=1 𝑟𝑖 ) to R𝑖
+24:
+else if Do independent learning then
+25:
+Store experience tuple (𝒔, 𝒔′ , 𝒐𝑖 , 𝒐′𝑖 , 𝑎𝑖 , 𝑟𝑖 ) to R𝑖
+26:
+end if
+27:
+end for
+28:
+𝑡←𝑡+1
+29:
+end for
+30:
+for agent 𝑖 = 1 to 𝐼 do
+31:
+Sample a batch from R𝑖 according to mini-batch size 𝐵
+32:
+if Do cooperative multi-agent learning then
+33:
+Update 𝑦𝑖 by Eq.(29)
+34:
+Update weight parameter 𝜃𝑖 by Eq.(30)
+35:
+else if Do independent learning then
+36:
+Update 𝑦𝑖 by Eq.(33)
+37:
+Update weight parameter 𝜃𝑖 by Eq.(34)
+38:
+end if
+39:
+end for
+40:
+𝑒𝑝𝑖𝑠𝑜𝑑𝑒 ← 𝑒𝑝𝑖𝑠𝑜𝑑𝑒 + 1
+41:
+Decrease 𝜖 based on the 𝜖 decay schedule
+42:
+Decrease 𝜂 based on the 𝜂 decay schedule
+43:
+for agent 𝑖 = 0 to 𝐼 do
+44:
+Update target network according to Eq. (28)
+45:
+end for
+46: end while
+
+4.8. Independent learning architecture
+
+Independent Q-learning (IQL) (Tan, 1993) is a commonly applied method in multi-agent learning, serving as a benchmark in
+cooperative and competitive environments. IQL decomposes a multi-agent problem into a collection of single-agent problems.
+Instead of (26), the loss is calculated directly from the reward of each agent 𝑖. The temporal-difference loss function of IQL is:
+[
+]
+L (𝜃𝑖 ) = ER𝑖 (𝑦𝑖 − 𝑄𝑖 )2
+
+(32)
+
+−
+where 𝑦𝑖 = 𝑟𝑖 + 𝛾𝑄−
+𝑖 , and 𝑄𝑖 is the target network of independent agent 𝑖. It can also be rewritten in Double Q-learning format as:
+
+(
+)
+𝑦𝑖 = 𝑟𝑖 + 𝛾𝑄𝜋𝑖 − 𝒔′ , 𝒐′𝑖 , 𝑎𝑟𝑔𝑚𝑎𝑥𝑄𝜋𝑖 (𝒔′ , 𝒐′𝑖 , 𝑎𝑖 )
+
+(33)
+
+𝑎𝑖
+
+14
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 3. Test-bed network.
+
+The agent parameters 𝜽 are updated in a similar manner to the cooperative architecture, as:
+⎧𝜃 = 𝑎𝑟𝑔𝑚𝑖𝑛L (𝜃 )
+𝑖
+⎪ 𝑖
+𝜃𝑖
+⎪
+𝐵
+⎨
+∑
+[
+]
+⎪L (𝜃𝑖 ) = 1
+𝑦 − 𝑄𝜋𝑖 (𝒔𝑏 , 𝒐𝑖,𝑏 , 𝒂𝑖,𝑏 )2
+𝐵 𝑏=1 𝑖,𝑏
+⎪
+⎩
+
+(34)
+
+Also, the 𝜖-greedy method is applied to IQL for the same reason as the cooperative method.
+The pseudo-code of this algorithm is shown in Algorithm 4.
+5. Numerical tests
+This section demonstrates the performance of the proposed framework under different solution approaches and RG strategies.
+The developed algorithms are applied to a multi-region NMFD system with a trip-based traffic model. The background traffic is
+first introduced in Section 5.1. The training details of the reinforcement learning-based methods are then provided in Section 5.2.
+The parameter selection for the model-based methods and the reinforcement learning-based methods is performed in Section 5.3.
+Afterwards, the models are tested in Sections 5.4–5.6.
+5.1. Test bed
+The current work applies the trip-based model to a multi-reservoir system (Fig. 3(a)). A region is presented by one centroid
+allocated in the centre of the region. Every trip starts from one centroid to another centroid. Hence, a vehicle may go through some
+centroids if the trip passes the corresponding regions. An inner trip of each region (i.e. a trip with the same origin and destination)
+is simulated as a virtual route inside the corresponding region with a certain length. This ensures dynamic route adjustment at
+en-route centroids. Besides, the trip length between any two neighbouring regions is set to be the same and constant in this test
+bed. The region border divides the macroscopic link between neighbouring centroids at the middle point.
+A time-based simulation is applied in the current work with an agent-based setting, which considers an individual vehicle as the
+smallest unit of traffic flow. In this case, the first-in-first-out (FIFO) principle is satisfied for the general queue when shaping the
+queues along the border between two regions as one general queue. Thus, the leading vehicle of the queue, at each time step, can
+enter the downstream region first if the supply space of the downstream region remains.
+Speed-NMFDs are assumed to be the same in all regions and are used to calculate vehicles’ speeds. The free-flow speed is set
+as 5 m/s, and the maximum accumulation is 667 veh. The average trip length of each region 𝐿(𝑐) is 400 m. The demand can be
+found in Fig. 3(b), and it is discretized into one-vehicle units. The routing principle of background traffic is the shortest distance
+calculated by the Dijkstra approach (Dijkstra et al., 1959). We adopt the demand scenario to have a 4000-second simulation for
+creating a realistic NMFD shape. Fig. 4 shows the speed evolution and the production NMFD of the entire network during the
+simulation duration. The NMFD of each region is shown in Fig. 5, in which four regions (regions 2, 3, 6, and 7) were in free-flow
+condition, two regions (regions 1 and 5) achieved capacity-flow level, and region 4 had congestion. In this setting, region 4 is the
+main concerned region that may be congested, and the other regions can provide sufficient space for possible rerouting.
+The compliant vehicles are simulated based on an average control ratio with a random mechanism. As a trip-based transmission
+model can track the trip of an individual vehicle, whether a vehicle confirms to comply can be labelled individually. Each vehicle
+15
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 4. Traffic environment.
+
+Fig. 5. NMFD of each region.
+
+will be justified to be controllable or not before departing, according to an average compliance ratio 𝜙 ∈ [0, 1]. For each vehicle 𝑥,
+there is a random number 𝜑𝑥 between 0 and 1, which is compared with 𝜙 to decide whether the vehicle is controllable or not. If
+𝜑𝑥 ≤ 𝜙, vehicle 𝑥 would be labelled as controllable. The sampling interval and the control update interval are 1 min. This process
+is explicitly shown in Algorithm 5.
+Algorithm 5 Method for labelling compliant vehicles
+Require: set of departing vehicles 𝑿, current average compliance ratio 𝜙
+1: Initialize vehicle labels
+2: for 𝑥 = 1 to |𝑿| do
+3:
+Generate 𝜑𝑥 based on uniform distribution in the range of [0,1]
+4:
+if 𝜑𝑥 ≤ 𝜙 then
+5:
+𝑥 is labelled as compliant
+6:
+else
+7:
+𝑥 is labelled as uncompliant
+8:
+end if
+9: end for
+16
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 6. Convergence of TTT under different RG schemes.
+
+5.2. Training process
+Since daily traffic flow trajectories often follow the same pattern on typical days (e.g. similar commuting patterns between the
+current Monday and historical Mondays) (Wang and Shi, 2013), the daily trip schedules of most urban road users are predictable
+and relatively constant. Thus, we create various scenarios for training by adding Gaussian noises to the demand in Section 5.1.
+In the learning process, a multi-step learning rate schedule is used. Specifically, the initial learning rate is 0.001, declining by
+90% at every milestone episode (i.e., episode 100, episode 200). To avoid myopic decisions, the discount factor 𝛾 is set to 1. We
+update the target network every 5 episodes, i.e., 𝜏 = 0.005. Agent networks are fed with mini-batches of 256 tuples at each step.
+The termination time for a single simulation is defined as 4000 s, even if none of the vehicles completed their trips.
+Fig. 6 plots the tests during the training processes (10 retrains) of the independent and multi-agent methods for both user-oriented
+(UO) and system-utility (SU) purposes. In the figure, the total travel time (TTT ) in the simulation during 300 episodes is shown.
+The independent method is shown by red curves, in which the light red curve shows the test results for UO purpose (I-UO) and the
+dark red curve shows the test results for SU purpose (I-SU). Similarly, the multi-agent method is shown by blue curves, in which
+the light blue curve shows the test results for UO purpose (MA-UO) and the dark blue curve shows the test results for SU purpose
+(MA-SU).
+The training of the independent method for both UO and SU achieves convergence at around episode 150, whereas around
+200 episodes are needed for the multi-agent method in the training processes to achieve convergence. In general, the independent
+method tends to converge quicker than the multi-agent method. As expected, the multi-agent method with SU purpose obtained the
+lowest TTT at the final stage, showing the effectiveness of improving the total throughput of the network. The multi-agent method
+with UO purpose and the independent method with SU purpose have similar final performance in terms of TTT. On the one hand,
+this may suggest that learning vehicular collaboration through the independent method might prove challenging. On the other hand,
+the agent, even when trained with the UO reward, is likely to exhibit only a marginal grasp of cooperative patterns after adopting
+the multi-agent approach.
+5.3. Parameters selection
+In this section, the key parameters of the model-based methods and the reinforcement learning-based methods are determined by
+conducting several experiments. The parameters of the model-based methods include the prediction horizon 𝛺 for S-MPC, C-MPC,
+and CL-MPC, in which CL-MPC with different information updating periods (i.e. 𝐺𝑐 (𝑡) is updated every 5 min (CL-MPC-5), 10 min
+(CL-MPC-10), or 15 min (CL-MPC-15)) are examined. The parameters of the reinforcement learning-based method include 𝜌1 and
+𝜌2 .
+Fig. 7 illustrates the TTT results for different prediction horizons using aforementioned model-based methods. With a small
+prediction horizon (5 min), C-MPC has the best performance among these methods in mitigating traffic congestion in the network.
+The TTT performance tends to be improved and reach around 605 h with the prediction horizon increasing. This tendency can
+also be seen in other methods. CL-MPC performs the best with higher prediction horizons, reaching around 595 h with a 25 min
+prediction horizon. For all the methods, similar TTT can be observed with 20 min and 25 min prediction horizons. While a higher
+prediction horizon can result in a better TTT result, the computation would be more time-consuming. Thus, considering the trade-off
+between the TTT and the computational burden, 20 min prediction horizon is selected for the rest of the tests.
+Fig. 8(a) provides a visualization of the TTT results obtained through the MADRL framework, showcasing the influence of
+different fairness parameters 𝜌1 . In this analysis, 𝜌1 ranges from 0 to 1000. For 𝜌1 values within the range of [50, 150], the TTT hovers
+around 590 h, representing the top-tier performance across all results. However, as 𝜌1 escalates beyond 150, the TTT experiences
+a sharp ascent, reaching approximately 600 h at 𝜌1 = 200, and gradually increasing to around 640 h when 𝜌1 = 1000. This implies
+17
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 7. TTT under MPC-based strategies with different prediction horizons.
+
+Fig. 8. The impact of fairness and scaling parameters in MA-SU method.
+
+that a considerable penalty for long trips might encourage agents to opt for the shortest possible route without considering traffic
+conditions. It is also worth noting that the performance at 𝜌1 = 0 (i.e. without long trip penalty) also presents an unexpected
+outcome, potentially attributed to the presence of unnecessarily long trips resulting from certain optimization behaviours. For the
+purposes of mitigating network congestion, 𝜌1 is conservatively set to 100 in the conducted test.
+Furthermore, Fig. 8(b) illustrates the TTT results while varying the scaling parameters 𝜌2 within the MADRL framework.
+Commencing with 𝜌2 = 0, the TTT registers at approximately 610 h, and declines as 𝜌2 increases up to 200. Within the range
+of [200, 400], TTT achieves around 590 h, representing peak performance levels among all the results. However, as 𝜌2 exceeds 400,
+TTT begins to increase, culminating at approximately 605 h when 𝜌2 = 1000. A value of 𝜌2 = 200 is selected for the following tests.
+5.4. The performance of different RG strategies
+To investigate the difference between the proposed methods, we test the RG performance in terms of total travel time and total
+travel distance (TTD), plotted in Figs. 9(a) and 9(b) respectively. As shown in Fig. 9(a), the methods can reduce traffic congestion
+in the network to varying levels. In general, when considering TTT as the metric, the reinforcement learning-based methods and
+the model-based methods exhibit similar performance levels. The guidance information is updated every 1 min in the case study.
+The MA-SU approach resulted in the lowest average TTT (around 589 h) across a bunch of tests. This outcome suggests
+that emphasizing efficient system capacity utilization within the transportation network can lead to minimized total travel time.
+Conversely, the I-UO strategy led to relatively higher average TTT values (around 613 h), indicating that user-centric route
+prioritization may come at the expense of longer total travel time. This emphasizes the impact of the UO and SU reward mechanisms
+on travel efficiency.
+Using MA-UO obtains around 8 h lower average TTT than using I-UO. This observation suggests that when agents are equipped
+with the knowledge of other agents’ rewards, they tend to adopt slightly more cooperative behaviours, even within learning a
+user-oriented reward. By incorporating the mean reward information from all participating agents, this multi-agent strategy may
+enhance performance for only the group of active agents, as opposed to all vehicles within the network. This distinction potentially
+contributes to this slight superior TTT outcome achieved by the MA-UO approach over the I-UO counterpart.
+The I-SU approach results in a marginally reduced TTT compared to the MA-UO strategy, albeit still around 14 h longer than the
+MA-SU approach. This discrepancy underscores the pronounced effectiveness of the MA-SU technique in addressing traffic congestion
+18
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 9. Performance of different RG strategies under light congestion scenario.
+
+Table 1
+Computational costs of different RG methods.
+Method
+
+Computational time (s)
+
+Decentralized decision-making
+
+Centralized decision-making
+
+S-MPC
+
+MADRL
+
+C-MPC
+
+CL-MPC
+
+4.172
+
+0.002
+
+120.168
+
+47.156
+
+across the entirety of the network. This further highlights the point that solely prioritizing individual user benefits is not an optimal
+strategy for effectively alleviating traffic congestion across the entire network.
+Among the proposed model-based approaches, the CL-MPC method stands out, achieving a notably lower TTT of approximately
+593 h. In contrast, both S-MPC and C-MPC exhibit performance inferior to that of CL-MPC. This discrepancy could be attributed
+to the absence of collaboration and a dynamic mechanism in S-MPC and C-MPC, respectively. S-MPC calculates the optimal route
+based on the real-time decisions of the individual vehicle, which can lead to non-cooperative actions among the vehicles. On the
+other hand, while C-MPC incorporates a cooperative mechanism, its performance is limited due to the lack of an en-route routing
+mechanism.
+Concerning TTD, it is noteworthy that both the C-MPC and MA-SU approaches exhibit higher TTD values in comparison to
+the other methods (see Fig. 9(b)). This outcome can be attributed to the guidance principle that these approaches promote,
+wherein agents are directed without considering their private benefits. This principle aims to facilitate the smooth flow of traffic by
+accommodating vehicles in uncongested areas and ultimately striving for system-level optimality.
+Table 1 presents the computational costs associated with various methods. The computational cost for decentralized decisionmaking strategies (i.e. S-MPC and MADRL) is measured by the average CPU time an individual makes the decision, whereas, for
+centralized strategies (i.e. C-MPC and CL-MPC), it is the average CPU time the control centre makes decisions at control intervals.
+Notably, the MADRL approach stands out with the lowest computational cost, at just 0.002 s. This value is significantly lower than the
+computational demands of MPC-based methods. Note that the computational cost for MADRL is the time for decentralized execution
+rather than centralized training. MPC-based methods tend to require more time due to the necessity of obtaining predictions via
+simulation. Moreover, a distinction can be made between centralized methods (C-MPC and CL-MPC) and decentralized methods
+(S-MPC and MADRL) in terms of computational costs. The centralized approaches generally incur higher computational expenses.
+In addition, CL-MPC demonstrates a computational time of 47.856 s, but this should be viewed in the context of the information
+updating period, making it a reasonable computational cost in practical implementation.
+5.5. Impact of severe traffic congestion scenario
+This sub-section investigates the impact of severe traffic congestion on the guidance performance of the methods. In the tests
+for severely congested condition, the testing scenarios are modified by evenly increasing the average demand level. The demand
+profile for the congested scenarios is shown in Fig. 10(a). With high demand, the network becomes gridlock if no control is applied,
+as illustrated in Fig. 10(b).
+The implementation of RG leads to a notable enhancement in the overall traffic situation, observed in the results of all the
+methods. As reflected in Fig. 11(a), we provide a comparison of these methods in terms of TTT. Specifically, when we examine
+TTT performance, we observe that both S-MPC and I-UO exhibit similar, and less favourable, average TTT values, approximately
+amounting to 982.5 h. This places them in the category of the least efficient methods in terms of TTT among all the evaluated
+strategies. In contrast, MA-SU and CL-MPC emerge as the top-performing methods in terms of TTT. Notably, both of these strategies
+demonstrate commendable efficiency gains compared to the other approaches. While MA-SU achieves the lowest TTT, closely
+approaching approximately 932.5 h, CL-MPC does not lag far behind, with its lowest TTT also hovering around the same mark.
+19
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 10. Demand setting and the corresponding speed profile (no RG) with severe traffic congestion.
+
+Fig. 11. Performance of different RG strategies under severe congestion scenario.
+
+However, the key distinction lies in their average TTT values, where MA-SU outshines CL-MPC by a notable margin of roughly
+12 h, indicating a higher RG efficiency.
+Concerning the model-based methods, much like in the light congestion scenario, we observe a trend where the C-MPC approach
+exhibits slightly better performance in terms of average TTT, hovering at approximately 981 h, when compared to the S-MPC
+method. Nevertheless, it is crucial to recognize that the C-MPC approach achieves higher performance levels under certain conditions.
+Meanwhile, the CL-MPC method emerges as the frontrunner in terms of average TTT among the model-based methods. However, it
+comes with an associated caveat. The distribution of TTT values in the case of CL-MPC exhibits a wider spread, which contrasts with
+the narrower distribution observed for both S-MPC and C-MPC. This variance in TTT within the CL-MPC approach suggests that
+while it excels in terms of average performance, it might introduce a higher degree of variability in system performance, potentially
+leading to less predictable user experiences within the system.
+In the realm of reinforcement learning-based methods, a noteworthy trend emerges wherein the multi-agent strategies generally
+outperform their independent counterparts. This trend is particularly evident when considering TTT as the key performance metric.
+Specifically, the MA-UO approach achieves a slightly lower average TTT, approximately around 981 h, compared to the I-UO method.
+This not only signifies an improvement in the overall TTT performance but is complemented by a narrower distribution range of TTT
+values and a superior lowest TTT, suggesting a more consistent system performance. The MA-SU approach exhibits a distribution
+range of TTT that is comparable to that of the I-SU method. However, it stands out with the best average TTT among all the methods
+considered in this study. This emphasizes the effectiveness of multi-agent reinforcement learning in optimizing travel times within
+the multi-agent system.
+Furthermore, it is observed that the SU methods consistently outperform the UO methods when it comes to effectively mitigating
+traffic congestion across the network. This distinction is also prominently reflected in the TTT outcomes. For instance, the MA-SU
+approach boasts a TTT approximately 30 h lower than that of the I-SU method, highlighting the gains achieved by prioritizing
+system utility mechanisms. Similarly, the MA-UO method outperforms the I-UO approach by approximately 13 h in terms of TTT,
+further underlining the effectiveness of the SU reward over the UO reward when it comes to enhancing traffic flow and reducing
+network congestion.
+20
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 12. Influence of the trade-off parameter (𝛽1 ).
+
+Fig. 11(b) illustrates the TTD performance in the congested case. Similar to the scenario with lower congestion levels, both the
+CL-MPC and MA-SU methods tend to exhibit elevated average TTD values, measuring approximately 10,110 km and 10,185 km,
+respectively. This observation suggests that, in the context of a congested network, some vehicles also find it necessary to opt for
+longer travel distances to mitigate network congestion. However, this strategic choice forces them to circumvent areas characterized
+by severe congestion, contributing to a longer trip in the face of adverse traffic conditions.
+5.6. Influence of the trade-off parameter
+The examination of balance reward is a key focus of this section, achieved by adjusting the trade-off parameter 𝛽1 . Fig. 12(a)
+provides an insightful visualization of the TTT values obtained through the multi-agent reinforcement learning algorithm, paired
+with the corresponding trade-off parameter 𝛽1 . This figure demonstrates that the lowest average TTT value, approximately 588 h,
+is attained when 𝛽1 = 0, signifying the application of the SU reward. Conversely, the largest average TTT value, around 605 h, is
+observed when 𝛽1 = 1, corresponding to the UO reward. This outcome aligns with expectations, confirming that the utilization of
+the SU reward (𝛽1 = 0) results in the most favourable average TTT performance.
+Additionally, it is important to highlight that there is a discernible trend wherein TTT tends to increase as the value of 𝛽1
+increases. As the trade-off parameter 𝛽1 increases, more weight is put on the user-oriented purpose, thereby reducing the TTT
+performance.
+The investigation also extends to the changes in trip length induced by the trade-off process. Fig. 12(b) provides a visual
+representation of the TTD obtained through the proposed multi-agent algorithm in correlation with the trade-off parameter 𝛽1 ,
+denoted as MA-B. In this figure, it is evident that the largest TTD, approximately 7564 km, materializes when 𝛽1 = 0, aligning with
+the application of the SU reward. Conversely, the lowest TTD value, around 7540 km, emerges when 𝛽1 = 1, corresponding to the
+UO reward. This outcome emphasizes the anticipated behaviour, where employing the SU reward results in the trade-off where
+some vehicles experience a sacrifice in their trip length. In general, a counter-trend pattern becomes apparent when examining the
+TTD curve. Unlike the TTT values, the TTD exhibits a reverse relationship with the trade-off parameter 𝛽1 : as 𝛽1 increases, the TTD
+tends to decrease.
+Fig. 13 provides a visual representation of the relationship between TTT and TTD for various methods. The solid black curve
+represents the set of the results from the multi-agent reinforcement learning method utilizing the balance reward with different
+trade-off parameters, denoted as MA-B. The scatters represent the results from the other proposed methods.
+As illustrated, among the examined methods, MA-B is the one that yields results aligned with the Pareto frontier formed by the
+black curve plotted by connecting the results of MA-B. This highlights its ability to balance both TTT and TTD effectively. I-UO is
+roughly on the extension of the Pareto frontier, while C-MPC is slightly away from the curve. However, it does not mean C-MPC has a
+desired performance, as the objective of C-MPC is to minimize TTT. While being close to the Pareto frontier, C-MPC faces challenges
+in reaching the lowest possible TTT value due to the absence of an en-route rerouting mechanism. This limitation underscores the
+importance of adaptability and dynamic adjustments in achieving minimal TTT. In addition, I-UO, aligning with its user-oriented
+objective, prioritizes individual user benefits. Consequently, it succeeds in achieving a relatively low TTD but at the expense of a
+higher TTT.
+In contrast, CL-MPC, I-SU, and S-MPC do not reach the Pareto frontier due to the non-cooperative nature of the vehicles involved.
+Thus, the results obtained from S-MPC, C-MPC, CL-MPC, and I-SU can be considered dominated solutions when compared to the
+MA-B and the I-UO approaches. This observation implies that the independent method is better suited for the UO reward, whereas
+it may not be as suitable for SU purposes, which emphasizes the overall system efficiency.
+21
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Fig. 13. TTT and TTD under different RG strategies.
+
+6. Conclusions
+This paper puts an effort to address the regional RG problem with realistic compliance patterns using different solution
+approaches, namely MPC-based and deep reinforcement learning-based approaches. The objective is to design an RG framework for
+mitigating traffic congestion or minimizing private travel cost while taking into account realistic driver behaviour (i.e., compliance
+patterns) at the network level. A trip-based multi-reservoir transmission model is presented as the prediction model for the
+MPC-based approach. Three different RG strategies (so-called single-agent, cooperative, and congestion level-based strategies) are
+proposed with the objective of minimizing total travel time. Meanwhile, a MADRL-based approach with different rewards (so-called
+user-oriented, system-utility, and balance rewards) is also developed, taking into account the vehicle collaboration. The numerical
+results demonstrate that the proposed approaches can account for realistic driver compliance and improve traffic throughput under
+both lightly and severely congested scenarios. Specifically, the congestion level-based strategy in MPC-based approach and the
+MADRL-based approach with the SU reward yield better performance in terms of minimizing network congestion. These results
+provide strong evidence of the efficacy of the proposed frameworks in regional RG applications.
+In addition, the MADRL-based approach with the balance reward is designed to strike a balance between the increment of drivers’
+trip costs and the total travel time. The numerical results under different trade-off parameters demonstrate a contrast between total
+travel distances and total travel times, which implies that the minimization of network congestion will increase users’ travel costs.
+By using the MADRL-based approach with the balance reward, it might prevent the unacceptable sacrifice of RG users in order to
+alleviate network congestion. This potentially increases the drivers’ willingness to comply by compromising system utility to some
+extent. Besides, in the RG problem considering compliance patterns, compliant vehicles might encounter a disadvantage compared
+to non-compliant ones due to the inability to freely choose the desired routes. This, as a consequence, could potentially lead to a
+lower overall compliance rate. Therefore, addressing this gap is a crucial direction for the practical implementation of proposed
+strategies. One potential solution could be adopting reward and penalty strategies, akin to congestion pricing or tradable credit
+systems (Krabbenborg et al., 2020; Servatius et al., 2023), which is the authors’ on-going research.
+Finally, the current work also lays a foundation for some future research to further advance the field.
+• A precise estimation of the NMFD is crucial for obtaining desirable results in the proposed approaches. A well-defined
+NMFD provides the agents with reliable traffic information, which enhances the robustness of the model prediction and
+the reinforcement learning training process. Understanding how to accurately obtain the NMFD in real-world scenarios is
+an important step towards achieving effective results.
+• Optimizing the algorithmic design of the MADRL framework is the key to enhancing the training efficiency and generalization
+capability. Incorporating advanced deep learning techniques can better capture the complex, short and long-term variations
+in driving behaviour, thus realizing the practical potential of the approach.
+• It is necessary to implement the proposed frameworks in different realistic scenarios to determine their applicability
+comprehensively. The current trip-based model used for testing the algorithm has certain limitations, such as assuming equal
+route lengths between all region pairs and considering only one vehicle class. These assumptions may hinder the test bed
+model’s ability to depict traffic evolution in reality accurately. Further testing and validation of the algorithms in a more
+realistic network environment are necessary to assess effectiveness fully.
+22
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+Table A.2
+Notation.
+Symbol
+
+Definition
+
+Unit
+
+Time step
+Vehicle index
+Region index
+𝑐 − : Upstream region of 𝑐
+𝑐 + : Downstream region of 𝑐
+𝑐 ∗ , 𝑐 +∗ : Centroid of regions 𝑐 and 𝑐 + , respectively
+Total number of vehicles in the network
+𝑁𝑐 : Number of vehicles in region 𝑐
+Time when vehicle 𝑥 starts and ends its trip, respectively
+Time when vehicle 𝑥 at centroid 𝑐 ∗ , boundary between 𝑐 and 𝑐 + , and centroid 𝑐 +∗ , respectively
+Speed-NMFD of region 𝑐
+Trip length of vehicle 𝑥 from region 𝑐 to 𝑐 +
+∗ +∗
+𝐿𝑐𝑥 ,𝑐 : Trip length of vehicle 𝑥 from centroid 𝑐 ∗ to 𝑐 +∗
+Path of vehicle 𝑥
+P𝑥(1) , P𝑥(−2) : First and the second last elements in the path, respectively
+Cumulative distribution function of trip length
+𝑓 (.): Probability density function of 𝐹 (.)
+Demand from region 𝑐 with destination to region 𝑗
+Outflow from region 𝑐 − to 𝑐
+Transfer flow from region 𝑐 − to 𝑐
+Space of region 𝑐 for the vehicles from region 𝑐 −
+Average trip length in region 𝑐
+Average speed of vehicles in region 𝑐 for the critical accumulation
+Critical accumulation and gridlock accumulation in region 𝑐
+Objective functions of the MPC-based methods
+J S : Objective functions of the single-agent method
+J C : Objective functions of the cooperative method
+J CL : Objective functions of the congestion level-based method
+Prediction horizon
+Index of congestion level in region 𝑐
+Travel cost of vehicle 𝑥 from region 𝑐 to region 𝑐 +
+Set of the indexes of congestion levels in the network
+Set of regional accumulation
+Regional speed set
+Inflow set
+Extra trip cost ratio of agent 𝑖
+𝜁max,𝑖 : Maximum extra trip cost ratio of agent 𝑖
+Trip length travelled and shortest trip length of agent 𝑖, respectively
+Travel cost of agent i
+
+–
+–
+–
+–
+–
+–
+veh
+veh
+–
+–
+–
+m
+m
+–
+–
+–
+–
+veh/s
+veh/s
+veh/s
+veh/s
+m
+m/s
+veh
+–
+–
+–
+–
+–
+–
+s
+–
+–
+–
+–
+s
+–
+m
+s
+
+Traffic-related
+𝑡
+𝑥
+𝑐
+
+𝑁
+𝑡0,𝑥 , 𝑡𝑥
+∗
++
++∗
+𝑡𝑐𝑥 , 𝑡𝑐𝑐
+, 𝑡𝑐𝑥
+𝑥
+𝑣𝑐 (.)
++
+𝐿𝑐,𝑐
+𝑥
+P𝑥
+
+𝐹 (.)
+𝐷𝑐,𝑗
+𝐻𝑐 − ,𝑐
+𝐻̂ 𝑐 − ,𝑐
+𝑆𝑐,𝑐 −
+𝐿(𝑐)
+𝑣cri,𝑐
+𝑁cri,𝑐 , 𝑁jam,𝑐
+J
+
+𝛺
+𝐺𝑐
++
+𝐺̃ 𝑐,𝑐
+𝑥
+
+𝑮
+𝑵
+𝑽
+𝑫
+𝜁𝑖
+𝑇 𝐿𝑇𝑖 , 𝑆𝑇 𝐿𝑖
+𝑢𝑖
+
+Deep reinforcement learning-related
+
+
+
+
+𝒂
+
+𝑃
+𝛾
+𝑟uo,𝑖
+𝑟dif,𝑖
+𝐺(𝑠′ ), 𝐺(𝑠′ − 𝑖)
+𝑟fair,𝑖
+𝑟stay,𝑖
+𝜌1
+𝜌2
+𝑟su,𝑖
+𝑟to,𝑖
+𝛽1
+
+Set of agents, indexed by 𝑖 ∈ {1, 2, … , 𝐼}, 𝐼 = ||
+Environment state space
+Observation space
+𝑖 : Private observation space of agent 𝑖, 𝑖 ∈ 
+Action space
+𝑖 : Action space of agent i, 𝑖 ∈ 
+Joint action of all agents, 𝒂 = (𝑎1 , 𝑎2 , … 𝑎𝑖 , … , 𝑎𝐼 ), 𝑎𝑖 ∈ 𝑖
+Reward function
+𝑖 : Reward function of agent 𝑖, 𝑖 ∈ 
+State transition probability
+Discount factor
+User-oriented reward for agent 𝑖
+Difference reward for agent 𝑖
+Global reward of the system at state 𝑠′ with and without the influence of agent 𝑖, respectively
+Fairness limit for agent 𝑖
+Stay penalty for agent 𝑖
+Fairness parameter for the system-utility reward
+Scaling parameter for the system-utility reward
+System-utility reward for agent 𝑖
+Balance reward for agent 𝑖
+Trade-off parameter, 𝛽1 ∈ [0, 1]
+
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+(continued on next page)
+
+• Associating the current frameworks with link-level routes using a hierarchical framework could enhance its practicality by
+providing more detailed guidance information to drivers, which could lead to improved traffic management performance and
+increased adoption of the system in realistic networks.
+23
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+Table A.2 (continued).
+
+Scaling hyper-parameter for the balance reward
+Policy for selecting outboard link
+Q network of policy 𝜋𝑖 for agent 𝑖
+Weight parameter in agent neural networks, 𝜽 = (𝜃1 , 𝜃2 , … , 𝜃𝐼 )
+Average Q value for the agent set {1,2, . . . ,I}
+Loss function for training 𝜃𝑖
+One-step target of agent 𝑖
+Q value of the target network 𝑄̃ 𝜋𝑖
+Mini-batch size
+
+𝛽2
+𝜋
+𝑄𝜋𝑖
+𝜽
+𝑄̃
+L̃ (𝜃𝑖 )
+𝑦̃𝑖
+𝑄̃ −𝐼
+𝐵
+
+–
+–
+–
+–
+–
+–
+–
+–
+–
+
+Table B.3
+Acronyms and abbreviations.
+Abbreviation
+
+Definition
+
+C-MPC
+CL-MPC
+CL-MPC-5
+CL-MPC-10
+CL-MPC-15
+DRL
+I-SU
+I-UO
+MADRL
+MA-B
+MA-SU
+MA-UO
+MPC
+NMFD
+RG
+𝑆𝑇 𝐿
+SU
+S-MPC
+𝑇𝑇𝐷
+𝑇 𝐿𝑇
+𝑇𝑇𝑇
+UO
+
+Cooperative MPC method
+Congestion Level-based MPC method
+Congestion Level-based MPC method with 5 min updating period
+Congestion Level-based MPC method with 10 min updating period
+Congestion Level-based MPC method with 15 min updating period
+Deep Reinforcement Learning
+Independent deep Q-learning method with the System-Utility reward
+Independent deep Q-learning method with the User-Oriented reward
+Multi-Agent Deep Reinforcement Learning
+Multi-Agent deep Q-learning method with the Balance reward
+Multi-Agent deep Q-learning method with the System-Utility reward
+Multi-Agent deep Q-learning method with the User-Oriented reward
+Model Predictive Control
+Network Macroscopic Fundamental Diagram
+Route Guidance
+Shortest Trip Length of an agent
+System-Utility
+Single-agent MPC method
+Total Travel Distance
+Trip Length Travelled of an agent
+Total Travel Time
+User-Oriented
+
+• Additionally, using the hierarchical framework may also provide more comprehensive insights into how the agents respond
+to different traffic scenarios, thereby further enhancing the practicality and versatility of the proposed framework.
+CRediT authorship contribution statement
+Shang Jiang: Conceptualization, Formal analysis, Investigation, Methodology, Software, Writing – original draft, Writing –
+review & editing. Cong Quoc Tran: Conceptualization, Formal analysis, Investigation, Methodology, Writing – original draft, Writing
+– review & editing. Mehdi Keyvan-Ekbatani: Conceptualization, Formal analysis, Funding acquisition, Investigation, Methodology,
+Project administration, Supervision, Validation, Writing – original draft, Writing – review & editing.
+Acknowledgment
+This work is partially funded by the project HINT supported by the Catalyst: Strategic Fund from Government Funding,
+administered by the Ministry of Business Innovation and Employment, New Zealand.
+Appendix A. Summary of notations
+See Table A.2.
+Appendix B. Summary of abbreviations
+See Table B.3.
+
+24
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+References
+Aboudolas, K., Geroliminis, N., 2013. Perimeter and boundary flow control in multi-reservoir heterogeneous networks. Transp. Res. B 55, 265–281.
+Al Mallah, R., Quintero, A., Farooq, B., 2017. Distributed classification of urban congestion using VANET. IEEE Trans. Intell. Transp. Syst. 18 (9), 2435–2442.
+Arnott, R., 2013. A bathtub model of downtown traffic congestion. J. Urban Econ. 76, 110–121.
+Arnott, R., Buli, J., 2018. Solving for equilibrium in the basic bathtub model. Transp. Res. B 109, 150–175.
+Bagloee, S.A., Sarvi, M., Patriksson, M., Rajabifard, A., 2017. A mixed user-equilibrium and system-optimal traffic flow for connected vehicles stated as a
+complementarity problem. Comput.-Aided Civ. Infrastruct. Eng. 32 (7), 562–580.
+Balzer, L., Ameli, M., Leclercq, L., Lebacque, J.-P., 2023. Dynamic tradable credit scheme for multimodal urban networks. Transportation Research Part C:
+Emerging Technologies 149, 104061.
+Bell, M.G., 2009. Hyperstar: A multi-path astar algorithm for risk averse vehicle navigation. Transp. Res. B 43 (1), 97–107.
+Chabini, I., Lan, S., 2002. Adaptations of the a* algorithm for the computation of fastest paths in deterministic discrete-time dynamic networks. IEEE Trans.
+Intell. Transp. Syst. 3 (1), 60–74.
+Chai, H., Zhang, H.M., Ghosal, D., Chuah, C.-N., 2017. Dynamic traffic routing in a network with adaptive signal control. Transp. Res. C 85, 64–85.
+Chang, I.-C., Tai, H.-T., Yeh, F.-H., Hsieh, D.-L., Chang, S.-H., 2013. A vanet-based a* route planning algorithm for travelling time-and energy-efficient gps
+navigation app. Int. J. Distrib. Sens. Netw. 9 (7), 794521.
+Chen, C., Huang, Y., Lam, W., Pan, T., Hsu, S., Sumalee, A., Zhong, R., 2022. Data efficient reinforcement learning and adaptive optimal perimeter control of
+network traffic dynamics. Transp. Res. C 142, 103759.
+Chen, P.W., Nie, Y.M., 2015. Stochastic optimal path problem with relays. Transp. Res. Procedia 7, 129–148.
+Chu, T., Wang, J., Codecà, L., Li, Z., 2019. Multi-agent deep reinforcement learning for large-scale traffic signal control. IEEE Trans. Intell. Transp. Syst. 21 (3),
+1086–1095.
+Daganzo, C.F., 2007. Urban gridlock: Macroscopic modeling and mitigation approaches. Transp. Res. B 41 (1), 49–62.
+De Souza, F., Carlson, R.C., Müller, E.R., Ampountolas, K., 2020. Multi-commodity traffic signal control and routing with connected vehicles. IEEE transactions
+on intelligent transportation systems 23 (5), 4111–4121.
+De Souza, A.M., Yokoyama, R.S., Boukerche, A., Maia, G., Cerqueira, E., Loureiro, A.A., Villas, L.A., 2016. ICARUS: Improvement of traffic condition through
+an alerting and re-routing system. Comput. Netw. 110, 118–132.
+Dijkstra, E.W., et al., 1959. A note on two problems in connexion with graphs. Numer. Math. 1 (1), 269–271.
+Ding, H., Guo, F., Zheng, X., Zhang, W., 2017. Traffic guidance–perimeter control coupled method for the congestion in a macro network. Transp. Res. C 81,
+300–316.
+Du, L., Han, L., Chen, S., 2015. Coordinated online in-vehicle routing balancing user optimality and system optimality through information perturbation. Transp.
+Res. B 79, 121–133.
+Du, J., Rakha, H., Gayah, V.V., 2016. Deriving macroscopic fundamental diagrams from probe data: Issues and proposed solutions. Transp. Res. C 66, 136–149.
+Fan, Y., Kalaba, R., Moore Ii, J., 2005. Shortest paths in stochastic networks with correlated link costs. Comput. Math. Appl. 49 (9–10), 1549–1564.
+Farver, J., Chabini, I., 2003. Hybrid vehicle-centric route guidance. IFAC Proc. Vol. 36 (14), 149–154.
+Fu, H., Chen, S., Chen, K., Kouvelas, A., Geroliminis, N., 2021. Perimeter control and route guidance of multi-region mfd systems with boundary queues using
+colored petri nets. IEEE Transactions on Intelligent Transportation Systems 23 (8), 12977–12999.
+Fu, Y., Li, C., Yu, F.R., Luan, T.H., Zhang, Y., 2021b. Hybrid autonomous driving guidance strategy combining deep reinforcement learning and expert system.
+IEEE Trans. Intell. Transp. Syst. 23 (8), 11273–11286.
+Gao, S., Chabini, I., 2006. Optimal routing policy problems in stochastic time-dependent networks. Transp. Res. B 40 (2), 93–122.
+Gayah, V.V., Dixit, V.V., 2013. Using mobile probe data and the macroscopic fundamental diagram to estimate network densities: Tests using microsimulation.
+Transp. Res. Rec. 2390 (1), 76–86.
+Geroliminis, N., Daganzo, C.F., 2008. Existence of urban-scale macroscopic fundamental diagrams: Some experimental findings. Transp. Res. B 42 (9), 759–770.
+Geroliminis, N., Haddad, J., Ramezani, M., 2013. Optimal perimeter control for two urban regions with macroscopic fundamental diagrams: A model predictive
+approach. IEEE Trans. Intell. Transp. Syst. 14 (1), 348–359.
+Grunitzki, R., de Oliveira Ramos, G., Bazzan, A.L.C., 2014. Individual versus difference rewards on reinforcement learning for route choice. In: 2014 Brazilian
+Conference on Intelligent Systems. IEEE, pp. 253–258.
+Guo, C., Li, D., Zhang, G., Zhai, M., 2018. Real-time path planning in urban area via vanet-assisted traffic information sharing. IEEE Trans. Veh. Technol. 67
+(7), 5635–5649.
+Haddad, J., 2017. Optimal perimeter control synthesis for two urban regions with aggregate boundary queue dynamics. Transp. Res. B 96, 1–25.
+Hajiahmadi, M., Knoop, V.L., De Schutter, B., Hellendoorn, H., 2013. Optimal dynamic route guidance: A model predictive approach using the macroscopic
+fundamental diagram. In: 16th International IEEE Conference on Intelligent Transportation Systems (ITSC 2013). IEEE, pp. 1022–1028.
+Hart, P.E., Nilsson, N.J., Raphael, B., 1968. A formal basis for the heuristic determination of minimum cost paths. IEEE Trans. Syst. Sci. Cybern. 4 (2), 100–107.
+Hayes, S., Wang, S., Djahel, S., 2020. Personalized road networks routing with road safety consideration: A case study in manchester. In: 2020 IEEE International
+Smart Cities Conference (ISC2). IEEE, pp. 1–6.
+Hegyi, A., De Schutter, B., Hellendoorn, H., 2005. Model predictive control for optimal coordination of ramp metering and variable speed limits. Transp. Res.
+C 13 (3), 185–209.
+Hou, Z., Lei, T., 2020. Constrained model free adaptive predictive perimeter control and route guidance for multi-region urban traffic systems. IEEE Transactions
+on Intelligent Transportation Systems 23 (2), 912–924.
+Hryhoryeva, M., Leclercq, L., 2023. Competition in ride-hailing service operations: Impacts on travel distances and service performance. Transp. Res. Rec.
+03611981231171155.
+Huang, B., Wu, Q., Zhan, F., 2007. A shortest path algorithm with novel heuristics for dynamic transportation networks. Int. J. Geogr. Inf. Sci. 21 (6), 625–644.
+Jeong, J., Jeong, H., Lee, E., Oh, T., Du, D.H., 2015. SAINT: Self-adaptive interactive navigation tool for cloud-based vehicular traffic optimization. IEEE Trans.
+Veh. Technol. 65 (6), 4053–4067.
+Ji, S., Wang, Z., Li, T., Zheng, Y., 2020. Spatio-temporal feature fusion for dynamic taxi route recommendation via deep reinforcement learning. Knowl.-Based
+Syst. 205, 106302.
+Jiang, S., Keyvan-Ekbatani, M., 2023. Hybrid perimeter control with real-time partitions in heterogeneous urban networks: An integration of deep learning and
+MPC. Transp. Res. C 154, 104240.
+Johari, M., Jiang, S., Keyvan-Ekbatani, M., Ngoduy, D., 2023. Mode differentiation in partitioning of mixed bi-modal urban networks. Transp. B 11 (1), 463–485.
+Johari, M., Keyvan-Ekbatani, M., Leclercq, L., Ngoduy, D., Mahmassani, H.S., 2021. Macroscopic network-level traffic models: Bridging fifty years of development
+toward the next era. Transp. Res. C 131, 103334.
+Keyvan-Ekbatani, M., Carlson, R.C., Knoop, V.L., Papageorgiou, M., 2021. Optimizing distribution of metered traffic flow in perimeter control: Queue and delay
+balancing approaches. Control Eng. Pract. 110, 104762.
+Keyvan-Ekbatani, M., Kouvelas, A., Papamichail, I., Papageorgiou, M., 2012. Exploiting the fundamental diagram of urban networks for feedback-based gating.
+Transp. Res. B 46 (10), 1393–1403.
+25
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Kingma, D.P., Ba, J., 2014. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980.
+Knoop, V., Hoogendoorn, S., Van Lint, J., 2012. Routing strategies based on macroscopic fundamental diagram. Transp. Res. Rec. 2315 (1), 1–10.
+Koh, S., Zhou, B., Fang, H., Yang, P., Yang, Z., Yang, Q., Guan, L., Ji, Z., 2020. Real-time deep reinforcement learning based vehicle navigation. Appl. Soft
+Comput. 96, 106694.
+Krabbenborg, L., Mouter, N., Molin, E., Annema, J.A., van Wee, B., 2020. Exploring public perceptions of tradable credits for congestion management in urban
+areas. Cities 107, 102877.
+Lamotte, R., Geroliminis, N., 2018. The morning commute in urban areas with heterogeneous trip lengths. Transp. Res. B 117, 794–810.
+Lamotte, R., Murashkin, M., Kouvelas, A., Geroliminis, N., 2018. Dynamic modeling of trip completion rate in urban areas with mfd representations. In: 2018
+TRB Annual Meeting Online. Transportation Research Board, pp. 18–06192.
+Leclercq, L., Geroliminis, N., 2013. Estimating MFDs in simple networks with route choice. Proc.-Soc. Behav. Sci. 80, 99–118.
+Leclercq, L., Ladino, A., Becarie, C., 2021. Enforcing optimal routing through dynamic avoidance maps. Transp. Res. B 149, 118–137.
+Leclercq, L., Sénécat, A., Mariotte, G., 2017. Dynamic macroscopic simulation of on-street parking search: A trip-based approach. Transp. Res. B 101, 268–282.
+Leduc, G., et al., 2008. Road traffic data: Collection methods and applications. Work. Pap. Energy Transp. Clim. Change 1 (55), 1–55.
+Lin, J., Yu, W., Yang, X., Yang, Q., Fu, X., Zhao, W., 2016. A real-time en-route route guidance decision scheme for transportation-based cyberphysical systems.
+IEEE Trans. Veh. Technol. 66 (3), 2551–2566.
+Lowe, R., Wu, Y.I., Tamar, A., Harb, J., Pieter Abbeel, O., Mordatch, I., 2017. Multi-agent actor-critic for mixed cooperative-competitive environments. Adv.
+Neural Inf. Process. Syst. 30.
+Mao, C., Shen, Z., 2018. A reinforcement learning framework for the adaptive routing problem in stochastic time-dependent network. Transp. Res. C 93, 179–197.
+Mariotte, G., Leclercq, L., 2019. Flow exchanges in multi-reservoir systems with spillbacks. Transp. Res. B 122, 327–349.
+Mariotte, G., Leclercq, L., Batista, S., Krug, J., Paipuri, M., 2020. Calibration and validation of multi-reservoir MFD models: A case study in lyon. Transp. Res.
+B 136, 62–86.
+Mariotte, G., Leclercq, L., Laval, J.A., 2017. Macroscopic urban dynamics: analytical and numerical comparisons of existing models. Transportation Research Part
+B: Methodological 101, 245–267.
+Masters, D., Luschi, C., 2018. Revisiting small batch training for deep neural networks. arXiv preprint arXiv:1804.07612.
+Matignon, L., Laurent, G.J., Le Fort-Piat, N., 2012. Independent reinforcement learners in cooperative markov games: a survey regarding coordination problems.
+Knowl. Eng. Rev. 27 (1), 1–31.
+Menelaou, C., Timotheou, S., Kolios, P., Panayiotou, C.G., 2021. Joint route guidance and demand management for real-time control of multi-regional traffic
+networks. IEEE Transactions on Intelligent Transportation Systems 23 (7), 8302–8315.
+Menelaou, C., Timotheou, S., Kolios, P., Panayiotou, C.G., 2023. Convexification approaches for regional route guidance and demand management with generalized
+mfds. Transportation Research Part C: Emerging Technologies 154, 104245.
+Miller-Hooks, E.D., Mahmassani, H.S., 2000. Least expected time paths in stochastic, time-varying transportation networks. Transp. Sci. 34 (2), 198–215.
+Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A.A., Veness, J., Bellemare, M.G., Graves, A., Riedmiller, M., Fidjeland, A.K., Ostrovski, G., et al., 2015. Human-level
+control through deep reinforcement learning. Nature 518 (7540), 529–533.
+Nie, Y.M., Wu, X., 2009. Shortest path problem considering on-time arrival probability. Transp. Res. B 43 (6), 597–613.
+Núñez, A., Cortés, C.E., Sáez, D., De Schutter, B., Gendreau, M., 2014. Multiobjective model predictive control for dynamic pickup and delivery problems. Control
+Eng. Pract. 32, 73–86.
+Osanaiye, O., Chen, S., Yan, Z., Lu, R., Choo, K.-K.R., Dlodlo, M., 2017. From cloud to fog computing: A review and a conceptual live vm migration framework.
+IEEE Access 5, 8284–8300.
+Puterman, M.L., 2014. Markov Decision Processes: Discrete Stochastic Dynamic Programming. John Wiley & Sons.
+Ramezani, M., Nourinejad, M., 2018. Dynamic modeling and control of taxi services in large-scale urban networks: A macroscopic approach. Transp. Res. C 94,
+203–219.
+Rasheed, F., Yau, K.-L.A., Noor, R.M., Wu, C., Low, Y.-C., 2020. Deep reinforcement learning for traffic signal control: A review. IEEE Access 8, 208016–208044.
+Ren, Y., Hou, Z., Sirmatel, I.I., Geroliminis, N., 2020. Data driven model free adaptive iterative learning perimeter control for large-scale urban road networks.
+Transportation Research Part C: Emerging Technologies 115, 102618.
+Rezaei, M., Noori, H., Razlighi, M.M., Nickray, M., 2019. Refocus+: Multi-layers real-time intelligent route guidance system with congestion detection and
+avoidance. IEEE Trans. Intell. Transp. Syst. 22 (1), 50–63.
+Rosyidi, L., Pradityo, H.P., Gunawan, D., Sari, R.F., 2014. Timebase dynamic weight for dijkstra algorithm implementation in route planning software. In: 2014
+International Conference on Intelligent Green Building and Smart Grid (IGBSG). IEEE, pp. 1–4.
+Schaul, T., Quan, J., Antonoglou, I., Silver, D., 2015. Prioritized experience replay. In: 4th International Conference on Learning Representations.
+Servatius, P., Loder, A., Provoost, J., Balzer, L., Cats, O., Leclercq, L., Hoogendoorn, S., Bogenberger, K., 2023. Trading activity and market liquidity in tradable
+mobility credit schemes. Transp. Res. Interdiscip. Perspect. 22, 100970.
+Shen, Y., Lee, J., Jeong, H., Jeong, J., Lee, E., Du, D.H., 2017. Saint+: Self-adaptive interactive navigation tool+ for emergency service delivery optimization.
+IEEE Trans. Intell. Transp. Syst. 19 (4), 1038–1053.
+Sirmatel, I.I., Geroliminis, N., 2017. Economic model predictive control of large-scale urban road networks via perimeter control and regional route guidance.
+IEEE Trans. Intell. Transp. Syst. 19 (4), 1112–1121.
+Sirmatel, I.I., Tsitsokas, D., Kouvelas, A., Geroliminis, N., 2021. Modeling, estimation, and control in large-scale urban road networks with remaining travel
+distance dynamics. Transp. Res. C 128, 103157.
+Song, Q., Wang, X., 2010. Efficient routing on large road networks using hierarchical communities. IEEE Trans. Intell. Transp. Syst. 12 (1), 132–140.
+Su, Z., Chow, A.H., Fang, C., Liang, E., Zhong, R., 2023. Hierarchical control for stochastic network traffic with reinforcement learning. Transp. Res. B 167,
+196–216.
+Sunehag, P., Lever, G., Gruslys, A., Czarnecki, W.M., Zambaldi, V., Jaderberg, M., Lanctot, M., Sonnerat, N., Leibo, J.Z., Tuyls, K., et al., 2017. Value-decomposition
+networks for cooperative multi-agent learning. arXiv preprint arXiv:1706.05296.
+Sutton, R.S., Barto, A.G., 2018. Reinforcement Learning: An Introduction. MIT Press.
+Tan, M., 1993. Multi-agent reinforcement learning: Independent vs. cooperative agents. In: Proceedings of the Tenth International Conference on Machine Learning.
+pp. 330–337.
+Tang, C., Hu, W., Hu, S., Stettler, M.E., 2020. Urban traffic route guidance method with high adaptive learning ability under diverse traffic scenarios. IEEE
+Trans. Intell. Transp. Syst. 22 (5), 2956–2968.
+Tseng, Y.-T., Ferng, H.-W., 2021. An improved traffic rerouting strategy using real-time traffic information and decisive weights. IEEE Trans. Veh. Technol. 70
+(10), 9741–9751.
+Tumer, K., Agogino, A., 2007. Distributed agent-based air traffic flow management. In: Proceedings of the 6th International Joint Conference on Autonomous
+Agents and Multiagent Systems. pp. 1–8.
+Van Der Pol, E., 2016. Deep reinforcement learning for coordination in traffic light control Master’s thesis. University of Amsterdam.
+Wang, J., Niu, H., 2019. A distributed dynamic route guidance approach based on short-term forecasts in cooperative infrastructure-vehicle systems. Transp. Res.
+D 66, 23–34.
+26
+
+Transportation Research Part C 158 (2024) 104440
+
+S. Jiang et al.
+
+Wang, J., Shi, Q., 2013. Short-term traffic speed forecasting hybrid model based on chaos–wavelet analysis-support vector machine theory. Transp. Res. C 27,
+219–232.
+Wang, J., Sun, L., 2020. Dynamic holding control to avoid bus bunching: A multi-agent deep reinforcement learning framework. Transp. Res. C 116, 102661.
+Wedde, H.F., Senge, S., 2013. BeeJamA: A distributed, self-adaptive vehicle routing guidance approach. IEEE Trans. Intell. Transp. Syst. 14 (4), 1882–1895.
+Wolpert, D.H., Kirshner, S., Merz, C.J., Tumer, K., 2000. Adaptivity in agent-based routing for data networks. In: Proceedings of the Fourth International
+Conference on Autonomous Agents. pp. 396–403.
+Yao, L., Wang, J., Wang, X., Chen, A., Wang, Y., 2017. V2X routing in a VANET based on the hidden Markov model. IEEE Trans. Intell. Transp. Syst. 19 (3),
+889–899.
+Yau, K.-L.A., Qadir, J., Khoo, H.L., Ling, M.H., Komisarczuk, P., 2017. A survey on reinforcement learning models and algorithms for traffic signal control. ACM
+Comput. Surv. 50 (3), 1–38.
+Yildirimoglu, M., Geroliminis, N., 2014. Approximating dynamic equilibrium conditions with macroscopic fundamental diagrams. Transp. Res. B 70, 186–200.
+Yildirimoglu, M., Sirmatel, I.I., Geroliminis, N., 2018. Hierarchical control of heterogeneous large-scale urban road networks via path assignment and regional
+route guidance. Transp. Res. B 118, 106–123.
+Ying, C.-s., Chow, A.H., Nguyen, H.T., Chin, K.-S., 2022. Multi-agent deep reinforcement learning for adaptive coordinated metro service operations with flexible
+train composition. Transp. Res. B 161, 36–59.
+Zheng, N., Geroliminis, N., 2016. Modeling and optimization of multimodal urban networks with limited parking and dynamic pricing. Transp. Res. B 83, 36–58.
+Zhou, D., Gayah, V.V., 2021. Model-free perimeter metering control for two-region urban networks using deep reinforcement learning. Transp. Res. C 124,
+102949.
+Zhou, D., Gayah, V.V., 2023. Scalable multi-region perimeter metering control for urban networks: A multi-agent deep reinforcement learning approach. Transp.
+Res. C 148, 104033.
+Zhou, B., Song, Q., Zhao, Z., Liu, T., 2020. A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion
+game. Appl. Math. Comput. 371, 124895.
+
+27
+
+

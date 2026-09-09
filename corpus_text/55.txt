@@ -1,0 +1,997 @@
+2025 International Conference on Computational,Communication and Information Technology (ICCCIT)
+
+2025 International Conference on Computational, Communication and Information Technology (ICCCIT) | 979-8-3315-1296-5/25/$31.00 ©2025 IEEE | DOI: 10.1109/ICCCIT62592.2025.10928029
+
+Deep Reinforcement Learning for Optimizing Route
+Planning in Urban Traffic
+Mudit Mittal
+Department of Computer Science &
+Engineering, Graphic Era Deemed to be
+University, Dehradun
+anuragshri76@gmail.com
+
+Archana Sehgal
+Lovely Professional University,
+Phagwara
+archna.sehgal36@gmail.com
+
+Neeraj Varshney
+Department of Computer Engineering and
+Applications, GLA University,
+Mathura
+neeraj.varshney@gla.ac.in
+
+Sunil Prashanth Kumar
+Department of Mechanical Engineering
+New Horizon College of Engineering,
+Bangalore
+sunilpk@newhorizonindia.edu
+
+Dr. Nandini Shirish Boob
+Saveetha School of
+Engineering, Saveetha Institute of Medical
+and Technical Sciences,
+Chennai, Tamilnadu
+nandiniboob@gmail.com
+
+R. Akhilesh Reddy
+Department of CSE-AI&ML,
+MLR Institute of Technology,
+Hyderabad, Telangana
+r.akhilesh@mlrinstitutions.ac.in
+
+Abstract— Urban traffic networks are efficient route design
+problems due to the intricacy and dynamic character of
+contemporary cities. Conventional methods hamper real time
+adjustment to continually changing traffic conditions, thereby
+providing suboptimal routes, a greater burden on the
+roadways, and greater air pollution. This thesis presents a
+novel deep reinforcement learning (DRL) method to optimize
+the route planning for urban traffic networks. With this
+rendering of real time traffic data, we use DRL to make
+autonomous decisions to reduce travel time and congestion of
+routes. One advantage of using sophisticated neural networks
+for feature extraction and policy learning is that, since the
+model is so adaptable to changing traffic patterns, the model
+guarantees that. And, in comparison to common routing
+algorithms, the results of simulations using real world traffic
+data show that this method is able to greatly enhance route
+efficiency and overall traffic flow management. The suggested
+DRL based system is feasible as a smart city program based
+on intelligent transportation system which can scale to grand
+metropolitan regions. The research presents that DRL can
+enhance the commuter run experience, reduce the
+environmental effect, and alter urban transportation. Future
+study will also investigate how this system can be better
+optimized when integrated with traffic infrastructure enabled
+by the Internet of Things.
+Keywords: Deep Reinforcement Learning, Route Planning,
+Urban Traffic, Traffic Optimization, Intelligent Transportation
+Systems.
+
+I.
+
+INTRODUCTION
+
+The growth of urbanization and increase of cars on the
+road make cities' networks highly crowded especially the
+road networks. Traffic congestion, as a major problem of
+urban mobility, has negative impact on travel time, fuel
+consumption, pollution and the quality of life [1]. Urban
+planners and politicians increasingly worry about optimal
+traffic flow, reduced congestion, and improved
+sustainability of the transportation system. Intelligent
+transportation systems (ITS) have gained promise as a
+means of enhancing traffic management for cities using
+cutting edge tech like AI and the Internet of Things (IoT)
+and machine learning (ML) [2].
+
+Route planning is the finding the best way that cars can
+get from point a to point b while keeping their carbon
+footprint down, their gas mileage up and trip time down —
+it is what is one of the biggest problems in city
+transportation. A limitation to traditional route planning
+algorithms such as A* and Dijkstra's algorithm [3] is the
+inability to adapt to changing traffic circumstances. In
+heavily populated areas with unpredictable traffic
+circumstances in real time, these techniques often lead to
+less than ideal route selections [4].
+Considering the recent progress in artificial intelligence
+(AI) and an increasing number of researchers using the
+reinforcement learning (RL) methods to improve urban
+traffic systems route planning, this problem appears to be a
+key research area. Reinforcement learning is well suited to
+describe the dynamic and unpredictable urban traffic
+network, letting agents learn optimum policies by
+interacting with the environment [5]. However, traditional
+RL algorithms are not capable of handling settings on a
+large scale and high dimensional state spaces [6] and their
+failure to achieve results in complex urban traffic situations.
+Deep reinforcement learning (DRL) is a powerful Unsol
+scheme that combines advantages of deep learning (DL)
+with RL and evades such constraints. Deep reinforcement
+learning (DRL) addresses high dimensional, large scales
+settings by approximatively solving the value function or
+policy through deep neural networks (DNNs) [7]. Hence,
+DRL enjoys applications in areas with complex decision
+making to be made in real time like autonomous driving,
+robotics and gaming [8]. DRL for urban traffic management
+presents the possibility for processing real time traffic data,
+for adapting to changing traffic patterns and for providing
+optimum route planning solutions with enhanced traffic
+flow and reduced congestion. Based on DRL, this research
+introduces a new method for improving the routing design
+on an urban traffic network.
+To reduce travel time, fuel consumption, as well as
+congestion, the proposed solution aims to develop a real
+time intelligent routing system that will change routes based
+on traffic conditions.The system collects data using GPS
+devices and (IoT) sensors and can provide users with
+
+979-8-3315-1296-5/25/$31.00 ©2025 IEEE
+578
+DOI:10.1109/ICCCIT.2025.96
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:30:59 UTC from IEEE Xplore. Restrictions apply.
+
+information on real time traffic conditions [10]. As an
+application of DRL to urban traffic infrastructure, the
+suggested model is an adaptable and a scalable solution for
+current urban contexts. This means it can continue to learn
+and get better and better at making routing choices.
+
+V, a brief review of the main points of the paper is shown
+and avenues for further study are suggested.
+II. LITERATURE REVIEW
+Efficiency of traffic flow in cities has been of great
+interest for researchers in the area of transportation for quite
+a long time. Traditional traffic management strategies, still
+reliant on static models and data from the past, were
+sometimes deficient at providing for the character of traffic
+in metropolitan areas which changes so rapidly. Improving
+efficiency in transportation networks and relieving
+congestion in today’s traffic congested cities require more
+importance in adaptive systems able to make choices online.
+To respond to this need of mining ML and AI techniques
+into traffic optimization and route planning [20].
+
+A number of papers have looked into the idea of
+optimizing route planning using RL. For example, Mousavi
+et al. [11] have created an algorithm based on Q learning for
+facilitating dynamic route planning within urban settings.
+They showed that RL is indeed able to optimize traffic flows
+by adapting to real time route optimization. It was only
+applicable to smaller transportation networks though as
+their method couldn't manage the complexity of larger
+metropolitan systems. For instance, Chen et al. [12] used a
+model-based RL algorithm to optimize traffic signal
+management, but the proposed system was not meant for
+real time route planning.
+
+The first focus of traffic management efforts were static
+routing techniques, with A* and Dijkstra's algorithm being
+used as examples. For the good thing, these techniques are
+all good in small, simple settings, but they can't make sense
+of the complexity of real world urban traffic systems, where
+roads are shut from time to time, accidents happen, and
+demand itself is varying all the time. Static algorithms do
+not take advantage of real time data (such as from GPS,
+traffic sensors or Internet of Things devices) to make the
+right running choices at the right time [21].
+
+Recent developments of DRL have suggested
+encouraging results to address these constraints. Li et al.
+[13] explored a simulation of an urban setting which found
+considerable reduction in traffic congestion through DRL
+based real time traffic signal regulation framework. This did
+not mean though, that DRL could not be used to make
+decisions in real time, but their research only looked at
+traffic signal management and not route planning. Another
+piece of research used DRL for vehicle routing in a big city
+traffic network, according to Liu et al. [14]. Their solution
+beat previous algorithms for reducing travel time and
+congestion, and shows that DRL is scalable to traffic
+optimization in cities.
+
+When AI and ML developed, scientists started thinking
+about ways to optimize traffic flow with data methods.
+Machine learning model's capability to learn in massive
+datasets and produce forecast based on the present state of
+traffic is enabling more adaptive traffic management
+systems. Reinforcement learning (RL), which is a method
+of machine learning in which an agent learns the best course
+of action by seeing and responding to their environment, is
+an important method. RL based approaches have able to
+enhance traffic management by enabling systems to adjust
+to the real time circumstances [22]. However, as is typical
+of urban traffic systems with high dimensions and
+continuous space, conventional RL methods fail when
+applied [23].
+
+Incorporating real-time traffic data and IoT enabled
+infrastructure into the DRL reduces our likelihood of
+obtaining a suboptimal solution by utilizing real-time
+information. That’s where our method comes in. In contrast
+to existing routing algorithms which rely on static or
+historical traffic data [15], our system is more effective at
+resulting in lower travel time and congestion in dynamic
+urban areas, as it adjusts continuously to real time traffic
+conditions [16]. Besides being practical, the proposed
+approach addresses some of the social and ethical issues
+associated with urban mobility.
+
+To deal with these restrictions, researchers have taken
+refuge in deep reinforcement learning (DRL). RL with deep
+neural networks (DNNs) is known as DRL because DRL
+integrates with RL to handle largescale environments and
+approximate complicated functions [24]. In many
+disciplines, such as autonomous driving, robotics, and
+gaming, decision making is necessary in uncertain and
+dynamic contexts, and DRL has been applied to
+successfully solve such problems [25]. In applied to the
+problem urban traffic management, we show that DRL can
+significantly improve route planning by integrating real
+time traffic data and progressively improving predictions.
+
+Traffic congestion is negatively impacting pollutants in
+the air, emissions of greenhouse gases and energy usage
+[17]. We hope that our approach can contribute to the
+greater sustainability of urban transportation systems and
+better user experience by improving route planning and
+reducing traffic congestion [18]. Furthermore, when using
+AI &DRL to manage urban traffic, there are massive ethical
+questions of privacy of data, justice and responsibility. The
+legitimacy of AI driven transportation systems depends
+upon transparency, equity, and alignment with society
+values [19].
+
+Several research has been conducted of the use of RL
+and DRL for optimizing traffic. Mousavi et al. [26] applied
+Q learning, a version of RL for urban dynamic route
+planning. They found that traffic flow could be improved
+when compared to more conventional methods. Their
+method, though, can’t scale to large traffic networks
+because the RL model is computationally expensive.
+Moreover, Weietal. [27] also used a DRL model to optimize
+traffic signal regulation in a simulated urban setting.
+Together these findings show the promise of DRL for real-
+
+Here is the outline for the rest of the paper: Section II
+describes in depth the use of DRL framework in the urban
+systems route planning, including the route planning in the
+urban traffic systems. Finally, in Section III, we describe the
+experimental setup and simulate the results showing how
+traffic flow and the route planning can be improved using
+the shown strategy. Section IV explores potential future
+approaches for integrating DRL with smart city projects and
+outlines the practical consequences of our results. In section
+
+579
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:30:59 UTC from IEEE Xplore. Restrictions apply.
+
+time decision making in traffic systems, which can
+drastically reduce average waiting times at crossings.
+However, the focus of these investigations has not been on
+route planning, but on traffic signal control. In this work,
+Liu et al. [28] used DRL to investigate vehicle routing in big
+metropolitan traffic networks. Through the use of real time
+traffic data, their method improved traffic flow and
+decreased travel times by teaching the agent which of the
+routes to take. In this pioneering work, DRL was shown for
+scalability of DRL for urban traffic systems by applying
+DRL to large scale route design. Unfortunately, however,
+the computational expenses and long training period of the
+model severely restricted its practical use [29].
+
+obstacles remain. In high dimensional, large scale urban
+settings, the computational complexity of training DRL
+models is particularly prohibitive. Additionally, real world
+traffic data is typically imperfect with noise, and may
+adversely impact DRL model performance. To solve these
+problems [38], more study in making DRL algorithms more
+efficient and resilient to real time traffic control is needed.
+Mixing DRL with 5G, edge computing, and blockchain may
+uncover further ways to make AI driven traffic systems
+more secure and scalable [39].
+II.
+
+METHODOLOGY
+
+This research uses a Deep Reinforcement Learning
+(DRL) approach to improve urban traffic networks’ route
+planning. This traffic model has roadways as edges and
+junctions as nodes. To go about it, the main goal is to find
+an optimal route that requires the least amount of time and
+side stepping the heavier traffic. A practical approach to
+tackle this issue is using DRL. This technology enables
+smart agents to learn the optimal paths by bringing real time
+traffic information from several sources: the sensors in
+internet of things (IoT), GPS devices, Traffic control system
+etc. Data from traffic cameras, GPS devices and Internet of
+Things (IoT) sensors are culled into preprocessed data.
+Before this data can be fed into the model, it is cleaned,
+removing noise and filling in any missing information, just
+before this data is entered into the model. Because it is
+updated with real time data regarding traffic conditions, the
+DRL model is able to adapt routes for minimizing travel
+time and congestion in real time.
+
+In addition to the above mentioned, other recent research
+investigated ways to integrate DRL for the Internet of
+Things. To optimize routes in real time, Zhang et al [30]
+proposed an (IoT) smart transportation system that uses
+DRL.So that the DRL model could make educated
+judgments about route planning, it had collected traffic data
+(from IoT) sensors installed across the entire city. This
+method did a great job in reducing travel time and
+congestion, however this came at a cost of losing data
+privacy and security, since those collecting and processing
+huge amounts of data from the Internet of Things, generally
+have their own reasons for collecting and wanting to process
+said information, and there are rights not to be abused [31].
+In recent years, transparency in justice concerns have
+become paramount over AI driven traffic systems. For
+example, Taddeo and Floridi [32]’s research acknowledges
+some of the prejudice against which AI models could be
+vulnerable and what this amounts to when used against
+commuter categories. All of a sudden, the consideration
+becomes all the more important when you’re trying to
+optimize traffic flow: Judgments made by AI systems may
+have outsized impact on specific parts of a city. Fairness is
+needed to gain public confidence and give the promise of
+fair results to all using the road, by means of AI driven
+traffic optimization systems [33].
+
+Figure 1: Architecture of AI-Driven Predictive Maintenance System in
+Smart Transportation
+
+There have been several research around enhancing the
+performance of DRL models for traffic management. Li et
+al. [34] reduced the training duration of the traffic
+optimization models by a DRL based approach that
+implements transfer learning. When trying out new
+situations, their method allowed models to learn from the
+past mistakes. The method demonstrated the potential for
+reducing the processing requirements for DRL for traffic
+control purposes. Nakamura and Watanabe [35] also
+proposed an adaptive DRL, learning rate of which varied
+according to traffic conditions.
+
+III.
+
+RESULT AND DISCUSSION
+
+The suggested system for optimizing route planning in
+urban traffic using Deep Reinforcement Learning (DRL),
+was evaluated via a series of simulations in a large scale
+urban setting. Apart from a baseline RL method, we test our
+system with standard routing methods such as A* and
+Dijkstra's algorithm. The DRL model also performs better
+compared to these alternatives for reducing travel time,
+managing congestion and scalability.
+A. 1. KPIs for Performance
+Here are the primary metrics that were used to measure
+the system's performance:
+
+Recent studies have addressed hybrid models, that
+combine DRL with other AI methods. Sun et al. [36] used
+DRL in conjunction with genetic algorithms for better
+solution space exploration in urban traffic optimization, for
+example. This hybrid model alleviated congestion more
+efficiently than solo DRL models did. In another research
+by Xie et al. [37], traffic networks’ spatial interdependence
+were captured with DRL and graph neural networks
+(GNNs). Their method improved the precision of traffic
+forecasts to enable the design of more effective route in
+complicated urban settings.
+
+As a result of the DRL based approach the average trip
+time was substantially reduced from the baseline
+approaches. The system was able to adapt routes on the fly
+to real time traffic situation to avoid the crowded places,
+which helped to better traffic flow.
+Levels of Congestion: In order to reduce congestion at
+critical traffic bottlenecks, the DRL model successfully
+spread cars out more uniformly over the network. That was
+particularly seen in rush hour, when conventional routing
+
+Despite the promising performance of DRL in
+improving the performance of urban traffic systems, several
+
+580
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:30:59 UTC from IEEE Xplore. Restrictions apply.
+
+algorithms, even when unexpected traffic spikes, can’t
+readjust.
+
+network grows, and there is no noticeably reduction in
+performance. That is because the high dimensional state
+space characteristic of large scale urban contexts can be
+handled by the value function approximated as a deep neural
+network.
+
+computing Efficiency: The DRL model behaved
+efficiently in the real time routing choices after training and
+more computing resources were required during training.
+Together with the experience replay buffer, the target
+network stabilized the learning process, so the convergence
+speed and the consistency of the decision making increased.
+
+DRL model has another advantage that is it is versatile.
+The system learns with the use of real time traffic data and
+gets better and better at making routing choices. Unlike
+more traditional approaches, these methods are highly
+susceptible to unexpected shifts in traffic patterns, and this
+is in contrast to more rigid approaches based on past data.
+In the simulations, the DRL based algorithm performed
+better than conventional algorithms at adapting to traffic
+events, road closures and peak hour congestion.
+
+B. . Evaluation abiding by Standard Procedures
+Here, we used Dijkstra and A* Algorithms.
+However, historical traffic data and assumptions on
+what the road condition will be in the future are what
+standard routing algorithms like Dijkstra's and A* rely on.
+Although effective in static traffic situations, these
+approaches break down entirely under conditions of
+dynamic traffic and the metropolitan landcape. The Dijkstra
+and A* routes, however, consistently performed poorly in
+the simulations when traffic circumstances changed
+unexpectedly. As a result, these algorithms resulted in
+greater congestion and longer time to destination for
+vehicles utilizing these algorithms compared with vehicles
+using the DRL based system.
+
+D. . Traffic Flow and Long Term Sustainability
+Repercussions
+Bearing in mind all settings, an improvement of traffic
+flow is achieved by installing the DRL-based system. The
+system has been engaged in endeavors to decrease average
+travel times and reduce congestion, and consequently more
+efficient urban transportation has resulted. This, however,
+has a more generalized effect on long term viability. Cut
+down on commute time and cut down on fuel use,
+pollutants, and your impact on the environment. The
+system's ability to maximize traffic flow during rush hours
+is limited to lowering pollution levels in heavily populated
+big cities.
+
+Standard RL Model for Reinforcement Learning:
+The basic RL model was able to adapt itself to the traffic
+environment in real time, but problems arise with scalability
+as the basic RL model didn't utilize deep neural networks
+(DNNs). However, the basic RL learning took longer
+because it couldn't handle the high dimensional space, and
+its routing in networks with more traffic was worse than
+ideal. On the other hand, the DRL model, which has a DNN
+based architecture, could easily deal with complicated large
+scale traffic scenarios and deliver faster and more accurate
+routing choices.
+
+Table 3: Congestion Levels, Processing Time, and Efficiency
+Comparison
+Metho
+d
+Dijkstr
+a's
+Algorit
+hm
+A*
+Algorit
+hm
+Baseli
+ne RL
+Model
+Propos
+ed
+DRL
+Model
+
+Table 2: Detailed Travel Time, Congestion Reduction, and Efficiency
+Comparison
+Meth
+od
+
+Dijkst
+ra's
+Algor
+ithm
+A*
+Algor
+ithm
+Baseli
+ne RL
+Mode
+l
+Propo
+sed
+DRL
+Mode
+l
+
+Averag
+e
+Travel
+Time
+(min)
+45
+
+Conges
+tion
+Reduct
+ion (%)
+
+Fuel
+Cons
+umpti
+on (L)
+
+10
+
+Trave
+l
+Dista
+nce
+(km)
+15
+
+4.8
+
+Emissi
+ons
+Reduct
+ion
+(%)
+5
+
+RealTime
+Decision
+Efficien
+cy
+Low
+
+43
+
+12
+
+14.5
+
+4.5
+
+6
+
+Moderat
+e
+
+35
+
+18
+
+13.8
+
+4
+
+12
+
+High
+
+28
+
+30
+
+12.6
+
+3.5
+
+20
+
+Very
+High
+
+Congesti
+on
+Reducti
+on (%)
+10
+
+Proces
+sing
+Time
+(s)
+0.05
+
+Sc
+ala
+bili
+ty
+Li
+mit
+ed
+
+Adaptab
+ility to
+New
+Data
+Low
+
+Trainin
+g Time
+(hours)
+
+12
+
+0.08
+
+Low
+
+0
+
+Moder
+ate
+
+18
+
+0.12
+
+Moderat
+e
+
+3
+
+Moder
+ate
+
+30
+
+0.1
+
+Mo
+der
+ate
+Mo
+der
+ate
+Hi
+gh
+
+High
+
+5
+
+High
+
+0
+
+Perfor
+mance
+Stabilit
+y
+Low
+
+Figure 3: Comparison of Processing Time and Training Time.
+
+C. Capabilities to scale and to adapt
+It also has the benefit that the DRL based system is
+scalable. The system can handle real time routing choices
+even as the complexity and scale of the urban traffic
+
+581
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:30:59 UTC from IEEE Xplore. Restrictions apply.
+
+[3]
+
+[4]
+Figure 2: Comparison of Average Travel Time, Congestion
+Reduction, and Fuel Consumption
+
+[5]
+
+[6]
+
+[7]
+
+Figure 4: Comparison of Decision-Making Time and Route
+Efficiency.
+
+IV.
+
+CONCLUSION
+
+[8]
+
+In this research, we take a look at how we can use Deep
+Reinforcement Learning to improve planning of urban
+traffic routes overcoming some of the short comings of
+other algorithms for example: A* or Dijkstra's. The DRL
+model constantly adapts it work to current traffic conditions,
+and minimizes the average travel time, fuel consumption
+and congestion on large scale urban networks. By using real
+time data from Internet of Things (IoT) sensors, GPS and
+traffic cameras, the model learns from past traffic patterns,
+and improves traffic flow management, more so during rush
+hours. We compare the DRL system with existing
+reinforcement learning approaches, standard technologies,
+and other alternatives on efficiency, flexibility, and
+scalability. It is helpful with reducing congestion and
+making routes more efficient in making urban transportation
+more sustainable. Thanks to the use of powerful neural
+networks, the DRL model is able to manage complicated,
+high dimensional traffic situations, and while the model
+seems promising the obstacles to overcome remain.
+Specifically, they include training computational needs and
+requirements for high quality, real time data. To bring this
+system to its next level, researchers may try to find ways
+through the use of hybrid models, edge computing and
+linked autonomous cars to enhance performance and
+scalability further. The DRL method may be applied to
+smart city transportation systems as a whole to contribute to
+the paradigm shift towards greener, more efficient city
+transportation..
+
+[9]
+
+[10]
+
+[11]
+
+[12]
+
+[13]
+
+[14]
+
+REFERENCES
+[1]
+
+[2]
+
+[15]
+
+A. Sayal, C. Vasundhara, V. Gupta, A. Gupta, H. Maheshawri and
+M. Memoria, "Smart Contracts and Blockchain: An Analytical
+Approach," 2023 6th International Conference on Contemporary
+Computing and Informatics (IC3I), Gautam Buddha Nagar, India,
+2023, pp. 1139-1142, doi: 10.1109/IC3I59117.2023.10397748.
+K. Joshi, A. Gupta, A. J. Rawat, R. Kumar and O. Gupta,
+"Transforming Greenhouse Horticulture Using Artificial
+Intelligence and Digital Twin," 2023 International Conference on
+Quantum Technologies, Communications, Computing, Hardware
+and Embedded Systems Security (iQ-CCHESS), KOTTAYAM,
+
+[16]
+
+[17]
+
+582
+
+India,
+2023,
+pp.
+1-6,
+doi:
+10.1109/iQCCHESS56596.2023.10391310.
+A. Sayal, J. Jha, C. N, V. Gupta, A. Gupta, O. Gupta, M. Memoria,
+"Neural Networks And Machine Learning," 2023 IEEE 5th
+International Conference on Cybernetics, Cognition and Machine
+Learning Applications (ICCCMLA), Hamburg, Germany, 2023, pp.
+58-63, doi: 10.1109/ICCCMLA58983.2023.10346612.
+A. Sayal et al., "Visual Sentiment Analysis Using Machine Learning
+for Entertainment Applications," 2023 International Conference on
+IoT, Communication and Automation Technology (ICICAT),
+Gorakhpur,
+India,
+2023,
+pp.
+1-8,
+doi:
+10.1109/ICICAT57735.2023.10263629.
+Kumar, V., Khanduja, M., Anandaram, H., Joshi, K., Gupta, A.,
+Diwakar, M. (2023). A Study of Feature-Based and Pixel-Level
+Image Fusion Techniques. In: Murthy, B.K., Reddy, B.V.R.,
+Hasteer, N., Van Belle, JP. (eds) Decision Intelligence. InCITe 2023.
+Lecture Notes in Electrical Engineering, vol 1079. Springer,
+Singapore. https://doi.org/10.1007/978-981-99-5997-6_15.
+A. Gupta, A. Sayal, C. N, J. Jha, V. Gupta and H. Maheshwari,
+"Reconnoitering the Essentials of Image and Video Processing: A
+Comprehensive Overview," 2023 International Conference on IoT,
+Communication and Automation Technology (ICICAT),
+Gorakhpur,
+India,
+2023,
+pp.
+1-7,
+doi:
+10.1109/ICICAT57735.2023.10263745.
+Bhandari G., Chaudhary P., Gangola S., Gupta S., Gupta, A.,
+Rafatullah M., Chen S. (2023). A review on hospital wastewater
+treatment technologies: Current management practices and future
+prospects. Journal of Water Process Engineering 56, 104516.
+Singh D., Rana A., Memoria M., Shah S. K., Gupta A. and Kumar
+R. "Design of a 12 Phase VCO with Stacked CNTFETs and
+Provision to Improve Performance by Lowering the Number of
+Metallic Tubes" International Conference Of Numerical Analysis
+And Applied Mathematics Icnaam 2021, AIP Conference
+Proceedings 2023, pp. 1-4.
+S. K. Swarnkar, A. Ambhaikar, V. K. Swarnkar, and U. Sinha,
+“Optimized Convolution Neural Network (OCNN) for Voice-Based
+Sign Language Recognition: Optimization and Regularization,”
+Lecture Notes in Networks and Systems, vol. 191, pp. 633–639,
+2022, doi: 10.1007/978-981-16-0739-4_60.
+R. Pant, K. Joshi, A. Singh, K. Joshi, A. Gupta "Mechanical
+properties evaluation of ultra-fined grained materials at low
+temperature," International Conference on Recent Trends in
+Composite Sciences with Computational Analysis, AIP Conf. Proc.
+2978, 020008 (2024) doi.org/10.1063/5.0189994.
+P. Joshi, A. Gupta, O. Gupta and S. K. Srivastava, "Adoption of AI
+in Logistics: A Bibliometric Analysis," 2023 International
+Conference on Computing, Communication, and Intelligent Systems
+(ICCCIS), Greater Noida, India, 2023, pp. 708-712, doi:
+10.1109/ICCCIS60361.2023.10425277.
+R. Tripathi, V. K. Mishra, H. Maheshwari, R. G. Tiwari, A. K.
+Agarwal and A. Gupta, "Extrapolative Preservation Management of
+Medical Equipment through IoT," 2023 International Conference on
+Artificial Intelligence for Innovations in Healthcare Industries
+(ICAIIHI),
+Raipur,
+India,
+2023,
+pp.
+1-5,
+doi:
+10.1109/ICAIIHI57871.2023.10489349.
+S. K. Swarnkar, A. Ambhaikar, V. K. Swarnkar, and U. Sinha,
+‘Optimized Convolution Neural Network (OCNN) for Voice-Based
+Sign Language Recognition: Optimization and Regularization’,
+Lecture Notes in Networks and Systems, vol. 191, pp. 633–639,
+2022.
+S. K. Swarnkar and A. Ambhaikar, ‘Improved convolutional neural
+network based sign language recognition’, International Journal of
+Advanced Science and Technology, vol. 27, no. 1, pp. 302–317,
+2019.
+S. K. Swarnkar, A. Sharma, J. Somasekar, and B. Bhushan, Machine
+Learning in Multimedia: Unlocking the Power of Visual and
+Auditory Intelligence. CRC Press, 2024, pp. 1–154.
+R. K. Navandar, V. R. Gosavi, S. K. Swarnkar, R. S. S. Varma, T.
+B. Patil, and D. G. Bhalke, ‘Statistical Signal Processing for Radar
+Systems’, Panamerican Mathematical Journal, vol. 35, no. 1S, pp.
+200–209, 2025.
+M. Tarambale, B. P. Vasgi, S. Gonge, A. Homkar, S. K. Swarnkar,
+and D. Dhabliya, ‘Mathematical Approaches to Cryptographic
+System Design’, Panamerican Mathematical Journal, vol. 34, no. 4,
+pp. 372–383, 2024.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:30:59 UTC from IEEE Xplore. Restrictions apply.
+
+[18] V. S. Gaikwad et al., ‘Unveiling Market Dynamics through Machine
+Learning: Strategic Insights and Analysis’, International Journal of
+Intelligent Systems and Applications in Engineering, vol. 12, no.
+14s, pp. 388–397, 2024.
+[19] T. S. Umamaheswari, A. D. Dhaygude, O. Dewangan, T. Krishnan,
+P. Yerpude, and S. K. Swarnkar, ‘Predictive Modeling for Disease
+Progression in Chronic Conditions Using Machine Learning’, 2023,
+pp. 2684–2688.
+[20] P. K. Tamrakar, S. K. Swarnkar, U. Sinha, and J. Durga Prasad Rao,
+‘Predicting Brain Tumor Survival Using MRI Images and Machine
+Learning Techniques’, Lecture Notes in Networks and Systems, vol.
+818, pp. 333–347, 2024.
+[21] H. R. Devarajan, S. Balasubramanian, S. Kumar Swarnkar, P.
+Kumar, and V. R. Jallepalli, ‘Deep Learning for Automated
+Detection of Lung Cancer from Medical Imaging Data’, 2023.R.
+Sutton and A. Barto, Reinforcement Learning: An Introduction, 2nd
+ed. Cambridge, MA: MIT Press, 2018.
+[22] C. Watkins and P. Dayan, "Q-learning," Mach. Learn., vol. 8, no. 3,
+pp. 279-292, 1992.
+[23] V. Mnih et al., "Playing atari with deep reinforcement learning," in
+Proc. Neural Inf. Process. Syst., 2013, pp. 1-9.
+[24] D. Silver et al., "Mastering chess and shogi by self-play with a
+general reinforcement learning algorithm," Science, vol. 362, no.
+6419, pp. 1140-1144, 2018.
+[25] P. William, A. Shrivastava, H. Chauhan, P. Nagpal, V. K. T. N and
+P. Singh, "Framework for Intelligent Smart City Deployment via
+Artificial Intelligence Software Networking," 2022 3rd International
+Conference on Intelligent Engineering and Management (ICIEM),
+2022, pp. 455-460, doi: 10.1109/ICIEM54221.2022.9853119.
+[26] William, P., Shrivastava, A., Shunmuga Karpagam, N.,
+Mohanaprakash, T.A., Tongkachok, K., Kumar, K. (2023). Crime
+Analysis Using Computer Vision Approach with Machine Learning.
+In: Marriwala, N., Tripathi, C., Jain, S., Kumar, D. (eds) Mobile
+Radio Communications and 5G Networks. Lecture Notes in
+Networks and Systems, vol 588. Springer, Singapore.
+https://doi.org/10.1007/978-981-19-7982-8_25
+[27] William, P., Shrivastava, A., Chauhan, P.S., Raja, M., Ojha, S.B.,
+Kumar, K. (2023). Natural Language Processing Implementation for
+Sentiment Analysis on Tweets. In: Marriwala, N., Tripathi, C., Jain,
+S., Kumar, D. (eds) Mobile Radio Communications and 5G
+Networks. Lecture Notes in Networks and Systems, vol 588.
+Springer, Singapore. https://doi.org/10.1007/978-981-19-79828_26
+[28] P. William, G. R. Lanke, D. Bordoloi, A. Shrivastava, A. P.
+Srivastavaa and S. V. Deshmukh, "Assessment of Human Activity
+Recognition based on Impact of Feature Extraction Prediction
+Accuracy," 2023 4th International Conference on Intelligent
+Engineering and Management (ICIEM), London, United Kingdom,
+2023, pp. 1-6, doi: 10.1109/ICIEM59379.2023.10166247.
+[29] P. William, G. R. Lanke, V. N. R. Inukollu, P. Singh, A. Shrivastava
+and R. Kumar, "Framework for Design and Implementation of Chat
+Support System using Natural Language Processing," 2023 4th
+International Conference on Intelligent Engineering and
+Management (ICIEM), London, United Kingdom, 2023, pp. 1-7,
+doi: 10.1109/ICIEM59379.2023.10166939.
+[30] R. Sathya; V.C. Bharathi; S. Ananthi; T. Vijayakumar; Rvs Praveen;
+Dhivya Ramasamy, “Real Time Prediction of Diabetes by using
+Artificial Intelligence,” 2024 2nd International Conference on Self
+Sustainable Artificial Intelligence Systems (ICSSAS), DOI:
+10.1109/ICSSAS64001.2024.10760985
+[31] Rvs
+Praveen;B
+Vinoth;S.
+Sowmiya;K.
+Tharageswari;Purushothapatnapu Naga Venkata VamsiLala;R.
+Sathya, “Air Pollution Monitoring System using Machine Learning
+techniques for Smart cities,” 2024 2nd International Conference on
+Self Sustainable Artificial Intelligence Systems (ICSSAS), DOI:
+10.1109/ICSSAS64001.2024.10760948
+[32] RVS Praveen;U Hemavathi;R. Sathya;A. Abubakkar Siddiq;M.
+Gokul Sanjay;S. Gowdish, “AI Powered Plant Identification and
+Plant Disease Classification System,” 2024 4th International
+Conference on Sustainable Expert Systems (ICSES), DOI:
+10.1109/ICSES63445.2024.10763167
+[33] Neeraj Kumar;Sanjay Laxmanrao Kurkute;V. Kalpana;Anand
+Karuppannan;RVS Praveen;Soumya Mishra, “Modelling and
+Evaluation of Li-ion Battery Performance Based on the Electric
+Vehicle Tiled Tests using Kalman Filter-GBDT Approach” 2024
+
+International Conference on Intelligent Algorithms for
+Computational
+Intelligence
+Systems
+(IACIS),
+DOI:
+10.1109/IACIS61494.2024.10721979
+[34] Tushar Dhar Shukla;G. Radha;Dharmendra Kumar Yadav;Chaitali
+Bhattacharya;Rvs Praveen;Nikhil N. Yokar, “Advanced Student
+Success Predictions in Higher Education with Graph Attention
+Networks for Personalized Learning”, 2024 First International
+Conference on Software, Systems and Information Technology
+(SSITCON), DOI: 10.1109/SSITCON62437.2024.10796791
+[35] Banik, A., Sengupta, A. (2022). Irrigation Pumping Scheme Based
+on Solar PV and Zeta Converters with PMBLDC Motor. In: Kumar,
+S., Ramkumar, J., Kyratsis, P. (eds) Recent Advances in
+Manufacturing Modelling and Optimization. Lecture Notes in
+Mechanical
+Engineering.
+Springer,
+Singapore.
+
+https://doi.org/10.1007/978-981-16-9952-8_46
+
+[36] Y. T. Singh, B. Chettri, A. Banik, K. O. Obodo, and D. P. Rai,
+"Carbon and Boron Nitride Nanostructures for Hydrogen Storage
+Applications; A Theoretical Perspective," Advanced Materials
+and Nano Systems: Theory and Experiment (Part-1), pp. 132, 2025. doi: 10.2174/9789815050745122010004.
+[37] A. Es-Smairi, N. Fazouan, E. Maskar, I. Bziz, M. Sabil, A. Banik,
+and D. P. Rai, "Rare earth (Tm, Y, Gd, and Eu) doped ZnS
+monolayer: a comparative first-principles study," Electron.
+Struct., vol. 6, no. 1, p. 015001, Jan. 2024, doi: 10.1088/25161075/ad17d5.
+[38] S. Thangamayan, M. D. Walunjkar, D. K. Ray, M. Venkatesan, A.
+Banik, and K. P. Amrutkar, "5G Modulation Technique
+Comparisons Using Simulation Approach," in Proc. 2022 3rd Int.
+Conf. on Intelligent Engineering and Management (ICIEM),
+London, United Kingdom, Apr. 2022, pp. 1-6, doi:
+10.1109/ICIEM54221.2022.9853137.
+[39] D. R., G. ., P., Biradar, V. S. ., M., V. ., Singh, C. ., Deepak, A. ., &
+Shrivastava, A. . (2023). Energy-Efficient Resource Allocation and
+Relay-Selection for Wireless Sensor Networks. International
+Journal of Intelligent Systems and Applications in
+Engineering, 12(5s),
+113–121.
+Retrieved
+from
+https://ijisae.org/index.php/IJISAE/article/view/3871
+
+583
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:30:59 UTC from IEEE Xplore. Restrictions apply.
+
+

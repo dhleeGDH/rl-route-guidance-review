@@ -1,0 +1,656 @@
+2025 IEEE 9th International Conference on Information and Communication Technology (CICT) | 979-8-3315-7249-5/25/$31.00 ©2025 IEEE | DOI: 10.1109/CICT67193.2025.11399143
+
+Situation-aware Path Optimization for Autonomous
+Systems: A Deep Reinforcement Learning based
+Approach
+P. Sri Ashritha
+Dept of CSE
+
+Srija Nandamuri
+Dept of CSE
+
+Yarra Venkata Vijay
+Dept of CSE
+
+Preeth Raguraman
+Dept of CSE
+
+IIITDM Kancheepuram
+Chennai , India
+sriashrithapendekanti@gmail.com
+
+IIITDM Kancheepuram
+Chennai , India
+srijanandamuri@gmail.com
+
+IIITDM Kancheepuram
+Chennai , India
+yarravijay2005@gmail.com
+
+IIITDM Kancheepuram
+Chennai , India
+preeth@iiitdm.ac.in
+
+Koppala Guravaiah
+Dept of CSE
+IIIT Kottayam
+Kottayam , India
+kguravaiah@iiitkottayam.ac.in
+
+Abstract—Intelligent Route Optimization (IRO) addresses autonomous navigation in dynamic urban environments by combining real-time machine learning, probabilistic modeling, and
+adaptive simulation into a seamless routing framework. Unlike
+traditional approaches that depend on static maps or simple
+shortest-path algorithms, IRO actively integrates live contextual
+data, such as time, weather, road state, and events, using neural
+networks to achieve highly accurate traffic state predictions with
+minimal input features. These predictions are further refined
+by Hidden Markov Models to ensure consistency and reliability,
+especially during abrupt transitions or anomalies in traffic.
+Building on this stabilized foundation, a Deep Reinforcement
+Learning agent equipped with a deep Q-network evaluates a
+broad action space, selecting routes that optimize not only for
+speed but also for risk, congestion, and environmental safety
+across various transport modes. For every potential path, IRO
+invokes adaptive Monte Carlo sampling to quantify travel time
+variability and the probability of events that could impact
+the route, thus assigning a reliability measure alongside the
+expected travel time and suggested route. With a modular
+pipeline that separates prediction, smoothing, policy selection,
+and uncertainty quantification, IRO is able to rapidly adapt to
+new environments, technologies, and data sources. It consistently
+outperforms classical shortest-path methods, as demonstrated by
+its 96.06% accuracy on a custom urban dataset, delivering more
+reliable results in the presence of outliers such as traffic surges,
+harsh weather, or road closures. The proposed method empowers
+autonomous systems to navigate urban settings with a high
+degree of resilience and transparency, providing interpretable
+recommendations that specify not just which route to take, but
+why, bridging rigorous AI modeling with practical, real-time
+urban mobility needs.
+
+Index Terms—Route Optimization, Intelligent Transportation
+Systems, Deep Q-Network, Hidden Markov Model, Travel Time
+Prediction, Uncertainty Modeling
+
+I. I NTRODUCTION
+Smart city transport systems need route planning that adapts
+to context, not just static maps or simple shortest-path methods. Classical algorithms like Dijkstra’s and A* work on fixed
+graphs but fail under real-world uncertainties like traffic, road
+damage, weather, or events. Autonomous vehicles also don’t
+use live internet maps like Google Maps; instead, they rely
+on high-definition static maps with past road data and local
+sensing. Addressing how such static, history-based navigation
+can be enhanced to adapt dynamically under uncertainty is the
+central focus of this paper. Researchers address these challenges with probabilistic and learning-based models. PTDR
+uses statistics and Monte Carlo simulations to model travel
+time distributions, giving probability-based arrival times, while
+Vitali et al. scaled this with high-performance computing for
+city-wide routing. Yet, limitations remain: (1) road segments
+are modeled independently, ignoring temporal correlations; (2)
+route selection is often static or rule-based; and (3) simulations
+handle uncertainty but lack feedback from history and realtime data. This paper introduces a unified and modular framework for smarter route planning, designed to be both powerful
+and easy to understand. The system brings together several layers of intelligence: supervised neural networks to predict traffic
+conditions, a Hidden Markov Model (HMM) to track how
+congestion evolves over time, a deep reinforcement learning
+(DRL) agent to choose the best routes under uncertainty, and
+Monte Carlo simulations with adaptive sampling to estimate
+travel times more accurately. Unlike black-box systems, IRO
+approach is transparent, providing clear outputs such as route
+confidence levels, safety and efficiency scores, and explainable
+decision steps. Its modular design keeps prediction, estimation,
+decision-making, and scoring separate, making it easier to
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:40:34 UTC from IEEE Xplore. Restrictions apply.
+
+tune, debug, and improve. With a built-in feedback loop, the
+framework continuously learns and adapts, while adjusting
+its simulations and route choices to match changing traffic
+patterns.The Monte Carlo methods and fast neural inference,
+it can scale from large traffic control centers to lightweight
+modules in autonomous vehicles. Beyond everyday traffic, the
+framework is also adaptable to high-stakes scenarios like urban
+crime interception, where real-time, pursuit-aware routing is
+critical.
+II. R ELATED W ORK
+Route optimization in intelligent transportation systems
+has gradually evolved from traditional deterministic shortestpath methods to probabilistic and learning-based approaches
+capable of handling real-world uncertainties and dynamic
+traffic conditions. As an initial step, stochastic methods were
+examined for capturing variability in travel times. Based on the
+work of S.Ahmad et al. [1], developed a Markov chain–based
+approach for route recommendation, probabilistic state transitions were recognized that could capture user preferences
+and travel uncertainties, providing a foundation for modeling
+traffic behaviors in routing decisions.
+To incorporate temporal dynamics, the capabilities of Hidden Markov Models(HMMs) were leveraged. Goh et. al.
+[2] has applied HMMs for online map matching to handle
+noisy GPS trajectories, a similar probabilistic framework was
+adopted to infer traffic states from sensor data. In [3], the
+author has extended this idea with a second-order HMM
+incorporating road hierarchy, vehicle heading, and driver preferences, highlighting the importance of modeling multiple contextual features to improve accuracy in dense urban networks.
+Y. Zheng et al. [4],proposed a model that integrates driver
+path preferences into transition probabilities, HMMs were
+applied to estimate segment-level speed distributions (mean
+and variance), forming the basis for travel time prediction.
+These studies collectively motivated the use of HMMs for
+temporal smoothing and state transition modeling in IRO
+pipeline, going beyond localization toward predictive route
+optimization.
+With segment-level probabilistic speeds obtained from
+HMMs, Monte Carlo simulations were implemented to estimate total travel times under uncertainty. F. Vitali et al.[7]
+demonstrated that adaptive Monte Carlo sampling could efficiently generate travel time distributions while maintaining
+accuracy, and Authors [8] confirmed its robustness in largescale traffic networks.An adaptive sampling approach was
+adopted dynamically adjusting the number of samples based
+on route volatility using the coefficient of variation (CV),
+ensuring computational efficiency while accurately capturing
+uncertainty.
+Recognizing that traffic patterns and routing decisions depend on multiple modes of transport, the system was extended
+to handle cars, bikes, and walking. To further refine predictions, a hybrid Bayesian–HMM smoothing mechanism was
+integrated, similar in spirit to the probabilistic inference frameworks suggested in prior studies [5,6,13,16]. This allowed us to
+
+maintain posterior beliefs over traffic states for each segment at
+any time, supporting dynamic, context-aware route estimation.
+For adaptive route selection under dynamic traffic conditions,reinforcement learning (RL) was incorporated. Building
+on the stochastic motion planning and traffic light management
+work of Authors [9,14,15,18], who optimized the probability
+of on-time arrival under uncertain delays, and the attentionbased RL architectures applied by D. Iklassov et al.[10] to
+vehicle routing with time windows, deep RL was used to learn
+route selection policies that adapt to real-time traffic patterns.
+Finally, recognizing safety-critical scenarios, such as emergency vehicle routing, real-time adaptability was incorporated
+into IRO framework. In [11,12,17,19], who proposed traffic
+signal preemption strategies and decentralized RL frameworks
+for emergency vehicle passage, IRO pipeline ensures that
+adaptive route optimization accounts for both efficiency and
+critical time constraints.
+III. P ROPOSED A PPROACH
+The proposed framework, IRO addresses the limitations
+of static route planning through dynamic, uncertainty-aware
+optimization. IRO directly infers dynamic features such as day,
+time, and destination to predict key traffic-related variables.
+It simultaneously estimates vehicle count (regression), road
+condition (classification), and weather condition (classification), thereby forming a unified multi-output traffic prediction
+pipeline. The proposed approach integrates neural networks
+(NN), Hidden Markov Models (HMM), reinforcement learning
+(RL), and Monte Carlo (MC) techniques, with HMM and
+MC methods already addressed in prior studies. The complete
+schematic of the pipeline is shown in Figure 1
+
+Fig. 1: Schematic Diagram of the Intelligent Route Optimization
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:40:34 UTC from IEEE Xplore. Restrictions apply.
+
+A. Vehicle Count Prediction and Road and Weather Condition
+Prediction
+The number of vehicles in terms of count is modeled
+using an XGBRegressor with 100 estimators. The regressor
+constructs an additive ensemble of decision trees, learning a
+mapping
+K
+X
+fXGB (X) =
+fk (X),
+k=1
+
+to minimize the squared error objective with regularization.
+This approach enables the model to capture complex nonlinear relationships and interactions between temporal, spatial,
+and contextual features, providing accurate estimates of the
+expected traffic volume. Road and weather conditions are predicted using a CatBoostClassifier, a gradient-boosted decision
+tree ensemble optimized for categorical inputs. The model
+outputs class probabilities via a softmax function:
+exp(Fk (X))
+,
+P (yc = k | X) = PC
+j=1 exp(Fj (X))
+and is trained to minimize the cross-entropy loss. With a depth
+of 6,200 iterations, and a learning rate of 0.1, the model
+captures non-linear feature interactions, handles categorical
+variables natively, and mitigates overfitting.
+B. Neural Network-Based Traffic Predictor
+The predicted vehicle counts and categorical road/weather
+states serve as inputs for Neural Network models. The Neural Network-based Traffic Predictor employs a multi-layer
+feedforward architecture with an input layer corresponding to 8 features: start node, end node, time, day, vehicle
+count, weather, road condition, and special event. This is
+followed by three fully connected hidden layers of dimensions [128, 64, 32], each using Batch Normalization, ReLU
+activation, and Dropout (rate = 0.3) to prevent overfitting.
+The network concludes with a 3-neuron softmax output layer
+for traffic state classification.Training utilizes CrossEntropyLoss optimized via the Adam optimizer with learning rate
+η = 10−3 , where the loss function is defined as
+
+Traffic profiles (mean severity, high-traffic ratio, traffic
+variance),
+• Environmental conditions (normalized time, vehicle
+count, special event indicators).
+The network utilizes a 3-layer fully connected architecture
+with ReLU activations, and dropout regularization rate of 0.2).
+The details of the hidden dimensions is [256, 128, 64].
+The multi-objective reward function is defined as
+•
+
+R = α1 · (−time) + α2 · speed + α3 · (−queue) + α4 · safety,
+balancing travel efficiency, congestion penalties, and safety
+considerations. Queue penalties are derived from traffic severity scores, while safety bonuses incorporate contextual risk
+factors such as weather conditions, road quality, and temporal
+factors.
+Training employs experience replay with buffer size 10,000,
+batch size 32, target network updates every 100 steps, and
+ϵ-greedy exploration where ϵ decays exponentially from 1.0
+to 0.01 with decay rate 0.995. Optimization is performed
+using Adam with learning rate 10−3 and gradient clipping
+(max norm = 1.0) for stability.
+The Q-network approximates expected cumulative discounted rewards:
+#
+"∞
+X
+k
+Q(st , at ) ≈ E
+γ rt+k st , at ,
+k=0
+
+and updates using the Bellman equation:
+Q(st , at ) = rt + γ · max
+Qtarget (st+1 , a′ ),
+′
+a
+
+with mean squared error loss between predicted and target
+Q-values. Once the DQN selects the best route, travel times
+were estimated for three different modes of transport using the
+Monte Carlo approach described earlier, accounting for traffic
+variability and uncertainty. This workflow diagram shown in
+Figure 2, shows the data flow that encompasses the integration
+of neural networks, HMMs, and deep reinforcement learning
+to predict traffic states.
+
+exy
+L(x, y) = − log P xj ,
+je
+which combines LogSoftmax and NLLLoss for mutually exclusive classification. Training proceeds for 100 epochs with
+a 20% validation split.
+C. HMM and Reinforcement Learning Based Path Selection
+The predicted traffic states are then passed into the Hidden
+Markov Model (HMM) to model the traffic sequence from
+start to end. These HMM-processed states are fed into the
+Deep Q-Network (DQN) reinforcement learning agent, named
+PathSelectionDQN, which operates on a 10-dimensional
+state vector encoding:
+• Path statistics (average length, min/max path length, path
+diversity),
+
+Fig. 2: Workflow diagram of the proposed technique
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:40:34 UTC from IEEE Xplore. Restrictions apply.
+
+Algorithm 1 DQN-Based Path Selection
+
+D. Dataset
+The dataset was designed to model urban traffic by incorporating the real-time parameters. Each road segment is defined
+by start and end nodes, capturing directional flow, and each
+record represents traffic at a specific time with contextual
+features: day, timestamp, vehicle counts, weather (no rain,
+slow rain, normal rain, snow), road quality (poor to better),
+and special events like closures or gatherings.
+During validation,some inconsistencies were found: Nighttime counts (12-3 am) were unrealistically high, while morning
+rush hrs (7-10 am) were unusually low, probably due to sensor
+errors, correcting them by normalizing nighttime counts using
+statistical priors and smoothing peak hrs counts based on
+nearby times and segments.
+Feature engineering: road conditions were converted into ordered categories, weather systematically encoded, and vehicle
+counts clustered into traffic states (low, medium, high) using
+K-means.
+The final curated dataset contains 15,120 validated records,
+providing training data for the neural network traffic classifier,
+historical sequences for HMM estimation, scenarios for reinforcement learning, and calibration for Monte Carlo travel time
+simulations. This careful curation ensures clean, representative
+data that reflects real urban traffic dynamics while remaining
+robust to measurement noise and temporal inconsistencies.
+E. Code Integration Layer
+The DQN algorithm employed for path selection is summarized as follows:
+This algorithm enables adaptive routing by learning to
+balance travel time, congestion penalties, and safety based on
+dynamic traffic states, providing robust route selection under
+uncertainty.
+
+1:
+2:
+3:
+4:
+5:
+6:
+7:
+8:
+9:
+10:
+11:
+12:
+13:
+14:
+15:
+16:
+17:
+
+y = rt + γ · max
+Qtarget (st+1 , a′ )
+′
+a
+
+18:
+
+19:
+20:
+21:
+22:
+23:
+
+•
+
+A. Accuracy and F1 Score for Traffic Classification
+•
+
+Baseline (Neural Network Only): Achieved an accuracy
+of 87.4% and an F1 score of 0.84, indicating solid initial
+performance in classifying traffic states.
+
+Update Q-network by minimizing loss:
+L = (Q(st , at ) − y)
+
+IV. R ESULTS AND D ISCUSSIONS
+The proposed model, (i.e, IRO) focuses to predict the
+vehicle count, road condition, and weather using only date,
+day, time, start node, end node, and special event indicators
+as input features. The dataset contained 15,120 validated
+records capturing diverse traffic scenarios. The vehicle count
+model, implemented with an XGBRegressor, achieved strong
+predictive performance with a mean absolute error (MAE)
+of 19.74, a root mean squared error (RMSE) of 24.57, and
+an R² score of 0.7303. The road condition classifier, using
+CatBoostClassifier, obtained an accuracy of 79.50%, while
+the weather classifier achieved an accuracy of 63.69%. These
+results demonstrate that IRO method can reliably infer critical
+traffic context variables from minimal input features, providing
+enriched information for downstream routing and optimization
+modules.
+
+Input: Current traffic state from HMM, 10-dimensional
+state vector
+Output: Optimal route from sIROce to destination
+Initialization:
+Initialize experience replay buffer (size = 10,000)
+Initialize target network
+Set learning rate η = 10−3 , exploration rate ϵ = 1.0,
+discount factor γ = 0.99
+while not converged do
+Observe current state st
+if random action with probability ϵ then
+at ← random action
+else
+at ← arg maxa Q(st , a)
+end if
+Execute action at , observe reward rt , and next state
+st+1
+Store (st , at , rt , st+1 ) in experience replay buffer
+Sample mini-batch (batch size = 32) from buffer
+Compute target Q-value:
+
+2
+
+Perform gradient clipping (max norm = 1.0)
+Periodically update target network every 100 steps
+Decay ϵ: ϵ ← ϵ × 0.995
+end while
+Select optimal path based on learned Q-values
+
+With HMM Smoothing: Accuracy improved to 96.06%,
+and the F1 score increased to 0.89. This improvement
+is particularly notable in correcting misclassifications
+during state transitions, such as rush hIRO periods,
+demonstrating the effectiveness of HMM smoothing in
+refining predictions.
+
+B. Prediction Stability
+•
+
+•
+
+Before HMM: Predictions lacked stability, especially at
+state transition points, leading to higher variability in
+classification outcomes.
+After HMM: The incorporation of HMM smoothing
+significantly enhanced prediction stability, as evidenced
+by a reduced variance in Monte Carlo simulations:
+2
+2
+2
+2
+σwithout
+HMM ≈ 8.7 min , σwith HMM ≈ 3.9 min ,
+
+particularly beneficial in complex scenarios such as industrial zones and traffic bottlenecks.
+C. Monte Carlo Variance Reduction via Adaptive Sampling
+Monte Carlo simulations, used for route ETA prediction,
+were conducted 1,000 times per route. The mean ETA prediction error was approximately ±3.2 minutes. The adaptive
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:40:34 UTC from IEEE Xplore. Restrictions apply.
+
+Monte Carlo module thus combines uncertainty profiling,
+quantile-based robustness, and sorted sampling for intelligent,
+scalable route evaluation. Refer to Figures 3, 4, and 5 for
+Monte Carlo-based travel time distributions showing 95th
+percentiles of 26.4 min (Car mode), 33.6 min (Bike mode),
+and 260 min (Walk mode), respectively.
+
+Fig. 3: Monte Carlo-based travel time distribution for Car
+mode: 95th percentile at 26.4 min.
+
+D. Evaluation
+•
+
+•
+
+Neural Network (NN): The traffic predictor achieved
+a validation accuracy of 96.06% with HMM smoothing,
+up from 87.4% without HMM, reflecting significant improvement in classification performance.
+Reinforcement Learning (RL): The RL policy demonstrated substantial improvement, where the average cumulative reward per episode increased from −300 to
++65 over 500 episodes. The success rate for optimally
+reaching the destination rose to 92% with RL, compared
+to 76% using static Dijkstra’s algorithm. Convergence
+stabilized around episode 150, with only minor enhancements observed thereafter.
+
+As observed, the difference between Monte Carlo estimates
+and baseline times increases with the slowness of the mode,
+especially prominent in walking, where exposure to dynamic
+factors is prolonged. For the car and bike modes, the variance is smaller but still significant, signaling moderate traffic
+volatility. Overall, Monte Carlo outputs consistently produce
+conservative yet reliable buffers, making them a robust tool
+for high-stakes routing under uncertainty.
+E. Path Selection (RL-based Approach vs. Dijkstra’s Approach)
+
+Fig. 4: Monte Carlo-based travel time distribution for Bike
+mode: 95th percentile at 33.6 min.
+
+Dijkstra’s algorithm selected the path [1, 2, 6] covering 5.00
+km via edges 1 → 2 (2.0 km) and 2 → 6 (3.0 km), minimizing
+distance with a deterministic travel time of 12.17 minutes at a
+constant speed of 50 km/h under low traffic conditions. This
+approach does not account for dynamic traffic factors.
+In contrast, the Reinforcement Learning (RL) agent, trained
+over 500 episodes, selected the path [1, 3, 6] covering 5.50
+km via edges 1 → 3 (3.0 km) and 3 → 6 (2.5 km).
+Although longer in distance, this selection reflects rush-hIRO
+congestion, HMM-smoothed traffic predictions, and risk-aware
+decision-making. The 95th percentile Monte Carlo estimate of
+travel time for the RL-selected path was 26.37 minutes, as
+it deliberately avoided node 2’s congestion and favored node
+3’s stability. Policy statistics—ϵ = 0.0807, average reward =
+0.4068—confirmed convergence.
+Thus, while slower in distance and nominal time, the RLbased route emphasizes reliability under uncertainty, showcasing its clear advantage over static shortest-path strategies.
+F. Bayes vs Neural Network
+
+Fig. 5: Monte Carlo-based travel time distribution for Walk
+mode: 95th percentile at 260 min.
+
+The Neural Network achieved a validation accuracy of
+96.06% on 15,120 samples, effectively capturing complex
+non-linear relationships. XGBoost reached a test accuracy
+of 76.85% with a macro F1-score of 0.74, demonstrating
+moderate performance. Overall, Neural Networks outperform
+both Bayesian models and XGBoost due to their ability to
+model intricate feature dependencies and non-linear patterns
+more robustly.
+•
+
+Bayesian Model : Converges faster but with early high
+uncertainty.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:40:34 UTC from IEEE Xplore. Restrictions apply.
+
+TABLE I: Performance Evaluation of proposed method across
+three datasets
+Metric
+Traffic Predictor Accuracy (%)
+Final Validation Loss (NN)
+Final Training Loss (NN)
+RL Path Selection Accuracy (%)
+Average RL Reward
+Average RL Loss
+RL Episodes Trained
+RL Final Epsilon
+
+Dataset 1 (1848)
+89.45
+0.6583
+0.6618
+100
+0.1578
+0.0121
+500
+0.0816
+
+Dataset 2 (3528)
+87.82
+0.6953
+0.7049
+100
+0.2717
+0.0037
+1000
+0.01
+
+Dataset 3 (7896)
+87.50
+0.6925
+0.7070
+100
+0.1460
+0.0120
+1000
+0.009
+
+deployments, handling rare or outlier real world events, and
+testing transferability to diverse cities or larger networks will
+further strengthen applicability. Exploring partial observability,
+external data sets and comprehensive studies can enhance
+reliability, while continuing attention to ethical and practical
+implementation issues will ensure real-world feasibility. These
+future developments will further advance the impact and
+scalability of the IRO approach.
+R EFERENCES
+
+Neural Network : Loss decreases smoothly from approximately 0.17 to 0.005, demonstrating stable learning
+while capturing complex non-linear relationships.
+• XGBoost : Shows moderate convergence behavior compared to the other two.
+This comparison reinforces the strength of Neural Networks
+for traffic state prediction in dynamic and uncertain environments.
+Table I shows the performance of the IRO models perform
+across three datasets of increasing size (DS1: 1848, DS2: 4212,
+DS3: 7896 samples). The neural network (NN) stays highly
+accurate, dropping only slightly from 89.45% to 87.50%,
+which indicates it generalizes well even as the data gets
+more complex. Its training and validation losses remain low
+and consistent, reflecting stable learning without overfitting.
+The RL agent performs best on DS2, suggesting it learns
+optimal path strategies most effectively with moderate data,
+while RL loss decreases on larger datasets, showing improved
+policy refinement. Epsilon values drop as dataset size grows,
+meaning the agent confidently exploits what it has learned.
+Impressively, the RL agent achieves 100% path selection
+precision across all datasets in a fully observable environment,
+demonstrating reliable convergence. Overall, both NN and RL
+show consistent and dependable performance across datasets
+and simulations.
+In this study, the RL success rate measures how often
+the agent selects the path with the lowest composite cost,
+considering travel time, safety, and efficiency not just the
+shortest ETA. Performance was evaluated on both validation
+and unseen test routes to ensure generalization. To capture
+travel-time reliability, mean and median Monte Carlo times
+were recorded alongside the 95th percentile. The model
+achieved 96.06% classification accuracy and a 0.89 F1-score
+on a held-out validation set, with evaluations on unseen routes
+confirming stable, generalizable performance. The safety score
+is a relative risk indicator derived from traffic, weather, and
+road conditions, providing context aware guidance rather than
+an absolute measure. Overall, these results demonstrate that
+the framework delivers reliable, risk-aware, and adaptable
+route planning under real world uncertainties.
+•
+
+V. C ONCLUSION AND F UTURE W ORK
+This work demonstrates strong accuracy and robustness for
+urban traffic routing using IRO hybrid framework; however,
+future directions remain. Broader validation, including live
+
+[1] S. Ahmad, I. Ullah, F. Mehmood, M. Fayaz, and D. Kim, “A stochastic
+approach towards travel route optimization and recommendation based
+on users constraints using Markov chain,” IEEE Access, 2020.
+[2] C. Y. Goh, J. Dauwels, N. Mitrovic, M. T. Asif, A. Oran, and P. Jaillet,
+“Online map-matching based on Hidden Markov Model for real-time
+traffic sensing applications,” in IEEE Intelligent Transportation Systems
+Conference (ITSC), 2012, doi: 10.1109/ITSC.2012.6338825.
+[3] Y. Fu, “An online map matching algorithm based on second-order
+Hidden Markov Model,” JIROnal of Advanced Transportation, 2021.
+[4] Y. Zheng, X. Lin, and H. Zhang, “Hidden Markov Model and driver
+path preference for floating car trajectory map matching,” IET Intelligent
+Transport Systems, 2018.
+[5] X. Sun, H. Liu, and J. Lu, “Dynamic stochastic shortest path problem
+in transportation networks,” Transportation Research Part B, 2006.
+[6] X. Chen, X. Liu, and F. Wang, “Real-time traffic information based vehicle routing using stochastic models,” IEEE Transactions on Intelligent
+Transportation Systems, 2013.
+[7] F. Vitali, A. Golasowski, and K. Zhang, “Efficient Monte Carlo-Based
+Probabilistic Time-Dependent Routing with Adaptive Sampling,” IEEE
+Transactions on Emerging Topics in Computing, 2019, arXiv preprint.
+[8] A. Golasowski, S. Brak, and M. Kowalski, “Performance evaluation of
+Monte Carlo-based time-dependent routing,” in Proceedings of CISIM,
+2016, SpringerLink.
+[9] B. Lim, S. Park, and C. Lee, “Stochastic motion planning for traffic
+navigation,” International JIROnal of Robotics Research, 2011.
+[10] D. Iklassov, M. Song, and P. Liu, “Reinforcement Learning for Solving
+Stochastic Vehicle Routing Problem with Time Windows,” in Proceedings of Machine Learning Research (ACML), 2024.
+[11] Y. Mu, D. Song, and L. Liu, “Route-Based Signal Preemption Control
+of Emergency Vehicle,” JIROnal of Control Science and Engineering,
+2018.
+[12] L. Su, K. Zhang, and H. Chen, “EMVLight: A Decentralized Reinforcement Learning Framework for Efficient Passage of Emergency Vehicles,”
+arXiv, 2021.
+[13] M. Li, Z. Wang, F. Liu, and J. Li, “Federated deep reinforcement
+learning-based urban traffic signal control,” Scientific Reports, vol. 15,
+no. 6721, 2025
+[14] W.L. Shang, A. Hassan, and L. Zhu, “The impact of deep reinforcement
+learning-based traffic signal control: integrating cooperative vehicleinfrastructure systems,” Applied Energy, vol. 358, p. 122613, 2025.
+[15] B. Medina-Salgado, F. Bousetouane, and L. Mo, “Urban traffic flow prediction techniques: A review,” Environmental Technology Innovation,
+vol. 27, p. 102147, 2022.
+[16] H. Qi, W. Zhao, L. Wang, C. Xu, and Z. Li, “Deep reinforcement
+learning for dynamic vehicle routing problem with time windows,”
+Transportation Research Part E: Logistics and Transportation Review,
+vol. 180, p. 103768, 2025.
+[17] G.Palermo,A.Golasowski,M.Vitali, and K.Zhang,“An Efficient Monte
+Carlo-Based Probabilistic Time-Dependent Routing Calculation Targeting a Server-Side Car Navigation System,”Expert Systems with
+Applications,vol.126,pp.68-81,2021
+[18] A. Merbah and J. Ben-Othman, “Optimizing Traffic Flow With Reinforcement Learning: A Study on Traffic Light Management,” IEEE
+Transactions on Intelligent Transportation Systems, vol. 25, no. 5, pp.
+3964-3977, 2024.
+[19] X.Y. Liu, M. Zhu, S. Borst, and A. Walid, “Deep Reinforcement
+Learning for Traffic Light Control in Intelligent Transportation Systems,”
+IEEE Transactions on Network Science and Engineering, vol. XX, no.
+XX, 2025.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:40:34 UTC from IEEE Xplore. Restrictions apply.
+
+

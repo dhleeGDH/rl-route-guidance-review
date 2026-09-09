@@ -1,0 +1,760 @@
+2022 IEEE 25th International Conference on Intelligent Transportation Systems (ITSC)
+October 8-12, 2022, Macau, China
+
+Vehicle-Road Collaborative Path Planning Based on
+A*-assisted Deep Reinforcement Learning
+
+2022 IEEE 25th International Conference on Intelligent Transportation Systems (ITSC) | 978-1-6654-6880-0/22/$31.00 ©2022 IEEE | DOI: 10.1109/ITSC55140.2022.9921845
+
+Chenhao Jin, Yinyan Wu and Congduan Li∗
+Abstract— Traffic congestion is a serious problem that needs
+to be solved in the development of intelligent transportation,
+and global path planning is an effective way, especially with
+the collaborative optimization on various traffic participants.
+In this paper, we formulate the vehicle global path planning as
+a Markov decision problem, and propose an A*-assisted deep
+reinforcement learning algorithm to achieve path optimization
+in complex environment by maximizing the total rewards.
+Compared with the existing ones in the literature, the proposed
+method can not only filter and extract unobvious features
+from multidimensional observations, but also make dynamic
+decisions in complex environment. To verify the effectiveness
+of our algorithm, we design experiments on the Simulation
+of Urban MObility (SUMO) platform. It is shown that the
+proposed algorithm converges faster and can deal with the
+changing and complex environment more effectively, which
+provides a practical solution to the problem of urban traffic
+congestion.
+Index Terms— global path planning, A* assisted deep reinforcement learning, dynamic decision
+
+I. INTRODUCTION
+With the development of urbanization, traffic congestion
+problem is getting worse and worse, and may lead to serious
+issues in economics, environment and safety. Path planning,
+as one of the most effective methods to solve traffic congestions, and one of the key technologies in autonomous driving,
+has always been a hot topic in academia and industry.
+One challenge that the current path planning algorithms
+need to solve is how to plan an efficient path in various
+scenarios, especially cope with the dynamic changes of the
+road conditions.
+Vehicle path planning algorithms include static ones and
+dynamic ones [1]. Static path planning is constrained by
+global map information and traffic rules to find the optimal
+path. Dynamic path planning requires consideration of realtime traffic information and adjusts the optimal pre-planned
+path until reaching the destination. The traditional global
+path planning algorithms include: Graph-based methods,
+such as Dijkstra’s Algorithm [2][3], A* Algorithm family
+[4][5]; Bionics-based methods, such as Ant Colony Algorithm [6] and Particle Swarm Optimization [7]; Samplebased methods [8], such as Rapidly-exploring Random Trees
+(RRT) family.
+The traditional path planning algorithms have been proved
+to achieve the global optimum in the static network, but
+the efficiency will decrease greatly with the expansion of
+the road network, and they are no longer applicable to the
+∗
+
+The corresponding author, licongd@mail.sysu.edu.cn
+The authors are with School of Electronics and Communication Engineering, Sun Yat-sen University, Shenzhen, China
+
+978-1-6654-6880-0/22/$31.00 ©2022 IEEE
+
+Fig. 1.
+
+Global path planning based on DRL framework
+
+real traffic environment in complex and dynamic road conditions. Many scholars have studied accelerated optimization
+schemes for the above algorithms, such as Contraction Hierarchies (CH) [9], Highway Hierarchies (HH) [10], and the
+Customizable Route Planning (CRP) [11]. These optimization algorithms realize the requirements of real-time response
+by using hierarchical processing of road structure and realtime information, therefore they can support the basic path
+planning services of current industrial map products.
+The success of machine learning has attracted many scholars in recent years. Many studies tend to predict traffic flow
+[12], disaster risks [13][14], traffic congestion [15][16], etc.
+In addition, some studies have also attempted to deal with
+traffic problems at junctions, such as controlling traffic light
+signals [17] and navigating vehicles at occluded junctions
+[18]. There are few existing studies on path control, most
+of them are based on robots, which do not need to consider
+strict traffic rules and network, and are unsuitable for actual
+vehicle traffic planning tasks. Reinforcement learning is also
+applied to path planning research [19][20]. This method
+models the task as a Markov Decision Process (MDP) by
+defining vehicle path planning as a decision sequence, and
+solves the real-time path optimization problem by observing
+and evaluating the action results in the complex environment
+[21]. [22] demonstrated the effectiveness of Q-learning for
+path planning problems in SUMO simulator. Then, the
+authors designed a suitable reward function and a ComboDQN framework to cope with more complex transportation
+network, and proposed a distance ranking sampling strategy
+to speed up the convergence [23].
+It still lacks route decision methods involving real traffic networks to help users find the optimal route to the
+destination and avoid traffic congestions with vehicle-road
+
+3010
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:23 UTC from IEEE Xplore. Restrictions apply.
+
+collaborations. So in this paper, we propose an A*-assisted
+deep reinforcement learning algorithm and introduce multidimensional observation information from Vehicle-Road
+collaborations to design a more effective vehicle global path
+planning system (Fig.1). The primary novelties of our work
+are as follows:
+(1) We choose multi-dimensional and reasonable observation information with vehicle-road collaborations as the feature input of agent’s action policy network. The observation
+information that a single agent can obtain during the driving
+process is limited. However, we want to obtain as much road
+conditions as possible in the global path planning problem.
+These information are crucial for the agent’s brain to learn
+a better policy quickly.
+(2) To avoid useless early explorations in the training
+process of the agent, we combine A* algorithm to exclude
+all the paths that cannot reach the destination or exceed the
+expected time, and provide some heuristic guidance in the
+early stage of exploration.
+(3) We propose a policy network that uses state + action
+as feature input and Q value of current action as output. Each
+junction may have different numbers of road as choices in
+actual traffic scenarios, this framework makes the vehicle
+agent more flexible to deal with different traffic conditions.
+These ideas aim at improving the convergence speed and
+enhancing generalization performance of the model, which
+make the model more suitable for complex path planning
+tasks.
+The rest of this paper is organized as follows. Section
+II models the global path planning as a Markov Decision
+Process (MDP) problem and expounds the feasibility of
+reinforcement learning. Section III describes our proposed
+algorithm in detail. Section IV analyzes the simulation results
+of our algorithm and conclusions are provided in Section V.
+II. PROBLEM FORMULATION
+In the vehicle global path planning problem, the path
+choices of a vehicle only depend on the current state of the
+road, but are irrelevant to the previous states. This state transition is Markov-compliant and the problem can be modeled
+as a MDP. We assume that the history of all previous states
+of the vehicle is denoted by ht = {s1 , s2 , s3 , ..., st }, then
+the global path planning satisfies the following conditions:
+p(st+1 |st ) = p(st+1 |ht ),
+
+(1)
+
+p(st+1 |st , at ) = p(st+1 |ht , at ).
+
+(2)
+
+The global path planning task consists of five elements
+< S, A, P, R, γ >, where S is the set of finite states, that
+is, the set of all possible paths of the planning task from the
+start point to the destination; A is the set of finite actions,
+contains the set of all paths can be chosen by the agent; P is
+the state transition probability matrix; R is a reward function,
+indicating how much reward the vehicle can get when it
+arrives a certain path; γ is the discount factor, indicating the
+importance of future rewards in the current state.
+
+In planning problems, we give positive rewards when the
+vehicle travels to the best path, and give punishment if the
+vehicle travels to the path with traffic congestions. By adding
+all the returns to calculate an expectation, we get the state
+value function for path evaluation as
+Vπ (s) = Eπ [Gt |st |s]
+= Eπ [Rt+1 + γRt+2 + γ 2 Rt+3 + ...+
+γ
+
+T −t−1
+
+(3)
+
+RT |st = s],
+
+where policy π is the action distribution for the state, and
+return Gt represents the superposition of all the discounted
+rewards obtained in the current state.
+The change of the Markov state depends on which road
+the vehicle chooses in the current state. The Q function is
+used to evaluate the state-action value:
+qπ (s, a) = Eπ [Gt |st |s, At = a].
+
+(4)
+
+According to Bellman expectation equation, we have
+Vπ (s) = Eπ [Rt+1 + γVπ (st+1 )|st = s],
+
+(5)
+
+qπ (s, a) = Eπ [Rt+1 + γqπ (st+1 , At+1 )|st = s, At = a].
+(6)
+Then, we can get the relationship between the state value
+function and Q function:
+X
+Vπ (s) =
+π(a|s)qπ (s, a).
+(7)
+a∈A
+
+Based on equations (1)-(5), the global path planning
+problem can be expressed as how to find an optimal policy
+to maximize optimal value function,
+v ∗ (s) = max Vπ (s),
+π
+
+(8)
+
+where v ∗ is the maximum reward that the vehicle can get
+for each path before reaching the end. By maximizing the Q
+function, the optimal policy is shown as follows:
+
+1 if a = arg max q ∗ (s, a)
+a∈A
+(9)
+π ∗ (a|s) =
+0 otherwise
+.
+The optimal policy is usually deterministic and stable,
+but not necessarily unique, since it is possible for multiple
+actions to achieve the same maximum value.
+III. PROPOSED SOLUTION
+Fig.2 provides an overview of our global path planning
+algorithm training framework, which consists of three parts.
+The first part is the SUMO environment, which includes the
+construction of urban traffic simulation and the feedback of
+real-time environment information. The second part is the
+design of deep reinforcement learning for the training and
+optimization of the agent, and we embed the agent into
+the vehicle to be responsible for the dynamic navigation.
+The third part is the interface connecting the agent and
+the environment, which is responsible for the transmission
+
+3011
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:23 UTC from IEEE Xplore. Restrictions apply.
+
+ters continuously by using gradient descent to minimize the
+loss function:
+Li (θi ) =E(s,a,r,si )∼U (D) [(r + γ max
+q(s′ , ai ; θi− )
+′
+a
+
+− q(s, a; θi ))2 ],
+
+Fig. 2.
+
+Vehicle path planning framework
+
+of environment and policy information, and controls the
+stepping and termination of the simulation.
+Our objective is to make the agent’s policy network
+converge stably to the optimal policy. In each training step,
+the agent stores the current state s, action a, the reward
+′
+obtained from the environment r and the next state s (an
+experience) in the memory after each path choice, and uses
+the experiences to train and update the policy network.
+A. DRL design
+To obtain the Q function, the Nature-DQN can be used
+to design our global path planning algorithm. Nature-DQN
+uses deep neural network to approximate the Q function:
+qπ (s, a) ≈ qπ (s, a; θ), where θ is the parameter of neural
+network. DRL can not only extract the features that are
+not easily detected from the information of high latitude,
+but also take into account the dynamic decision of complex
+environment, which is very suitable for the study of dynamic
+path planning under complex road network. Before the
+learning start, Q value is initialized to a fixed value (depends
+on θ). At each time t, the agent chooses the action at to get a
+reward rt , the Q function is updated and the agent move into
+the next state St+1 . The algorithm has two features in the
+training process. The first one is Temporal-Difference (TD).
+According to the Bellman equation we have,
+X
+q(s, a) = R(s, a) + γ
+P (s′ |s, a)V (s′ ),
+(10)
+s′ ∈s
+
+so we can sum the actual reward of the current state and the
+Q-value of the next state to approximate the Q-value of the
+current state. The training process of the Q-function can be
+expressed as:
+q(st , at ) ← q(st , at )+α·[rt +γ max q(st+1 , at )−q(st , at )],
+π
+(11)
+where α is the learning rate, and γ is the discount factor.
+The other feature is Different Policy (DP), that is, the
+action policy and the evaluation policy are not the same. The
+action policy uses the ϵ−greedy policy, while the evaluation
+policy uses the greedy maxπ Q(s, a).
+For Nature-DQN, the core of the algorithm is to determine
+θ to approximate Q function. We tune the network parame-
+
+(12)
+
+where θi− is the target network parameters and θi is the
+evaluation network parameters.
+In addition, DRL emphasizes four elements: observation/state, agent, action and reward. Each element will be
+explained in detail as follows.
+1) State/Observation: In the global path planning problem, the information that the vehicle can observe is limited,
+however, the multiple observations enable the agent to make
+better choices. First, we consider that the vehicle has stored
+the static map information, and the following features can
+be obtained:
+• Pv : The absolute position of the vehicle in cartesian
+coordinates (Xv , Yv ).
+• Pd : The absolute position of the destination in cartesian
+coordinates (Xd , Yd ).
+• Nl : Number of lanes.
+• L : Length of road.
+• D : The distance from the end of the road to the
+destination, obtained by the A* algorithm.
+We assume that when the vehicle makes a decision on the
+route, the Road Side Unit (RSU) will feedback the following
+information in real-time:
+• Nv : Number of vehicles on the road
+• Va : Average speed of all vehicles (default=Vm ,)
+• Vm : Maximum speed limit
+Considering that the traffic flows of the network
+have the similar characteristic in the same time period,
+we define the state as a vector [|Xv − Xd |, |Yv −
+Yd |, Nl , L, D, Nv , Va , Vm , T imeperiod]. The vectors
+are fed into the policy network to choose the best path.
+The acquisition of these features is reasonable and will not
+involve privacy issues.
+2) Action: Action refers to the choice of path made by
+the vehicle agent. In our model, the action space is defined as
+the finite set of all roads that the vehicle can choose at each
+junction, so it is discrete and dynamic. In the real traffic
+network, the action space contains at most four actions:
+[ST RAIGHT, LEF T, RIGHT, RET U RN ].
+3) Agent: The agent senses the current environment and
+affects the environment through actions. We consider the
+action space that the agent can get at different junctions may
+be different. For example, the action space that the vehicle in
+the current junction is [ST RAIGHT, LEF T, RIGHT ],
+while in the next junction is [ST RAIGHT, RET U RN ].
+Since the output dimension of the neural network is fixed,
+framework(b) needs to set default values for the non-existent
+states, and we can’t evaluate whether these default values
+will affect the training of the policy network. So we adopt
+framework(a) as our policy network, which is shown in Fig.3.
+
+3012
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:23 UTC from IEEE Xplore. Restrictions apply.
+
+Algorithm 1: Global path planning based on A*-DQN
+1
+2
+3
+4
+5
+6
+
+Fig. 3.
+
+Policy network frameworks
+
+7
+8
+
+4) Reward: Reward is the most direct experience for
+agent. The agent judges its own policy by obtaining rewards
+from the actual environment, and chooses actions with the
+highest return to approach the goal. The design of the reward
+needs to let the agent know what it has learned, otherwise
+the policy network may not converge, or the result may
+not be optimal. In general, reward is designed with simple
+principles.
+In our work, the global path planning is a time optimization problem, so we choose the optimization objective
+to design the reward mechanism. For other cases, one can
+simply modify the reward as distance, cost, etc. When the
+agent chooses an action, the environment feedbacks expected
+travel time of the action as an immediate reward:
+(
+−(Lst+1 /Vat+1 ) on the way
+(13)
+rs =
+0
+reach the end,
+where Va =1 if average speed is 0. The negative sign indicates
+that the travel time of the vehicle is inversely related to the
+reward.
+
+9
+10
+11
+12
+13
+14
+15
+
+Initialization:
+initialize the eval network with random parameters θ
+initialize the target network with θ − = θ
+initialize the memory store D
+initialize feature dimension N ; discount factor γ
+Training:
+for episode=1,M do
+initialize SUMO environment; exploration rate ϵ;
+induction rate η
+repeat
+observe state s and obtain action space A
+filter actions by A*
+with probability η select a by A*
+with probability ϵ select random choice a
+otherwise select a = arg max q(s, a; θ)
+a∈A
+
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+
+receive reward r and observe next state s′
+store experience [s, a, r, s′ ] in D
+if memory counter mod CAPICITY = 0 then
+sample mini-batches from D
+update eval network parameters θ
+end
+D=∅
+until simulation is terminal;
+obtain travel time Ttotal and total reward Rtotal
+if learn counter mod TARGET = 0 then
+update target network parameters θ − = θ
+end
+end
+
+B. A* assisted
+In the training process, the agent needs to use the so called
+Exploration in the early stage to obtain the information
+of the road network as much as possible. And choose the
+path based on the learned experience in the later stage,
+which is called Exploitation. Exploitation is effective for
+maximizing the current expected benefit, while Exploration
+may maximize overall benefits in the long turn.
+In the real complex traffic network, we found that in the
+early exploration of the agent, some paths could not reach
+the end, or it takes longer time than expected to reach the
+end, which we called Invalid Exploration. So in our work,
+the A* algorithm is used in the early exploration of the agent
+to reduce Invalid Exploration. We improve the algorithm
+in four aspects:
+1) When the agent chooses an action, it uses the A*
+algorithm to determine whether the current action can
+reach the end point. If not, exclude the action.
+2) If the action can reach the destination, the agent judges
+whether the expected time is exceeded when the agent
+executes the action to reach the end (the distance is
+calculated from A*). If it exceeds, exclude the action.
+3) In the early stage of exploration, the agent chooses
+the path obtained by the A* algorithm with a certain
+probability.
+
+4) The distance from the current state to the destination is
+calculated by the A* algorithm as an input feature of
+the policy network.
+The overall algorithm is shown in Algorithm 1.
+IV. SIMULATION RESULTS
+A. Simulation experiments
+We use SUMO to build a real traffic network simulation
+environment. SUMO is a free and open source traffic simulation suite, supporting both macro and micro traffic simulation
+[24]. Real world maps can be incorporated into SUMO for
+simulation. It can also define the vehicle’s departure and
+arrival attributes, such as lane, speed, and position. In order
+to control the vehicle and feedback traffic information in real
+time, SUMO provides Traffic Control Interface (TraCI) giving access to a running road traffic simulation. It is allowed
+to retrieve values of simulated objects and to manipulate their
+behavior “on-line”.
+In our experiments, we aim to achieve real-time route optimization in vehicle point-to-point tasks, so we use two urban
+maps that converted from OpenStreetMap via the SUMO
+method called NETCONVERT, to verify the effectiveness of
+the proposed algorithm, which are shown in Fig.4. We use
+randomT rips.py provided by SUMO to generate random
+
+3013
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:23 UTC from IEEE Xplore. Restrictions apply.
+
+Fig. 4.
+
+Real world city maps for SUMO environment
+
+traffic flows in our traffic network. The experiments set
+different traffic flows in each map and use the proposed
+algorithm to control the path selection of individual vehicle.
+To demonstrate the performance of the proposed method, A*
+algorithm and Nature-DQN are compared.
+B. Deep neural network architecture
+The training hyper-parameters are shown in Table I. Our
+policy neural network contains five fully connected layers
+with three hidden layers. The training episodes increase with
+the complexity of the map, and the exploration rate and
+induction rate will decrease with the convergence of the
+model. We consider the global time optimization, rather than
+choosing the shortest path locally, the future reward is very
+important to the current state return calculation, therefore the
+discount factor is set to 0.99.
+TABLE I
+H YPER - PARAMETERS FOR TRAINING
+Parameter
+
+Value
+
+Episodes
+Adam optimizer learning rate
+Exploration rate
+Induction rate
+Replay memory size
+Target network update frequency
+Discount factor
+Mini-batch for update
+
+5000/8000
+0.001
+0.8 → 0.01
+0.2 → 0
+3000
+15
+0.99
+8
+
+Table II. At the beginning of training, the agent does not
+know the optimal policy, and it is in the exploration stage.
+The agent has more chances to choose actions randomly,
+and accumulate experience. During the training process, the
+agent continues to optimize its policy network, and learns
+from experiences to take actions that maximize the total
+reward. Map 2 is more complex (reflected in the number
+of edges, nodes and traffic lights) than Map1, and the agent
+needs to explore more unknown environments to learn more
+experience, therefore the model convergence time is longer
+than Map 1. For the same map, the increase of vehicles on
+the road will increase the uncertainty of the environment and
+make a higher possibility of traffic congestion. So there are
+more peaks in training process, and the convergence speed
+will be slower.
+The performance of convergence between the proposed
+algorithm and Nature-DQN is shown in Fig.6. In early training, our algorithm avoids the invalid exploration, allowing
+the policy network to converge faster. However the NatureDQN explores invalid paths and collects bad experiences
+into memory library, which leads to a longer convergence
+time. In the experiments, we also found that there is a
+situation in which the Nature-DQN always samples bad
+experiences to update the policy network, then the policy
+network chooses the bad path, resulting agent collects more
+bad experiences and cannot learn the optimal policy or even
+cannot convergence.
+Table III shows the average travel time of our proposed
+algorithm compared to the other algorithms. The results show
+that the proposed method outperforms other algorithms in
+all of the traffic conditions. Compared with A* algorithm,
+our proposed method reduces about 10.8%, 11.8% and 8.6%
+traveling time with different traffic flows in Map1, and
+reduces about 58.3%, 43.0% and 42.7% traveling time with
+different traffic flows in Map2. In addition, the convergence
+results of Nature-DQN are similar to the proposed algorithm
+because they are set the same observation vector.
+TABLE III
+T HE OBJECTIVE PERFORMANCE COMPARISONS UNDER
+A VARIOUS OF TRAFFIC CONDITIONS .
+Map1
+Nvehicle
+
+TABLE II
+M AP INFORMATION
+
+Total edges
+Total nodes
+Num of traffic light
+Numlanes range
+Edge max speed range(kmph)
+Traffic density
+
+City Map1
+
+City Map2
+
+84
+44
+0
+1-2
+50-80
+20/50/100
+
+143
+64
+4
+1-3
+20-100
+100/200/400
+
+Map2
+
+20
+
+50
+
+100
+
+200
+
+400
+
+A*
+
+129.7
+
+134.4
+
+100
+138.7
+
+545.9
+
+691.41
+
+728.1
+
+DQN
+
+116.2
+
+126.5
+
+130.3
+
+274.5
+
+415.9
+
+417.4
+
+A*-DQN
+
+115.6
+
+118.5
+
+126.7
+
+227.3
+
+393.7
+
+416.5
+
+V. CONCLUSIONS
+
+C. Results and Discussions
+Fig.5 shows the convergence of proposed algorithm on two
+different maps. Details of the map information are given in
+
+This paper studies the Vehicle-Road collaborative path
+planning based on Deep Reinforcement Learning. By introducing multi-dimensional observations, using the A* algorithm for induction in the early stage of exploration,
+and rationally designing the architecture of the decisionmaking network, our proposed algorithm has better performance in complex and dynamic traffic road networks. The
+
+3014
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:23 UTC from IEEE Xplore. Restrictions apply.
+
+Fig. 5.
+
+The training curves of our algorithm. (a) and (b) correspond to map1, (c) and (d) are for map2.
+
+experimental results show that the algorithm is effective
+in path optimization with faster training and less driving
+time, especially with real-time changing and complex road
+conditions.
+
+Fig. 6. The training curves compared between the proposed algorithm and
+Nature-DQN. (Map1, Nvehicle = 20)
+
+ACKNOWLEDGEMENT
+This work was supported in part by the National Science
+Foundation of China (NSFC) with grant no. 61901534,
+in part by the Guangdong Basic and Applied Basic Research Foundation under Key Project 2019B1515120032,
+in part by the Science, Technology and Innovation
+Commission of Shenzhen Municipality with grant no.
+JCYJ20210324120002007, JCYJ20190807155617099 and
+SYSU-A202106.
+R EFERENCES
+[1] L. Qiao, Y. Li, D. Chen, S. Serikawa, M. Guizani, and Z. Lv, “A survey
+on 5g/6g, ai, and robotics,” Computers & Electrical Engineering,
+vol. 95, pp. 107 372–, 2021.
+[2] E. W. Dijkstra, “A note on two problems in connexion with graphs,”
+Numerische Mathematik, 1959.
+[3] P. Eklund, S. Kirkby, and S. Pollitt, “A dynamic multi-source dijkstra’s
+algorithm for vehicle routing,” in 1996 Australian New Zealand
+Conference on Intelligent Information Systems. Proceedings. ANZIIS
+96, 1996, pp. 329–333.
+[4] A. Patel, “Introduction to the a* algorithm,” 2014, https://www.
+redblobgames.com/pathfinding/a-star/introduction.html.
+[5] X. Wang and T. Ye, “Research on robot path planning based on
+improved a* algorithm,” Computer Measurement & Control, 2018.
+[6] C. Wu, S. Zhou, and L. Xiao, “Dynamic path planning based on
+improved ant colony algorithm in traffic congestion,” IEEE Access,
+vol. 8, pp. 180 773–180 783, 2020.
+[7] J. Kennedy and R. Eberhart, “Particle swarm optimization,” in Proceedings of ICNN’95 - International Conference on Neural Networks,
+vol. 4, 1995, pp. 1942–1948 vol.4.
+
+[8] M. Elbanhawi and M. Simic, “Sampling-based robot motion planning:
+A review,” IEEE Access, vol. 2, pp. 56–77, 2014.
+[9] R. Geisberger, P. Sanders, D. Schultes, and D. Delling, “Contraction
+hierarchies Faster and simpler hierarchical routing in road networks,”
+in International Workshop on Experimental and Efficient Algorithms,
+2008.
+[10] P. Sanders and D. Schultes, “Engineering highway hierarchies,” Journal of Experimental Algorithmics, 2012.
+[11] D. Delling, A. Goldberg, T. Pajor, and R. Werneck,
+“Customizable route planning,” in Proceedings of the 10th
+International Symposium on Experimental Algorithms (SEA’11),
+ser. Lecture Notes in Computer Science.
+Springer Verlag,
+May 2011. [Online]. Available: https://www.microsoft.com/enus/research/publication/customizable-route-planning/
+[12] D. Xu, P. Peng, C. Wei, D. He, and Q. Xuan, “Road traffic network
+state prediction based on a generative adversarial network,” IET
+Intelligent Transport Systems, no. 3, 2020.
+[13] L. Zhu, T. Li, and S. Du, “Ta-stan: A deep spatial-temporal attention
+learning framework for regional traffic accident risk prediction,” in
+2019 International Joint Conference on Neural Networks (IJCNN),
+2019, pp. 1–8.
+[14] S. Lai, C. Zhou, X. Song, and X. Zhang, “A traffic accident risk
+prediction model based on spatial gated memory network,” in 2021
+International Conference on Electronic Information Engineering and
+Computer Science (EIECS), 2021, pp. 331–335.
+[15] L. Li, H. Lin, J. Wan, Z. Ma, and H. Wang, “Mf-tcpv: A machine
+learning and fuzzy comprehensive evaluation-based framework for
+traffic congestion prediction and visualization,” IEEE Access, vol. 8,
+pp. 227 113–227 125, 2020.
+[16] W. Hu, H. Wang, and L. Yan, “An actual urban traffic simulation model
+for predicting and avoiding traffic congestion,” in 17th International
+IEEE Conference on Intelligent Transportation Systems (ITSC), 2014,
+pp. 2681–2686.
+[17] Y. Liu, L. Liu, and W.-P. Chen, “Intelligent traffic light control using
+distributed multi-agent q learning,” in 2017 IEEE 20th International
+Conference on Intelligent Transportation Systems (ITSC), 2017, pp.
+1–8.
+[18] X. Lin, M. Li, Z. Shen, Y. Yin, and F. He, “Rhythmic control of
+automated traffic part ii Grid network rhythm and online routing,”
+2020.
+[19] A. Haydari and Y. Yilmaz, “Deep reinforcement learning for intelligent
+transportation systems: A survey,” arXiv, 2020.
+[20] B. Khamidehi and E. S. Sousa, “Distributed deep reinforcement
+learning for intelligent traffic monitoring with a team of aerial robots,”
+in 2021 IEEE International Intelligent Transportation Systems Conference (ITSC), 2021, pp. 341–347.
+[21] A. Tamar, S. Levine, and P. Abbeel, “Value iteration networks,” 2016.
+[22] S. S. Koh, B. Zhou, P. Yang, Z. Yang, H. Fang, and J. Feng,
+“Reinforcement learning for vehicle route optimization in sumo,”
+in 2018 IEEE 20th International Conference on High Performance
+Computing and Communications; IEEE 16th International Conference
+on Smart City; IEEE 4th International Conference on Data Science
+and Systems (HPCC/SmartCity/DSS), 2018, pp. 1468–1473.
+[23] S. Koh, B. Zhou, H. Fang, P. Yang, and Z. Ji, “Real-time deep
+reinforcement learning based vehicle routing and navigation,” Applied
+Soft Computing, 2020.
+[24] P. A. Lopez, M. Behrisch, L. Bieker-Walz, J. Erdmann, and E. Wiener,
+“Microscopic traffic simulation using sumo,” in The 21st IEEE International Conference on Intelligent Transportation Systems, 2018.
+
+3015
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:23 UTC from IEEE Xplore. Restrictions apply.
+
+

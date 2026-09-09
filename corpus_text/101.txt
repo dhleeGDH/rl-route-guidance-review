@@ -1,0 +1,940 @@
+Proceedings of the 6th International Conference on Trends in Material Science and Inventive Materials (ICTMIM-2026)
+IEEE Xplore Part Number: CFP260J1-ART; ISBN: 979-8-3315-7006-4
+
+2026 6th International Conference on Trends in Material Science and Inventive Materials (ICTMIM) | 979-8-3315-7006-4/26/$31.00 ©2026 IEEE | DOI: 10.1109/ICTMIM68190.2026.11506680
+
+Energy Optimal Route Planning Framework for
+Electric Vehicles using Hybrid Artificial
+Intelligence Models
+Maram Y. Al-Safarini
+Computer Science Department, Zarqa
+University,zarqa, Jordan.
+University of Business and
+Technology, Jeddah, 21448, Saudi
+Arabia.
+maram@zu.edu.jo.
+Lokesh
+Department of Computer science and
+Engineering
+Cambridge Institute of Technology,
+KR Puram 560036
+lokesh.cse@cambridge.edu.in
+
+P.Sivabalan,
+Professor, Naval Architecture & Ocean
+Engineering
+AMET University, Kanathur, Chennai
+- 603112
+sivabalan@ametuniv.ac.in
+
+S. Agnes Shifani
+Professor, Department of ECE,
+Saveetha School of Engineering,
+SIMATS, Chennai
+agnesshifani@gmail.com
+
+N Krishna Chythanya,
+Department of CSE,
+GRIET, Hyderabad, Telangana, India,
+nkrishna1397@grietcollege.com
+
+Ramya M,
+Division of Research and
+Development,
+Lovely Professional University,
+Jalandhar - Delhi G.T.Road,
+Phagwara, Punjab (India) – 144411.
+ramyalpu@yahoo.com
+
+Abstract—The rapid proliferation of electric vehicles (EVs)
+has necessitated intelligent route planning systems that
+prioritize energy efficiency over mere distance or travel time.
+This study proposes a novel Energy Optimal Route Planning
+Framework that integrates multi-source spatio-temporal data
+with hybrid artificial intelligence (AI) models to enhance
+navigation decisions for EVs. The artificial intelligence
+approach includes the graph-based representation of roads,
+physics-directed neural differentiable representations of realtime energy prediction, and quantum-inspired optimization of
+multi-objective cost optimization. An extraordinary hybrid
+learning system is introduced that integrates Deep
+Reinforcement Learning (DRL) and Swarm-Based Global
+Search to enable the learning to be dynamic in response to the
+traffic, elevation, and charging constraints. The system also
+involves Gated Graph-Temporal Convolutional Networks (GGTCNs) to predict traffic trends in order to proactively route
+traffic. A city-wide experimental validation shows that 26.3%
+energy efficiency is improved, 14.8% route detour time
+reduction, and 91.72 route selection accuracy improve
+compared to the traditional shortest-path and time-based
+navigation models. The future of smarter EV routing systems is
+that the framework has real-time flexibility, predictive
+intelligence, and multi-objective optimization. This study
+provides a foundation of intelligent transportation systems that
+are energy-sensitive, infrastructure-sensitive and appropriate in
+the real-world application in the highly populated or
+infrastructure-restrained.
+Keywords—Energy-Aware
+Routing,
+Electric
+Vehicle
+Optimization, Neural Differential Equations, Quantum-Inspired
+Optimization, Deep Reinforcement Learning.
+
+I. INTRODUCTION
+The transition toward sustainable transportation is
+reshaping the automotive industry, with electric vehicles
+
+(EVs) emerging as a key component in reducing carbon
+emissions and promoting energy efficiency [1]. With the
+increasing spread of EVs in the world, supported by the
+development of the battery technologies and the incentives
+offered by the government, there has been a growing
+necessity of creating intelligent navigation systems that
+would suit the needs of EVs [2]. Compared to traditional
+internal combustion engine automobiles, EVs are limited in
+range of battery, have extended charging times, and have a
+low density of charged station networks. EVs therefore must
+rely on route planning that extends beyond paradigms of
+shortest-distance and fastest-time optimization to enable
+energy optimization, real-time traffic prediction and
+awareness of charging infrastructure [3].
+EVs routing is a multi-objective problem that is energyefficient in nature, entailing minimizing the battery used,
+travel and charging time, and battery health [4]. The fact that
+the issue is exacerbated by external factors like dynamic
+traffic jam, road elevation, weather changes, and charging
+stations also complicate a solution [5]. These variables
+present a demand of real-time decision-making structures that
+are adaptive and able to process non-homogeneous data and
+learn the best routing policies through constant interaction
+with the environment [6]. Moreover, predictive modeling can
+be essential to prevent congestion proactively and be able to
+plan possible routes within battery limits, particularly in big
+cities with unstable traffic patterns [7].
+The majority of the available EV routing models are
+based on classical algorithms such as Dijkstra- or Astarbased, and are not flexible to changes in traffic, elevation, and
+battery state [8]. Although machine learning enhances energy
+and traffic forecasting, it tends to run alone resulting in partial
+
+979-8-3315-7006-4/26/$31.00 ©2026 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:06:34 UTC from IEEE Xplore. Restrictions apply.
+
+172
+
+Proceedings of the 6th International Conference on Trends in Material Science and Inventive Materials (ICTMIM-2026)
+IEEE Xplore Part Number: CFP260J1-ART; ISBN: 979-8-3315-7006-4
+
+planning. Reinforcement learning is flexible, which is not
+guaranteed to be globally optimistic, and metaheuristic
+techniques do not have the ability to learn [9]. Therefore, to
+reduce energy consumption, the smart EV route planning
+entails an integrated structure that integrates predictive
+intelligence, adaptive learning, and global optimization [10].
+To instigate solutions to these issues, the present study
+suggests a special framework of the Energy Optimal Route
+Planning that is specifically aimed at the electric vehicles
+based on the hybrid approach to artificial intelligence. The
+energy-aware decision-making model proposed comprises
+several uncommon methods to boost navigation of EV. The
+multi-layered road network graph is built based on the realtime and past spatio-temporal data of the vehicular sensors,
+IoT sensors, and open mobility databases. Dynamic
+characteristics of the road segments include congestion,
+gradient, energy cost and accessibility of the charging
+stations. An energy model that is physics-informed based on
+Neural Ordinary Differential Equations (Neural-ODEs)
+predicts battery consumption per segment, operates with
+physical interpretability and in real-time.
+II. RELATED WORKS
+To overcome constraints of distance-based or time-based
+routing, an energy-optimal routing system of electric vehicles
+was provided. A neural network based on LSTM estimated the
+state-of-charge consumption by using real-world driving data
+and using the spatiotemporal characteristics of speed,
+temperature, road gradient, and distance [11]. The model also
+modeled nonlinear and time-dependent energy patterns
+without the use of complicated physical parameters. Systems
+routing map, traffic, weather, and charging data were
+incorporated into a weighted graph and an improved version
+of A+ was used. Experiment findings revealed much better
+accuracy compared to traditional and commercial solutions.
+Due to the growing requirement of decarbonization and
+smart transportation, the technologies of eco-driving of
+electric vehicles were developed. An integrated approach of
+macro traffic flow, detailed vehicle energy models and road
+environmental factors was implemented to come up with a
+hierarchical eco-driving framework [12]. Real road topology
+traffic network was built and energy-efficient routes were
+determined with the help of multi-heuristic A 3 algorithm.
+Convex optimization allowed velocity planning to be used
+accurately along chosen routes. It was experimentally
+demonstrated to incur computation times of less than 2
+seconds and energy and time savings of over 10 %.
+Increasing environmental consciousness and the issue of
+climate change had risen the use of electric vehicles, and the
+governmental incentives were a part of this rise. Nevertheless,
+range anxiety was still a significant impediment because
+driving range was short, charge times were lengthy and
+charging stations were widespread [13]. A progressive route
+planning strategy was introduced with battery state of health,
+external temperature, and driving style being considered in
+routing. Actually, available energy was used to select
+reachable charging stations. The effect of the strategy
+proposed on the results of simulation indicated high risk of
+
+battery depletion in situations where routes were based on
+proclaimed range alone which became effective.
+Electric vehicles powered by fuel cells needed to have
+proper energy management policies to achieve the sustainable
+transportation gains. The framework of co-optimization was
+advanced to plan the speed and energy consumption of
+intelligent fuel cell electric vehicles [14]. A Toyota Mirai
+energy model has been designed and tested on the basis of
+real-life test data. The optimal control problem was to
+minimize hydrogen use, prevent peaks of power and
+maximize regenerative braking subject to battery and motor
+limits. Test results demonstrated that a 25 % fuel saving was
+achieved on flat roads and a 36 % increase in results when
+driving under realistic scenarios.
+The movement of electricity cars and their charging
+patterns had an impact on the functioning of power grid and
+road traffic. The graph theory, time-varying traffic
+information and a road impedance formulation were applied
+to create a dynamic road network model [15]. The electric
+vehicle spatio-temporal travel properties were modelled and a
+modified Dijkstra algorithm with real-time impedance used to
+represent the energy-consumption as accurate. Real scenario
+simulation outcomes indicated that it reduced travel time by
+18 %, load balance in each charging station, stabilization of
+voltages within 7 % and congestion at each station.
+III. PROPOSED METHODOLOGY
+3.1. Spatio-Temporal Traffic Data Acquisition and MultiSource Integration
+The methodology starts with the total acquisition and
+synthesis of spatio-temporal data which plays a critical role
+in proper and contextual route planning of the electric
+vehicles (EVs). These data are in many non-homogenous
+sources like vehicle GPS tracking, Internet of Vehicles (IoV),
+stationary sensors and live traffic applications (Google Maps,
+HERE Maps) and open geospatial databases like
+OpenStreetMap and Waze. Besides moving traffic, data on
+the availability of charging stations, altitude of the ground,
+and twistiness of the roads, as well as the speed limit, is also
+absorbed. The system uses real time data streaming using the
+MQTT protocols and edge based preprocessing modules to
+normalize formats and timestamps. Spatial harmonization
+process is done with the Delaunay triangulation in order to
+maintain a uniform mapping of the sparse or unbalanced data.
+The temporal aggregation is then accomplished through the
+sliding window model that realizes that the updates at high
+frequencies are synchronized without overloading the
+system. The space is partitioned into uniform cells with
+hexagonal hierarchical indexing (via Uber H3) to provide
+efficient indexing, caching and look-up of the dynamic
+routing engine. The combined data constitutes the input of
+energy-sensitive route optimization.
+3.2. Graph Construction and Topological Feature
+Extraction for Road Networks
+The dynamic road network is modeled as a directed
+weighted multigraph with the vertex denoting an intersection,
+
+979-8-3315-7006-4/26/$31.00 ©2026 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:06:34 UTC from IEEE Xplore. Restrictions apply.
+
+173
+
+Proceedings of the 6th International Conference on Trends in Material Science and Inventive Materials (ICTMIM-2026)
+IEEE Xplore Part Number: CFP260J1-ART; ISBN: 979-8-3315-7006-4
+
+point of interest and EV charging stations and the edge
+denoting traversable road segments. The edge weights are not
+only Euclidean distance or travel time weightings but they are
+augmented with multi-dimensional cost vectors such as
+slope-adjusted energy consumption, surface friction
+coefficient, average congestion level, and regenerative
+braking potential. To maintain the complexity of urban
+transport topology, edge-betweenness centrality is calculated
+to determine and maintain critical arterial routes which can
+be otherwise overlooked during simplification. A superior
+dual-graph encoding scheme is used where the primal graph
+represents the physical road connectivity and a dual graph
+represents transition between road segments to represent
+turning behavior and multi-hop traveling energy. The
+features which are extracted out of the two graphs are
+subjected to topological embedding (Unsupervised node2vec
+and spectral clustering) so as to enable the downstream
+models to discover latent structural patterns and group
+interdependencies. The final product of this stage is a rich and
+adaptive space model contextualizing road segments
+containing energy and traffic-conscious features to be
+processed into real-time queries. Figure 1 shows the hybrid
+AI-based energy-optimal EV route planning architecture.
+
+physically valid predictions, residual learning is applied by
+using physics-constrained autoencoders, which are penalized
+on deviations of known energy transfer behavior. The hybrid
+model can estimate the rate at which a battery is drained at
+different working conditions including uphill transmission,
+acceleration bursts, stop-and-go traffic, and regenerative
+braking. The energy profile thus obtained is very contextual
+and is used to estimate costs in the routing algorithm.
+𝐸(𝑡) =
+
+1
+⋅ (𝐹𝑟 + 𝐹𝑔 + 𝐹𝑎 ) ⋅ 𝑣(𝑡)
+𝜂
+
+(1)
+
+Where 𝐸(𝑡) is the instantaneous energy consumption at
+time 𝑡, 𝜂 is the drivetrain efficiency, 𝐹𝑟 is rolling resistance,
+𝐹𝑔 is gradient force, 𝐹𝑎 is aerodynamic drag, and 𝑣(𝑡) is
+vehicle velocity.
+3.4. Multi-Criteria Cost Function Formulation with
+Quantum-Inspired Weight Optimization
+In order to be able to incorporate the various goals in EV
+routing, such as minimal energy consumption, minimal time,
+minimal battery degradation, and minimal charging detours,
+a composite cost functional is formulated based on the
+weighted-sum of normalized parameters. The parameters
+involve the amount of energy consumed by each segment, the
+approximate time taken, the number and length of charging
+stations, and closeness to the degradation limits. Rather than
+manually giving a weight to these criteria, a QuantumInspired Evolutionary Algorithm (QIEA) is used to maximize
+them. This metaheuristic algorithm uses the simulated
+quantum parallelism with the use of the probability amplitude
+representations in which a high and complex solution space
+is explored using fewer generations. Interestingly, the QIEA
+dynamically adjusts weights to various route profiles and
+preferences of users, like urgency or battery health priority. It
+means that the cost function can be used to conform to
+different use-cases, and then have a personalized
+optimization instead of a one-size-fits-all strategy.
+𝐶𝑡𝑜𝑡𝑎𝑙 = 𝑤1 ⋅ 𝐸𝑟𝑜𝑢𝑡𝑒 + 𝑤2 ⋅ 𝑇𝑟𝑜𝑢𝑡𝑒 + 𝑤3̇ 𝐷𝑐ℎ𝑎𝑟𝑔𝑒 + 𝑤4
+(2)
+⋅ 𝐵𝑑𝑒𝑔
+
+Fig 1. Hybrid AI-Based Energy-Optimal EV Route Planning Architecture
+
+3.3. Energy Consumption Modeling using PhysicsGuided Neural Differential Equations
+A major development on this methodology is that it has a
+new energy modelling approach that integrates physics-based
+vehicle dynamic and neural learning. The framework does
+not only use solely data-driven estimates, but it combines a
+family of models called Neural Ordinary Differential
+Equations (Neural-ODEs) to estimate energy consumption
+curves in the continuous-time on each road section. These
+models are trained using both simulated and experimental
+telemetry data and are limited to physical parameters
+including rolling resistance, gradient force, aerodynamic
+drag, and battery thermal response. In order to have
+
+Where 𝐶𝑡𝑜𝑡𝑎𝑙 is the total cost of a candidate route, 𝐸𝑟𝑜𝑢𝑡𝑒
+is estimated energy consumption, 𝑇𝑟𝑜𝑢𝑡𝑒 is travel time,
+𝐷𝑐ℎ𝑎𝑟𝑔𝑒 is charging detour time, 𝐵𝑑𝑒𝑔 is battery degradation
+score, and 𝑤1 , 𝑤2 , 𝑤3 , 𝑤4 are optimization weights.
+3.5. Real-Time Traffic Pattern Forecasting using GraphBased Temporal Convolution Networks
+The capability to predict the traffic congestion and the
+delay state over future time horizons is a very important
+element in proactive route planning. To this end, the proposed
+framework utilizes a Gated Graph Temporal Convolutional
+Network (G-GTCN) a hybrid deep learning architecture that
+is able to jointly capture spatial road network representations
+as well as time-series traffic features. In contrast to the
+traditional RNN or LSTMs that are based on sequential
+dependencies only, the G-GTCN employs graph convolution
+layers to derive topological features and combines them with
+
+979-8-3315-7006-4/26/$31.00 ©2026 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:06:34 UTC from IEEE Xplore. Restrictions apply.
+
+174
+
+Proceedings of the 6th International Conference on Trends in Material Science and Inventive Materials (ICTMIM-2026)
+IEEE Xplore Part Number: CFP260J1-ART; ISBN: 979-8-3315-7006-4
+
+the temporal convolution functions in rolling traffic
+windows. This congestion captures the short-term spikes and
+long-term seasonal trends in congestion. The supervised
+learning on time-tagged traffic density and speed data taken
+over months is used to train the model. The system predicts
+the future states of the bottlenecks and prevents them before
+they occur by feeding the traffic predicted states into the
+routing engine, as opposed to reactive response. This
+forecasting layer brings a degree of strength and flexibility to
+the entire system particularly in the contexts of metropolitan
+traffic or event-based traffic.
+𝑋̂𝑡+1 = 𝜎 (𝑊𝑔 ⋅ 𝐺𝐶𝑁(𝑋𝑡 ) + 𝑊𝑡 ⋅ 𝑇𝐶𝑁(𝑋𝑡 ))
+
+(3)
+
+Where 𝑋̂𝑡+1 is the predicted traffic state at time 𝑡 +
+1, 𝐺𝐶𝑁(𝑋𝑡 ) and 𝑇𝐶𝑁(𝑋𝑡 ) are graph and temporal
+convolutions over input traffic state 𝑋𝑡 and 𝑊𝑔 , 𝑊𝑡 are
+learnable weights, with 𝜎 being the activation function.
+
+infeasible or suboptimal nodes on-the-fly with regard to
+constraints. The two systems make sure that there is decision
+agility locally with DRL and consistency globally with graphbased inference. The model is characterized by greater
+flexibility, because it constantly improves policies depending
+on new environmental information without altering structural
+limitations on the back-end network.
+𝑄(𝑠, 𝑎) = 𝛼 ⋅ (𝑟 + 𝛾 ⋅ max
+𝑄(𝑠 ′ , 𝑎′ ) − 𝑄(𝑠, 𝑎))
+′
+
+(4)
+
+𝑎
+
+Where 𝑄(𝑠, 𝑎) is the expected reward of taking action 𝑎
+in state 𝑠, 𝛼 is the learning rate, 𝛾 is the discount factor, 𝑟 is
+the observed reward, and 𝑠 ′ is the next state. Figure 2
+illustrates the overview of energy-optimal route planning for
+electric vehicles.
+
+3.6. Multi-Agent Swarm-Based Search for Global
+Optimal Routes
+The framework is used to investigate the large and
+evolving routing space subject to energy and time constraints
+through the deployment of the hybrid optimization model,
+Particle Swarm Optimization with Dynamic Neighborhoods
+(HPSO-DN). Every swarm agent is the candidate route path
+in the form of a sequence of nodes and transitions. The swarm
+is optimized through successive evolution and local
+exploitation (through dynamic neighborhood best) and global
+exploration (through velocity updates). An example of a
+fuzzy heuristic element is introduced to optimize the use of
+the Ant Colony Optimization (ACO). In this case, the
+transition probabilities are adjusted depending on the energy
+penalties imposed by the terrain and coverage of the charging
+stations. The two-step process enables the swarm to get out
+of local optima and find globally optimal paths that not only
+reduce cost, but also offer plausible backup paths in the event
+of unexpected congestion or charging unavailability. Swarmbased system is also parallelizable in nature and can run
+efficiently on a multi-core system or cloud-based system.
+3.7. Proposed Model: Hybrid AI Framework Combining
+Deep Reinforcement Learning with Graph Optimization
+The climax of the methodology will be the fusion of a
+hybrid artificial intelligence system that integrates Deep
+Reinforcement Learning (DRL) and real-time graph
+optimization heuristic. According to DRL component, the
+component is trained using the Deep Q-Network (DQN) to be
+able to learn the best navigation policies by simulating
+interaction with the environment, where reward function
+serves as an expression of energy efficiency, time
+minimization, and battery health preservation. The agent
+monitors the existing road condition, battery and traffic
+prediction in order to make the decision to follow, i.e., the
+change of route. The system uses an experience replay
+mechanism in which the events that occur infrequently and
+dissipate energy are sampled more to hasten learning in
+situations of high-risk. Laminated with the DQN, the graph
+optimization engine utilizes the pruning strategies to remove
+
+Fig 2. Energy-Optimal EV Route Planning
+
+IV. RESULTS AND DISCUSSION
+The main working concept of the suggested energy
+optimal route planning tool is the possibility to calculate the
+most efficient energy-saving and time-saving path of electric
+vehicles dynamically, combining traffic, real-time
+information regarding the consumption of energy, and
+charging infrastructure. The system builds a spatio-temporal
+road graph and forecasts traffic congestion based on graph
+temporal models, and predicts battery drain in segments
+based on physics-informed neural energy model. These
+forecasts are provided to a multi-objective optimization
+engine which combines reinforcement learning and swarmbased search to find global optimum paths. The last chosen
+path changes constantly based on the environment and
+transportation, which provides viable practical and
+trustworthy energy-conscious navigation.
+TABLE I.
+
+COMPARATIVE ENERGY CONSUMPTION ACROSS ROUTING
+MODELS (KWH)
+
+Scenario
+ID
+
+Shortest
+Path
+
+TimeOptimal
+
+S1
+S2
+S3
+S4
+S5
+S6
+S7
+S8
+S9
+S10
+
+18.6
+21.2
+19.8
+23.5
+17.4
+24.1
+20.7
+22.9
+18.9
+25.4
+
+17.9
+20.4
+18.6
+22.8
+16.9
+23.2
+19.6
+21.8
+18.1
+24.6
+
+Static
+EnergyAware
+16.8
+18.7
+17.2
+20.9
+15.6
+21.5
+18.1
+20.2
+16.7
+22.8
+
+979-8-3315-7006-4/26/$31.00 ©2026 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:06:34 UTC from IEEE Xplore. Restrictions apply.
+
+Proposed
+Hybrid AI
+13.9
+15.4
+14.1
+16.8
+12.7
+17.2
+14.9
+16.1
+13.8
+18.5
+
+175
+
+Proceedings of the 6th International Conference on Trends in Material Science and Inventive Materials (ICTMIM-2026)
+IEEE Xplore Part Number: CFP260J1-ART; ISBN: 979-8-3315-7006-4
+
+Table 1 and Figure 3 indicates that the proposed hybrid
+AI model is more energy efficient in 10 urban traffic
+scenarios. The proposed model will always consume less
+energy, 12.7 to 18.5 kWh, in comparison to the traditional
+shortest path strategy and time-optimal strategy, which mean
+18200 to 25000, respectively.
+
+The mean time savings over shortest path routing is about
+15.6% which illustrates that predictive traffic learning and
+rerouting allow the system to provide a fast and energy saving
+navigation at the same time.
+Table 3 and Figure 5 shows how well the proposed hybrid
+AI model can work in dynamically changing traffic
+conditions. The route choice accuracy is as high as 93.1%
+which is considerably larger than the one of the static models
+or the classical optimization procedures which approach 8084%. This is where reinforcement learning component is of
+significant importance and it redefines decision policies
+every time by prioritized experience replay. In addition, the
+swarm search will guarantee local optima escape.
+TABLE III.
+
+ROUTE SELECTION ACCURACY UNDER DYNAMIC TRAFFIC
+(%)
+
+Fig 3. Comparative Energy Consumption Across Routing Models
+
+This advancement can be explained by the fact that it
+incorporates Neural ODE-based energy modeling and graphtemporal forecasting that enables avoiding energydemanding parts in real-time. The overall energy efficiency
+gains of about 26.3% is a clear demonstration of the model
+capability of the energy conscious routing choices that
+respond to the contextual constraints like gradient and traffic.
+TABLE II.
+
+AVERAGE TRAVEL TIME REDUCTION (MINUTES)
+
+Route ID
+
+Shortest
+Path
+
+TimeOptimal
+
+R1
+R2
+R3
+R4
+R5
+R6
+R7
+R8
+R9
+R10
+
+64
+72
+68
+79
+60
+82
+70
+76
+65
+85
+
+58
+65
+61
+71
+55
+74
+63
+69
+59
+77
+
+Static
+EnergyAware
+61
+69
+64
+74
+57
+77
+66
+72
+62
+80
+
+Proposed
+Hybrid AI
+54
+59
+56
+63
+50
+66
+57
+61
+54
+68
+
+The proposed model can create very high improvements
+in travel time as seen in Table 2 and Figure 4. In all 10 route
+IDs, the hybrid AI process has been most effective than both
+the shortest path and the fixed energy-aware mode and the
+travel time is between 50 and 68 minutes. Although timeoptimal models are good in isolation they do not tend to take
+into consideration the energy cost.
+
+Test Case
+
+Shortest
+Path
+
+TimeOptimal
+
+T1
+T2
+T3
+T4
+T5
+T6
+T7
+T8
+T9
+T10
+
+68.4
+70.1
+66.8
+69.3
+71.6
+65.9
+67.5
+72.1
+68.9
+66.2
+
+74.2
+76.5
+73.9
+75.1
+77.8
+72.4
+73.6
+78.4
+74.8
+72.9
+
+The model proposed however balances energy and travel
+time constraints by means of multi-objective optimization.
+
+Proposed
+Hybrid AI
+91.1
+92.3
+90.8
+91.9
+92.7
+90.2
+91.4
+93.1
+91.6
+90.5
+
+Fig 5. Route Selection Accuracy by Routing Model
+
+A combination of these mechanisms makes this model
+make reliable and accurate decisions even when in uncertain
+or volatile environment. The average route selection accuracy
+due to the proposed model is 91.72%, which proves its
+applicability to traffic changes.
+TABLE IV.
+
+Fig 4. Travel Time by Routing Model
+
+Static
+EnergyAware
+81.3
+83.4
+80.6
+82.2
+84.1
+79.8
+81
+85.2
+82.7
+80.1
+
+CONGESTION AVOIDANCE EFFICIENCY (%)
+
+Traffic
+Density
+
+Shortest
+Path
+
+TimeOptimal
+
+Low
+Medium
+High
+Peak-1
+Peak-2
+Event-1
+Event-2
+Rainy
+Weekend
+Holiday
+
+71.3
+66.8
+59.4
+56.9
+55.1
+57.3
+54.6
+58.1
+63.9
+61.7
+
+78.5
+74.1
+67.2
+64.5
+62.8
+65.7
+61.9
+66.4
+71.8
+69.2
+
+Static
+EnergyAware
+83.9
+80.7
+73.6
+71.2
+69.9
+72.1
+68.8
+73
+78.5
+76.1
+
+979-8-3315-7006-4/26/$31.00 ©2026 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:06:34 UTC from IEEE Xplore. Restrictions apply.
+
+Proposed
+Hybrid AI
+92.4
+90.8
+88.1
+86.7
+85.9
+87.4
+85.2
+88.6
+89.9
+89.1
+
+176
+
+Proceedings of the 6th International Conference on Trends in Material Science and Inventive Materials (ICTMIM-2026)
+IEEE Xplore Part Number: CFP260J1-ART; ISBN: 979-8-3315-7006-4
+
+Table 4 and Figure 6 compares the capability of various
+models to prevent congestion at a different level of traffic.
+The hybrid AI model is the most efficient with a high
+percentage of 92.4 in low traffic and a high percentage of over
+85 in the peak and event conditions. On the other hand,
+shortest path strategies are not effective when there is high
+traffic density or irregular traffic and they tend to drop to less
+than 60.
+Gated Graph-Temporal Convolutional Networks enable
+the model to predict future congestion/rerouting in advance.
+This active vision together with swarm-based rerouting and
+quantum-inspired cost balancing improves the capability of
+the system in ensuring smooth navigation and countering of
+bottlenecks in a real-time situation. Shortest-path algorithms
+are also ineffective in situations where there is lack of context
+such as sudden congestion or multiple point failure.
+Conversely, the DRA agent in the proposed system is trained
+on optimal fallback behaviors based on previous episodes and
+the global graph optimization is used to guarantee the
+existence of valid alternative paths. This extreme adaptability
+means that the system will be operational, energy efficient as
+well as safe even in such unpredictable conditions.
+
+Fig 6. Congestion Avoidance Efficiency Across Traffic Conditions
+
+V. CONCLUSION AND FUTURE SCOPE
+In this paper, the authors introduced a hybrid artificial
+intelligence approach to energy-optimal route planning on
+electric vehicles, combining graphics with graph-based
+optimization methods with deep reinforcement learning. The
+proposed system can successfully operate in real-time to
+model traffic conditions and energy use along with charging
+constraints by utilizing multi-source spatial and temporal
+data. This method is characterized by the use of neural
+differential equation to estimate the energy and to optimize
+the multi-objective cost function inspired by quantum, which
+is why it is not similar to the current solution of routing with
+rules or distance as a priority. The combined framework
+attains a prediction performance average of 91.72% of
+accurate prediction of routes, and provides better results in
+energy consumption, detour reduction, and congestion
+reduction in a variety of traffic conditions. The framework
+proposed has very high potentials to be implemented within
+the real-world intelligent transport systems especially in
+
+urban areas where the availability of charging and traffic
+congestion is a major limitation. The next steps of this work
+will involve vehicle-to-infrastructure (V2I) communication
+to support decentralized planning, federated learning to
+maintain the privacy of users among a group of EV agents,
+and introduction of weather-aware dynamics into energy
+models. In addition, smart grid infrastructure can be
+integrated with adaptive pricing that can further optimize the
+charging decisions. In the end, the framework provides a
+solution of next-generation electric mobility, which is
+scalable, accurate, and adaptive to provide its contribution to
+sustainability and smart planning of infrastructure in cities.
+REFERENCES
+[1]
+
+Tang, Q., Li, D., Zhang, Y., & Chen, X. (2023). Dynamic PathPlanning and Charging Optimization for Autonomous Electric
+Vehicles in Transportation Networks. Applied Sciences, 13(9), 5476.
+https://doi.org/10.3390/app13095476
+[2] G. Ramkumar, "SmartGridOptimizer-X: A Novel Energy-Efficient
+Design Framework for Sustainable Electrical Systems Integration,"
+SSRG International Journal of Electronics and Communication
+Engineering, vol. 13, no. 2, pp. 68-90, 2026. Crossref,
+https://doi.org/10.14445/23488549/IJECE-V13I2P106
+[3] Ahmed, H. Y., Ali, Z. M., Refaat, M. M., & Aleem, S. H. E. A. (2023).
+A Multi-Objective Planning Strategy for Electric Vehicle Charging
+Stations towards Low Carbon-Oriented Modern Power Systems.
+Sustainability, 15(3), 2819. https://doi.org/10.3390/su15032819
+[4] Ramkumar, G., Sathish Kannan, and Vinayagam Mohanavel.
+"Performance Evaluation of Electric Vehicles (EVs) High Voltage
+Gain Achievement Logic using Bidirectional DC-DC Converter." In
+2025 6th International Conference on Electronics and Sustainable
+Communication Systems (ICESC), pp. 156-162. IEEE, 2025.
+[5] Kyriakakis, N. A., Stamadianos, T., Marinaki, M., & Marinakis, Y.
+(2023). A GRASP Approach for the Energy-Minimizing Electric
+Vehicle Routing Problem with Drones. World Electric Vehicle Journal,
+14(12), 354. https://doi.org/10.3390/wevj14120354
+[6] Ramkumar, G., I. Chandra, and N. V. Krishnamoorthy. "Experimental
+Evaluation of Improved Battery Management System Design for
+Electric Vehicles to Resist Performance over Long Duration." In 2024
+Ninth International Conference on Science Technology Engineering
+and Mathematics (ICONSTEM), pp. 1-8. IEEE, 2024.
+[7] Wang, J., Zhang, H., Wu, B., & Liu, W. (2025). Symmetry-Guided
+Electric Vehicles Energy Consumption Optimization Based on Driver
+Behavior and Environmental Factors: A Reinforcement Learning
+Approach.
+Symmetry,
+17(6),
+930.
+https://doi.org/10.3390/sym17060930
+[8] Zhang, Q., Si, G., & Li, H. (2025). Optimization of Electric Vehicle
+Charging Station Location Distribution Based on Activity-Travel
+Patterns. ISPRS International Journal of Geo-Information, 14(10), 373.
+https://doi.org/10.3390/ijgi14100373
+[9] Ferreira, J. C., & Esperança, M. (2025). Enhancing Sustainable LastMile Delivery: The Impact of Electric Vehicles and AI Optimization
+on Urban Logistics. World Electric Vehicle Journal, 16(5), 242.
+https://doi.org/10.3390/wevj16050242
+[10] E. Seilabi, S., Pourgholamali, M., Miralinaghi, M., Homem de Almeida
+Correia, G., Li, Z., & Labi, S. (2025). Sustainable Planning of Electric
+Vehicle Charging Stations: A Bi-Level Optimization Framework for
+Reducing Vehicular Emissions in Urban Road Networks.
+Sustainability, 17(1), 1. https://doi.org/10.3390/su17010001
+[11] Gutiérrez-Moreno, R., Llamazares, Á., Revenga, P., Ocaña, M., &
+Antunes-García, M. (2026). Electric Vehicle Route Optimization: An
+End-to-End Learning Approach with Multi-Objective Planning. World
+Electric
+Vehicle
+Journal,
+17(1),
+41.
+https://doi.org/10.3390/wevj17010041
+[12] D. Xie, J. Guo, Y. Jiang, Z. Hou and J. Deng. (2025). Energy-Efficient
+Route and Velocity Planning for Electric Vehicles: A Hierarchical EcoDriving Framework Integrating Traffic and Road Information. in IEEE
+Open Journal of Vehicular Technology, vol. 6, pp. 1317-1332.
+https://doi.org/10.1109/OJVT.2025.3562317
+
+979-8-3315-7006-4/26/$31.00 ©2026 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:06:34 UTC from IEEE Xplore. Restrictions apply.
+
+177
+
+Proceedings of the 6th International Conference on Trends in Material Science and Inventive Materials (ICTMIM-2026)
+IEEE Xplore Part Number: CFP260J1-ART; ISBN: 979-8-3315-7006-4
+
+[13] Ponso, A., Bonfitto, A., & Belingardi, G. (2023). Route Planning for
+Electric Vehicles Including Driving Style, HVAC, Payload and Battery
+Health. Energies, 16(12), 4627. https://doi.org/10.3390/en16124627
+[14] Seyed Mohammad Hosseini, Sousso Kelouwani, Mohsen
+Kandidayeni, Ali Amammou, Mehdi Soleymani. (2025). Fuel
+efficiency through co-optimization of speed planning and energy
+management in intelligent fuel cell electric vehicles. International
+
+Journal of Hydrogen Energy, Volume 126, Pages 9-21, ISSN 03603199. https://doi.org/10.1016/j.ijhydene.2025.03.305
+[15] Li, J., Tian, S., Zhang, N., Liu, G., Wu, Z., & Li, W. (2023).
+Optimization Strategy for Electric Vehicle Routing under Traffic
+Impedance Guidance. Applied Sciences, 13(20), 11474.
+https://doi.org/10.3390/app132011474
+
+979-8-3315-7006-4/26/$31.00 ©2026 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:06:34 UTC from IEEE Xplore. Restrictions apply.
+
+178
+
+

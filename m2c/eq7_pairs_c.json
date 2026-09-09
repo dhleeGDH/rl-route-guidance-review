@@ -1,0 +1,50 @@
+{
+ "Sioux Falls|published|0.99": {
+  "pairs": 552,
+  "differing": 0,
+  "share": 0.0,
+  "max_rel": 0.0
+ },
+ "Sioux Falls|published|0.95": {
+  "pairs": 552,
+  "differing": 71,
+  "share": 12.9,
+  "max_rel": 33.3
+ },
+ "Sioux Falls|c|0.99": {
+  "pairs": 552,
+  "differing": 0,
+  "share": 0.0,
+  "max_rel": 0.0
+ },
+ "Sioux Falls|c|0.95": {
+  "pairs": 552,
+  "differing": 41,
+  "share": 7.4,
+  "max_rel": 14.3
+ },
+ "Anaheim|published|0.99": {
+  "pairs": 15562,
+  "differing": 3518,
+  "share": 22.6,
+  "max_rel": 14.8
+ },
+ "Anaheim|published|0.95": {
+  "pairs": 2710,
+  "differing": 535,
+  "share": 19.7,
+  "max_rel": 54.7
+ },
+ "Anaheim|c|0.99": {
+  "pairs": 15562,
+  "differing": 2230,
+  "share": 14.3,
+  "max_rel": 8.1
+ },
+ "Anaheim|c|0.95": {
+  "pairs": 2710,
+  "differing": 385,
+  "share": 14.2,
+  "max_rel": 30.3
+ }
+}

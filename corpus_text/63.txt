@@ -1,0 +1,1500 @@
+IEEE TRANSACTIONS ON INTELLIGENT VEHICLES, VOL. 9, NO. 1, JANUARY 2024
+
+1243
+
+A Bi-Level Network-Wide Cooperative Driving
+Approach Including Deep Reinforcement
+Learning-Based Routing
+Jiawei Zhang , Jingwei Ge , Shu Li , Shen Li , Member, IEEE, and Li Li , Fellow, IEEE
+
+Abstract—Cooperative driving of connected and automated vehicles (CAVs) has attracted extensive attention and researchers
+have proposed various approaches. However, existing approaches
+are limited to small-scale isolated scenarios and gaps remain in
+network-wide cooperative driving, especially in routing. In this
+article, we decompose the network-level cooperative driving problem into two dominant sub-problems and accordingly propose a
+bi-level network-wide cooperative driving approach. The dynamic
+routing problem is considered in the upper level and we propose
+a multi-agent deep reinforcement learning (DRL) based routing
+model. The model can promote the equilibrium of network-wide
+traffic through distributed self-organized routing collaboration
+among vehicles, thereby improving efficiency for both individual
+vehicles and global traffic systems. In the lower level, we focus on the
+right-of-way assignment problem at signal-free intersections and
+propose an adaptive cooperative driving algorithm. The algorithm
+can adaptively evaluate priorities of different lanes, and then uses
+the lane priorities to guide the Monte Carlo tree search (MCTS)
+for better right-of-way assignments. Essentially, the upper level
+determines which conflict areas the vehicles will pass through, and
+the lower level addresses how the vehicles use the limited road
+resources more efficiently in each conflict area. The experimental
+results show that the upper and lower levels complement each other
+and work together to significantly improve the network-wide traffic
+efficiency and reduce the travel time of individual vehicles. Moreover, the results demonstrate that microscopic and mesoscopic
+cooperative driving behaviors of vehicles can significantly benefit
+the macroscopic traffic system.
+Index Terms—Connected and automated vehicles (CAVs),
+Network-wide cooperative driving, Routing, Deep reinforcement
+learning (DRL), Intersection management.
+
+Manuscript received 25 July 2023; accepted 13 August 2023. Date of publication 16 August 2023; date of current version 23 February 2024. This work
+was supported in part by the National Key Research and Development Program
+of China under Grant 2020AAA0108104, and in part by the National Natural
+Science Foundation of China under Grant 52272420. (Corresponding authors:
+Shen Li; Li Li.)
+Jiawei Zhang, Jingwei Ge, and Shu Li are with the Department
+of Automation, Tsinghua University, Beijing 100084, China (e-mail:
+zhangjw20@mails.tsinghua.edu.cn; gjw19@mails.tsinghua.edu.cn; shuli19@
+mails.tsinghua.edu.cn).
+Shen Li is with the Department of Civil Engineering, Tsinghua University,
+Beijing 100084, China (e-mail: sli299@tsinghua.edu.cn).
+Li Li is with the Department of Automation, BNRist, Tsinghua University,
+Beijing 100084, China (e-mail: li-li@tsinghua.edu.cn).
+Color versions of one or more figures in this article are available at
+https://doi.org/10.1109/TIV.2023.3305818.
+Digital Object Identifier 10.1109/TIV.2023.3305818
+
+I. INTRODUCTION
+ONNECTED and automated vehicles (CAVs) are expected to significantly improve the safety and efficiency of
+autonomous driving and are considered the crucial component
+of the next-generation transportation system [1], [2], [3], [4], [5],
+[6], [7], [8]. With V2X communication, researchers are working
+to promote cooperative driving of vehicles to fully utilize the
+advantages of CAVs [9], [10], [11], [12], [13], [14], [15], [16].
+The research on boosting traffic efficiency with CAVs can
+be broadly categorized into two evolutionary threads. The first
+evolutionary thread begins with isolated single intersections,
+then gradually expands to multiple intersections and the ultimate
+goal, i.e., road networks [17]. Research on single intersections
+has received a lot of attention and accumulation. Existing approaches generally improve intersection efficiency by removing
+traffic signals and working to solve better right-of-way assignments [9], [18], [19], [20], [21], [22]. Representative approaches
+include reservation based algorithm [23], dynamic resequencing
+(DR) based algorithm [24], tree search based algorithm [25],
+[26], and deep learning based algorithm [9]. Then, as the development of the approaches for single intersections has reached
+a performance ceiling, the expansion from single intersections
+to multiple intersections [27], [28] and even road networks has
+attracted more and more research interests. Carlson et al. [29]
+propose a greedy search strategy. Pei et al. [30] design a distributed strategy for the coordination of adjacent intersections.
+However, due to the complexity of the road network planning
+problem and the severe coupling between sub-problems, there
+are still gaps in network-wide approaches [16], [17].
+The second evolutionary thread is from traffic-responsive
+feedback control to planning based feedforward control [31],
+[32]. Most traditional approaches conform to the concept of
+feedback control because they specify control commands in
+response to the current state of the traffic system [33], [34],
+[35], [36], [37], [38]. Recently, thanks to the more fine-grained
+traffic information available within the CAV environment, traffic control approaches have gradually integrated the concept
+of feedforward control, such as feedforward trajectory planning [26], [39], [40], [41]. We are able to take preemptive
+control commands through state prediction, which can effectively improve the stability and efficiency of the traffic system.
+To this end, Guo et al. [31] point out that the driver guidance
+system has great potential to take full advantage of CAVs by
+
+C
+
+2379-8858 © 2023 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+1244
+
+IEEE TRANSACTIONS ON INTELLIGENT VEHICLES, VOL. 9, NO. 1, JANUARY 2024
+
+Fig. 1. Illustration of the proposed bi-level network-wide cooperative driving approach. In the upper level, the multi-agent deep reinforcement learning (DRL)
+based dynamic routing model takes the traffic state information from the macroscopic system as input and outputs the mesoscopic routing choices. In the lower
+level, the tree search based intersection cooperative driving algorithm takes the traffic state information from the mesoscopic system as input and outputs the
+microscopic passing order, i.e., the right-of-way assignment of vehicles passing through the conflict areas.
+
+providing instructions to vehicles on how to properly operate
+to achieve certain objectives (e.g., reduce travel time, minimize
+fuel consumption, etc.). However, routing choice, as one of the
+most prominent guidance ways, still has research gaps.
+Therefore, in summary, the current research suffers from
+two critical deficiencies. First, existing approaches are limited to small-scale isolated scenarios (e.g., intersections, on/off-ramps) and only consider traffic information in a small
+spatial-temporal range. Deploying these approaches directly to
+road network scenarios will lead to a prominent issue, i.e.,
+many vehicles will queue beyond the control zone, and thus
+their efficiency will be seriously weakened [16]. Second, and
+more prominently, there are still gaps in network-wide planning
+problems due to the complexity of the problem. The complexity
+of the network-wide planning problem increases dramatically
+with the number of intersections and vehicles, while there are
+causal loops that are difficult to solve directly [17], [30].
+To address the above deficiencies, we decompose the networklevel cooperative driving problem into two sub-problems and
+accordingly propose a bi-level network-wide cooperative driving approach, as illustrated in Fig. 1. The upper level solves
+the dynamic routing problem, and the lower level solves the
+right-of-way assignment problem at intersections. The upper
+level provides long-term plans for vehicles to decide which
+conflict areas the vehicles will pass through; the lower level
+provides short-term plans for vehicles to interact with other
+vehicles when they pass through the conflict areas. The upper
+and lower levels will complement each other and work together
+to reduce vehicles’ travel time and improve the traffic system’s
+efficiency and equilibrium.
+Specifically, for the upper level, we propose a multi-agent
+deep reinforcement learning (DRL) based routing model, aiming
+to promote the collaboration of vehicles on routing choices.
+
+We comprehensively analyze the characteristics of the routing
+problem and propose a dynamic routing decision principle of
+“Consider two steps, take one step”, and accordingly design the
+observation space for DRL agent. Meanwhile, inspired by the
+idea of backpressure control in wireless communication [42],
+[43], we propose a backpressure based reward function. The
+reward function can guide the DRL agent to learn routing policy
+that can improve efficiency and enhance the equilibrium of the
+network-wide traffic system. In particular, the relative nature
+of the backpressure based reward significantly enhances the
+generalizability and scalability of the routing model.
+For the lower level, we propose an adaptive cooperative
+driving algorithm for CAVs at signal-free intersections, aiming
+to reduce the travel delay of vehicles passing through intersections while effectively avoiding congestion at microscopic
+intersections. The proposed algorithm can adaptively prioritize
+lanes based on the queuing length and the traffic flow rate, and
+then schedule right-of-way assignment of conflict zone accordingly. Compared to the existing cooperative driving algorithms,
+the proposed adaptive cooperative driving algorithm is more
+efficient for network-wide traffic systems by making crucial
+improvements in both spatial and temporal dimensions. In the
+spatial dimension, the adaptive cooperative driving algorithm
+takes into account a larger range of state information, which
+can effectively address the deficiencies that existing algorithms
+cause vehicles to queue beyond the control zone [16]. In the
+temporal dimension, the adaptive cooperative driving algorithm
+not only considers the current state information but also indirectly incorporates the future state of the intersection, which
+will improve the robustness and predictability of the lower-level
+intersection system.
+The experimental results show that the proposed networkwide cooperative driving approach can boost the efficiency
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: BI-LEVEL NETWORK-WIDE COOPERATIVE DRIVING APPROACH INCLUDING DRL-BASED ROUTING
+
+Fig. 2.
+
+1245
+
+Overall framework of the bi-level network-wide cooperative driving approach for CAV swarms.
+
+of network-wide CAVs, promote the equilibrium of networkwide traffic, and prevent the road network from being paralyzed under congested traffic conditions. For individual vehicles, the proposed approach significantly reduces travel time
+under any traffic conditions; for the network-wide traffic system, the macroscopic fundamental diagram (MFD) [44], [45]
+curve is evidently raised, which indicates that the performance
+has been comprehensively improved. The experimental results
+also demonstrate that the microscopic and mesoscopic behaviors of individual vehicles will lead to significant differences
+at the macroscopic traffic level, which provides a systematic
+perspective for the design of autonomous driving approaches
+and the management methods for the emerging intelligent traffic system. More generally, the proposed approach provides a
+general framework and corresponding methods for CAV swarms
+cooperative driving at the road network level, effectively solving the challenges encountered when the cooperative driving
+methods transition from isolated scenarios to network-wide
+scenarios.
+In addition, the boundaries of the problem studied in this
+article need to be clarified. First, we work to improve the
+performance of macroscopic traffic systems via the microscopic
+self-organized behaviors of individual vehicles. Therefore, the
+object of study is the macroscopic network-wide CAV traffic
+system, but the proposed methods are intended for microscopic
+individual vehicles. Second, the upper level aims to solve the
+problem of distributed and self-organized dynamic routing problem, rather than the centralized traffic assignment problem.
+Third, in the lower level, microscopic intersections adopt the
+cooperative driving scheme, which turns signalized intersections
+to be signal-free. Thus, the core issue is the efficient assignment
+of right-of-way in conflict areas [9].
+
+To better present our work, the rest of this article is organized
+as follows. Section II presents the bi-level framework for the
+network-wide cooperative driving approach. Section III introduces the upper-level multi-agent DRL based routing model.
+Section IV presents the lower-level adaptive cooperative driving algorithm. Section V presents the numerical experiments.
+Finally, we conclude the article in Section VI.
+II. A BI-LEVEL FRAMEWORK FOR NETWORK-WIDE
+COOPERATIVE DRIVING
+This section presents the bi-level framework for the networkwide cooperative driving approach. The framework of the proposed approach is illustrated in Fig. 2, where we take two
+levels, i.e., dynamic routing in the upper level and cooperative
+driving at signal-free intersections in the lower level, to solve
+the right-of-way assignment problem that plays a dominant
+impact on network-wide traffic performance [16], [17]. Here,
+it is noteworthy that the upper and lower levels are seriously
+coupled. The upper level implicitly determines the number of
+vehicles, state information, and spatio-temporal location of the
+lower-level right-of-way conflicting. In turn, the lower-level
+right-of-way conflicting provides crucial decision-making bases
+for upper-level routing to improve the utilization of limited road
+resources. Accordingly, we propose the bi-level approach as
+shown in Fig. 2, and the main ideas of the proposed methods
+for the upper and lower levels are presented below.
+A. Upper-Level Dynamic Routing
+The upper level is to plan routes for arriving vehicles based
+on real-time traffic information, aiming to reduce the travel
+time of vehicles while promoting the equilibrium of traffic
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+1246
+
+IEEE TRANSACTIONS ON INTELLIGENT VEHICLES, VOL. 9, NO. 1, JANUARY 2024
+
+flow and thus improving overall efficiency. In the general road
+network, routing essentially decides which conflict areas (i.e.,
+intersections) vehicles will pass through. We can abstractly consider the routing decision as the mapping from real-time traffic
+information to candidate routes, as illustrated in Fig. 2. However,
+the route mapping problem has several critical challenges.
+First, the mapping from real-time traffic information to routes
+is complicated and implicit. It is difficult to design a theoretical
+formula to achieve the desired mapping performance. Second,
+for the route mapping problem, the system model is unknown
+and stochastic. A crucial reason is that we consider the lowerlevel cooperative driving at intersections simultaneously, resulting in many unpredictable uncertainties for the network-wide
+traffic system. Third, the benefits of a routing decision can only
+be evaluated after the corresponding vehicle executes the chosen
+routes, resulting in a severe delay in the feedback of the system
+on the route mapping.
+To address these challenges, we use DRL to learn the desired
+routing policy because (1) DRL agent learns the mapping from
+real-time traffic information to routes with deep neural networks,
+which can effectively cope with the nonlinearity of the mapping
+and even have great potential for learning the desired abstract
+mapping relationship [46]; (2) DRL conducts trial-and-error
+learning by interacting with the simulation environment without
+the requirement of knowing the system model [47], [48], allowing us to consider the lower-level complex cooperative driving at
+intersections simultaneously; (3) DRL can effectively deal with
+the challenge of feedback delay [49]. We will present the DRL
+based routing model in detail in Section III.
+B. Lower-Level Adaptive Cooperative Driving At Intersections
+The core issue of the lower-level cooperative driving algorithm at microscopic intersections is to assign the conflicting right-of-way for vehicles passing through the intersection.
+However, the existing cooperative driving algorithms at isolated
+intersections have three deficiencies. (1) From the perspective
+of spatial range, the existing algorithms only consider the information in the control zone and aim to schedule vehicles in the
+control zone to pass the intersection more efficiently. However,
+in network-wide traffic, only considering the vehicles in the
+control zone will cause many vehicles to queue outside the
+control zone, and thus their efficiency will be seriously weakened. (2) From the perspective of temporal scale, each round of
+planning of the existing algorithms is usually independent and
+only considers the information at the current moment, without
+considering the continuity of the traffic system, especially the
+predictable evolution of the intersection system. (3) The results
+in [18] show that although a better passing order can improve
+the overall efficiency of the intersection system, it will cause
+some vehicles to make efficiency sacrifices. That is, the existing
+algorithms do not consider the fairness of vehicles. When these
+algorithms are directly deployed to the network-wide traffic, it
+will lead to a long travel time for some vehicles.
+To address these deficiencies, we propose the lower-level
+adaptive cooperative driving algorithm for intersections in road
+
+networks. Our algorithm aims to enable cooperative driving at
+microscopic intersections to consider a broader range of traffic
+information in the spatial dimension and consider the future state
+of the intersection system in the temporal dimension. It will
+not only shorten the delays of vehicles within the control zone,
+but also promote vehicles on lanes with longer queuing lengths
+and greater flow rates to pass through the intersection with
+higher priority, thus improving the efficiency of the traffic system
+and promoting fairness between vehicles. We will present the
+lower-level adaptive cooperative driving algorithm in details in
+Section V.
+III. MULTI-AGENT DRL BASED ROUTING MODEL
+In this section, we present the multi-agent DRL based routing
+model in detail. Section III-A analyses the problem context of
+routing. Section III-B presents the formulated reinforcement
+learning setup for routing. Section III-C introduces the reinforcement learning algorithm for routing.
+A. Problem Context of Routing
+Network-wide traffic system is a typical self-driven particle
+system [50]. Each vehicle has its origin and destination and
+independently makes routing decisions according to real-time
+traffic states. Meanwhile, different routing decisions may lead
+to direct or indirect interactions between vehicles with varying
+degrees and ranges of impact. To reduce the travel time of
+individual vehicles and improve the efficiency of the whole
+traffic system, we desire that vehicles can dynamically choose
+better routes according to the real-time evolving traffic states,
+i.e., the upper-level dynamic routing problem.
+However, from a systematic perspective, the dynamic routing
+problem has the two critical characteristics. First, since the
+state transition of an individual vehicle is not only directly
+influenced by the ego routing decision but also indirectly influenced by the decisions of other vehicles, the routing problem for vehicles essentially constitutes a multi-agent system.
+To simultaneously improve the efficiency of individual vehicles and the overall system, there is not only competition
+for limited road resources between vehicles but also a need
+to collaborate to achieve more efficient utilization of road
+resources.
+Second, routing should be based on appropriate spatial-range
+traffic information. There are three crucial reasons for this.
+(1) We need to make a trade-off between performance and
+problem complexity. Considering too large a spatial range will
+lead to a dramatic increase in the state space of the routing
+problem, which will cause great learning difficulty for the DRL
+agent. (2) The traffic system evolves stochastically and is subject to many perturbations, uncertainties, and even faults [51],
+[52]. It is not advisable to consider traffic information with
+too large a spatial range for routing because it will cause the
+DRL agent that considers traffic states that the vehicle will
+never experience (because by the time the vehicle arrives at
+the corresponding spatio-temporal location, the traffic state will
+have already changed). (3) According to the current situation
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: BI-LEVEL NETWORK-WIDE COOPERATIVE DRIVING APPROACH INCLUDING DRL-BASED ROUTING
+
+1247
+
+Fig. 3. Dynamic routing problem formulation and corresponding reinforcement learning setup. (a) An illustration of the routing problem formulation. The
+red-shaded lanes are the candidate routes, and the blue-shaded lanes are the subsequent lanes corresponding to the two candidate routes. The traffic state information
+on the green-shaded area is the critical basis for dynamic routing decisions. The blue-dotted routes indicate the shortest subsequent routes for the candidate routes
+to the destination. (b) Observation Space Ω = [ΩO , ΩT ], where the left subfigure is one-step range observation ΩO = [ΩRoute
+, ΩIntersection,k
+{k = #0,#1-1,#1-2}]
+O
+O
+
+and the right subfigure is two-step range observation ΩT = [ΩRoute
+, ΩIntersection,k
+{k = #2-1,#2-2}]. Furthermore, for ease of reading, it is necessary to illustrate
+T
+T
+the intersection markers. For example, Node # 1-2 refers to the second intersection that is one step away from the current node. And so on for the rest.
+
+and conception of the CAV environment, the spatial information available in real time from the vehicles’ perspective is
+limited.
+Therefore, we propose a routing principle of “Consider two
+steps, take one step” and formulate the routing decision problem
+as illustrated in Fig. 3. Specifically, when arriving at an intersection node, the ego vehicle needs to choose a route within a
+one-step space from the candidate routes to drive (i.e., Take one
+step) based on the traffic state information within the two-step
+space (i.e., Consider two steps). Taking the scenario shown in
+Fig. 3(a) as an example, the ego vehicle can access the traffic
+information in the green-shaded area with the support of V2X
+communication. The routing model needs to consider the traffic
+information in the two-step range. i.e., from Node #0 to Node
+#1 (including Node #1-1 and #1-2) and Node #1 to Node #2
+(including Node #2-1, #2-2, and #2-3), called “Consider two
+steps.” Based on the information in the two-step range, the ego
+vehicle chooses a route within the one-step range and drives
+accordingly, called “Take one step.” Without loss of generality,
+when the vehicle arrives at Node #1-1 or Node #1-2, a similar
+routing decision will be conducted until it reaches its destination. It should be illustrated that we consider a general urban
+network-wide traffic so that at any intersection node, the vehicle
+will generally have one or two candidate routing choices, and
+when there are two candidate routing choices, the corresponding
+routing decision needs to be made. Moreover, the following
+reinforcement learning setup is scalable for scenarios with more
+candidate routes and the corresponding models can be obtained
+with analogical settings.
+
+B. Reinforcement Learning Setup
+In the multi-agent system formed by routing problem, all
+vehicle share the system state st , but each vehicle can only
+observe partial information ot about the system state st at
+time t. Based on the observed information ot , vehicle will
+sample a route action at from the shared routing decision
+policy πθ :
+at ∼ πθ (at | ot )
+
+(1)
+
+where θ is the parameter of the routing policy πθ . The vehicle
+executes route action at and arrives at a new observation ot+1 .
+Since routing is a fully decentralized and independent decision
+process, we can formulate the multi-agent routing problem as
+a partially observable Markov decision process (POMDP) from
+the perspective of the individual vehicles. Formally, a POMDP
+can be described as a 6-tuple (S, A, P, R, Ω, O) [53], [54],
+which comprises state space S, action space A, state transition
+model P, reward function R, the observation space Ω (ot ∈ Ω),
+and the observation probability distribution O for a given system
+state st (ot ∼ O(st )). Here, since each vehicle executes action
+at in a fully independent manner, the state transition model P is
+unknown from the perspective of the vehicle. In the following,
+we will present in detail the observation space Ω, action space
+A, and reward functions R, which are the core components of
+the DRL based routing model.
+1) Observation Space Ω: According to the “Consider two
+steps, take one step” routing decision principle proposed above,
+we will set two types of information to construct the observation
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+1248
+
+IEEE TRANSACTIONS ON INTELLIGENT VEHICLES, VOL. 9, NO. 1, JANUARY 2024
+
+space
+Ω = [ΩO , ΩT ]
+
+(2)
+
+from the perspective of spatial scope, namely: a) One-step range
+observation ΩO and b) Two-step range observation ΩT . Here,
+we use the scenario shown in Fig. 3(a) as an example to introduce the detailed composition of the two types of observation
+information.
+a) One-step range observation ΩO : The one-step range
+observation ΩO encodes state information within the spatial
+range of the one-intersection domain, i.e., from Node #0 to Node
+#1-1 and Node #1-2, providing the critical information for “Take
+one step”. Among various traffic information, two critical pieces
+of information will affect the performance of routing decision,
+which will be encoded into the one-step range observation:
+, ΩIntersection,k
+{k = #0, #1-1, #1-2}]
+ΩO = [ΩRoute
+O
+O
+
+(3)
+
+As illustrated in Fig. 3(b), the first one Ωroute
+= [NjRoute {j =
+O
+1, 2}] is the number of vehicles on the one-step range candidate
+routes. Specifically, N1Route is the number of vehicles on the first
+candidate route between Node #0 and Node #1-1; N2Route is the
+number of vehicles on the second candidate route between Node
+is the traffic states
+#0 and Node #1-2. The second one Ωintersection,k
+O
+at the intersection k{k = #0, #1-1, #1-2}, i.e., Node #0, Node
+#1-1, and Node #1-2. Especially for the second one, we encode
+, i.e.,
+three types of information into Ωintersection,k
+O
+ΩIntersection,k
+= [NiIntersection,k {i = 1, . . . , 4},
+O
+Intersection,k
+Intersection,k
+, NTo
+{j = 1, 2}]
+MSteer,j
+route j
+
+(4)
+
+considering the dominant influence on vehicles passing through
+the intersections. The first type NiIntersection,k is the number of
+vehicles in each direction i{i = 1, . . . , 4} at the intersection k
+since it will directly affect the time taken for the ego vehicle
+Intersection,k
+is the
+to pass the intersections. The second type MSteer,j
+steering type at the intersection k correspond to candidate route
+j{j = 1, 2}. Different candidate routes correspond to different
+steering types, which will lead to different types of right-ofway conflicts [16], and then, the priority of the ego vehicle
+passing through the intersections will be affected under the
+lower-level adaptive cooperative driving algorithm. The third
+Intersection,k
+is the number of vehicles at the intersection
+type NTo
+route j
+k that will drive into the candidate route j{j = 1, 2}, which
+provides information about the future state of the candidate
+routes and will directly affect the travel efficiency of the ego
+vehicle.
+Here, to distinguish the control zone defined at microscopic
+intersections (see Section IV for more details), we define the
+view zone with radius Lview , as illustrated in Fig. 3(a). The
+roadside unit can access the state information and driving intentions of vehicles in the view zone. Therefore, we count the state
+information within the view zone to compose the observation of
+corresponding intersections. Moreover, without loss of generality, we encode the current intersection information by taking
+the ego vehicle as a reference and rotating clockwise from the
+direction in which the vehicle is located.
+
+b) Two-step range observation ΩT : The two-step range
+observation ΩT encodes state information in the spatial range
+of the two-intersection domain, providing the key information
+for “Consider two steps”. Here, considering the randomness
+of the traffic system and the existence of nodes with only one
+subsequent candidate route, we take Node #1-1 and Node #1-2
+as the starting nodes to solve for the subsequent static shortest
+routes, respectively, and accordingly determine the two nodes in
+the two-intersection domain. For example, as shown in Fig. 3(a),
+the shortest route starting from Node #1-1 is shown as the
+blue-dashed line, and thus Node #2-1 is chosen as one of the
+two-intersection domain nodes. Similar to the one-step range
+observation ΩO , we encode the number of vehicles at the two
+intersections and the number of vehicles on the corresponding
+routes to constitute the two-step range observation ΩT ,
+ΩT = [ΩRoute
+, ΩIntersection,k
+{k = #2-1,#2-2}]
+T
+T
+
+(5)
+
+as illustrated in Fig. 3(b). Similarly, without loss of generality,
+we encode the state information by taking the candidate routes
+as a reference and rotating clockwise.
+2) Action Space A: Action at is the routing decision made
+by policy πθ based on the observation information ot . As formulated in Section III-A, the action space consists of candidate
+routing choices. Within a typical urban road network, there are
+generally two candidate routing choices at each intersection.
+Such an action space will streamline the learning difficulty of
+the DRL agent and promote its exploration and improvement.
+3) Reward Function R: Reward rt is the feedback from the
+environment after the vehicle executes the action at . It aims to
+guide the DRL agent to learn the desired routing performance
+and plays a crucial role in the learning of the DRL agent [55].
+For the network-wide traffic, the reward function R is dedicated
+to guiding the agent to learn a routing policy that is beneficial to
+both the microscopic individual vehicles and the macroscopic
+traffic system. However, to accurately evaluate the benefits of a
+routing decision with the reward function R, the following two
+characteristics need to be emphasized.
+First, it is challenging to simultaneously evaluate the benefits
+of a route decision for individual vehicles and the traffic system.
+A key reason is that the benefits for individual vehicles are
+reflected at the microscopic level, while the benefits for the traffic
+system are reflected at the macroscopic level. To evaluate the
+benefits of routing decision at both the microscopic and macroscopic levels, an in-between performance metric is needed.
+Inspired by our previous work [16], we found that the MFD [44],
+[45] of the network-wide traffic can effectively evaluate the
+macroscopic performance differences caused by the microscopic
+self-organized behaviors of vehicles. More essentially, it is the
+vehicle accumulation in the road network that can capture the
+aggregation characteristics in the macroscopic traffic system
+caused by the microscopic self-organized behaviors of vehicles.
+The vehicle accumulation will directly affect the travel efficiency
+of the ego vehicle and will affect the efficiency of other vehicles.
+Therefore, we use the metric of vehicle accumulation to design
+our reward function.
+Second, the reward function should be based on locally accessible traffic information to make a relative, rather than an
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: BI-LEVEL NETWORK-WIDE COOPERATIVE DRIVING APPROACH INCLUDING DRL-BASED ROUTING
+
+absolute, evaluation of the benefits of routing decisions. There
+are two reasons for this. On the one hand, since our routing model
+is decentralized and designed to be deployed on-board units,
+the reward function should be based on locally accessible traffic
+information, similar to the observation space. On the other hand,
+we desire that the agent can make the relatively optimal routing
+decision from candidate routes under any traffic conditions. That
+is, whether in a smooth or congested network-wide traffic, the
+reward function should be able to make a positive feedback
+evaluation as long as the agent chooses a better route among
+candidate routes. According to the above characteristics, the
+backpressure (BP ) principle in the wireless communication
+field can effectively deal with this challenge. Backpressure
+principle is a simple but flexible idea used to solve the transmission lines scheduling problem in wireless communication
+networks [42], [43]. Its core idea is to define an evaluation
+function to make a relative evaluation of the occupancy level
+of different transmission lines, and then usually choose the
+idler line to transmit data. This is consistent with the desired
+performance of our routing model. Therefore, we will use the
+backpressure principle to design our reward function.
+Based on the above considerations, our reward function is
+designed as follows. First, we define the backpressure function
+according to the accumulation of vehicles on the candidate lanes:
+⎞α
+⎛
+ρLanej
+⎠
+(6)
+BPj = 1 − ⎝
+max
+ρLanei
+i∈{Candidate lanes}
+
+where BPj is the backpressure value of Lane j. ρLanej is the
+density of vehicles on Lane j. α determines the relative discrimination of the backpressure value. Therefore, the backpressure
+value of the candidate lane with the greatest vehicle density is
+0, and the backpressure value of the rest candidate lanes is a
+positive value less than 1. The smaller the density is, the greater
+the backpressure value is.
+According to the our routing principle of “Consider two steps,
+take one step”, we define the following one-step reward term
+Rone−step and two-step reward term Rtwo−step , respectively:
+Rone-step = 
+
+eBPChosen lane
+i∈{Candidate lanes}
+
+eBP i
+
+eBPSubsequent lane of chosen lane
+Rtwo-step = 
+BP i
+i∈{Subsequent lanes} e
+
+(7)
+(8)
+
+Therefore, the reward function R is defined as follows using a
+linear combination manner:
+R = w1 ∗ Rone-step + w2 ∗ Rtwo-step
+
+(9)
+
+where w1 and w2 are weight coefficients, which are used to
+adjust the trade-off between one-step and two-step benefits.
+Here, it should be illustrated that the feedback delay of the
+reward function is mainly in calculating the backpressure value
+corresponding to action at . It can only be obtained after the
+ego vehicle executes action at , i.e., when the vehicle driving
+through the corresponding chosen route, it can be calculated.
+Although it will cause a serious delay in our reward function,
+
+1249
+
+Fig. 4. Illustration of the training pipeline of the upper-level multi-agent DRL
+based routing model. J(ϕi ) is the loss function for the value network and Jπ (θ)
+is the loss function for the policy network πθ . See Appendix Algorithm 1 for
+details.
+
+it can accurately evaluate the impact of the individual vehicles
+routing decision on the traffic system.
+C. Deep Reinforcement Learning Algorithm
+In this article, we aim to enable the DRL agent to learn
+a routing policy that can promote efficient collaboration between vehicles regarding limited road resources. To this end,
+we modify the outstanding reinforcement learning algorithm,
+Soft Actor-Critic (SAC) [56] to train our agent. Compared with
+other DRL algorithms, SAC significantly improves the learning
+efficiency by introducing entropy regularization and achieves
+state-of-the-art performance on many problems [48], [57], [58].
+However, the original SAC algorithm is oriented to single-agent
+problems with continuous action space. Here, the formulated
+routing decision problem is a multi-agent problem with discrete
+action space. Therefore, the original SAC algorithm needs to
+be modified accordingly. The modified SAC is illustrated in
+Appendix Algorithm 1 and the details can be found in [48], [59].
+The training process of the routing model alternates between
+experience collecting and policy updating. Specifically, we share
+policy between vehicles during training, and each vehicle counts
+its observation ot independently and makes routing decision
+at based on the shared policy πθ . All the experiences will be
+collected into the experience memory pool and used to train the
+DRL model, as illustrated in Fig. 4.
+Moreover, both the policy network πθ and value networks
+consist of deep neural networks. The input to the policy network
+is the observation ot , while the output is a probability distribution
+over the actions. The DRL agent will choose the action at
+with the highest probability for the vehicle to execute. The
+architecture of the policy network πθ is illustrated in Fig. 4,
+where we use a fully connected deep neural network to learn
+the mapping from observation ot to action at , and the last layer
+uses the softmax activation function to output the probability
+distribution. The value network has a similar architecture to
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+1250
+
+IEEE TRANSACTIONS ON INTELLIGENT VEHICLES, VOL. 9, NO. 1, JANUARY 2024
+
+Fig. 5. Illustration of the proposed adaptive cooperative driving for CAVs at intersections. (left) Queuing length information in the view zone (obtained by the
+roadside units at the current intersection) and drive-in traffic flow rate information of each lane (obtained by roadside units at the adjacent intersections and V2X
+communication) will be used to solve for the passing order of vehicles within the control zone (indicated by the blue dashed line). (right) An illustration of the
+passing order. For example, “BDEFCA” is a feasible passing order. When the routes of two vehicles conflict, the more front the vehicle is in the passing order, the
+higher its priority is. For example, the priority of Vehicle D is higher than the priority of Vehicle A.
+
+the policy network, except that the last layer directly outputs
+the value of each action instead of the probability distribution
+over the actions. The policy network and value network will be
+updated separately and their parameters are not shared [60].
+IV. ADAPTIVE COOPERATIVE DRIVING AT INTERSECTIONS
+In this section, we present the lower-level adaptive cooperative
+driving algorithm at microscopic intersections in detail.
+Followed by the problem context analyzed in Section II-B,
+the core idea of the adaptive cooperative driving algorithm is
+to adaptively adjust the right-of-way assignment of vehicles
+passing through the intersection based on the traffic states,
+expecting that vehicles on the lanes with longer queue lengths
+and greater traffic flow rates can have priority in passing the
+intersection, so as to promote the efficiency and stability of the
+traffic system at the network-wide level. To this end, the core of
+our adaptive cooperative driving algorithm has two sequential
+steps. In the first step, we define a lane priority based on the
+vehicle queuing information and the traffic flow rates, which can
+adaptively determine the priority of lanes in different directions
+at the intersection. In the second step, the priorities of lanes will
+be used to guide the search process of the Monte Carlo tree
+search (MCTS) based algorithm to find the desired right-of-way
+assignment solution, i.e., the passing order, as illustrated in
+Fig. 5.
+In the following, Section IV-A presents the lane prioritization of adaptive cooperative driving. Section IV-B presents the
+MCTS based adaptive cooperative driving algorithm.
+A. Lane Prioritization of Adaptive Cooperative Driving
+We formulate the priority of lanes according to the above
+ideas. In order to broaden the traffic state information input to
+the intersection system on both spatial and temporal dimensions,
+
+the lane prioritization will be composed of two parts. First, in
+the spatial domain, we define the priority of the lanes based on
+the number of vehicles in the view zone. Intuitively, promoting
+vehicles on lanes with more vehicles to pass the intersection
+faster will effectively prevent vehicles on corresponding lanes
+from queuing outside the control zone for a long-time waiting.
+of Lane i is defined as:
+Therefore, the spatial priority P rspatial
+i
+P rispatial =
+
+Niview
+max Njview
+
+(10)
+
+j
+
+where Njview is the number of vehicles in Lane j within the view
+zone.
+Second, in the temporal domain, we define the priority of
+the lanes based on the drive-in traffic flow rate on each lane.
+Intuitively, allowing vehicles on lanes with a higher drive-in
+flow rate to pass earlier will reserve the right-of-way for subsequent arriving vehicles in advance, avoiding them long-time
+waiting outside the control zone. Therefore, the temporal priority
+of Lane i is defined as:
+P rtemporal
+i
+P ritemporal =
+
+fi
+max fj
+
+(11)
+
+j
+
+where fi is the drive-in flow rate of Lane i. Here, it should
+be illustrated that in the CAV environment, the drive-in flow
+rate can be obtained from the roadside devices at adjacent
+intersections via V2X, as illustrated in Fig. 5. Since the real-time
+driven-in traffic flow will arrive at the control zone of the current
+intersection sometime later, the upstream driven-in flow rate
+essentially contains information about the future state of the
+intersection system. Therefore, considering the temporal priority
+determined by the drive-in flow rate is essentially
+P rtemporal
+i
+incorporating the information about the future state of the current
+intersection system. Meanwhile, this will promote the fairness
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: BI-LEVEL NETWORK-WIDE COOPERATIVE DRIVING APPROACH INCLUDING DRL-BASED ROUTING
+
+1251
+
+Fig. 6. Illustration of the adaptive MCTS based cooperative driving algorithm. The lane priority is used to guide the tree search process. MCTS algorithm: (i)
+Selection: selecting the most promising nodes based on their scores; (ii) Expansion: expanding the not-yet-visited child node into the current search tree; (iii)
+Simulation: running several rollout simulations until a leaf node is reached, i.e., a complete passing order is obtained; (iv) Backup: back-propagating to update the
+scores of all parent nodes based on the score of the leaf node.
+
+of the cooperative divining algorithm for vehicles’ efficiency.
+Finally, the total priority of Lane i is defined as:
+P ri = wP r ∗ P rispatial + (1 − wP r ) ∗ P ritemporal
+
+(12)
+
+where wP r ∈ (0, 1) is a weight coefficient. In the following, the
+lane priorities will be used to solve the passing order.
+B. MCTS Based Adaptive Cooperative Driving
+This subsection shows how to use the lane priorities defined above to improve the cooperative driving algorithm at
+microscopic intersections to better deal with the network-wide
+traffic. Our core idea is that cooperative driving algorithm
+at intersections should aim not only to reduce the delay of
+vehicles in the control zone passing through the intersection,
+but also to allow vehicles in lanes with longer queue lengths
+and greater traffic flow rates to have priority through the intersection, the latter of which is never considered by existing
+algorithms.
+Here, we take the MCTS based cooperative driving algorithm at isolated intersections as the basic algorithm because it
+achieves the highest efficiency in the performance comparison
+at the signal-free intersection [18], [32], [61]. The MCTS based
+cooperative driving algorithm formulates the right-of-way assignment problem as a special tree search problem, and then uses
+the MCTS algorithm to search the tree with the delay of vehicles
+in the control zone as the objective function. However, due to the
+strong real-time constraints, it is impossible to traverse the whole
+search tree in a limited time budget. Therefore, the core idea of
+the MCTS based cooperative driving algorithm is to guide the
+search process of the MCTS approach by designing the heuristic
+rules to traverse more potential nodes in a limited time. More
+details about the MCTS based cooperative driving algorithm can
+
+be found in our previous article [9], [26]. In the following, we
+present the improved MCTS based adaptive cooperative driving
+algorithm.
+The iterative search process of the MCTS approach has four
+main steps: selection, expansion, simulation, and backpropagation, as illustrated in Fig. 6. In order to enable vehicles in
+the lanes with higher priorities to join the passing order earlier
+(accordingly, these vehicles will have priority in passing through
+the intersection), we make the following improvements in the
+selection and simulation steps.
+1) Improved Selection: The original node selection method
+is based on the classical UCB1 policy [62]. The UCB1 policy
+calculates the node’s score based on the cumulative visit times
+and node value, and then selects the child node with the highest
+score as the expanded node, as follows:
+
+ln T
+(13)
+arg max Qk + λ
+k
+Tk
+where Qk is the value of child node k determined by its objective
+value, T is the cumulative visit times of the current node,
+and Tk is the visit times of child node k. λ is the weight
+parameter.
+In order to enable vehicles in the lanes with higher priorities
+to join the passing order earlier, we modify the original UCB1
+policy by adding an item related to the priority of the lane where
+the vehicle is located, so as to improve the scores of vehicles on
+the lanes with higher priorities. The improved UCB1 policy is
+as follows:
+
+ln T
++ ηP r(k)
+(14)
+arg max Qk + λ
+k
+Tk
+where P r(k) is the priority value of the lane where the vehicle
+is located. η is a parameter used to weigh the importance of lane
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+1252
+
+IEEE TRANSACTIONS ON INTELLIGENT VEHICLES, VOL. 9, NO. 1, JANUARY 2024
+
+priorities. The modified UCB1 policy has three items, 
+of which
+
+the first item Qk is for exploration, the second item lnTkT is
+for exploitation, and the third item P r(k) is for giving priority
+to vehicles on the high-priority lanes.
+2) Improved Simulation: Simulation is used to determine a
+complete passing order by continuously expanding the partial
+passing order represented by the current node. In the original
+MCTS based algorithm, the simulation step randomly selects
+lanes and then expands vehicles closer to the conflict zone. The
+priorities of lanes are not considered when randomly selecting
+lanes. To enable vehicles in the lanes with higher priorities to
+join the passing order earlier, we design the following lane selection probability according to the priorities of the lanes defined
+above:
+pi = 
+
+eP ri
+i∈{All lanes}
+
+eP rj
+
+(15)
+
+In the simulation step, lanes are selected based on the probability
+rather than the original random selection. In this way, vehicles
+on the high-priority lanes will be expanded into the passing order
+with higher probability.
+The expansion and backpropagation steps are the same as in
+the original MCTS based algorithm [26]. Here, it is noteworthy
+that when the numbers of queuing vehicles and drive-in flow
+rates of the different lanes are equal, the priorities of corresponding lanes will be equal and the adaptive MCTS based
+algorithm will be the same as the original MCTS based algorithm. However, in most cases, the numbers of queuing vehicles
+and the drive-in flow rates are different for different lanes (for
+example, the common traffic tidal flow phenomenon caused by
+commuting). At this time, the priority defined above will be
+changed adaptively, so that the adaptive MCTS based algorithm
+can adaptively adjust the passing order according to the lane
+priority, promoting vehicles in the lanes with higher flow and
+a greater number of queuing vehicles to pass the intersection
+earlier. Moreover, if there is no computation time limit imposed,
+the time complexity of the adaptive MCTS algorithm is O(2n ),
+where n is the number of vehicles. To meet real-time requirements, we set the maximum computation time budget to 100 ms.
+Finally, it should be illustrated that the objective function value
+of the passing order, i.e., the delay, can be conveniently derived
+using the Passing Ordre to Trajectory Interpretation Algorithm
+proposed in [26] with an algorithmic complexity of O(n), where
+n is the number of vehicles. For interested readers, please refer
+to [26] for more details.
+V. EXPERIMENTS
+In order to verify the performance of the proposed bi-level
+network-wide cooperative driving approach, we conduct numerical experiments from several aspects. Section V-A describes
+our experimental settings and the road network case considered.
+Section V-B presents the results of the performance evaluation.
+Section V-C analyzes the upper-level multi-agent DRL based
+routing model and Section V-D analyzes the lower-level adaptive
+cooperative driving algorithm at signal-free intersections.
+
+Fig. 7.
+
+Typical network-wide traffic environment with nine intersections.
+
+A. Numerical Experiment Settings
+In this section, we conduct numerical experiments to evalaute
+the performance of the network-wide cooperative driving approach proposed in this article. Here, we use CAVSim [32], [61]
+simulation platform to carry out experiments systematically.
+CAVSim is a microscopic traffic simulator for CAVs, which
+emphasizes the impact of the CAVs’ microscopic driving behavior on the macroscopic traffic system. Moreover, microscopic
+traffic simulation can enhance the properties capture of the
+realistic traffic setup and the vehicles’ driving behaviors under
+the proposed methods, and thus enable a more comprehensive
+evaluation of the proposed methods. Without losing generality,
+we build a typical network-wide traffic environment as illustrated in Fig. 7, where L1 is the distance from the intersection to
+the boundary of the road network and L2 is the distance between
+intersections. The origin-destination (OD) is set to randomly
+select a destination for each vehicle in the direction different
+from that of the origin.
+Table I lists the parameter settings in the simulation experiments. The arriving vehicles meet the Poisson distribution and
+continuously drive into the simulated road network from the
+boundary of the network. When not specified, the arrival rates in
+different directions are equal. For DRL agent training, the learning rates for the policy network and value network are 0.0001.
+The size of experience memory pool is 5000. Batch size for
+training is 128. The discount factor for DRL agent learning is 0.5.
+The interpolation factor in Polyak averaging for target network
+updating is 0.01. The architecture of the used fully connected
+deep neural network is (32 − 256 − 1024 − 512 − 64 − 2).
+In the following, we will first evaluate the performance of the
+network-wide cooperative driving approach in Section V-B. In
+Section V-C, we will demonstrate the training and performance
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: BI-LEVEL NETWORK-WIDE COOPERATIVE DRIVING APPROACH INCLUDING DRL-BASED ROUTING
+
+1253
+
+Fig. 8. Travel time of vehicles under different arrival rates. For comparison, we count the travel time on the routes with a length of 2400 m, i.e., the vehicles
+crossing the road network diagonally (similarly hereinafter).
+
+TABLE I
+PARAMETER SETTINGS
+
+of the upper-level multi-agent DRL based routing model. Section V-D will evaluate the performance of the lower-level adaptive cooperative driving algorithm at the network-wide traffic.
+B. Performance Evaluation of the Network-Wide Approach
+Here, we verify the performance of the bi-level network-wide
+cooperative driving approach proposed in this article via comparative experiments. We systematically compare our approach
+with a benchmark approach. The benchmark approach consists
+of the Dijkstra based shortest routing at the upper level and the
+state-of-the-art MCTS based cooperative driving algorithm [26]
+at the lower level.
+Under different traffic demands, we count the following performance metrics:
+r Travel time: Travel time is a performance metric of the
+network-wide cooperative driving approach at the individual vehicles’ level. Generally, a better approach can achieve
+shorter travel time and smaller variations in travel times
+between vehicles, i.e., better fairness [18], [32].
+r Accumulation of vehicles: Vehicle accumulation is a performance metric of the network-wide cooperative driving
+approach at the macroscopic system level. Generally, a
+
+better approach can maintain lower vehicle accumulation
+at the same arrival rate.
+r Macroscopic fundamental diagram (MFD): The MFD provides a comprehensive view of the approach’s performance
+under different traffic conditions and is a powerful tool
+for evaluating the impact of the vehicle’s microscopic
+driving behavior on the macroscopic network-wide traffic
+system [16], [63].
+We simulate the network-wide traffic under different arrival
+rates for 30 mins and count the following performance results.
+1) Travel Time: First, we count the travel time of vehicles
+on routes with equal length under different arrival rates, and the
+results are shown in Fig. 8. The results show that when the arrival
+rate is low (e.g., 300 veh/(h ∗ lane)), the performance of the
+two approaches is similar due to the small number of vehicles
+and smooth network-wide traffic. However, as the arrival rate
+increases, the travel time of the benchmark approach increases
+significantly. Meanwhile, the travel time of different vehicles
+varies greatly. On the contrary, under the proposed approach, the
+travel time of vehicles maintains at a low level as the increase
+of arrival rate, and meanwhile, the difference in travel time of
+different vehicles is small. It suggests that the network-wide
+cooperative driving approach proposed in this article reduces the
+travel time of vehicles and improves the efficiency of the overall
+network-wide traffic system. Moreover, the proposed approach
+achieves better fairness, and the travel time variance of different
+vehicles is small.
+2) Accumulation of Vehicles: Second, we count the accumulation of vehicles in the road network under different arrival
+rates, and the results are shown in Fig. 9. The results show that
+under almost all arrival rates, the proposed approach achieves
+lower vehicle accumulation. It suggests that under the proposed
+approach, vehicles can pass through the road network more
+efficiently so that the vehicle accumulation in the road network
+is kept at a low situation.
+Moreover, with the increase of the arrival rates, under the
+proposed approach, the increase rate of vehicle accumulation is
+smaller than that of the benchmark approach. Especially when
+the arrival rate is 360 veh/(h ∗ lane), the road network loses
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+1254
+
+Fig. 9.
+
+IEEE TRANSACTIONS ON INTELLIGENT VEHICLES, VOL. 9, NO. 1, JANUARY 2024
+
+Accumulation of vehicles in the road network under different arrival rates.
+
+Fig. 11. Simulation snapshots under different approaches. The light gray is
+the view zone and the dark gray is the control zone. (a) Benchmark approach;
+(b) Proposed approach.
+Fig. 10.
+
+MFDs of the network-wide traffic under different approaches.
+
+balance soon under the benchmark approach, i.e., the output flow
+is smaller than the input flow and vehicle accumulation continues
+to increase. On the contrary, under the proposed approach, the
+network-wide traffic system still operates smoothly.
+3) Macroscopic Fundamental Diagram (MFD): Third, we
+count the MFDs of the network-wide traffic under the two
+approaches by varying the arrival rate, and the results are shown
+in Fig. 10. The MFD results show that the difference between the
+two approaches is not significant at lower vehicle accumulation.
+However, as the number of vehicles increases, the approach
+proposed in this article can achieve greater traffic flow, which
+significantly improves the efficiency of the traffic system. Moreover, the MFD’s critical density of the road network increases
+under our approach, suggesting that the methods in this article
+increase the carrying capacity of the road network.
+4) Further Look Into the Proposed Approach: Here, we visually show how the proposed network-wide cooperative driving
+approach contributes to the performance. For this purpose, we
+intercept snapshots of the simulation at the same moment with
+the same arrival rate under different approaches, as shown in
+Fig. 11. The results show that under the proposed approach,
+the distribution of vehicles within the road network is relatively
+uniform and dispersed. Meanwhile, at microscopic intersections,
+
+the number of vehicles in different directions is basically uniform, and there is no queuing congestion. On the contrary, under
+the benchmark approach, the distribution of vehicles within
+the road network is uneven. The number of vehicles at the
+intersection varies greatly in different directions, and congested
+queues occur in some directions, especially causing vehicles to
+queue beyond the control zone.
+C. Analysis of the Upper-Level Multi-Agent DRL Based
+Routing Model
+The observation space and reward function play an important
+influence on the training of multi-agent DRL based routing
+model. Here, we verify the performance of the proposed observation space and reward function by training and testing the
+corresponding models, respectively. In addition, under the same
+lower-level adaptive cooperative driving algorithm, we compare
+the upper-level DRL based routing method with the Dijkstra
+based shortest routing method.
+1) Observation Information: Here, we explore the impact of
+the two types of observation information proposed in Section III-B on the routing model. Fig. 12 shows the variation curves of
+the reward values with the learning steps for different observation information settings. The results show that the proposed
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: BI-LEVEL NETWORK-WIDE COOPERATIVE DRIVING APPROACH INCLUDING DRL-BASED ROUTING
+
+1255
+
+Fig. 12. Effects of different observation information on training, where the
+solid lines are the moving average value. Model without one-step observation
+ΩO means that we set the value of ΩO to 0 to mask the corresponding observation
+information, and the others are similar.
+Fig. 14. Improvement rate of the adaptive cooperative driving algorithm with
+different parameter settings.
+
+Fig. 13. Average travel time under the DRL based routing method and the
+Dijkstra based routing method.
+
+model achieves higher and more stable reward value curves
+under our observation space setting. Models without one-step
+observation ΩO or two-step observation ΩT show significant
+degradation in performance. In particular, the results show that
+one-step observation ΩO plays a more dominant influence, while
+two-step observation ΩT makes an important contribution to
+achieving a higher reward. Therefore, the two types of observation information proposed in this article contribute significantly
+to the performance of the routing model.
+2) Reward Function: To verify the superiority of the backpressure based reward function proposed in this article, we
+compare it with the reward function based on travel time. The
+travel time based reward is a direct and absolute performance
+evaluation of the route decision. Here, we use the above two
+different reward functions to train the routing models in the same
+simulation environment, where the arrival rate of vehicles during
+training is 400 veh/(lane ∗ h). For the well-trained models, we
+test them under different arrival rates, and the results are shown
+in Table II.
+The results show that the backpressure based reward function leads to better performance of the multi-agent DRL based
+routing model, especially better generalization performance.
+When the test environment is inconsistent with the training
+
+Fig. 15. Performance of adaptive MCTS based cooperative driving algorithm
+compared with the original MCTS based cooperative driving algorithm. (a)
+Average travel time under different arrival rates; (b) Travel time distribution under different cooperative driving algorithms, where the arrival rate is
+550 veh/(lane ∗ h).
+
+environment, our model achieves better performance. One of
+the key reasons is that the backpressure based reward function
+is to make a relative evaluation of route decisions. Whether in
+smooth or congested traffic, it will be actively rewarded if the
+model chooses a better route. On the contrary, travel time varies
+greatly in smooth and congested traffic, so the reward function
+based on travel time cannot accurately reflect the performance
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+1256
+
+IEEE TRANSACTIONS ON INTELLIGENT VEHICLES, VOL. 9, NO. 1, JANUARY 2024
+
+Fig. 16. Passing order solved by different algorithms for the same scenario. The number next to the vehicle is the index of the corresponding vehicle in the
+solved passing order. The smaller the number, the higher the ranking, i.e., the higher the priority. (left) Original MCTS based cooperative driving algorithm; (right)
+Adaptive MCTS based cooperative driving algorithm proposed in this article.
+
+TABLE II
+PERFORMANCE OF ROUTING MODELS TRAINED WITH DIFFERENT
+REWARD FUNCTIONS
+
+caused by the routing decision. Therefore, the results suggest
+that the backpressure based reward function proposed in this
+article is conducive to learning the desired performance of the
+multi-agent DRL based routing model, especially the excellent
+generalization performance.
+3) Performance Comparison: Here, we compare the upperlevel DRL based routing method with the Dijkstra based shortest
+routing method. With the same lower-level adaptive cooperative
+driving algorithm and traffic demands, we deploy the DRL
+based routing method and the Dijkstra based routing method
+respectively, and count the travel time of vehicles on the same
+routes. The results are shown in Fig. 13. The results show that
+compared to the Dijkstra based routing method, the proposed
+DRL based routing method can achieve shorter travel times
+under different arrival rates. As the arrival rate increases, the
+performance benefits of the proposed DRL based routing method
+become more significant, and the travel time increases slowly.
+On the contrary, the travel time under the Dijkstra based routing
+method significantly increases as the arrival rate increases.
+
+D. Analysis of the Lower-Level Adaptive Cooperative Driving
+1) Parameter Analysis: As presented in Section IV, wP r
+and η play a crucial role in the proposed adaptive cooperative
+driving algorithm, where wP r is used to weigh the spatial domain
+priority against the temporal domain priority and η determines
+the extent to which the search process considers lane priority.
+To determine the optimal parameter settings for the proposed
+adaptive cooperative driving algorithm, we test the performance
+by varying wP r and η. Here, we take the travel time T travel for the
+vehicles to pass through the road network as the performance
+metric. We compare the proposed algorithm with the original
+MCTS based cooperative driving algorithm by defining the
+following travel time reduction ratio:
+δ=
+
+travel
+travel
+− TAdaptive
+TMCTS
+MCTS
+∗ 100%
+travel
+TMCTS
+
+(16)
+
+travel
+where TMCTS
+is the travel time under the original MCTS based
+travel
+algorithm and TAdaptive
+MCTS is the travel time under the adaptive
+MCTS based algorithm proposed in this article.
+As shown in Fig. 14, we obtain the performance improvement
+results by varying wP r and η from 0 to 1. The results show
+that the adaptive cooperative driving algorithm has significant
+performance improvement and shortens the average travel time
+of vehicles for most cases of the parameter settings. Among
+them, the highest performance improvement with δ = 8.92% is
+achieved when wP r is 0.8 and η is 0.4. Thus, such a combination
+of parameters is used for the other experiments in this article.
+Moreover, the results also show that performance degrades when
+wP r is set large (e.g., wP r = 1) and η is set small (e.g., η = 0.0).
+The reason for this is that the upstream drive-in flow of the
+lanes (essentially, the future state of the intersection) is overly
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: BI-LEVEL NETWORK-WIDE COOPERATIVE DRIVING APPROACH INCLUDING DRL-BASED ROUTING
+
+considered, while the current state of the intersection is ignored,
+resulting in performance degradation. Therefore, a balanced
+consideration of the current and future states of the intersection
+is critical to the performance of the traffic system.
+2) Performance Comparison: Here, we compare the adaptive MCTS based algorithm proposed in this article with the
+original MCTS based algorithm to verify its performance superiority. With the same upper-level routing model and traffic
+demands, we deploy the original algorithm and the adaptive
+algorithm respectively, and count the travel time of vehicles on
+the same routes. The results are shown in Fig. 15. The average
+travel time results (Fig. 15(a)) show that the vehicles achieve a
+shorter average travel time under our adaptive cooperative driving algorithm. Meanwhile, the benefits of the proposed adaptive
+algorithm become more significant as the arrival rate increases.
+Fig. 15(b) shows the distribution of travel time. The results show
+that the adaptive algorithm shifts the distribution of travel time
+to the left, especially avoiding the problem that some vehicles
+have excessive travel time. Thus, the results suggest that the
+adaptive cooperative driving algorithm significantly improves
+the performance of cooperative driving within the network-wide
+traffic in terms of efficiency and fairness by considering the
+priority of lanes in the spatial and temporal domains.
+3) Further Look Into the Effect of Adaptive Cooperative
+Driving: Here, we use a specific scenario to further look into
+how adaptive lane prioritization improves the performance of
+cooperative driving in network-wide traffic. We solve the passing
+order for the same scenario with different cooperative driving
+algorithms, as shown in Fig. 16. In the scenario, the number
+of vehicles on the south-to-north lane is significantly greater
+than in the other directions. The original MCTS based algorithm
+does not consider the queuing and traffic flow rate in different
+directions, but only considers the real-time state information
+of the vehicles in the control zone. As a result, vehicles in the
+south-to-north lanes have a lower priority in the derived passing
+order, while vehicles in the lanes with fewer vehicles have a
+higher priority. In contrast, the adaptive cooperative driving
+algorithm proposed in this article derives a passing order with
+higher priority for vehicles in the south-to-north lane. The results
+show that the adaptive algorithm adaptively increases the priority
+of lanes with more vehicles by taking into account the number
+of vehicles with a wider spatio-temporal range and the drive-in
+traffic flow rate information, thus assigning higher priority to the
+vehicles in the corresponding lanes.
+VI. CONCLUSION
+In this article, a novel bi-level network-wide cooperative
+driving approach is proposed to boost the traffic efficiency for
+network-wide CAVs. In the upper level, we address the dynamic
+routing problem and propose a multi-agent DRL based routing
+model. We design the observation space and reward function
+based on the proposed routing principle of “Consider two steps,
+take one step,” which promotes the DRL agent to learn a dynamic
+routing policy that can consider the performance of individual
+vehicles and global traffic system. In the lower level, we resolve
+the cooperative driving at microscopic intersections and propose
+
+1257
+
+Algorithm 1: Multi-Agent SAC With Discrete Action for
+the Routing Problem.
+
+an adaptive cooperative driving algorithm by introducing lane
+prioritization, which effectively solves the deficiencies encountered by existing intersection cooperative driving algorithms.
+The simulation experiments show that the upper and lower levels
+complement each other and work together to boost the efficiency
+of the overall macroscopic traffic system via the mesoscopic and
+microscopic driving behaviors of individual vehicles. More generally, the bi-level network-wide cooperative driving approach
+provides a general solving roadmap and corresponding methods
+for collaborating network-wide CAV swarms, effectively promoting the utilization of right-of-way resources and boosting
+network-wide traffic efficiency.
+
+APPENDIX A
+SAC ALGORITHM FOR ROUTING
+See Algorithm 1.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+1258
+
+IEEE TRANSACTIONS ON INTELLIGENT VEHICLES, VOL. 9, NO. 1, JANUARY 2024
+
+REFERENCES
+[1] F.-Y. Wang, “Metavehicles in the metaverse: Moving to a new phase for
+intelligent vehicles and smart mobility,” IEEE Trans. Intell. Veh., vol. 7,
+no. 1, pp. 1–5, Mar. 2022.
+[2] D. Cao et al., “Future directions of intelligent vehicles: Potentials, possibilities, and perspectives,” IEEE Trans. Intell. Veh., vol. 7, no. 1, pp. 7–10,
+Mar. 2022.
+[3] Z. Ju, H. Zhang, X. Li, X. Chen, J. Han, and M. Yang, “A survey on
+attack detection and resilience for connected and automated vehicles: From
+vehicle dynamics and control perspective,” IEEE Trans. Intell. Veh., vol. 7,
+no. 4, pp. 815–837, Dec. 2022.
+[4] S. Xiao, X. Ge, Q.-L. Han, and Y. Zhang, “Resource-efficient platooning
+control of connected automated vehicles over VANETs,” IEEE Trans.
+Intell. Veh., vol. 7, no. 3, pp. 579–589, Sep. 2022.
+[5] C. Chang et al., “Bev-V2X: Cooperative birds-eye-view fusion and grid
+occupancy prediction via V2X-based data sharing,” IEEE Trans. Intell.
+Veh., early access, Jul. 11, 2023, doi: 10.1109/TIV.2023.3293954.
+[6] D. Liu, S. Baldi, V. Jain, W. Yu, and P. Frasca, “Cyclic communication
+in adaptive strategies to platooning: The case of synchronized merging,”
+IEEE Trans. Intell. Veh., vol. 6, no. 3, pp. 490–500, Sep. 2021.
+[7] H. Yu et al., “Automated vehicle-involved traffic flow studies: A survey of
+assumptions, models, speculations, and perspectives,” Transp. Res. Part
+C: Emerg. Technol., vol. 127, 2021, Art. no. 103101.
+[8] L. Li, Y. Lin, Y. Wang, and F.-Y. Wang, “Simulation driven AI: From
+artificial to actual and vice versa,” IEEE Intelligent Systems, vol. 38, no. 1,
+pp. 3–8, 2023.
+[9] J. Zhang, S. Li, and L. Li, “Coordinating CAV swarms at intersections
+with a deep learning model,” IEEE Trans. Intell. Transp. Syst., vol. 24,
+no. 6, pp. 6280–6291, Jun. 2023.
+[10] R. van Hoek, J. Ploeg, and H. Nijmeijer, “Cooperative driving of automated
+vehicles using b-splines for trajectory planning,” IEEE Trans. Intell. Veh.,
+vol. 6, no. 3, pp. 594–604, Sep. 2021.
+[11] Z. Zhu, N. Pivaro, S. Gupta, A. Gupta, and M. Canova, “Safe modelbased off-policy reinforcement learning for ECO-driving in connected and
+automated hybrid electric vehicles,” IEEE Trans. Intell. Veh., vol. 7, no. 2,
+pp. 387–398, Jun. 2022.
+[12] Z. Hu, S. Lou, Y. Xing, X. Wang, D. Cao, and C. Lv, “Review and perspectives on driver digital twin and its enabling technologies for intelligent
+vehicles,” IEEE Trans. Intell. Veh., vol. 7, no. 3, pp. 417–440, Sep. 2022.
+[13] H. Yu, C. Chang, S. Li, and L. Li, “CD-DB: A data storage model for
+cooperative driving,” IEEE Trans. Intell. Veh., vol. 8, no. 1, pp. 492–501,
+Jan. 2023.
+[14] N. Williams, G. Wu, and M. Barth, “Position uncertainty-tolerant cooperative merging application for mixed multilane traffic,” IEEE Trans. Intell.
+Veh., vol. 7, no. 1, pp. 143–153, Mar. 2022.
+[15] J. Ge, J. Zhang, Y. Zhang, D. Yao, Z. Zhang, and R. Zhou, “Autonomous
+vehicles testing considering utility-based operable tasks,” Tsinghua Sci.
+Technol., vol. 28, no. 5, pp. 965–975, 2023.
+[16] J. Zhang, H. Pei, X. J. Ban, and L. Li, “Analysis of cooperative driving
+strategies at road network level with macroscopic fundamental diagram,”
+Transp. Res. Part C: Emerg. Technol., vol. 135, 2022, Art. no. 103503.
+[17] L. Li, D. Wen, and D. Yao, “A survey of traffic control with vehicular communications,” IEEE Trans. Intell. Transp. Syst., vol. 15, no. 1, pp. 425–432,
+Feb. 2014.
+[18] H. Xu, C. G. Cassandras, L. Li, and Y. Zhang, “Comparison of cooperative
+driving strategies for CAVs at signal-free intersections,” IEEE Trans. Intell.
+Transp. Syst., vol. 23, no. 7, pp. 7614–7627, Jul. 2022.
+[19] L. Li and S. Li, “A theoretical analysis for cooperative driving at idealized non-signalized intersections,” Social Sci. Electron. Publishing, to be
+published, doi: 10.2139/ssrn.4010332.
+[20] C. Chang, K. Zhang, J. Zhang, S. Li, and L. Li, “Driving safety monitoring
+and warning for connected and automated vehicles via edge computing,”
+in Proc. IEEE 25th Int. Conf. Intell. Transp. Syst., 2022, pp. 3940–3947.
+[21] J. Ge, H. Xu, J. Zhang, Y. Zhang, D. Yao, and L. Li, “Heterogeneous driver
+modeling and corner scenarios sampling for automated vehicles testing,”
+J. Adv. Transp., vol. 2022, pp. 1–14, 2022.
+[22] C. Zhao, L. Li, X. Pei, Z. Li, F.-Y. Wang, and X. Wu, “A comparative study
+of state-of-the-art driving strategies for autonomous vehicles,” Accident
+Anal. Prevention, vol. 150, 2021, Art. no. 105937.
+[23] K. Dresner and P. Stone, “A multiagent approach to autonomous intersection management,” J. Artif. Intell. Res., vol. 31, pp. 591–656, 2008.
+[24] Y. Zhang and C. G. Cassandras, “A decentralized optimal control
+framework for connected automated vehicles at urban intersections with
+dynamic resequencing,” in Proc. IEEE Conf. Decis. Control., 2018,
+pp. 217–222.
+
+[25] L. Li and F.-Y. Wang, “Cooperative driving at blind crossings using
+intervehicle communication,” IEEE Trans. Veh. Technol., vol. 55, no. 6,
+pp. 1712–1724, Nov. 2006.
+[26] H. Xu, Y. Zhang, L. Li, and W. Li, “Cooperative driving at unsignalized
+intersections using tree search,” IEEE Trans. Intell. Transp. Syst., vol. 21,
+no. 11, pp. 4563–4571, Nov. 2020.
+[27] L. Li and F.-Y. Wang, “Cooperative driving at adjacent blind intersections,”
+in Proc. IEEE Int. Conf. Syst., Man Cybern., 2005, vol. 1, pp. 847–852.
+[28] F. Yan, M. Dridi, and A. E. Moudni, “A scheduling approach for autonomous vehicle sequencing problem at multi-intersections,” Int. J. Prod.
+Res., vol. 9, no. 1, pp. 57–68, 2011.
+[29] A. Giridhar and P. R. Kumar, “Scheduling automated traffic on a network
+of roads,” IEEE Trans. Veh. Technol., vol. 55, no. 5, pp. 1467–1474,
+Sep. 2006.
+[30] H. Pei, Y. Zhang, Q. Tao, S. Feng, and L. Li, “Distributed cooperative
+driving in multi-intersection road networks,” IEEE Trans. Veh. Technol.,
+vol. 70, no. 6, pp. 5390–5403, Jun. 2021.
+[31] Q. Guo, L. Li, and X. J. Ban, “Urban traffic signal control with connected
+and automated vehicles: A survey,” Trans. Res. Part C: Emerg. Technol.,
+vol. 101, pp. 313–334, 2019.
+[32] J. Zhang et al., “CAVSim: A microscopic traffic simulator for evaluation
+of connected and automated vehicles,” IEEE Trans. Intell. Transp. Syst.,
+early access, May 12, 2023, doi: 10.1109/TITS.2023.3273565.
+[33] Y. Ma, C. Sun, J. Chen, D. Cao, and L. Xiong, “Verification and validation methods for decision-making and planning of automated vehicles: A review,” IEEE Trans. Intell. Veh., vol. 7, no. 3, pp. 480–498,
+Sep. 2022.
+[34] S. Feng, Z. Song, Z. Li, Y. Zhang, and L. Li, “Robust platoon control in
+mixed traffic flow based on tube model predictive control,” IEEE Trans.
+Intell. Veh., vol. 6, no. 4, pp. 711–722, Dec. 2021.
+[35] H. Chen and C. Lv, “Online learning-informed feedforward-feedback
+controller synthesis for path tracking of autonomous vehicles,” IEEE
+Trans. Intell. Veh., vol. 8, no. 4, pp. 2759–2769, Apr. 2023.
+[36] M. Papageorgiou and A. Kotsialos, “Freeway ramp metering: An
+overview,” IEEE Trans. Intell. Transp. Syst., vol. 3, no. 4, pp. 271–281,
+Dec. 2002.
+[37] B. G. Heydecker, “Objectives, stimulus and feedback in signal control of
+road traffic,” J. Intell. Transp. Syst., vol. 8, no. 2, pp. 63–76, 2004.
+[38] M. Papageorgiou, E. Kosmatopoulos, I. Papamichail, and Y. Wang, “A
+misapplication of the local ramp metering strategy ALINEA,” IEEE Trans.
+Intell. Transp. Syst., vol. 9, no. 2, pp. 360–365, Jun. 2008.
+[39] Z. Li, L. Elefteriadou, and S. Ranka, “Signal control optimization for
+automated vehicles at isolated signalized intersections,” Transp. Res. Part
+C: Emerg. Technol., vol. 49, pp. 1–18, 2014.
+[40] W. Liu, Z. Li, L. Li, and F.-Y. Wang, “Parking like a human: A direct
+trajectory planning solution,” IEEE Trans. Intell. Transp. Syst., vol. 18,
+no. 12, pp. 3388–3397, Dec. 2017.
+[41] F. Tian, Z. Li, F.-Y. Wang, and L. Li, “Parallel learning-based steering
+control for autonomous driving,” IEEE Trans. Intell. Veh., vol. 8, no. 1,
+pp. 379–389, Jan. 2023.
+[42] L. Tassiulas and A. Ephremides, “Stability properties of constrained
+queueing systems and scheduling policies for maximum throughput in
+multihop radio networks,” in Proc. IEEE 29th Conf. Decis. Control, 1990,
+pp. 2130–2132.
+[43] M. J. Neely and R. Urgaonkar, “Optimal backpressure routing for wireless
+networks with multi-receiver diversity,” Ad Hoc Netw., vol. 7, no. 5,
+pp. 862–881, 2009.
+[44] C. F. Daganzo and N. Geroliminis, “An analytical approximation for the
+macroscopic fundamental diagram of urban traffic,” Transp. Res. Part B:
+Methodological, vol. 42, no. 9, pp. 771–781, 2008.
+[45] N. Geroliminis and C. F. Daganzo, “Existence of urban-scale macroscopic
+fundamental diagrams: Some experimental findings,” Transp. Res. Part B:
+Methodological, vol. 42, no. 9, pp. 759–770, 2008.
+[46] Y. LeCun, Y. Bengio, and G. Hinton, “Deep learning,” Nature, vol. 521,
+no. 7553, pp. 436–444, 2015.
+[47] V. Mnih et al., “Human-level control through deep reinforcement learning,”
+Nature, vol. 518, no. 7540, pp. 529–533, 2015.
+[48] J. Zhang, C. Chang, X. Zeng, and L. Li, “Multi-agent DRL-based lane
+change with right-of-way collaboration awareness,” IEEE Trans. Intell.
+Transp. Syst., vol. 24, no. 1, pp. 854–869, Jan. 2023.
+[49] J. Zhang, Z. Li, L. Li, Y. Li, and H. Dong, “A bi-level cooperative operation
+approach for AGV based automated valet parking,” Transp. Res. Part C:
+Emerg. Technol., vol. 128, 2021, Art. no. 103140.
+[50] Z. Peng, Q. Li, K. M. Hui, C. Liu, and B. Zhou, “Learning to simulate
+self-driven particles system with coordinated policy optimization,” in Proc.
+Adv. Neural Inf. Process. Syst., 2021, pp. 10784–10797.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: BI-LEVEL NETWORK-WIDE COOPERATIVE DRIVING APPROACH INCLUDING DRL-BASED ROUTING
+
+[51] Q. Liu et al., “Fault-tolerant cooperative driving at highway on-ramps
+considering communication failure,” Transp. Res. Part C: Emerg. Technol.,
+vol. 153, 2023, Art. no. 104227.
+[52] H. Pei, J. Zhang, Y. Zhang, X. Pei, S. Feng, and L. Li, “Fault-tolerant
+cooperative driving at signal-free intersections,” IEEE Trans. Intell. Veh.,
+vol. 8, no. 1, pp. 121–134, Jan. 2023.
+[53] H.-R. Lee and T. Lee, “Multi-agent reinforcement learning algorithm to
+solve a partially-observable multi-agent problem in disaster response,”
+Eur. J. Oper. Res., vol. 291, no. 1, pp. 296–308, 2021.
+[54] F. A. Oliehoek and C. Amato, A Concise Introduction to Decentralized
+POMDPs. Berlin, Germany: Springer, 2016.
+[55] R. Devidze, G. Radanovic, P. Kamalaruban, and A. Singla, “Explicable
+reward design for reinforcement learning agents,” in Proc. Adv. Neural
+Inf. Process. Syst., 2021, pp. 20118–20131.
+[56] T. Haarnoja, A. Zhou, P. Abbeel, and S. Levine, “Soft actor-critic: Offpolicy maximum entropy deep reinforcement learning with a stochastic
+actor,” in Proc. Int. Conf. Mach. Learn., 2018, pp. 1861–1870.
+[57] X. Wang et al., “Deep reinforcement learning: A survey,” IEEE
+Trans. Neural Netw. Learn. Syst., early access, Sep. 28, 2022,
+doi: 10.1109/TNNLS.2022.3207346.
+[58] F. Mao, Z. Li, and L. Li, “A comparison of deep reinforcement learning
+models for isolated traffic signal control,” IEEE Intell. Transp. Syst. Mag.,
+vol. 15, no. 1, pp. 160–180, Jan./Feb. 2023.
+[59] P. Christodoulou, “Soft actor-critic for discrete action settings,” 2019,
+arXiv:1910.07207.
+[60] P. Long, T. Fan, X. Liao, W. Liu, H. Zhang, and J. Pan, “Towards optimally
+decentralized multi-robot collision avoidance via deep reinforcement
+learning,” in Proc. IEEE Int. Conf. Robot. Automat., 2018, pp. 6252–6259.
+[61] J. Zhang et al., “CAVSim: A microscope traffic simulator for connected
+and automated vehicles environment,” in Proc. IEEE 25th Int. Conf. Intell.
+Transp. Syst., 2022, pp. 3719–3724.
+[62] L. Kocsis and C. Szepesvári, “Bandit based monte-carlo planning,” in
+Proc. Eur. Conf. Mach. Learn., 2006, pp. 282–293.
+[63] C. F. Daganzo, L. J. Lehe, and J. Argote-Cabanero, “Adaptive offsets
+for signalized streets,” Transp. Res. Part B: Methodological, vol. 117,
+pp. 926–934, 2018.
+
+Jiawei Zhang received the B.S. degree in 2020 from
+the Department of Automation, Tsinghua University,
+Beijing, China, where he is currently working toward
+the Ph.D. degree with the Department of Automation.
+His research interests include intelligent transportation systems, autonomous driving, connected and automated vehicles, and deep reinforcement learning.
+
+1259
+
+Jingwei Ge is currently working toward the Ph.D.
+degree with the Department of Automation, Tsinghua
+University, Beijing, China. His research interests include intelligent transportation systems, intelligence
+testing, and autonomous vehicles testing.
+
+Shu Li is currently working toward the bachelor’s
+degree with the Department of Automation, Tsinghua
+University, Beijing, China. His research interests include connected and automated vehicles and intelligent transportation systems.
+
+Shen Li (Member, IEEE) received the Ph.D. degree
+from the University of Wisconsin C Madison, Madison, WI, USA, in 2018. He is currently a Research
+Associate with Tsinghua University, Beijing, China.
+His research interests include intelligent transportation systems, architecture design of CAVH system,
+vehicle-infrastructure cooperative planning and decision method, traffic data mining based on cellular
+data, and traffic operations and management.
+
+Li Li (Fellow, IEEE) is currently a Professor with
+the Department of Automation, Tsinghua University, Beijing, China, working in the fields of artificial intelligence, intelligent control and sensing,
+intelligent transportation systems, and intelligent vehicles. He has authored or coauthored more than
+170 SCI-indexed international journal articles and
+more than 70 international conference papers as a
+first/corresponding author. He is a Member of the Editorial Advisory Board of the Transportation Research
+Part C: Emerging Technologies, and a Member of the
+Editorial Board of the Transport Reviews and Acta Automatica Sinica. He is
+also an Associate Editor for the IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS and IEEE TRANSACTIONS ON INTELLIGENT VEHICLES.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:33 UTC from IEEE Xplore. Restrictions apply.
+
+

@@ -1,0 +1,136 @@
+{
+ "adjudicated_count": 11,
+ "kept_on_later_occurrence": {
+  "51": "first occurrence is \"They show results for small networks such as the one used to illustrate the Braess paradox\"; the study's own evaluation section reads \"B. Sioux Falls Network The SF network ... has 24 vertices and 76 edges\"."
+ },
+ "lexical_count": 12,
+ "per_network": {
+  "Anaheim": [
+   "66",
+   "67",
+   "69"
+  ],
+  "Barcelona": [
+   "67",
+   "69"
+  ],
+  "Braess": [
+   "2",
+   "16",
+   "36",
+   "51"
+  ],
+  "Chicago Sketch": [
+   "66"
+  ],
+  "Nguyen-Dupuis": [
+   "25",
+   "36",
+   "53"
+  ],
+  "Sioux Falls": [
+   "17",
+   "51",
+   "66",
+   "67",
+   "68",
+   "69"
+  ],
+  "Winnipeg": [
+   "66",
+   "69"
+  ]
+ },
+ "per_study": {
+  "16": {
+   "networks": [
+    "Braess"
+   ],
+   "occurrences": 8,
+   "title": "Reinforcement Learning-based Sequential Route Recommendation for System-Optimal Traffic Assignment"
+  },
+  "17": {
+   "networks": [
+    "Sioux Falls"
+   ],
+   "occurrences": 2,
+   "title": "Joint Optimization of Traffic Signal Control and Vehicle Routing in Signalized Road Networks using Multi-Agent Deep Reinforcement Learning"
+  },
+  "2": {
+   "networks": [
+    "Braess"
+   ],
+   "occurrences": 11,
+   "title": "Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for dynamic traffic assignment"
+  },
+  "25": {
+   "networks": [
+    "Nguyen-Dupuis"
+   ],
+   "occurrences": 3,
+   "title": "Navigating the non-compliance effects on system optimal route guidance using reinforcement learning"
+  },
+  "36": {
+   "networks": [
+    "Braess",
+    "Nguyen-Dupuis"
+   ],
+   "occurrences": 28,
+   "title": "Providing real-time en-route suggestions to CAVs for congestion mitigation: A two-way deep reinforcement learning approach"
+  },
+  "51": {
+   "networks": [
+    "Braess",
+    "Sioux Falls"
+   ],
+   "occurrences": 4,
+   "title": "A multiagent reinforcement learning approach to en-route trip building"
+  },
+  "53": {
+   "networks": [
+    "Nguyen-Dupuis"
+   ],
+   "occurrences": 1,
+   "title": "A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion game"
+  },
+  "66": {
+   "networks": [
+    "Anaheim",
+    "Chicago Sketch",
+    "Sioux Falls",
+    "Winnipeg"
+   ],
+   "occurrences": 43,
+   "title": "SEGAC: Sample Efficient Generalized Actor Critic for the Stochastic On-Time Arrival Problem"
+  },
+  "67": {
+   "networks": [
+    "Anaheim",
+    "Barcelona",
+    "Sioux Falls"
+   ],
+   "occurrences": 9,
+   "title": "GE-DDRL: Graph Embedding and Deep Distributional Reinforcement Learning for Reliable Shortest Path: A Universal and Scale Free Solution"
+  },
+  "68": {
+   "networks": [
+    "Sioux Falls"
+   ],
+   "occurrences": 5,
+   "title": "Shortest-Time Path Planning Under Carbon Emission Constraints via Reinforcement Learning"
+  },
+  "69": {
+   "networks": [
+    "Anaheim",
+    "Barcelona",
+    "Sioux Falls",
+    "Winnipeg"
+   ],
+   "occurrences": 8,
+   "title": "DRL Router: Distributional Reinforcement Learning-Based Router for Reliable Shortest Path Problems"
+  }
+ },
+ "withdrawn": {
+  "38": "its single occurrence is inside the related-work paragraph on OD-level assignment, describing Wang et al.'s MARL-OD-DA: \"This approach achieved superior convergence performance in networks such as SiouxFalls\". Its own substrates are a synthetic 5x6 grid of 30 intersections and a Toronto network derived from OpenStreetMap."
+ }
+}

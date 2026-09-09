@@ -1,0 +1,2238 @@
+Cite this article
+
+Research Article
+
+Edrisi A, Bagherzadeh K and Nadi A
+Applying Markov decision process to adaptive dynamic route selection model.
+Proceedings of the Institution of Civil Engineers – Transport,
+https://doi.org/10.1680/jtran.19.00085
+
+Paper 1900085
+Received 21/06/2019;
+Accepted 10/10/2019
+
+Keywords: traffic engineering/transport
+management/transport planning
+
+ICE Publishing: All rights reserved
+
+Transport
+
+Applying Markov decision process to adaptive
+dynamic route selection model
+Ali Edrisi PhD
+
+Ali Nadi MSc
+
+Assistant Professor, Civil Engineering Department, K.N. Toosi University of
+Technology, Tehran, Iran (corresponding author: edrisi@kntu.ac.ir)
+
+PhD student, Civil Engineering Department, K.N. Toosi University of
+Technology, Tehran, Iran
+
+Koosha Bagherzadeh MSc
+Researcher, Civil Engineering Department, K.N. Toosi University of
+Technology, Tehran, Iran
+
+Routing technologies have long been available in many automobiles and smart phones, but the nearly random nature
+of traffic on road networks has always encouraged further efforts to improve the reliability of navigation systems.
+Given the networks’ uncertainty, an adaptive dynamic route selection model based on reinforcement learning is
+proposed. In the proposed method, the Markov decision process (MDP) is used to train simulated agents in a network
+so that they are able to make independent decisions under random conditions and, accordingly, determine the set of
+routes with the shortest travel time. The aim of the research was to integrate the MDP with a multi-nomial logit
+model (a widely used stochastic discrete-choice model) to improve finding the stochastic shortest path by computing
+the probability of selecting an arc from several interconnected arcs based on observations made at the arc location.
+The proposed model, tested with real data from part of the road network in Isfahan, Iran, and the results obtained
+demonstrated its good performance under 100 randomly applied stochastic scenarios.
+
+Notation
+A
+a
+b
+E
+h
+P
+Q
+R
+r
+S
+s
+t
+V
+γ
+
+1.
+
+set of actions
+specific action
+coefficient of logit model
+expected value
+number of iterations
+probability of choosing an action route
+final reward of route
+total reward including previous results
+momentary reward
+set of states
+specific state
+time
+total reward under a specific policy in a specific
+state and action
+coefficient of considering previous results
+
+Introduction
+
+Streamlined traffic flow and transportation through arterial
+roads can have major positive impacts on urban trade and the
+economy and quality of city life. Depending on the objective
+and destination, the behaviour of users of a road network can be
+categorised into different classes, such as shopping, commuting,
+business trips, cargo deliveries and so on. All these objectives
+and destinations are usually reached by motor vehicles traversing
+the ground, which thus require their own travelling routes.
+Extreme demand for travelling routes leads to congestion on the
+road network, longer travel times and increased noise and air
+pollution, which require additional efforts and capital to counter
+and control. Thus, methods of optimal routing and network balancing have emerged to minimise these adverse effects and
+reduce travel times. Given the importance of optimal routing in
+today’s traffic, this issue has been extensively researched, leading
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+to the emergence of many routing methods and algorithms,
+such as shortest path, flooding and so on. However, the need to
+incorporate the randomness of road networks into routing has
+necessitated the use of intelligent approaches.
+In this paper, a new adaptive dynamic route selection (ADRS)
+method is presented, which is based on intelligent agents (i.e.
+an agent-based system) for the optimisation of travel routes.
+Time, distance or passage through certain nodes can be considered as performance criteria and the basis for introducing
+the algorithm to the agent, so that the route can be optimised
+accordingly. Agent-based methods fall within a specific scientific domain called machine learning. An efficient method of
+machine learning is reinforcement learning, and this method
+was employed in this study to develop the ADRS model for
+finding the optimal path in a network with variable route cost.
+The main aim pursued in this study was to use reinforcement
+learning innovatively in the ADRS approach. This raises the
+controversial question of whether it is possible to make the
+route selection approach intensively accurate. In addition,
+route selection in agent-based systems is a stochastic process,
+so is it feasible to amend the action selection process?
+This research addressed these questions.
+The findings of this study revealed that targeted route selection
+in the process will modify the whole Markov decision process
+(MDP). The results also showed that modified approach
+exceeds the former and the whole process will take less time
+than the MDP.
+
+2.
+
+Literature review
+
+The high frequency of traffic congestion in today’s road
+networks has led to undesirable consequences such as higher
+1
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+network maintenance, higher fuel costs, increased travel time
+and longer delays for network users. The accumulation of
+about 4·4 billion hours of delay over the last 29 years in the
+USA has encouraged many traffic engineers and experts to
+seek new solutions for improving the situation (Schrank et al.,
+2012). To deal with the increasing demand, techniques and
+methods to optimise existing road traffic networks are attractive as they do not involve expensive and environmentalimpacting changes to infrastructure (Bazzan, 2009; Tavares
+and Bazzan, 2012a).
+
+caused by traffic congestion and, to this end, several researchers have proposed solutions to predict the propagation speed,
+patterns and effects of congestion. Predicting where observed
+congestions may spread over a transportation network is extremely helpful for several parties, including traffic controllers
+(to balance traffic flows in advance in the predicted congested
+areas/road segments), road users (to adapt their trajectories to
+avoid extended commuting times or to minimise exposure to
+carbon dioxide emissions) and police operators (to improve
+the efficiency of the deployment of resources) (Bouyahia et al.,
+2019). In the research of Tavares and Bazzan (2012b), traffic
+assignment over the road network is governed by reinforcement
+learning and drivers choose their routes without knowing the
+status of other users.
+
+Traffic situations can be improved by several methods, which,
+depending on the approach, can be divided into supplyoriented and demand-oriented solutions (Vasirani and
+Ossowski, 2012). One way to improve the situation in a
+network with insufficient capacity is to increase the supply – in
+other words, to increase the number and quality of links constituting the network. On the other hand, a more cost-effective
+solution to this problem would be to decrease the demand by
+restricting private users or increasing the efficiency of the existing infrastructure by the use of intelligent transportation
+systems. A precise simulation of stochastic networks on which
+intelligent systems should be applied is therefore required.
+As already noted, the better approach to resolve traffic congestion problems is to work on the demand side (i.e. the users) –
+that is, to optimise traffic flows and utilise the existing
+networks at full capacity to ensure a smooth traffic flow
+(Walraven et al., 2016). Recent efforts with regard to traffic
+flow optimisation include simulations of the factors that may
+affect traffic flow (traffic control devices, the possibility of
+unmanned vehicles, drivers’ decision making power etc.).
+An interesting area in this field is the simulation of automatic
+and driverless vehicles and their behaviour under different
+network conditions with the objective of providing a safe
+and smooth traffic flow. To obtain more accurate results,
+Shalev-Shwartz et al. (2016) performed this simulation using a
+multi-agent approach. Although autonomous vehicles (AVs)
+enhance the traffic status and reduce driver errors, which can
+lead to high economic benefits, there could be impediments to
+their implementation. Poor weather (e.g. fog and snow) and
+reflective road surfaces due to rain and ice may complicate AV
+sensor recognition; moreover, computers and sensors have
+great difficulty in identifying the composition of objects
+(Fagnant and Kockelman, 2015). In such degraded environments, drivers experience a similar decreased ability and this
+deteriorates the traffic status and increases driver errors.
+Having real-time traffic information from intelligent transportation systems and taking into account the stochastic nature of
+disruptions can significantly reduce time delays, congestion
+and air pollution. As a trade-off, for networks with many disruption levels, computing dynamic routing decisions takes a
+very long computational time (Sever et al., 2018). Optimal
+routing can play an important role in resolving the problems
+2
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+Given the importance of this issue, researchers have also proposed an approach called vehicle-to-vehicle or V2V. This is an
+attempt to use data collected from other vehicles to achieve
+better control of traffic flows and reduce traffic congestion due
+to non-optimal routing (Cunningham et al., 2008). Naturally,
+the more accurate this information is, the better the control
+over the movement of vehicles and the smoother the traffic
+flow. To improve accuracy, information can be gathered from a
+more limited population with more familiarity with the
+network, higher speed and generally more reasonable behaviour than that of other users (Machado and Bazzan, 2011).
+Information received from other users has also been used to
+update maps. However, route choice in this framework is not a
+dynamic approach and needs to be amended. According to
+Bazzan and Klügl (2008), modelling this phenomenon with a
+multi-agent approach can yield good results, with re-routing
+reducing the network traffic load and allowing it to be dispersed proportionally over other parts of the network. One of
+the contributors of urban traffic is related to drivers searching
+for parking spaces. Tang et al. (2014) formulated this problem
+as an MDP for efficient traffic management.
+The way users respond to different traffic conditions has a
+major effect on flow controllability and the smoothness of the
+traffic flow. Therefore, information gathered from users cannot
+determine the best result independently and the interaction
+between users and their environment should be taken into
+account (Bazzan et al., 2006). To obtain more realistic results,
+these agents can be considered simultaneously in a multi-agent
+modelling. Nadi and Edrisi (2017) modelled both real-time
+data collection and the interactions among three types of
+agents in a multi-agent cooperative routing system. One
+advantage of this type of modelling is the possibility of assessing the effect of modelled agents on each other (Krzysztoń
+and Śnieżyń ski, 2015). van Katwijk et al. (2005) presented a
+test bed for a multi-agent traffic control system and a survey of
+this approach.
+In innovative research by the authors, an online route-planning
+model was proposed. The model provides time-saving routes
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+by extracting latent routing knowledge, which leverages both
+current and estimated future traffic status, from massive trajectories of experienced drivers. The model focuses on three key
+issues – (a) the prediction of future traffic status, (b) routing
+knowledge learning from experienced drivers and (c) route
+planning based on both the current and future traffic status. In
+this paper, a new MDP is added, which is generated by the
+future traffic status and current routing actions. By leveraging
+the proposed double-rewarded value iteration network (VIN),
+these two MDPs are processed separately by two sub-VINs
+(i.e. current VIN and prediction VIN) in the first K − 1 iterations, and then aggregated in the last iteration to give actions
+as well as perform back-propagation. The combination of the
+two sub-VINs is based on an intuition that the current VIN
+focuses more on short-term planning, whereas the prediction
+VIN focuses more on long-term planning. Extensive experimental results, based on real taxicab mobility traces in
+Beijing, have demonstrated that the proposed model can
+achieve human-like performance with a high success rate and
+reduced commuting time (Li et al., 2019).
+
+estimated network condition. This approach can be employed
+in multi-agent systems in order to define rewards in the whole
+process. In other words, real-time data can be used to anticipate the travel time, which helps determine an accurate
+momentary reward and a total reward.
+
+An alternative agent-based solution for the traffic flow
+problem is to control drivers’ behaviour by the enforcement of
+laws specifically enacted for this purpose. Enforcing speed
+limits and optimising maximum speeds by Q-learning algorithms may allow users to cross intersections by spending the
+minimum time in congestion and behind traffic lights and also
+solve the problem of a reduced number of lanes at intersections
+(Krzysztoń and Śnieżyń ski, 2015). Lu et al. (2008) used agentbased modelling to explore the influence of urban form on
+work travel behaviour, but did not consider the uncertainty
+and randomness of traffic on road networks. Tillotson et al.
+(2000) developed a routing survey based on Watkin’s
+Q-learning algorithm, which again does not take uncertainty
+into account. To address this issue, reinforcement learning
+and Q-learning algorithms were used to develop a method for
+finding the optimal route with the randomness of the network
+condition taken into consideration. In other research, de
+Oliveira et al. (2018) considered the stateless approach;
+whenever this problem is mentioned in this paper it refers to
+that unless otherwise mentioned. The reason for this choice
+was twofold. First, it is more realistic as a commuter will
+already have an idea about possible routes. Second, and more
+relevant to this paper, the goal here is to compare the
+performance of a commonly used algorithm for reinforcement
+learning, namely Q-learning (in its stateless variant), with a
+class of algorithms specifically designed to deal with action
+selection in multi-armed (or N-armed) bandit problems.
+One of the most interesting ways to answer the same problem
+is to use real-time predictions of sustainable network flow.
+DynaMit is a system of models for guidance generation based
+on the predicted traffic condition (Ben-Akiva et al., 1997). The
+DynaMit system interacts with traffic surveillance systems and
+generates user-optimal guidance that takes into account the
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+According to the above literature review, most research studies
+have not considered the stochastic status of networks accurately. In addition, selecting routes based on the route’s characteristics has received little attention in previous research.
+Furthermore, most studies used unreliable travel time as a cost
+function to find an optimum result. The main aim of the
+current research was to modify these issues.
+To accomplish the current study, the stochastic situation of
+networks relating to the physical characteristics of an arrow
+was considered, which is a gap in the literature. The research
+showed that these characteristics affect the designation of
+traffic flow; therefore, assumptions were simulated on hypothetical networks by reducing the uncertainty (standard deviation)
+of network parameters. It was concluded that some of the
+parameters that will be introduced in this paper have profound
+effects on road networks. An accurate dynamic simulation,
+which approximates better results, is proposed. A method close
+to this approach was proposed by Nadi and Edrisi (2017), in
+which the best route is determined in a crisis situation.
+Although both studies use reinforcement learning, Nadi and
+Edrisi (2017) did not consider the stochastic situation of the
+network and the characteristics of the links. The current
+research proposes a discrete-choice model for the selection of
+routes as actions in each state of the MDP in order to introduce the features of agents in decision making and make the
+action selection process closer to reality.
+The next section presents the methodology (the mathematical
+model and the algorithm) and a numerical example to evaluate
+the proposed model. Section 4 describes a case study of
+Isfahan, Iran, as a large network to prove the validity of
+the proposed ADRS method. Conclusions are presented in
+Section 5.
+
+3.
+
+ADRS methodology
+
+Given that transport networks are totally stochastic, route
+selection should be considered as a part of dynamic simulation
+of traffic flows and networks simultaneously. The MDP is a
+reinforcement-learning method that has been used in many
+applications to estimate the state of a dynamic system. In
+reinforcement-learning problems, an agent seeks to find the
+best solution by experience and trial and error (Nguyen et al.,
+2014; Zhang and Lesser, 2013). In other words, an agent
+randomly selects an action from a set of available options and
+performs it in a defined environment. In this work, this action
+selection process is utilised for selecting the best sequence of
+routes. The selection of a route by an agent changes the condition of the transportation network and the agent receives
+3
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+a reward accordingly. This process is repeated until a desired
+result or a certain convergence is achieved. This research proposes that random route selection can be modified to make
+route selecting accurate and thus the results will become
+more extensively accurate. The ADRS model was developed by
+combining the MDP and a discrete-choice model, which leads
+the solution to a cost-effective, more accurate and desirable
+result. The whole process of the ADRS model is shown in
+Figure 1.
+
+It is notable that the problem is viewed from the perspective
+of a purposeful agent interacting with an uncertain
+environment.
+
+As shown in Figure 1, the ADRS process starts with the
+input of the required parameters (initialisation). Network
+initialising begins with the input of effective parameters of
+arcs. Afterwards, agents evaluate the features and calculate
+the probabilities of each arc. In the MDP, an agent selects
+its routes (actions) randomly. However, the ADRS chooses
+the routes according to the calculated probability of arcs in
+the previous stage. Although routing progresses by trial and
+error and the agent navigates the path that yields the
+greatest reward, the rewards come from the action selection of
+the previous stage and at every stage the goal is to receive the
+greatest cumulative reward after all stages.
+
+Two types of reward are considered
+(a) rewards that approach an optimal value as iterations
+progress and thus play a significant role in determination
+of the optimal solution
+(b) rewards that remain unchanged and are added to the
+main reward function as a constant.
+For a sequence of rewards, the characteristic of the ADRS
+will be rt+k; this is the reward at time or stage t. It is notable
+that rewards have an inverse relation with the cost function.
+In other words, the higher the cost, the less the reward. An
+agent seeks to maximise the expected value of rewards gained
+from all actions.
+In most problems, interaction with the environment is episodic.
+For example, consider an agent that is supposed to reach a
+certain point. Upon reaching the target point, one episode of
+
+Start
+
+Initialise network’s
+features
+
+A
+Calculate logit value
+
+Impose coefficients
+Change coefficients to
+maximise
+
+Calculate probabilities
+of routes
+
+ls it maximum?
+
+No
+
+Calculate log-likelihood
+
+Yes
+Dedicate R, Q and P
+Set initial state
+
+Choose e node
+Introduce the best route
+Go to next state
+
+Choose action i due to
+Prob. (P)
+
+Dedicate Q and update P
+
+Get reward R
+
+Go to next state
+
+Dedicate Q and update
+P and R
+
+Detect max. Q
+
+A
+Calculate cumulative Q for
+all suggested routes
+
+Update Q value
+Update density
+No
+
+Stop criterion
+
+Online version
+
+Yes
+
+Figure 1. ADRS optimisation process
+
+4
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+No
+Offline version
+
+Identify all possible roads
+between i and j
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+learning ends. Thus, the total reward gained by starting from
+state St and reaching the final state ST (the end of the learning
+episode) is equal to Rt, which is the total reward or the sum of
+rt+k. Each episode is given a reward and the reward of each
+step is modified by a factor.
+
+where P(s′|s, a) is the transition probability that indicates the
+probability of observing state s′ when the agent chooses action
+a in state s. The transition probability in this problem is equal
+to 1 as routes definitely reach to the specific nodes.
+
+With this theory, the ADRS process was developed as follows.
+An agent has a set of states S (instances of nodes in
+a transportation network) and a set of actions A = {aij| i,
+j = 1, 2, …, n
+i, j ≤ number of nodes} in each state. At time
+t, the agent is in state st and chooses action at from the set of
+actions A. The environment provides a reward rt = r(st, at) and
+the agent then proceeds to state st+1 = δ(st, at). rt and δ are part
+of the environment but are not necessarily clear to the agent.
+r(st, at) and δ(st, at) depend only on the current state and
+action of the system in the MDP. In other words, they are
+independent of previous actions and states. In some environments, r(s, a) and δ(s, a) are probabilistic. This environment
+is called a non-deterministic ADRS. The agent should learn
+an optimum policy, such that π:S ! A specifies the next action
+at from state st. This can happen when the agent maximises
+the expected discounted cumulative reward during the time
+horizon of the system. This series is defined as
+
+1:
+
+V π ðst Þ ; E½rt þ γrtþ1 þ γ2 rtþ2 þ    ; E
+
+"
+1
+X
+
+where 0 ≤ γ < 1 is a constant for considering the reduced effect
+of a delayed reward. The optimum policy can be obtained
+using Equation 2.
+π  ; arg max V π ðst Þ
+π
+
+Having Equation 2 and reformulating Equation 1 into
+Equation 3 confirms that the optimum action a in state s is the
+action that maximises the expected sum of the immediate
+reward and discounted reward V* in the next state (δ(st, at)).
+3:
+
+π  ðsÞ ¼ arg max½E½rðs; aÞ þ γE½V  ðδðs; aÞÞ
+a
+
+Training π* is not possible from V* under the absence of information about pair (s, a). The only available information is
+r(st, at). Thus, training from an approximation function called
+Q, instead of V*, can help the agent learn the optimum policy.
+Here, it is assumed that the non-deterministic value for r(s, a),
+δ(s, a) and Q is a recursive function, as shown in Figure 1,
+which is defined as
+X
+4:
+Qðs; aÞ ¼ E½rðs; aÞ þ γ
+Pðs0 js; aÞ max
+Qðs0 ; a0 Þ
+0
+s0
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+a
+
+Q̂ðs; aÞ fills with random or initial values of s and a. In each
+step, the agent(s) looks at the state, chooses action a, receives
+the non-deterministic value of r(s, a) and observes the next
+state s′ = δ(s, a) with probability P(s′|s, a). The agent updates
+the value of Q̂ðs; aÞ as
+5:
+
+Q̂ðs; aÞ
+
+ð1  αn ÞQ̂n1 ðs; aÞ
+
+
+0 0
+þ αn rðs; aÞ þ γ max
+ðs
+;
+a
+Þ
+Q̂
+n1
+0
+a
+
+6:
+
+#
+γi rtþi
+
+i¼0
+
+2:
+
+The proposed model can be implemented with different
+algorithms, but the Q-learning algorithm is one commonly
+used for such dynamic problems. In this study, this algorithm
+was used for determination of the optimal route.
+
+αn ¼
+
+1
+1 þ Nsn ðs;aÞ
+
+where n is the step of algorithm and Nsn(s, a) is the number of
+visited (s, a) until step n.
+In this algorithm, agents do not need any information about δ
+or r to learn the optimum policy. The agent just performs the
+action and observes the reward. This algorithm proves that Q̂
+can converge to Q if the following two conditions can be satisfied (Melo, 2001).
+(a) The reward is limited to a value such as c, |r(s, a)| ≤ c.
+(b) Each pair (s, a) is evaluated by the agent repeatedly and
+more than once.
+The same approach was used to prove that the proposed model
+will converge to an optimum result.
+As already mentioned, each pair (s, a) should be evaluated by
+the agent repeatedly and more than once. To satisfy this condition, the softmax action selection method makes an agent
+choose an action with probability defined as
+7:
+
+K Q̂ðs;ai Þ=T
+qðai jsÞ ¼ P
+Q̂ðs;aj Þ=T
+jK
+
+where K is a positive constant and T is a ‘temperature’ that
+counterbalances between exploration and exploitation.
+To define a certain function for Equation 7, a probability function based on the logit model was used. In the logit model,
+5
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+the logit function is always a number between 0 and 1, and
+route selection probability can follow this function (Bornand
+et al., 2016). The utility function for routes is defined as
+
+Having Equations 7 and 13, the probability that each action in
+each state will be chosen can be obtained from Equation 14.
+
+8:
+
+Vni ¼
+
+X
+
+14:
+
+wni X ni
+
+eVni þQ̂ðs;ai Þ=T
+qðai jsÞ ¼ P
+Vnj þQ̂ðs;aj Þ=T
+je
+
+k
+
+9:
+
+Uni ¼ Vni þ εni
+
+where Xni is a vector of observed variables and is related
+to alternative i, Uni is utility of observed variable n for
+individual i, Vni is part of the random utility, εni refers to the
+uncertainty and wni is the weight of importance attached to
+each effective parameter. The probability that agent n chooses
+attribute i is
+
+10:
+
+Pni ¼ Probð Vni þ εni . Vnj þ εnj 8j = iÞ
+¼ Probð εnj . Vni þ εni  Vnj 8j = iÞ
+
+The logit model is obtained by assuming that each εni is
+an independently and identically distributed extreme value.
+The density for each unobserved component of utility is
+11:
+
+εnj
+
+f ðεnj Þ ¼ eεnj ee
+
+and the cumulative distribution is
+12:
+
+f ðεnj Þ ¼
+
+X
+
+εnj
+
+eεnj ee
+
+If εni is given, this expression will be the cumulative distribution for each εni evaluated at Vni + εni − Vnj. The expression
+leads to exp{−exp[−(Vni + εni − Vnj )]}, according to Equation 9.
+Given that ε is independent, this cumulative distribution
+over all j ≠ i is the product of individual cumulative distributions. Because εni is not given, the choice probability is
+the integral of Pni| εni over all values of εni weighted by its
+density function in Equation 11. Finally, some algebraic
+manipulations of these integral results in the succinct closedform expression
+13:
+
+eVni
+Pni ¼ P Vnj
+je
+
+As previously mentioned, Vni is related to Xni, which is
+an effective parameter. wni is the weight of importance
+attached to each effective parameter. These coefficients can
+be calculated by maximising the log-likelihood function.
+6
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+The data to be used in this method are not raw data. The data
+should be normalised by Equation 15 before being used for
+logit regression, where μ is the mean of the related data and ∂
+is the standard deviation.
+15:
+
+X¼
+
+X μ
+@
+
+An example is provided to clarify how well the parameters and
+variables of the proposed model and algorithm characterise
+the feature of the problem.
+Figure 2 is a hypothetical transportation network designed for
+this numerical example. This network contains five nodes and
+ten links. In this example, let r be the unchanged (momentary)
+reward of each link and Q the total reward after iteration.
+Origins and destinations are denoted by i and j, respectively.
+The initialising parameters are the free-flow speed (F), density
+(D), capacity (C ) and number of traffic lights (N), and γ was
+set to 0·9.
+As shown in Table 1, in this network, opposite legs of each
+route have different lengths. Therefore, the momentary and
+total rewards of each route depend on the direction along
+which it is traversed. On the other hand, the process calculates
+the probability of route selection and utilises this in other parts
+as follows.
+The first step is normalising the required details of the
+network using Equation 15. There will then be each arrow’s
+inter-relation and utilising the maximum likelihood can
+
+1
+3
+
+2
+
+5
+
+4
+
+Figure 2. Hypothetical network
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+Table 1. Details of hypothetical network
+Origin
+1
+1
+2
+2
+3
+3
+3
+4
+4
+4
+
+Destination
+
+Route length:
+km
+
+Capacity
+(1 h)
+
+Free-flow travel
+time: s
+
+Density:
+counts/km
+
+Number of traffic
+lights
+
+Volume
+
+2
+3
+1
+4
+1
+4
+5
+2
+3
+5
+
+6
+2
+2
+6
+4
+1
+18
+4
+9
+10
+
+4500
+4800
+3600
+4000
+3200
+3850
+4200
+3950
+2750
+5400
+
+23·5
+15·5
+14
+21
+38
+5·5
+41
+15
+35·5
+27
+
+115
+160
+100
+125
+110
+128
+143
+165
+150
+120
+
+0
+2
+1
+1
+3
+1
+2
+2
+3
+1
+
+2200
+2800
+2100
+2300
+1400
+1950
+2900
+2300
+1200
+4200
+
+help to calculate wni. Having shown the uncertainty in
+Equations 9–12, Equation 13 gives the probability of each
+route. The probability is then updated using Equation 14 in all
+learning iterations.
+One of the most common cost functions that relates a link’s
+attributes (capacity, free-flow travel time) and traffic flow is
+(de Dios Ortuzar and Willumsen, 2011)
+"
+
+16:
+
+ β #
+v
+ta ðvÞ ¼ fa 1 þ α
+ca
+
+In this function, ta(v) is travel time of link (action) a assuming
+that the flow volume in this link is v. fj is the free-flow travel
+time on link a, ca is the link’s capacity and α and β are
+calibration parameters.
+
+Due to the unreliability of travel time in Equation 16, the probability of selecting an action should be consequently updated
+considering Equation 14. In this example, the log-likelihood
+function was maximised and the results are presented in
+Table 3. The coefficients were derived from the features of the
+hypothetical network listed in Table 1.
+Table 3 shows the coefficients obtained for the considered
+parameters and their levels of significance. These coefficients
+can be positive or negative depending on their effect on the
+logit function. The R 2 value of this regression was determined
+to be 0·58166, which is reasonably acceptable. After computing
+the probability of selection of each route, the Q values are
+updated and the final Q values in the search for the shortest
+route are obtained after 1000 learning iterations. To shed more
+light on the issue, 1000 iterations were considered for the
+
+Table 2. Initial ADRS parameters
+
+Given this function, the momentary reward is defined as
+
+17:
+
+rðs; aÞ ¼ λ
+
+
+
+1
+ta ðvÞ
+
+where λ is a counterbalance factor for exploration; λ = 10 is set
+in this example. The initial value of Q is assumed to be a
+random number in the range
+18:
+
+1
+1
+,Q,
+Maximum tj ðvÞ
+Minimum tj ðvÞ
+
+Table 2 lists the origin, destination, parameters of travel time
+for each route (α and β), the reward and the initial route selection probability. For the 5 to 5 origin–destination path, as
+the final state, the reward is assumed to be the maximum
+number of 10. Other rewards are calculated with respect to
+Equation 17. In this example, it is assumed that P(s′|s, a) = 1
+for all routes. This means that there are no incidents in any of
+the available routes during the simulation process.
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+Origin
+5
+2
+2
+1
+4
+3
+1
+3
+3
+4
+4
+
+Destination
+
+α
+
+β
+
+r(s, a)
+
+Initial q(ai|s)
+
+5
+1
+4
+2
+5
+4
+3
+1
+5
+2
+3
+
+—
+2
+5
+7
+6
+3
+3
+4
+8
+3
+8
+
+—
+3
+2
+2
+4
+2
+5
+6
+2
+4
+2
+
+10
+0·511
+0·179
+0·159
+0·116
+1·027
+0·536
+0·256
+0·051
+0·496
+0·112
+
+1
+0·5
+0·5
+0·7
+0·7
+0·6
+0·3
+0·2
+0·2
+0·2
+0·1
+
+Table 3. Regression coefficients obtained from multi-nomial logit
+Variable
+
+Coefficient
+
+Standard error
+
+b/standard error
+
+F
+N
+C
+D
+Constant
+
+−0·19350
+−0·08921
+0·47829
+−0·17117
+−1·03298
+
+0·07687
+0·02525
+0·01815
+0·08175
+0·21641
+
+−2·517
+−3·532
+2·635
+−1·955
+−4·773
+
+7
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+solution to find out whether the answer was unique. For
+example, in this five-node problem, although the answer converged in less than 50 iterations, the chance was given to the
+algorithm to iterate up to 1000 iterations so that it could
+further explore the solution space and thus capture a unique
+answer by escaping possible local optima. Figure 3 shows the
+convergence of Q values. In this paper, the convergence criterion is the sum of entries in the Q matrix. The process of
+updating Q values proceeds because consecutive cumulative Q
+values of a specific route were altered by less than 0·001% in
+comparison with each other. This resulting curve is shown in
+Figure 3.
+
+to avoid backtracking. In Table 4, the Q value represents the
+final reward, so pursuing the highest Q value leads to the
+greatest reward.
+
+In Table 4, for origin 2 and destination 5 for example, the
+algorithm searches for all possible routes that connect these
+two nodes. In the next step the process tries to calculate the
+cumulative value of Q for each route. The best way to pass is
+the route that has the maximum Q value. Starting from the
+origin node 2, the maximum Q value in row 2 (83·939) is
+related to column 1, so the next node is node 1. In row 1, the
+maximum Q value is 87·71, which is related to node 3. This
+process repeatedly goes on until destination node 5 is reached.
+So the best route in this example is node 2, node 1, node 3,
+node 4, node 5. Note that an agent can pass each node only
+once so, when necessary, the second best node must be selected
+
+1000
+900
+800
+600
+700
+Q 500
+400
+300
+200
+100
+0
+
+100 200 300 400 500 600 700 800 900 1000
+Iteration
+
+Figure 3. Graph of sum of entries of Q matrix at each iteration
+
+Table 4. Final Q values
+
+Node 1
+Node 2
+Node 3
+Node 4
+Node 5
+
+8
+
+Node 1
+
+Node 2
+
+Node 3
+
+Node 4
+
+Node 5
+
+0
+83·939
+81·439
+0
+0
+
+77·211
+0
+0
+78·045
+0
+
+87·71
+0
+0
+87·71
+0
+
+0
+83·57
+91·9
+0
+0
+
+0
+0
+90·56
+91
+100
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+To evaluate the results of the ADRS model, its results were
+compared with a deterministic dynamic programming model
+(DPM) and the base MDP developed by Nadi and Edrisi
+(2017) in a case study of a large-scale, real transportation
+network.
+
+4.
+
+Case study
+
+To evaluate the performance of the ADRS method in a
+realistic problem, Visual Basic was used to code the method as
+a plugin for ArcMap software. A map of district 3 of Isfahan
+city, Iran, was used for testing. A diagram of the main routes
+in this district was developed and information about the travel
+time functions in these routes was obtained from the Isfahan
+traffic centre. Other information about the links (shown in
+Table 5) was obtained from a geo-database held by the Isfahan
+Municipality (see Isfahan Municipality, 2015).
+Unlike the numeral example, the incident ratios of links were
+used in this case study. These were derived from the Isfahan
+Municipality database. The incident ratio is the probability of
+an incident occurring in a link and can thus be used as the
+transition probability P(s′|s, a). Consideration of the transition
+probability leads to a more stochastic situation, but one that is
+closer to reality.
+In this case study, 100 randomly generated scenarios were
+performed in the mentioned network for three rounds. In each
+round, 1000 agents were simulated, each of which used the
+proposed ADRS method, the Nadi–Edrisi MDP (Nadi and
+Edrisi, 2017) and the DPM for their route selection process.
+The scenarios created stochastic situations such as different
+start–end nodes and various incidents to test the performance of
+the proposed model in comparison with the other two methods.
+For example, in one of the scenarios, the objective was to find
+the best route from Jomhuri Square to Enghelab Square.
+Figure 4 shows the route identified as the best in all three
+methods. The route is 3, 14, 19, 27, 39, 44, 48, 53. Table 6 lists
+the maximum Q values without considering incidents on
+Isfahan’s Chahar-Bagh-Abbasi Street using the ADRS
+approach. The values are shown on each link in Figure 4.
+In the next step, stochastic traffic incidents were applied on
+arcs to evaluate the performance of the proposed model under
+dynamic random situations. ‘Incidents’ include congestion
+charge zones, low-emission zones and stochastic events such as
+crashes and construction operations. These constraints do not
+allow users to pass the limited paths for a specific time.
+Among 100 different randomly generated scenarios, a block in
+Chahar-Bagh-Abbasi Street was used as an example scenario
+to show the detail results of the proposed model under
+stochastic conditions. The algorithm randomly assigned a
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+Table 5. Features of Isfahan road’ network
+Arc number
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+
+Length: km
+
+Capacity (1 h)
+
+Free-flow travel time: s
+
+Density: counts/km
+
+Traffic lights
+
+Volume
+
+P(s0 |s, a)
+
+2
+3
+2
+3
+8
+11
+7
+4
+3
+2
+8
+8
+6
+6
+8
+8
+3
+5
+3
+5
+5
+8
+5
+5
+9
+5
+7
+6
+8
+7
+7
+4
+11
+4
+6
+10
+10
+8
+6
+11
+8
+5
+10
+4
+7
+2
+8
+8
+8
+4
+7
+11
+6
+8
+5
+6
+11
+10
+3
+3
+
+4107
+3484
+2197
+3952
+4023
+4341
+4132
+3049
+4112
+3095
+4604
+2297
+4077
+3220
+2339
+3952
+2267
+2588
+2573
+2449
+2200
+2417
+3851
+2808
+3146
+3765
+4051
+2573
+4415
+3836
+2880
+2056
+4146
+2174
+3056
+3366
+3705
+3046
+3000
+2717
+2488
+3694
+3035
+3220
+2236
+3847
+2373
+4538
+4669
+3837
+3490
+2958
+2588
+2027
+3902
+3685
+2292
+2268
+2916
+3056
+
+259
+296
+197
+202
+320
+196
+266
+312
+200
+201
+283
+408
+274
+227
+207
+307
+210
+237
+194
+330
+346
+270
+248
+288
+282
+414
+260
+199
+304
+184
+311
+405
+319
+366
+379
+333
+263
+210
+185
+406
+186
+180
+329
+231
+375
+370
+229
+263
+366
+306
+320
+417
+206
+385
+357
+234
+220
+186
+227
+188
+
+154
+183
+173
+105
+168
+130
+114
+116
+123
+105
+163
+112
+121
+99
+103
+104
+110
+183
+105
+192
+134
+110
+147
+136
+106
+187
+168
+176
+164
+174
+133
+159
+138
+161
+125
+189
+193
+96
+167
+116
+166
+185
+151
+174
+192
+147
+112
+135
+127
+135
+145
+128
+124
+186
+116
+111
+103
+149
+145
+144
+
+2
+3
+1
+2
+0
+1
+0
+2
+0
+3
+3
+1
+0
+1
+0
+2
+0
+2
+2
+0
+3
+3
+3
+1
+0
+1
+0
+0
+0
+2
+1
+3
+1
+2
+3
+1
+0
+1
+2
+1
+1
+3
+2
+1
+0
+3
+0
+3
+2
+2
+0
+3
+1
+3
+1
+3
+1
+3
+3
+1
+
+1766
+1115
+747
+1383
+2132
+2084
+1653
+1890
+2837
+1919
+2993
+1401
+1386
+1449
+1006
+2292
+680
+1346
+1775
+1249
+1474
+1547
+2080
+1067
+1133
+1732
+2714
+1467
+2163
+1496
+1958
+1357
+2819
+1174
+1253
+1144
+1927
+2071
+1350
+869
+821
+1219
+1396
+1674
+1297
+1500
+807
+1906
+2008
+1151
+2129
+1804
+1372
+1054
+2029
+1695
+1467
+975
+875
+1467
+
+0·18
+0·14
+0·17
+0·12
+0·1
+0·1
+0·17
+0·19
+0·18
+0·05
+0·13
+0·2
+0·16
+0·14
+0·11
+0·17
+0·17
+0·16
+0·16
+0·12
+0·14
+0·18
+0·18
+0·08
+0·07
+0·05
+0·13
+0·05
+0·15
+0·17
+0·07
+0·06
+0·1
+0·12
+0·2
+0·14
+0·2
+0·15
+0·06
+0·07
+0·18
+0·11
+0·09
+0·08
+0·18
+0·16
+0·06
+0·11
+0·15
+0·16
+0·15
+0·05
+0·13
+0·11
+0·11
+0·11
+0·1
+0·08
+0·19
+0·17
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+9
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+N
+39·002
+38·135
+
+39·452
+
+Optimal
+route
+
+42·931
+
+36·536
+
+38·983
+41·24
+
+37·093
+
+0
+
+0·5
+
+1
+
+2
+
+3
+
+4
+miles
+
+Figure 4. Optimal route from Jomhuri Square to Enghelab Square without considering traffic constraints on Chahar-Bagh-Abbasi Street
+
+Table 6. Maximum Q values of arcs without traffic limitations
+Arc
+
+Maximum Q value
+
+3
+14
+19
+27
+39
+44
+48
+53
+
+37·093
+41·24
+38·983
+36·536
+42·931
+39·452
+38·135
+39·002
+
+congestion charge zone limitation to this arc and the
+recommended route deviated from the previous path, as shown
+in Figure 5.
+Figure 5 shows the optimal route considering limited traffic
+flow on Chahar-Bagh-Abbasi Street. The amended path is 2,
+10
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+17, 18, 27, 39, 44, 48, 53. Table 7 shows the maximum Q
+values for each node selected consecutively one after the other.
+These values are also shown on each link in Figure 5.
+In this scenario, the number of agents deciding to re-route
+after encountering an incident changed rapidly using the
+ADRS method while different behaviour was noted using
+the other two methods. Figure 6 compares the number of
+agents in each method making accurate decisions during the
+time horizon in this stochastic situation.
+Once the simulation process commenced, Figure 6 shows
+that the number of agents (vehicles) selecting optimum
+routes increased in all three methods. However, the ADRS
+method showed a sharper trend and a total number of
+791 agents found the optimum route within the first 24 s.
+In the MDP and DPM, this was accomplished by 706 and
+598 agents, respectively, within about 48 s. In the 48th second
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+N
+
+40·57
+
+46·2
+44·873
+
+Optimal
+route
+
+43·098
+
+37·67
+
+43·318
+
+42·627
+
+40·43
+
+0
+
+0·5
+
+1
+
+2
+
+3
+
+4
+miles
+
+Figure 5. Optimal route from Jomhuri Square to Enghelab Square after introducing traffic constraints on Chahar-Bagh-Abbasi Street
+
+Table 7. Maximum Q values of arcs after applying traffic
+limitations
+Arc
+
+Maximum Q value
+
+2
+17
+18
+27
+39
+44
+48
+53
+
+40·043
+42·627
+43·318
+37·67
+43·098
+44·873
+46·2
+40·57
+
+of the simulation, an incident occurred. There was an
+immediate reaction of agents using the ADRS and MDP, but
+the DPM resulted in no particular re-routing until 72 s. These
+results show that the ADRS method is more sensitive to
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+stochastic events and decides the best route more quickly
+because of the learning process of the agents in the ADRS
+model.
+The results of 100 randomly generated scenarios were
+aggregated to compare the outputs of the three methods.
+Figure 7 shows the average agent delay, average road density,
+average percentage of agents not finding the correct path (failed
+agents) and the average travel time over capacity ratio.
+The outputs show that, during all scenarios, agents experienced
+less average delay in arriving at the destination node when
+using the ADRS compared with agents using the MDP or
+DPM as their route-choice method. Use of the ADRS method
+led to the least average road density while the MDP showed
+the highest. The percentage of agents that failed to find an
+accurate path after encountering a stochastic incident and
+11
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+800
+ADRS
+MDP
+DPM
+
+Number of agents
+
+700
+600
+500
+400
+300
+200
+100
+0
+
+0
+
+20
+
+40
+
+24
+
+48
+
+60
+Time: s
+
+72
+
+80
+
+100
+
+120
+
+Figure 6. Number of agents making accurate decisions during the simulation time using ADRS, MDP and DPM
+
+3·0
+
+Average road density:
+vehicles per 100 m
+
+Average delay: min
+
+3·5
+
+2·5
+2·0
+1·5
+1·0
+0·5
+0
+ADRS
+
+MDP
+
+DPM
+
+25
+
+ADRS
+
+MDP
+
+DPM
+
+MDP
+
+DPM
+
+25
+Average travel time: min
+
+Failed agents: %
+
+20
+18
+16
+14
+12
+10
+8
+6
+4
+2
+0
+
+20
+15
+10
+5
+0
+
+20
+15
+10
+5
+0
+
+ADRS
+
+MDP
+
+DPM
+
+ADRS
+
+Figure 7. Aggregated network information
+
+became stuck in congestion was least for the ADRS method.
+Finally, when the route selection process used was ADRS, the
+average travel time over all scenarios was less than that
+obtained from the DPM and MDP.
+Table 8 shows the total outputs for all methods over all
+scenarios. As shown in the table, in a simple network without
+any stochastic events, the ADRS, MDP and DPM found the
+optimum solution with 3%, 6% and 0% errors, respectively.
+Although the DPM seems highly efficient in such networks,
+12
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+the error of this method increased rapidly to 27% when
+stochastic events in the network were considered. Overall,
+the ADRS model outperformed the other methods, with a 9%
+error of agents (i.e. agents stuck in congestion). Using this
+method enhanced dynamic traffic assignments, meaning less
+congestion in the network.
+The ADRS model worked quite well in a congested network
+with stochastic events. However, the limitation of this model is
+when a stochastic event happens and the alternative route is
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+Table 8. Comparison of results obtained from a real network
+Route selection
+method
+
+Average travel time:
+min
+
+Error without considering
+incidents: %
+
+Error considering
+incidents: %
+
+Total
+error: %
+
+ADRS
+Nadi–Edrisi MDP
+DPM
+
+12
+23
+16
+
+3
+6
+0
+
+11
+18
+27
+
+9
+13
+23
+
+also congested. This causes an increase in errors as agents
+cannot avoid delays in such a network.
+
+5.
+
+Conclusion
+
+With growing traffic congestion problems in many of the
+world’s road networks, there is an increasing need for optimal
+route selection methods to minimise delays in business travel,
+shopping trips and so on. The use of route optimisation
+methods can significantly contribute to the alleviation of road
+congestion and thus smooth traffic flows. In this work,
+an adaptive and dynamic method of optimal route selection
+was developed in order to redistribute traffic flow under the
+condition of incidents in the transportation network. Part of
+the road network in Isfahan, Iran, was used as a test bed
+and the results showed that the model had a total error of 9%
+over 100 randomly generated scenarios. The proposed method
+was found to outperform two other route selection methods.
+REFERENCES
+Bazzan AL (2009) Opportunities for multiagent systems and multiagent
+
+reinforcement learning in traffic control. Autonomous Agents and
+Multi-Agent Systems 18(3): 342–375.
+Bazzan AL and Klügl F (2008) Re-routing agents in an abstract traffic
+scenario. In Advances in Artificial Intelligence - SBIA 2008
+(Zaverucha G and da Costa AL (eds)). Springer, Berlin, Germany,
+pp. 63–72.
+Bazzan AL, Fehler M and Klügl F (2006) Implicit coordination in a
+network of social drivers: the role of information in a commuting
+scenario. In Learning and Adaption in Multi-Agent Systems
+(Tulyls K, Sen S, Hoen PJ t and Verbeeck K, (eds)). Springer,
+Berlin, Germany, pp. 115–128.
+Ben-Akiva M, Bierlaire M, Bottom J, Koutsopoulos H and Mishalani R
+
+(1997) Development of a route guidance generation system for
+real-time application. In Proceedings of the 8th IFAC Symposium
+on Transportation Systems, Chaina, Greece (Gurman V, Miller B
+and Dmitriev M (eds)). Elsevier, Amsterdam, the Netherlands,
+pp. 405–410.
+Bornand NJ, Balakireva L and Van de Sompel H (2016) Routing
+memento requests using binary classifiers. In Proceedings of 2016
+IEEE/ACM Joint Conference on Digital Libraries (JCDL). IEEE,
+Piscataway, NJ, USA, pp. 63–72.
+Bouyahia Z, Haddad H, Jabeur N and Yasar A (2019) A two-stage road
+traffic congestion prediction and resource dispatching toward a
+self-organizing traffic control system. Personal and Ubiquitous
+Computing 23(5–6): 909–920.
+Cunningham R, Garg A and Cahill V (2008) A collaborative
+reinforcement learning approach to urban traffic control
+optimization. In Proceedings of IEEE/WIC/ACM International
+Conference on Web Intelligence and Intelligent Agent
+Technology (WI-IAT’08). IEEE, Washington, DC, USA,
+pp. 560–566.
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+de Dios Ortuzar J and Willumsen LG (2011) Modelling Transport. Wiley,
+
+Chichester, UK.
+de Oliveira TB, Bazzan AL, da Silva BC and Grunitzki R (2018)
+
+Comparing multi-armed bandit algorithms and Q-learning
+for multiagent action selection: a case study in route choice.
+In Proceedings of 2018 International Joint Conference on Neural
+Networks (IJCNN), Rio de Janeiro, Brazil. IEEE, Piscataway,
+NJ, USA, pp. 1–8.
+Fagnant DJ and Kockelman K (2015) Preparing a nation for
+autonomous vehicles: opportunities, barriers and policy
+recommendations. Transportation Research Part A: Policy and
+Practice 77: 167–181.
+Isfahan Municipality (2015) See http://webgis.isfahan.ir/intro.aspx
+(accessed 17/05/2015).
+Krzysztoń M and Śnieżyński B (2015) Combining machine
+learning and multi-agent approach for controlling traffic
+at intersections. In Computational Collective Intelligence (Núñez
+M, Nguyen N, Camacho D and Trawiń ski B (eds)).
+Springer, Cham, Switzerland, pp. 57–66.
+Li J, Fu D, Yuan Q et al. (2019) A traffic prediction enabled
+double rewarded value iteration network for route
+planning. IEEE Transactions on Vehicular Technology 68(5):
+4170–4181.
+Lu Y, Kawamura K and Zellner M (2008) Exploring the influence
+of urban form on work travel behavior with agent-based
+modeling. Transportation Research Record 2082: 132–140.
+Machado AM and Bazzan AL (2011) Self-adaptation in a network of
+social drivers: using random Boolean networks. In Proceedings of
+2011 Workshop on Organic Computing, Karlsruhe, Germany. ACM,
+New York, NY, USA, pp. 33–40.
+Melo FS (2001) Convergence of Q-Learning: A Simple Proof. Institute
+of Systems and Robotics, Lisboa, Portugal.
+Nadi A and Edrisi A (2017) Adaptive multi-agent relief assessment and
+emergency response. International Journal of Disaster Risk
+Reduction 24: 12–23.
+Nguyen DT, Yeoh W, Lau HC, Zilberstein S and Zhang C (2014)
+Decentralized multi-agent reinforcement learning in
+average-reward dynamic DCOPs. In AAMAS ’14
+Proceedings of the 13th International Conference on Automous
+Agents and Multiagent Systems. ACM, New York, NY, USA,
+pp. 1341–1342.
+Schrank D, Eisele B and Lomax T (2012) TTI’s 2012 Urban Mobility
+Report. Texas A&M Transportation Institute, College Station, TX,
+USA, vol. 4.
+Sever D, Zhao L, Dellaert N et al. (2018) The dynamic shortest path
+problem with time-dependent stochastic disruptions.
+Transportation Research Part C: Emerging Technologies 92:
+42–57.
+Shalev-Shwartz S, Shammah S and Shashua A (2016) Safe, multi-agent,
+reinforcement learning for autonomous driving. arXiv preprint
+arXiv:1610.03295.
+Tang S, Rambha T, Hatridge R, Boyles S and Unnikrishnan A (2014)
+Modeling parking search on a network by using stochastic shortest
+paths with history dependence. Transportation Research Record
+2467: 73–79.
+
+13
+
+Transport
+
+Applying Markov decision process to
+adaptive dynamic route selection model
+Edrisi, Bagherzadeh and Nadi
+
+Tavares AR and Bazzan ALC (2012a) Independent learners in abstract
+
+in road traffic management. Transportation Research Record
+1910: 108–115.
+Vasirani M and Ossowski S (2012) A market-inspired approach for
+intersection management in urban road traffic networks. Journal of
+Artificial Intelligence Research 43: 621–659.
+Walraven E, Spaan MT and Bakker B (2016) Traffic flow optimization: a
+reinforcement learning approach. Engineering Applications of
+Artificial Intelligence 52: 203–212.
+Zhang C and Lesser V (2013) Coordinating multi-agent reinforcement
+learning with limited communication. In Proceedings of the 2013
+International Conference on Autonomous Agents and Multi-Agent
+Systems. International Foundation for Autonomous Agents and
+Multiagent Systems, St. Paul, MN, USA, pp. 1101–1108.
+
+traffic scenarios. Revista de Informática Teórica e Aplicada 19(2):
+13–33.
+Tavares AR and Bazzan ALC (2012b) Reinforcement learning for route
+choice in an abstract traffic scenario. Proceedings of VI
+Workshop-Escola de Sistemas de Agentes, Seus Ambientes E
+Aplicaçoes (WESAAC), Porto Alegre, Brazil, pp. 141–153.
+Tillotson P, Wu Q and Hughes P (2000) Multi-agent learning for control
+of internet traffic routing. In Proceedings of IEE Seminar on
+Learning Systems for Control. Institution of Engineering and
+Technology, Stevenage, UK, pp. 4/1–4/6.
+van Katwijk R, van Koningsbruggen P, De Schutter B and
+Hellendoorn J (2005) Test bed for multiagent control systems
+
+How can you contribute?
+To discuss this paper, please email up to 500 words to the
+editor at journals@ice.org.uk. Your contribution will be
+forwarded to the author(s) for a reply and, if considered
+appropriate by the editorial board, it will be published as
+discussion in a future issue of the journal.
+Proceedings journals rely entirely on contributions from the
+civil engineering profession (and allied disciplines).
+Information about how to submit your paper online
+is available at www.icevirtuallibrary.com/page/authors,
+where you will also find detailed author guidelines.
+
+14
+
+Proceedings of the Institution of Civil Engineers - Transport
+
+

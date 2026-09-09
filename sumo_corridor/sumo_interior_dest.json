@@ -1,0 +1,45 @@
+{
+ "network": "SUMO 5x5 replication, interior destination",
+ "interior_cells": 9,
+ "eval_pairs": 200,
+ "episodes": 120,
+ "seeds": 1,
+ "cells": {
+  "closed_time_min": {
+   "mean": 20.5,
+   "sd": NaN,
+   "per_seed": [
+    20.5
+   ],
+   "seeds": 1,
+   "episodes": 120
+  },
+  "open_time_min": {
+   "mean": 0.0,
+   "sd": NaN,
+   "per_seed": [
+    0.0
+   ],
+   "seeds": 1,
+   "episodes": 120
+  },
+  "closed_aligned": {
+   "mean": 94.0,
+   "sd": NaN,
+   "per_seed": [
+    94.0
+   ],
+   "seeds": 1,
+   "episodes": 120
+  },
+  "open_aligned": {
+   "mean": 99.0,
+   "sd": NaN,
+   "per_seed": [
+    99.0
+   ],
+   "seeds": 1,
+   "episodes": 120
+  }
+ }
+}

@@ -1,0 +1,1611 @@
+14830
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 12, DECEMBER 2023
+
+A Sustainable Multi-Agent Routing Algorithm for
+Vehicle Platoons in Urban Networks
+Francesco Giannini , Student Member, IEEE, Giuseppe Franzè , Senior Member, IEEE,
+Francesco Pupo , Member, IEEE, and Giancarlo Fortino , Fellow, IEEE
+
+Abstract— In this paper, a sustainable routing algorithm for
+vehicle platoons operating in smart urban networks is presented.
+The proposed approach makes use of deep reinforcement
+learning (DRL) and set-theoretic model predictive control (MPC).
+In particular, the learning process aims at reducing traffic
+congestion and C O2 emissions, whereas the MPC unit allows
+to adequately track the assigned path by using real-time traffic
+data. To adequately analyze the performance of the resulting
+control architecture, the SUMO and MATLAB environments are
+used to implement complex operating scenarios where road maps
+data and vehicle state trajectories can be shared and exchanged.
+Finally, numerical studies are provided by resorting to the SUMO
+environment and considering a platoon of five vehicles. The
+resulting simulation campaign puts in light the capability of the
+training process to significantly mitigate the C O2 emissions of the
+whole platoon: from a minimum of 3.7% to a maximum of 13%
+with respect to the use of the well-known Dijkstra algorithm.
+
+I. I NTRODUCTION
+N RECENT years, sustainable transportation issues have
+gained an increasing interest mainly for their capability
+to have deep socio-economic and environmental impacts in
+the human life across the world, see e.g., [1], [2], and [3].
+Accordingly, novel intelligent vehicle transportation systems
+play an important role: from one hand, they are of help in
+reducing traffic undesired effects on the environment care and
+human being health, while from the other hand, they are in
+charge to improve the city long-term sustainability [4].
+In this context, a formal and well-established way to evaluate the city sustainability level relies on the characterization
+of the so-called triple bottom line (TBL) index. As pointed
+out in [5], such a criterion concerns with environmental,
+economic and social aspects. In particular, socio-economic
+indicators can be defined from different point of views,
+to cite a few see [6]: the “business profit”, the purchase of
+goods and services, the imposed taxes and so on. Whereas,
+
+I
+
+Manuscript received 23 January 2023; revised 28 April 2023 and 6 June
+2023; accepted 4 August 2023. Date of publication 23 August 2023; date
+of current version 29 November 2023. This work was supported in part
+by the Piano Nazionale di Ripresa e Resilienza (PNRR) Project FAIR—
+Future Artificial Intelligence (AI) Research under Grant PE00000013 and
+in part by Spoke 9—Green-Aware AI under the National Recovery and
+Resilience Plan (NRRP) Ministry of Research (MUR) Program funded by
+the NextGenerationEU. The Associate Editor for this article was Z. Lv.
+(Corresponding author: Francesco Giannini.)
+Francesco Giannini, Francesco Pupo, and Giancarlo Fortino are
+with DIMES, University of Calabria, 87036 Rende, Italy (e-mail:
+francesco.giannini@dimes.unical.it; g.fortino@unical.it; francesco.pupo@
+unical.it).
+Giuseppe Franzè is with DIMEG, University of Calabria, 87036 Rende,
+Italy (e-mail: giuseppe.franze@unical.it).
+Digital Object Identifier 10.1109/TITS.2023.3305463
+
+environmental criteria take into account emission and energy
+saving issues. Along these lines and starting from 2006,
+the Connected Urban Development program (CUD), partner
+of the Cisco’s Internet Business Solutions Group (IBSG),
+has promoted around the world Information Communication
+Technologies practices for reducing C O2 emissions, see [7].
+The latter is formalized in [8], where mathematical models for
+environmental impact evaluation are provided. Similar studies
+have been conducted in [9] where the aim is to reduce travel
+time and C O2 emissions.
+In this scenario, increasing the level of autonomy in
+Intelligent Transportation Systems gives rise to several
+advantages: time savings for drivers, energy savings for the
+environment and road safety improvement. In particular, travel
+time savings can be achieved by coordinated and connected
+vehicle configurations that can be more efficiently managed
+by means of ad-hoc control strategies for autonomous multivehicles systems [10].
+A. Literature Review
+In the last decade, several innovative solutions have
+been developed with the aim of addressing environmental
+sustainability and traffic congestion specifications [11].
+As a matter of fact, today’s vehicles are also connected
+devices [12], [13] and Internet of Vehicles (IoV) paradigm
+has been successfully applied in high-tech roads scenarios
+as testified by [14] and [15] and references therein. It is
+worth underlining that the IoV technology can provide vehicle
+services oriented to sustainability goals, such as information
+about traffic congestion and C O2 emission levels.
+By referring to the field of autonomous vehicle systems,
+the Vehicle Routing Problem (VRP) [16] is by now relevant
+as testified by the significant number of strategies conceived
+for its solution: ranging from optimization-based techniques [17], [18] to Machine Learning [19], [20], [21], [22].
+By considering the more recent advancements, an interesting
+contribution on the adopted practices for dealing with the
+sustainable urban vehicle routing problem is presented in [23].
+There, a carefully analysis of different routing problem
+customizations, complying with mathematical models, sustainability levels and proposed solutions, has been provided.
+Moreover, the contribution [24] focuses on the so-called
+vehicle routing problem with backhauls (VRPB): a variant of
+the VRP that analyzes the vehicle efficiency versus the time
+interval of use. Conversely, the traffic-induced air pollution is
+addressed in [25], where an innovative scheme for detecting
+
+1558-0016 © 2023 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+GIANNINI et al.: SUSTAINABLE MULTI-AGENT ROUTING ALGORITHM FOR VEHICLE PLATOONS IN URBAN NETWORKS
+
+14831
+
+and counting vehicles has been proposed to mitigate the
+undesired effects of pollution.
+By taking a look to the autonomous multi-vehicle systems,
+the coordination and control have gained more and more
+interest, see e.g., [26] and [27]. In particular, in the last
+years most of the contributions were focused on analyzing
+stabilization [28], [29] and path following [30] issues, that
+are strictly connected with the computation of feasible state
+trajectories of the leader vehicle and the formal definition of
+control schemes capable to confine the vehicle positions within
+secure bounds.
+According to these premises, the MPC philosophy has
+acquired an increasing reputation in solving problems
+involving unavoidable physical constraints as testified by
+analyzing some pertinent and recent results. First, the
+contribution [31] where a distributed receding horizon
+controller is designed for regulating leader-follower (LF)
+configuration described by nonlinear dynamics. In [32], the
+authors propose a distributed MPC for multi-vehicle systems
+subject to nonholonomic constraints. Moreover, platoons of
+constrained nonlinear vehicles are managed by resorting to
+the concept of γ -gain stability, while state trajectories tubes
+of multi-vehicle systems are characterized in terms of highorder polynomials. Finally, the contributions [35] and [36]
+propose set-theoretic distributed MPC schemes for addressing
+formation requirements of LF systems.
+
+of vehicle collisions. On the control side, this translates into
+the formalization of local MPC controllers that take advantage
+of receding horizon philosophy and the platoon topology:
+in particular most of computations are performed by the
+leader while followers exploit the information spread along
+the vehicle chain and set-membership conditions for reducing
+their computational complexity. Besides this, the periodic RL
+activation is the job of the leader while the rest of platoon only
+accesses and evaluates the reward function for routing decision
+purposes. Further, it is worth remarking that the platoon
+configuration allows to reduce fuel consumption because the
+followers’ air resistance can be mitigated, see [40], [41],
+and [42] and references therein. In particular, in [42] a
+platooning forming strategy is presented with the focus on
+optimal insert point, based on Q-learning, and a collision
+detection model along the platoon.
+The paper outline is hereafter summarized. In Section II the
+sustainable urban vehicle routing problem for multi-vehicles
+organized as platoons is formulated. Sections III provides an
+overview on the proposed DMPC architecture. In Section IV,
+the deep reinforcement learning algorithm is outlined and
+the properties discussed. Sections V details the receding
+horizon controllers and describe the proposed distributed
+model predictive control (DMPC) algorithm. Finally, the
+numerical section provides some results on the effectiveness
+of the presented methodology.
+
+B. Main Contribution
+In this paper the main aim is to propose new insights
+in the field of path planning for constrained autonomous
+vehicles moving in the cluttered environments of urban road
+networks. Preliminary studies along these lines have been
+presented in [37], [38], and [39]. In particular, the attention
+will be devoted to address the Sustainable Urban Vehicle
+Routing (SUVR) problem. To this end, the guideline is to
+make the resulting control architecture scalable, flexible and
+computational low demanding in order to be capable of
+addressing time-varying operating scenarios along the path.
+In particular, the vehicles along the path are organized as
+platoons in order to improve as much as possible sustainability
+features of the overall architecture. From a methodological
+perspective two aspects deserve particular attention:
+1) the computation of routing decisions for mitigating traffic congestion phenomena and reducing C O2 emissions;
+2) a constrained control strategy in charge of adequately
+exploiting the routing decisions for sustainability
+purposes.
+These considerations naturally lead to consider a distributed
+framework, necessary to fulfill scalability and flexibility
+specifications, where the first issue is addressed by resorting
+to an innovative DRL scheme, while the point 2) is solved
+by means of a MPC approach adequately designed to reduce
+as much as possible computational loads pertaining to the
+underlying optimizations.
+To comply with this reasoning, the two approaches are
+combined into a single distributed control architecture where
+the capability of the DRL scheme to derive routing decisions
+by mitigating the undesired traffic effects allows to drive safely
+the vehicles until the assigned target without any occurrence
+
+N OTATION AND D EFINITIONS
+Definition 1: A junction is where two or more roads meet.
+□
+Definition 2: A link (or edge) is a portion of a road between
+two junctions.
+□
+Definition 3: An Urban Road Network (URN) is a
+collection of links and junctions.
+Definition 4: At each t, the vehicle density ρ j (t) of a j −th
+link is defined as:
+ρ j (t) ≜
+
+# j (t)
+d̄ j l j
+
+(1)
+
+with # j (t) ∈ ZZ+ the number of vehicles on the link j,
+and d̄ j ∈ R+ and l j the average width and road length,
+respectively.
+□
+Definition 5: Let G = (V, E) be a graph with V :=
+{v1 , . . . , v L } nodes and E edges, i.e. E := {(i, j) : i, j ∈
+L , i ̸ = j}. A node i ∈ V is connected (or adjacent) to a node
+j ∈ L\{i} if there exists an edge from i to j.
+□
+Definition 6: A m− length path of a given graph G is a
+sequence of m nodes {vi1 , . . . , vim } such that for k = 1, . . . , m,
+the vertices vik and vik+1 are adjacent.
+□
+Definition 7: A graph G is connected if exists a path for
+every pair of vertices vi , v j ∈ V, with i ̸ = j.
+□
+Definition 8: Given a set S ⊂ Rn and a point p ∈ Rn , the
+norm-2 distance between p and S is defined as:
+dist ( p, S) := inf ∥s − p∥2 ,
+s∈S
+
+Definition 9: Given two sets S1 , S2 ⊂ Rn , the norm-2
+distance between S1 and S2 is defined as:
+dist (S1 , S2 ) := inf {∥s1 − s2 ∥2 : s1 ∈ S1 , s2 ∈ S2 }
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+14832
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 12, DECEMBER 2023
+
+Fig. 1. O rf r ee and O sf r ee (dashed green zones) account for obstacle-free
+regions on the r and s links, respectively.
+
+Fig. 2.
+
+An urban road network map of the city of Hamburg.
+
+Consider a discrete-time linear time-invariant system
+x(t + 1) = 8x(t) + Gu(t)
+where t ∈ ZZ+ := {0, 1, . . .}, x(t) ∈
+the control input and
+u(t) ∈ U,
+
+Rn
+
+x(t) ∈ X ,
+
+(2)
+
+is the state, u(t) ∈ Rm
+∀t ≥ 0,
+
+(3)
+
+with U, X convex and compact subsets of
+and Rn ,
+respectively.
+Definition 10: A set 4 ⊆ X is said to be Positively
+Invariant (PI) set for (2) under constraints (3) if there exists
+a control law u := f (x(t)) ∈ U such that ∀ x(0) ∈ 4 →
+8x(t)+G f (x(t)) ∈ 4, ∀t ∈ ZZ+ [49].
+□
+Rm
+
+II. P ROBLEM F ORMULATION
+Consider a platoon of autonomous vehicles operating in an
+URN, where each vehicle has to select the more adequate
+action when approaching a junction. To this end, the so-called
+decision zone is introduced
+D Z j : H j p > g j , p ∈ R2 , j = 1, . . . , M
+
+(4)
+
+with H j and g j characterizing the hyper-plane associated to
+the j-link. For the sake of comprehension consider Figure 1.
+In this sketch, the dashed green zones account for those road
+constraints, where a vehicle can move.
+Then, the vehicle routing problem can be straightforwardly
+defined in terms of a path search on a connected graph, where
+pruning procedures are adequately applied to minimize the
+search space, see the illustrative sketch in Figures 2-3.
+There, the idea is to define a connected decision graph (the
+upper graph of Figure 3) which describes the URN as follows:
+a node accounts for a junction, while an edge represents the
+road link between two junctions. Hence, the adopted pruning
+procedure can be summarized as follows: associate to each
+edge a positive length weight, compute all the paths connecting
+given initial and final nodes, select the N paths shortest paths
+computed in terms of the sum of the length weights. This
+modus operandi has two benefits: mitigate the computational
+complexity pertaining to the search procedure; guarantee the
+existence of admissible path planning solutions, see lower
+graph of Figure 3.
+Then, the problem of interest is now defined.
+Autonomous Vehicles in Urban Environments (AV-UE): Given
+admissible initial and target conditions x(0) and x f ,
+
+Fig. 3. The connected graph pertaining to Figure 2 (upper-graph). The pruned
+description (lower-graph).
+
+respectively, and a group of autonomous vehicles, derive
+a path planning strategy complying with the following
+requirements:
+• the team is driven from x(0) towards x f ,under
+constraints fulfillment;
+• traffic congestion events are mitigated as much as
+possible;
+• C O2 emissions are kept under a prescribed threshold.
+□
+To formally address the AV-UE problem, the following
+assumptions are made.
+Assumption 1: An admissible path between x(0) and x f
+exists.
+Assumption 2: Each vehicle is aware about the traffic
+density along URN edges.
+III. A N OVERVIEW OF THE P ROPOSED S OLUTION
+The AV-UE problem is addressed by conceiving a
+distributed scheme incorporating into a single framework the
+features of DRL and MPC methodologies. Specifically, at each
+junction the output of the DRL algorithm, namely the routing
+decision, is exploited as the set-point of the MPC unit, see
+the overall architecture of Figure 4. Roughly speaking, three
+elements characterize the core of the proposed approach: the
+Path Planner (i.e., the DRL unit), the Reference Generator
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+GIANNINI et al.: SUSTAINABLE MULTI-AGENT ROUTING ALGORITHM FOR VEHICLE PLATOONS IN URBAN NETWORKS
+
+14833
+
+In general, the Q-function is
+Q i (σ i (tdec ), a(tdec ); θ i )
+"∞
+#
+X
+(ν−1) i
+≜E
+γ
+ψ (tdec + ν1tdec (t))
+
+(6)
+
+ν=1
+
+Fig. 4.
+
+where the E[·] is the expected value operator, a(tdec ) ∈ A,
+γ ∈ (0, 1) is the discount factor and ψ i is the local reward.
+Notice that, since that traffic behavior information are not
+available until the neural network training is activated, the
+Q-function is initialized with random weights and a greedy
+action a i (tdec ) selected as
+
+Proposed control architecture.
+
+a i (tdec ) := arg max Q i (σ i (tdec ), a; θ i )
+a∈A
+
+Fig. 5. Proposed NN architecture. Blue blocks refer to the inputs σ i and a i ,
+FC to fully connected layers and ELU to the exponential linear unit activation
+functions. The output size of each block is also reported.
+
+and the Controller defined according to the vehicles AV i ,
+i = 1, . . . , L .
+At each t, the following tasks are performed:
+• from the autonomous vehicles AV i , the Path Planner
+acquires vehicle position coordinates, the associated edge
+on the graph and the edge vehicle density;
+• the Path Planner computes the routing decision a i (t) to
+be applied by AV i at the next junction.
+Then, the Reference Generator generates the reference
+z i (t) according to a i (t) to be used by the controller.
+Hence, the receding horizon control (RHC) units, namely
+RHC Controllers, compute feasible inputs u i (t). Finally, the
+vehicles AV i receive the control inputs and send their data to
+the Path Planner.
+
+During the training, the trade-off between exploration and
+exploitation is managed by an epsilon-greedy policy [48].
+In particular, the local reward has been designed as
+!
+[
+i
+k
+ψ (tdec + 1tdec (t)) =9
+σ (tdec + 1tdec (t))
+k
+i
++ ψgoal
+(tdec + 1tdec (t))
+i
++ ψwt
+(tdec + 1tdec (t)), i ∈ V (8)
+
+where 1tdec (t) := t − tdec with x i (tdec ) ∈ (Xc )ri and
+x i (t) ∈ (Xc )is , r ̸ = s. Notice that the reward (8) is computed
+only when the generic vehicle AV i has effectively performed
+the imposed action. Essentially, the meaning of formula (8)
+can be summarized as follows: !
+[
+• 9
+σ k (tdec + 1tdec (t)) takes care of traffic congesk
+
+tion phenomena occurring over the urban road network
+that in turn is evaluated by
+!
+[
+9
+σ k (tdec + 1tdec (t))
+
+IV. R EINFORCEMENT L EARNING S CHEME
+
+k
+
+In the sequel, a distributed deep reinforcement learning
+algorithm will be developed with the aim of addressing the
+routing decision problem. By resorting to the Q-learning
+methodology [44], [45], [46], [47], a multi-agent reinforcement learning description is considered:
+< V, 6, A, 9 >
+
+(7)
+
+=
+
+ρ j (tdec ) − ρ j (tdec + 1tdec (t))
+
+j=1
+
+=
+
+M
+X
+# j (tdec ) − # j (tdec + 1tdec (t))
+j
+
+j=1
+
+(5)
+
+where
+• V = {AV 1 , . . . , AV h } is the set of involved vehicles
+(agents);
+h
+• 6 := {σ i }i=1
+is the set of RL states (consisting, for each
+AV i , of the edge j where it is driving, the vehicle density
+ρ j (t) and the vehicle densities of the neighbor edges);
+• A is a finite set of integer numbers accounting for the
+possible vehicle actions;
+• 9 : 6 × A × 6 → R is the global reward function.
+Let tdec be the decision time (or trigger time), i.e. the time
+instant when an autonomous vehicle enters in the DZ, where
+the RL unit starts, see Figure 1. Notice that Q i : 6 ×A → R
+refers to the i −th vehicle and is defined by means of a Neural
+Network (NN) where Q i (σ i , a i ; θ i ) also takes into account of
+the neural network weights θ i ∈ RW , see Figure 5.
+
+M
+X
+
+•
+
+•
+
+(9)
+
+d lj
+
+It is important to underline: lower traffic densities higher
+reward realizations.
+i
+the heuristics ψgoal
+(tdec + 1tdec (t)) accounts for the
+current longitudinal speed of the vehicle with respect to
+the distance from the target.
+i (t
+ψwt
+dec + 1tdec (t)) is given by:
+i (t
+i
+ψwt
+dec + 1tdec (t)) = −wt (tdec + 1tdec (t))
++ f (loops)i (tdec + 1tdec (t))
+(10)
+
+where wt is the total waiting time of the vehicle AV i
+from t0 to tdec + 1tdec (t), while f (loops) is a function
+that analyzes the route from the initial time instant t0 until
+tdec + 1tdec (t) and penalizes the possibly presence of
+i
+loops (like turning around a roundabout). Essentially, ψwt
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+14834
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 12, DECEMBER 2023
+
+takes into account those sequences of actions driving AV i
+to queue scenarios or repetitive routes.
+The neural network training process exploits the squared loss
+function:
+L(tdec + 1tdec (t); θ i ) :
+= (ψ i (tdec + 1tdec (t) − ψ̂ i (tdec + 1tdec (t)))2
+
+(11)
+
+where the expected reward is given by [39]
+ψ̂ i (tdec + 1tdec (t)) = Q i (σ i (tdec , aki ; θ i )
+−γ max Q i (tdec + 1tdec (t), a; θ i )
+a∈A
+
+(12)
+Finally, the neural network training is performed by means
+of a gradient descent update:
+θ i = θ i − α∇θ L(θ i )
+
+(13)
+
+with α ∈ (0, 1) the learning rate.
+Notice that the above reward function (8) does not explicitly
+take into account of emission phenomena. Then, in order to
+make the DRL process emission sustainable, the arguments
+proposed in [43] are exploited. Specifically, the idea is to
+support the AV i action with a low-level decision maker that
+can modify the assumed decision according to the environment
+emission of a specific URN district. In fact, a vehicle AV i can
+access a certain road link if a pre-assigned emission threshold
+is not overcome. Therefore, according to the RL condition
+σ i (t), if the action ā i reveals to be not appliable because of
+the emission threshold, the vehicle AV i must comply with the
+following sub-optimal decision:
+a i (tdec ) = arg max Q i (σ i (tdec ), a; θ i )
+a∈A\{ā i }
+
+(14)
+
+and final positions associated to the generic j−th link.
+By exploiting set-theoretic ideas [49], the problem to travel
+a link can be solved by computing sequences of overlapped
+positively invariant (PI) sets according to the multi-agent
+j
+system dynamics (15)-(16), where the link-free region O f r ee
+is added so giving rise to the following state constraint
+description:
+DQL-Algorithm
+Initialization
+1: Initialize Q(σ i , a; θ ), i = 1, . . . , h;
+2: Measure σ i (0), i = 1, . . . , h, from the URN; At each tdec
+do
+1: Choose an admissible action:
+
+ rand(A), with probability ϵ (tdec )
+
+
+a i (tdec ) =
+ arg max Q i σ i (tdec ) , a; θ i , otherwise
+a∈A
+
+2: Check if the action ā = a i = a i (tdec ) conducts a AV i into
+an edge with limitation on C O2 emissions:
+if FALSE go to STEP 3
+else ask to the infrastructure if AV i (and its followers)
+can enter inside such road:
+if TRUE go to STEP 3
+else pick a sub-optimal action.d Go to STEP 2
+3: Apply the chosen routing action;
+4: Compute the reward ψ i (tdec + 1Tdec (t)), , ∀i =1, . . . , h;
+5: Update θ i , ∀i = 1, . . . , h.
+
+j
+
+(Xc )ij ≜ X i ∩ O f r ee i = 1, . . . , L , j = 1, . . . , M,
+
+(17)
+
+j
+
+Remark 1: Notice that if the action ã i coming from (14)
+results to be again unusable, then a new sub-optimization has
+to be performed with the research space reduced as A\{ā i , ã i }.
+Moreover, it is important to underline that, since the threshold
+is a function of the platoon length, longer platoons lead to
+lower thresholds for keeping emissions constant.
+□
+V. RHC U NITS
+In the sequel, the autonomous vehicles are described by the
+following state space descriptions
+x i (t + 1) = Ai x i (t) + B i u i (t)
+
+, i = 1, . . . , L
+
+(15)
+
+with x i ∈ Rn , n = 4, accounting for the state of AV i
+(composed by the x-y position r i and by the x-y velocity v i )
+and the following constraints imposed:
+
+T
+i
+
+r i (t) ∈ Xri := {r i ∈ R2 : r i r i ≤ (rmax
+)2 } ⊂ R2
+
+
+
+T
+ i
+i
+v (t) ∈ Xvi := {v i ∈ R2 : v i v i ≤ (vmax
+)2 } ⊂ R2
+(16)
+T i
+i
+i
+i
+2
+i
+i
+
+u (t) ∈ U := {u ∈ R : u u ≤ (u max )2 } ⊂ R2 ,
+
+
+
+ ∀t ≥ 0, i = 1, . . . , L .
+The starting point relies on the formal characterization of
+feasible state trajectories complying with the prescriptions
+of AV-UE problem. Let denote with xin and x f in initial
+
+From now on, the set (Ti )k ⊂ Rn refers to the k − th PI set
+of AV i by
+j
+
+u i (t) = (Fi )k x i (t), ∀t ≥ 0,
+
+(18)
+
+with the apex j denoting the j − th road.
+The idea to develop can be briefly summarized. For each
+vehicle AV i , each link j and for each admissible direction
+of travel, a tube of admissible state trajectories is off-line
+determined compatibly with the platoon configuration. This
+translates in computing families of overlapped PI sets in charge
+to achieve an inner convex approximation of the link-free
+j
+region O f r ee . The rationale behind the need of the overlapped
+feature relies on viability arguments: in fact such a property
+guarantees that an admissible switching between two regions
+can be activated and, as a consequence, the vehicle can move
+towards the prescribed target. Then during the on-line phase,
+starting from admissible state conditions, leader and followers
+are driven through the road urban network by exploiting the
+routing decisions provided by the path planner as set-points
+to be tracked as best as possible. To this end, the off-line
+computations are of paramount relevance and must be properly
+defined. First of all, the PI sets must take of safe distances
+amongst the vehicles, therefore they have to be derived by
+a level-by-level procedure. Specifically, first the PI leader is
+derived without adding any distance constraint, then the direct
+follower (second agent) computes its PI under a distance
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+GIANNINI et al.: SUSTAINABLE MULTI-AGENT ROUTING ALGORITHM FOR VEHICLE PLATOONS IN URBAN NETWORKS
+
+requirement w.r.t. the leader region, and so on until the leaf
+node. According to this reasoning, feasible switchings along
+the pre-computed sets are always viable and, as a consequence,
+there exists an admissible path until the target, that in turn can
+be reached by using the routing decisions obtained via the
+DQL scheme. Within this context, it is clear that the family of
+PI sets must be properly designed by also taking into account
+of safe distances between the vehicles along the platoon.
+j
+Then by denoting with (Ti )k the PI set of AV i , the distance
+constraint is:
+j
+
+αmin ≤ dist (x i , (Ti−1 )k ) ≤ αmax
+
+(19)
+
+with Rx i > 0 and Ru i ≥ 0 symmetric state and input weighting
+matrices, respectively.
+Remark 2: It is worth to underline that (21) accounts for the
+positively invariance property compatible with the geometric
+constraint (Xc )1j resulting from the j link and direction of
+travel; the set-membership (22) refers to the input constraint
+satisfaction, while (23) ensure the feasibility retention under
+j
+j
+time-varying PI sets (T1 )k−1 and (T1 )k . Same comments holds
+true for the DMPC-P F optimization, where the additional
+constraint (28) formally takes into account the analysis above
+exploited for keeping the platoon formation.
+j
+Moreover, in virtue of (29), the set (Ti )k is such that
+
+c , αc
++
+with αmin
+max ∈ R chosen in accordance with the current
+operating scenario. Therefore, one has that
+j
+
+j
+
+(Ti )k ∩ (Ti−1 )k = ∅
+The latter essentially represents a formation constraint along
+the leader-follower configuration. In fact, it ensures that
+vehicles remain confined in a state trajectory tube compatible
+with all the prescribed input/state constraints. Moreover, notice
+that the following developments characterize the off-line phase
+where the routing decisions are not taken into account and
+whose the aim is to define feasible state trajectories for the
+whole platoon.
+In view of this analysis, the PI sets pertaining to the leader
+AV 1 are achieved as the solution of the following semi-defined
+programming problem
+DMPC-P L :
+min
+j
+
+j
+
+(F1 )k ,(T1 )k
+
+1
+J∞
+(t) s.t
+
+(20)
+
+1
+
+j
+(T1 )k
+
+⊆
+
+(Xc )1j
+
+(21)
+(22)
+(23)
+
+On the other, when a follower is concerned, one has:
+DMPC-P F :
+min
+j
+
+j
+
+(Fi )k ,(T1 )k
+
+i
+J∞
+(t) s.t
+j
+
+(24)
+
+j
+
+j
+
+(Ai + B i (Fi )k )(Ti )k ⊂ (Ti )k ⊆ (Xc )ij
+
+(25)
+
+j
+j
+(Fi )k (Ti )k ) ⊂ U i ,
+j
+j
+j
+(ξ i )k ∈ (Ti )k−1 ∩ (Ti )k
+j
+αmin ≤ dist (x i , (Ti−1 )k )
+
+(26)
+(27)
+≤ αmax , ∀x i ∈
+
+j
+(Ti )k
+
+(28)
+
+j
+
+where (ξ i )k , i = 1, . . . , L is the equilibrium selected at each
+k − th iteration as follows
+j
+
+(ξ i )k : = arg max
+
+j
+x∈(Ti )k−1
+
+j
+
+∥(ξ i )k−1 − x i ∥2
+
+(29)
+
+s.t. ∃ū i ∈ U i , x i = (In − Ai )−1 B i ū i
+
+and
+∞h
+i
+X
+i
+J∞
+(t) : = ∥r i (t + h|t)−r if ∥2R i +∥u i (t + h|t)∥2R i ,
+x
+
+u
+
+j
+
+(30)
+
+(31)
+
+As the on-line phase is concerned, this must guarantee
+that there always exist a control action capable to move the
+platoon amongst overlapped regions. The next results provides
+a solution to this requirement. During the on-line operations,
+the following viable property along the overlapped families
+must be ensured.
+j
+j
+Proposition 1: Let (Ti )k and (Ti )k+1 be two PI sets
+i
+complying with (31). Let z (t) be the current set-point. Let
+j
+j
+j
+x i (t) ∈ (Ti )k , x̃ i := x i − (ξ i )k+1 and ũ := u − (wi )k+1 be the
+current state, the shifted state and the shifted input with respect
+j
+j
+to the equilibrium ((ξ i )k+1 , (wi )k+1 ), respectively. Then, the
+tracking one-step MPC problem
+ũ i (t):=arg min∥Pr ojr i (Ai x̃ i (t)+ B i ũ i )− z̃ i (t)∥2
+
+j
+
+((Pi )k+1 )−1
+
+(32)
+such that
+Ai x̃ i (t) + B i ũ ∈ (Ti )k+1 , u i ∈ U i ,
+
+(33)
+j
+
+j
+(Pi )k+1
+
+the shaping positive definite matrix of (Ti )k+1 ,
+with
+has a solution at each time instant t.
+Proof - The proof is obtained by construction by following the
+arguments exploited in [53].
+□
+The above result puts in light the capability of the proposed
+approach to comply with the routing decision z i (t) at each time
+instant. In fact, the optimization (32)-(33) computes admissible
+control actions under a tracking requirement defined by the
+current value of z i (t).
+As a consequence of the above discussion, the following
+distributed algorithm results.
+The main properties of the DRHC Algorithm are collected in
+the next result.
+Proposition 2: Given x i (0) and x if , i = 1, . . . , L , the
+DRL-MPC Algorithm always fulfills the imposed constraints,
+satisfies the AV-UE problem specs and guarantees asymptotic
+stability of the closed-loop system.
+Proof - The feasibility retention is achieved by showing the
+solvability of (32)-(33) at each sampling time.
+By hypothesizing that one has an optimal solution for the
+j
+vehicle AV i at t and x i (t) ∈ (Ti )k , at t + 1 an admissible,
+though not optimal, command input can be derived because the
+j
+state evolution x i (·) driven by u i (·) = (Fi )k x i (·) indefinitely
+∗
+j
+lies within (Ti )k . On the other hand, the optimal action u ij (t|t)
+j
+
+h=0
+
+i = 1, . . . , L ,
+
+j
+
+(Ti )k ∩ (Ti )k−1 ̸ = ∅
+
+j
+
+j
+j
+(A + B (F1 )k )(T1 )k ⊂
+j
+j
+(F1 )k (T1 )k ) ⊂ U 1 ,
+j
+j
+j
+(ξ 1 )k ∈ (T1 )k−1 ∩ (T1 )k
+1
+
+14835
+
+conducts AV i within (Ti )k+1 . Same arguments can be used for
+the other vehicles.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+14836
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 12, DECEMBER 2023
+
+TABLE II
+V EHICLE I NITIAL C ONDITIONS
+
+TABLE I
+C OMPUTATIONAL C OST: DQL, DMPC P ROCEDURES
+AND DRL-MPC A LGORITHM
+
+As the asymptotic closed-loop stability is concerned,
+a similar analysis can be straightforwardly pursued by taking
+care that, thanks to the routing decision z i (t), each vehicle
+converges to r if and the velocity v i (t) will settle down as
+t → ∞.
+□
+DRL-MPC Algorithm - Vehicle i th
+Input: αmin , αmax , x i (0), x if ;
+Output: u i∗ (t/t);
+Initializationj
+j
+1: Compute {(T1 )k (F1 )k } bY solving (20)-(23);
+j
+j
+2: Compute {(T1 )k (F1 )k } complying with (24)-(28);
+3: Derive the equilibria by (29);
+4: k ← k + 1: goto Step 1;
+On-line phase 1: Receive x i (t);
+2: Determine the routing decision z i (t);
+3: Solve the optimization (32)-(33);
+4: Apply u i∗
+j (t | t)
+5: t t ← t + 1 and goto Step 1;
+
+Fig. 6.
+
+A. Computational Complexity Analysis
+In the sequel, computational burdens pertaining to the DQL,
+DMPC procedures and DRL-MPC algorithm are outlined and
+summarized in Table I.
+1) DQL: Let n 6 and n A be the maximum number of steps
+per episode (bounded by the number of the nodes in the
+URN) and the size of the action set A, respectively. Then,
+in the off-line phase the DQL procedure has a computational
+load polynomial in time O(n 2A ∗ n 6 ) while the on-line phase
+involves O(n 2A ), see [51] and [52].
+2) DMPC: In the offline phase, the computational complexity is related to the computation of the overlapped PI sets
+via the two optimization problems DMPC-P L and DMPCP Fi . Both the optimizations are SDP and the computational
+burdens are O(n 3 ). Conversely the on-line phase reduces to
+the solution of the tracking one-step problem that is Quadratic
+Programming (QP).
+3) DRL-MPC Algorithm: In the off-line phase, the DMPCP L and DMPC-P Fi , i = 2, . . . , L , are invoked and the
+DRL training. Conversely, on-line just a single iteration is
+considered to update the reward function and the solution of
+a QP optimization (32)-(33).
+
+Fig. 7. The URN in Google Earth: the leader initial (yellow) and target (red)
+locations are denoted with pins.
+
+VI. S IMULATIONS
+In what follows, a set of simulations is presented in
+order to show the peculiarities of the DRL-MPC algorithm.
+The simulation setup has been implemented within the
+
+Limited Traffic Zone.
+
+Matlab R2022a environment and SUMO 1.11.0 simulator [50].
+A platoon of L = 5 vehicles is used. The dynamical description
+of AV i is as in (15), with the following acceleration
+constraints
+||u i (t)||2 ≤ 5[m/s 2 ], ∀t ≥ 0, ∀i = 1, . . . , L ,
+The geometrical displacement between two consecutive
+vehicles is defined by the bounds αmin = 1[m]
+and αmax = 6[m].
+It is imposed that the distance between two vehicles is
+limited by αmin = 1[m] and αmax = 6[m].
+For simulation purposes, real traffic data, provided by
+the TAVF project (https://tavf.hamburg/en/) throught the
+SUMO documentation about scenarios (https://sumo.dlr.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+GIANNINI et al.: SUSTAINABLE MULTI-AGENT ROUTING ALGORITHM FOR VEHICLE PLATOONS IN URBAN NETWORKS
+
+Fig. 8.
+
+14837
+
+DRL training and emissions. Emission thresholds: 500 00 550 00 800 00 550 000 0 600 000 0 700 000 0 200 000 00 [mg/s].
+
+ON -L INE
+
+TABLE III
+C OMPUTATIONAL C OSTS : CPU TIMES [ S ]
+
+de/docs/Data/Scenarios.html#dublin_-_irish_motorway_nation
+al_road_and_city_centre), are exploited. In particular, they
+refer to the map of a district in Hamburg, see Figure 2.
+Operating scenario - The reference initial position is
+located at the latitude 53.540365◦ N and longitude 9.946923◦ E
+coordinates. By using a local tangent plane East-North-Up
+reference frame [54], the AVs initial positions are reported
+in Table I with vxi = 0 and v iy = 0, ∀i. Moreover, a traffic
+limitation is imposed on the edge highlighted in Figure 6,
+hereafter denoted as E lim . The aim consists in driving all the
+vehicles towards the parking area, see Figure 7.
+□
+The achieved results are collected in Figures 8-11. As the
+Q-function is concerned, around 1750 traffic episodes have
+been used for its training. Notice that the episode a sequence
+of time instants {t0 , . . . , t F }, see [46], where at t0 the vehicles
+are located to their initial positions reported in Table I, while
+at t F they are on the target x f (Parking area).
+First, the evolution of the training is reported in the left
+hand side of Figure 8, where the episode reward (the sum of
+all the received rewards during each episode) and the expected
+episode reward are depicted. This graph explicitly shows how
+proper routing decisions are selected according to the training
+evolution: the episode reward (blue line) settles down to an
+high performance value, while the expected reward (orange
+line) asymptotically converges to it. On the other hand, the
+r.h.s. of Figure 8 accounts for the C O2 emissions of the
+platoon for each episode. As expected, the emission curve
+decreases as the training process evolves
+To analyze the behavior of the training process versus
+the threshold, the results reported in Figure 8 are discussed
+
+Fig. 9. Regulated state trajectories: a) the circles denote the initial positions of
+the five vehicles; b) under the action of the DRL-MPC Algorithm the vehicles
+move along the path indicated by the DQL Algorithm; c) at t = 215 s the
+vehicles are geometrical organized as a platoon; d) the vehicle are approaching
+to the parking locations depicted as triangles.
+
+more in depth. As the threshold increases, the chance of
+the platoon to enter E lim clearly increases. Accordingly, the
+expected reward shows less settling times as the threshold
+increases. Finally, by taking a look to the regulated multi-agent
+system behavior, in Figure 9 the regulated state trajectories
+show that the platoon comply with the prescribed mission as
+testified by means of four relevant snapshots, while all the
+prescribed constraints are always fulfilled, see Figures 10, 11.
+In particular, Figure 10 shows the dynamical behavior of
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+14838
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 12, DECEMBER 2023
+
+TABLE IV
+C O2 E MISSIONS [ MG / S ] versus P LATOON L ENGTH
+
+three platoon lengths L = 5, 7, 10, and related initial and
+target planar coordinates:
+
+#
+"
+
+1303.8
+1301.1
+1298.3
+1295.6
+1292.9
+
+ r (0) =
+
+
+1294.2 1293.0 1291.8 1290.6 1289.3
+#
+"
+L = 5−
+
+2376.9 2376.6 2376.3 2376.0 2375.7
+
+
+
+ r f = 726.6 723.6 720.6 717.6 714.6
+
+"
+
+1309.3 1306.6 1303.8 1301.1 1298.3
+
+
+r (0) =
+
+
+
+1296.7 1295.5 1294.2 1293.0 1291.8
+
+
+#
+
+
+
+1295.6
+1292.9
+
+
+
+
+1290.6 1289.3
+"
+L = 7−
+
+2377.5 2377.2 2376.9 2376.6 2376.3
+
+
+rf =
+
+
+
+732.5 729.5 726.6 723.6 720.6
+
+
+#
+
+
+
+2376.0
+2375.7
+
+
+
+
+717.6 714.6
+
+"
+
+1317.5 1314.8 1312.0 1309.3 1306.6
+
+
+r (0) =
+
+
+
+1300.3 1299.1 1297.9 1296.7 1295.5
+
+
+#
+
+
+
+1303.8
+1301.1
+1298.3
+1295.6
+1292.9
+
+
+
+
+1294.2 1293.0 1291.8 1290.6 1289.3
+"
+L = 10 −
+
+2378.5 2378.2 2377.9 2377.5 2377.2
+
+
+rf =
+
+
+
+741.5 738.5 735.5 732.5 729.5
+
+
+#
+
+
+
+2376.9 2376.6 2376.3 2376.0 2375.7
+
+
+
+
+726.6 723.6 720.6 717.6 714.6
+•
+
+Fig. 10. State constraints (28): safe distance evolution between neighbouring
+vehicles along the platoon.
+
+Fig. 11. Acceleration constraints compatible with routing and sustainable
+requirements.
+
+the vehicles along the computed path by putting in light
+j
+j
+that each vehicle ∀x i ∈ (Ti )k and its father (Ti−1 )k remain
+confined in the so-called safe state trajectory tube defined by
+the scalars αmin = 1 [m] and αmax = 6 [m]. It is shown
+that the relative planar distances between each vehicles and
+its father (AV 2 vs AV 1 , AV 3 vs AV 2 and so on) are kept
+within the prescribed limits. Conversely, Figure 11 takes care
+of the prescribed saturations on the accelerator input, i.e., this
+graph allows to show the capability to improve the platoon
+control performance, according to a minimum time criterion,
+are strictly depending on the formation constraints reported in
+Figure 10.
+For the sake of completeness, average on-line computational
+burdens in terms of CPU times pertaining to the DQL and
+DMPC procedures are reported in Table III.
+Finally, some numerical comparisons have been carried
+out by contrasting the DQL algorithm with a well-reputed
+competitor, namely the Dijkstra algorithm [55]. To this end,
+the same DMPC controller has been exploited for both the
+routing schemes. To this end, two simulation scenarios have
+been carried out:
+
+•
+
+constant platoon length (L = 5) and three different initial
+and target planar coordinates:
+
+"
+#
+
+1488.4 1485.6 1482.8 1480.1 1477.3
+
+
+
+ r (0) = 660.3 659.2 658.0 656.9 655.7
+"
+#
+A)
+
+1978.6
+1981.6
+1984.6
+1987.6
+1990.6
+
+
+
+ r f = 2688.1 2688.1 2688.1 2688.0 2688.0
+
+"
+#
+
+1303.8
+1301.1
+1298.3
+1295.6
+1292.9
+
+
+ r (0) =
+
+1294.2 1293.0 1291.8 1290.6 1289.3
+#
+"
+B)
+
+2376.9 2376.6 2376.3 2376.0 2375.7
+
+
+
+ r f = 726.6 723.6 720.6 717.6 714.6
+
+"
+#
+
+1083.4
+1080.5
+1077.6
+1074.8
+1071.9
+
+
+
+ r (0) = 1624.2 1623.3 1622.4 1621.5 1620.6
+"
+#
+C)
+
+2951.3
+2948.4
+2945.5
+2942.6
+2939.7
+
+
+
+ r f = 2283.1 2283.8 2284.6 2285.3 2286.0
+
+Notice that the initial velocities are imposed equal to zero for
+all the vehicles. The results are collected in Tables IV-V in
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+GIANNINI et al.: SUSTAINABLE MULTI-AGENT ROUTING ALGORITHM FOR VEHICLE PLATOONS IN URBAN NETWORKS
+
+TABLE V
+C O2 E MISSIONS [ MG / S ] versus I NITIAL
+AND F INAL P LANAR C OORDINATES
+
+terms of C O2 emissions. As a common denominator, all the
+simulations show the proposed DRL algorithm outperforms
+the Dijkstra-based solution. In particular, Table IV shows that,
+by using the DRL scheme, the C O2 emissions progressively
+reduce with respect to the Dijkstra competitor as the platoon
+length increases, i.e., starting from 8.51% until 12.81% of
+emissions reduction. Conversely, Table V puts in light the
+capability of mitigating the C O2 emissions as the road
+distance between the initial and target conditions increases:
+from 3.72% to 10.36%.
+VII. C ONCLUSION
+In this paper, the sustainable routing decision problem for
+vehicle platoons operating in urban road networks has been
+addressed. By jointly exploiting Deep Reinforcement Learning
+and set-theoretic model predictive control arguments, a novel
+distributed machine learning-control architecture has been
+conceived and its main properties outlined. In the simulation
+section, a platoon of five vehicles, operating in the city center
+of Hamburg in Germany, has been used to enlight the main
+features of the DRL-MPC algorithm. Simulations testify that
+the proposed algorithm:
+• reduces C O2 emissions and traffic congestion;
+• avoids to increase the pollution of areas subject to
+C O2 emission constraints.
+Future studies will follow two directions. First, it is important
+to extend the proposed approach to comply with obstacle
+avoidance requirements and more roadway lanes. Then,
+the DRL algorithm computational performance should be
+increased in order to get faster routing decisions.
+R EFERENCES
+[1] D. Bamwesigye and P. Hlavackova, “Analysis of sustainable transport
+for smart cities,” Sustainability, vol. 11, no. 7, p. 2140, Apr. 2019.
+[2] P. M. d’Orey and M. Ferreira, “ITS for sustainable mobility: A survey on
+applications and impact assessment tools,” IEEE Trans. Intell. Transp.
+Syst., vol. 15, no. 2, pp. 477–493, Apr. 2014.
+[3] T. Litman and D. Burwell, “Issues in sustainable transportations,” Int.
+J. Global Environ. Issues, vol. 6, no. 4, pp. 331–347, 2006.
+[4] M. C. Bell, “Environmental factors in intelligent transport systems,” IEE
+Proc. Intell. Transport Syst., vol. 153, no. 2, pp. 113–128, Jun. 2006.
+[5] M. Kucukvar and O. Tatari, “Towards a triple bottom-line sustainability
+assessment of the U.S. construction industry,” Int. J. Life Cycle
+Assessment, vol. 18, no. 5, pp. 958–972, Jun. 2013.
+[6] E. Tolga, “Sustainability analysis of intelligent transportation systems,”
+M.S. thesis, Dept. Civil Environ. Eng., College Eng. Comput. Sci., Univ.
+Central Florida, Orlando, FL, USA, 2013.
+[7] B. Boorsma and W. Wagner, “Connected urban development: Innovation
+for sustainability,” Natoa J., vol. 15, no. 4, pp. 5–9, 2007.
+[8] E. Taniguchi and R. E. C. M. Van Der Heijden, “An evaluation
+methodology for city logistics,” Transp. Rev., vol. 20, no. 1, pp. 65–90,
+Jan. 2000.
+
+14839
+
+[9] V. Nguyen, O. T. T. Kim, T. N. Dang, S. Il Moon, and C. S. Hong,
+“An efficient and reliable green light optimal speed advisory system
+for autonomous cars,” in Proc. 18th Asia–Pacific Netw. Oper. Manage.
+Symp. (APNOMS), Oct. 2016, pp. 1–4.
+[10] A. Haydari and Y. Yilmaz, “Deep reinforcement learning for intelligent
+transportation systems: A survey,” IEEE Trans. Intell. Transp. Syst.,
+vol. 23, no. 1, pp. 11–32, Jan. 2022.
+[11] W. Besbes et al., Solving Transport Problems: Towards Green Logistics.
+Hoboken, NJ, USA: Wiley, 2019.
+[12] A. M. Pereira, H. Anany, O. Pribyl, and J. Prikryl, “Automated vehicles
+in smart urban environment: A review,” in Proc. Smart City Symp.
+Prague (SCSP), May 2017, pp. 1–8.
+[13] Q. Jin, G. Wu, K. Boriboonsomsin, and M. Barth, “Multi-agent
+intersection management for connected vehicles using an optimal
+scheduling approach,” in Proc. Int. Conf. Connected Vehicles Expo
+(ICCVE), Beijing, China, Dec. 2012, pp. 185–190.
+[14] J. Cheng, J. Cheng, M. Zhou, F. Liu, S. Gao, and C. Liu, “Routing in
+Internet of Vehicles: A review,” IEEE Trans. Intell. Transp. Syst., vol. 16,
+no. 5, pp. 2339–2352, Oct. 2015.
+[15] K. Lin, Y. Li, J. Deng, P. Pace, and G. Fortino, “Clustering-learningbased long-term predictive localization in 5G-envisioned Internet of
+Connected Vehicles,” IEEE Trans. Intell. Transp. Syst., vol. 22, no. 8,
+pp. 5232–5246, Aug. 2021.
+[16] M. W. Ulmer, J. C. Goodson, D. C. Mattfeld, and B. W. Thomas,
+“On modeling stochastic dynamic vehicle routing problems,” EURO
+J. Transp. Logistics, vol. 9, no. 2, Jun. 2020, Art. no. 100008.
+[17] P. Toth and D. Vigo, The Vehicle Routing Problem. Philadelphia, PA,
+USA: SIAM, 2002.
+[18] M. Mangeruga, A. Casavola, F. Pupo, and F. Bruno, “An underwater
+pathfinding algorithm for optimised planning of survey dives,” Remote
+Sens., vol. 12, no. 23, p. 3974, Dec. 2020.
+[19] K. Lin, C. Li, Y. Li, C. Savaglio, and G. Fortino, “Distributed learning
+for vehicle routing decision in software defined Internet of Vehicles,”
+IEEE Trans. Intell. Transp. Syst., vol. 22, no. 6, pp. 3730–3741,
+Jun. 2021.
+[20] G. Bono, J. S. Dibangoye, O. Simonin, L. Matignon, and F.
+Pereyron, “Solving multi-agent routing problems using deep attention
+mechanisms,” IEEE Trans. Intell. Transp. Syst., vol. 22, no. 12,
+pp. 7804–7813, Dec. 2021.
+[21] M. Nazari, A. Oroojlooy, L. V. Snyder, and M. Takáč, “Reinforcement
+learning for solving the vehicle routing problem,” in Proc. Adv. Neural
+Inf. Process. Syst. 2018, pp. 1–11.
+[22] K. Lin, J. Gao, Y. Li, C. Savaglio, and G. Fortino, “Multi-granularity
+collaborative decision with cognitive networking in intelligent transportation systems,” IEEE Trans. Intell. Transp. Syst., vol. 24, no. 1,
+pp. 1088–1098, Jan. 2023, doi: 10.1109/TITS.2022.3151754.
+[23] H. Dündar, M. Ömürgönülşen, and M. Soysal, “A review on sustainable
+urban vehicle routing,” J. Cleaner Prod., vol. 285, Feb. 2021,
+Art. no. 125444.
+[24] M. J. Santos, P. Amorim, A. Marques, A. Carvalho, and A. Póvoa,
+“The vehicle routing problem with backhauls towards a sustainability
+perspective: A review,” TOP, vol. 28, no. 2, pp. 358–401, Jul. 2020.
+[25] V. S. Harilakshmi and P. A. J. Rani, “Intelligent vehicle counter—A road
+to sustainable development and pollution prevention (P2),” in Proc.
+Int. Conf. Energy Efficient Technol. Sustainability (ICEETS), Nagercoil,
+India, Apr. 2016, pp. 877–880.
+[26] M. Mesbahi and M. Egerstedt, Graph Theoretic Methods in Multiagent
+Networks. Princeton, NJ, USA: Princeton Univ. Press, 2010.
+[27] K.-K. Oh, M.-C. Park, and H.-S. Ahn, “A survey of multi-agent
+formation control,” Automatica, vol. 53, pp. 424–440, Mar. 2015.
+[28] K. Hengster-Movrić, S. Bogdan, and I. Draganjac, “Multi-agent
+formation control based on bell-shaped potential functions,” J. Intell.
+Robotic Syst., vol. 58, no. 2, pp. 165–189, May 2010.
+[29] W. Dong, “Robust formation control of multiple wheeled mobile robots,”
+J. Intell. Robotic Syst., vol. 62, nos. 3–4, pp. 547–565, Jun. 2011.
+[30] J. Ghommam, H. Mehrjerdi, M. Saad, and F. Mnif, “Formation path
+following control of unicycle-type mobile robots,” Robot. Auto. Syst.,
+vol. 58, no. 5, pp. 727–736, May 2010.
+[31] W. B. Dunbar and D. S. Caveney, “Distributed receding horizon control
+of vehicle platoons: Stability and string stability,” IEEE Trans. Autom.
+Control, vol. 57, no. 3, pp. 620–633, Mar. 2012.
+[32] P. Wang and B. Ding, “Distributed RHC for tracking and formation
+of nonholonomic multi-vehicle systems,” IEEE Trans. Autom. Control,
+vol. 59, no. 6, pp. 1439–1453, Jun. 2014.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+14840
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 24, NO. 12, DECEMBER 2023
+
+[33] H. Li, Y. Shi, and W. Yan, “Distributed receding horizon control
+of constrained nonlinear vehicle formations with guaranteed γ -gain
+stability,” Automatica, vol. 68, pp. 148–154, Jun. 2016.
+[34] R. Van Parys and G. Pipeleers, “Distributed MPC for multi-vehicle
+systems moving in formation,” Robot. Auto. Syst., vol. 97, pp. 144–152,
+Nov. 2017.
+[35] G. Franzè, W. Lucia, and F. Tedesco, “A distributed model predictive
+control scheme for leader-follower multi-agent systems,” Int. J. Control,
+vol. 91, no. 2, pp. 369–382, Feb. 2018.
+[36] G. Franzè and G. Fedele, “A distributed model predictive control strategy
+for finite-time synchronization problems in multi-agent double-integrator
+systems,” Eur. J. Control, vol. 55, pp. 56–67, Sep. 2020.
+[37] F. Giannini, G. Fortino, G. Franzè, and F. Pupo, “A deep Q learningmodel predictive control approach to vehicle routing and control with
+platoon constraints,” in Proc. IEEE 18th Int. Conf. Autom. Sci. Eng.
+(CASE), Aug. 2022, pp. 563–568.
+[38] F. Giannini, G. Fortino, G. Franzè, and F. Pupo, “Path planning
+for vehicle platoons under routing decisions: A distributed approach
+combining deep reinforcement learning and model predictive control,”
+in Proc. 8th Int. Conf. Control, Decis. Inf. Technol. (CoDIT), vol. 1,
+May 2022, pp. 734–739.
+[39] F. Giannini, G. Franzè, F. Pupo, and G. Fortino, “Autonomous vehicles
+in smart cities: A deep reinforcement learning solution,” in Proc. IEEE
+Intl Conf Dependable, Autonomic Secure Comput., Intl Conf Pervasive
+Intell. Comput., Intl Conf Cloud Big Data Comput., Intl Conf Cyber
+Sci. Technol. Congr. (DASC/PiCom/CBDCom/CyberSciTech), Sep. 2022,
+pp. 1–6.
+[40] F. J. Ros, P. M. Ruiz, and I. Stojmenovic, “Acknowledgment-based
+broadcast protocol for reliable and efficient data dissemination in
+vehicular ad hoc networks,” IEEE Trans. Mobile Comput., vol. 11, no. 1,
+pp. 33–46, Jan. 2012.
+[41] P. GokulaKrishnan and P. GaneshKumar, “Beam: Bandwidth efficient
+acknowledgement based multicasting protocol for sub-urban scenario
+in VANET,” J. Theor. Appl. Inf. Technol., vol. 67, no. 1, pp. 201–211,
+Sep. 2014.
+[42] C. Chen, Y. Zhang, M. R. Khosravi, Q. Pei, and S. Wan, “An
+intelligent platooning algorithm for sustainable transportation systems
+in smart cities,” IEEE Sensors J., vol. 21, no. 14, pp. 15437–15447,
+Jul. 2021.
+[43] J. Wang, Q. Zhang, D. Zhao, and Y. Chen, “Lane change
+decision-making through deep reinforcement learning with rule-based
+constraints,” in Proc. Int. Joint Conf. Neural Netw. (IJCNN), Jul. 2019,
+pp. 1–6.
+[44] T. Hester et al., “Deep Q-learning from demonstrations,” in Proc. AAAI
+Conf. Artif. Intell., vol. 32, no. 1, 2018, pp. 1–8.
+[45] H. Van Hasselt, A. Guez, and D. Silver, “Deep reinforcement learning
+with double Q-learning,” in Proc. 30th AAAI Conf. Artif. Intell., vol. 30,
+no. 1, 2016, pp. 1–7.
+[46] R. Sutton and A. Barto, Reinforcement Learning: An Introduction.
+Cambridge, MA, USA: MIT Press, 2018.
+[47] R. Norvig and S. Russel, Artificial Intelligence: A Modern Approach.
+London, U.K.: Pearson, 2021.
+[48] C. Dann, Y. Mansour, M. Mohri, A. Sekhari, and K. Sridharan,
+“Guarantees for epsilon-greedy reinforcement learning with function
+approximation,” in Proc. 39th Int. Conf. Mach. Learn., 2022,
+pp. 4666–4689.
+[49] F. Blanchini and S. Miani, Set-Theoretic Methods in Control. Boston,
+MA, USA: Birkhäuser Verlag, 2008.
+[50] P. A. Lopez et al., “Microscopic traffic simulation using SUMO,”
+in Proc. 21st Int. Conf. Intell. Transp. Syst. (ITSC), Nov. 2018,
+pp. 2575–2582.
+[51] S. Koenig and R. G. Simmons, “Complexity analysis of real-time
+reinforcement learning,” in Proc. AAAI Conf. Artif. Intell., 1993,
+pp. 99–105.
+[52] M. Kearns and S. Singh, “Near-optimal reinforcement learning in
+polynomial time,” Mach. Learn., vol. 49, nos. 2–3, pp. 209–232,
+2002.
+[53] G. Franzè and W. Lucia, “A receding horizon control strategy for
+autonomous vehicles in dynamic environments,” IEEE Trans. Control
+Syst. Technol., vol. 24, no. 2, pp. 695–702, Mar. 2016.
+[54] G. Henderson, Applied Mathematics in Integrated Navigation Systems,
+R. M. Rogers, Ed., 3rd ed. Reston, VA, USA: American Institute of
+Aeronautics and Astronautics, 2007.
+[55] E. W. Dijkstra, “A note on two problems in connexion with graphs,”
+Numerische Math., vol. 1, no. 1, pp. 269–271, Dec. 1959.
+
+Francesco Giannini (Student Member, IEEE) was
+born in Italy in 1997. He received the Laurea degree
+in automation engineering from the University of
+Calabria, Italy, in 2021, where he is currently
+pursuing the Ph.D. degree with the Information and
+Communication Technologies Program, Department
+of Informatics, Modeling, Electronics and Systems
+Engineering. His current research interests include
+model predictive control, machine learning, and
+intelligent transportation systems.
+
+Giuseppe Franzè (Senior Member, IEEE) received
+the Ph.D. degree in systems engineering from the
+University of Calabria, Italy, in 1999. Since 2022,
+he has been a Full Professor with the DIMEG
+Department, University of Calabria. He has authored
+or coauthored of more than 200 research papers in
+archival journals, book chapters, and international
+conference proceedings. His current research interests include constrained predictive control, nonlinear
+systems, networked control systems, control under
+constraints and control reconfiguration for fault
+tolerant systems, and resilient control for cyber-physical systems. From
+November 2019 to December 2019, he was a Visiting Professor with the CIISE
+Department, Concordia University (CA). He currently serves as an Associate
+Editor for the IEEE/CAA J OURNAL OF AUTOMATICA S INICA. He was the
+Guest Editor of the Special Issue “Resilient Control in Large-Scale Networked
+Cyber-Physical Systems” of IEEE/CAA J OURNAL OF AUTOMATICA S INICA
+in 2020. From 2018 to 2022, he was the Graduate Program Director of
+the master’s degree in robotics and automation engineering with the DIMES
+Department, University of Calabria.
+
+Francesco Pupo (Member, IEEE) received the
+master’s degree (cum laude) in computer engineering
+and the Ph.D. degree in systems and computer
+engineering. He is currently an Associate Professor
+in computer engineering with the Department of
+Informatics, Modeling, Electronics, and Systems,
+University of Calabria (UNICAL), Italy. He teaches
+real time and distributed programming for the
+MD in robotics and automation engineering, and
+mobile devices for the MD in telecommunication
+engineering. His research interests include real-time
+systems, formal modeling and simulation, petri nets, intelligent agents,
+machine learning, the Internet of Things, and cyber-physical systems. He has
+authored several papers and regularly serves as a referee for journals and
+conferences proceedings.
+
+Giancarlo Fortino (Fellow, IEEE) received the
+Ph.D. degree in systems and computer engineering
+from the University of Calabria (UNICAL), Italy,
+in 2000. He is currently a Full Professor in computer
+engineering with the Department of Informatics,
+Modeling, Electronics, and Systems, UNICAL.
+His research interests include wearable computing
+systems, the Internet of Things, and cyber-security.
+He was a Highly Cited Researcher 2002–2021 in
+computer science. He is the author of more than
+550 papers in international journals, conferences,
+and books. He is the (Founding) Series Editor of the IEEE Press Book Series
+on Human-Machine Systems and the Internet of Things series (Springer), and
+an Associate Editor of premier IEEE T RANSACTIONS. He is the Co-Founder
+and the CEO of SenSysCal S.r.l., a Unical spinoff focused on innovative IoT
+systems. He is also a member of the IEEE SMCS BoG and the Chair of the
+IEEE SMCS Italian Chapter.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:53:02 UTC from IEEE Xplore. Restrictions apply.
+
+

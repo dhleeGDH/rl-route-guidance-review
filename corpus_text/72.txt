@@ -1,0 +1,663 @@
+2024 4th International Conference on Artificial Intelligence, Virtual Reality and Visualization
+
+2024 4th International Conference on Artificial Intelligence, Virtual Reality and Visualization (AIVRV) | 979-8-3315-2874-4/24/$31.00 ©2024 IEEE | DOI: 10.1109/AIVRV63595.2024.10859634
+
+Safety-aware Path Planning for Post-disaster Rescue
+Vehicles
+Jingjing Liu, Zhen Zhang, Yibo Guo*, Tao Niu and Xiaoxiao Zhao
+Zhengzhou University, Zhengzhou, China
+*
+Corresponding author: ieybguo@zzu.edu.cn
+
+To address the above challenges, this thesis proposes a
+global path planning algorithm based on deep reinforcement
+learning. On the basis of the DQN-based global path planning
+algorithm, a path situation awareness module is added, and a
+Transformer-based prediction algorithm is proposed to perceive
+changes in road conditions and adjust the global path of
+emergency rescue vehicles in real time to avoid congested paths
+and risky paths, improve vehicle rescue efficiency, and ensure
+driving safety.
+
+Abstract. Emergency rescue vehicles play a vital role in dealing
+with traffic accidents and emergencies. Emergency rescue vehicles
+can reduce accident losses by arriving at the accident site in time.
+Reasonable planning of emergency vehicle routes can shorten the
+travel time of the route and improve the safety of the route.
+However, due to the dynamic and changeable actual road network
+environment and various uncertainties, congestion or accidents
+may occur at any time, resulting in low rescue efficiency and high
+risk of rescue routes. In response to the above problems, this thesis
+proposes a global path planning algorithm based on deep
+reinforcement learning. In response to complex and changeable
+road conditions, this thesis adds a path situation awareness
+module to the global path planning algorithm based on DQN, and
+proposes a Transformer-based prediction algorithm to perceive
+road condition changes, adjust the global path in real time, avoid
+congested paths and risky paths, improve the rescue efficiency of
+emergency rescue vehicles, and ensure driving safety. According
+to different evaluation indicators, this thesis conducts simulation
+experiments on the global path planning algorithm based on deep
+reinforcement learning. The experimental results show that the
+route travel time planned by the proposed algorithm is lower than
+that of the benchmark algorithm, the safety is higher than that of
+the benchmark algorithm, and the success rate of pathfinding has
+improved by 14% compared to the baseline algorithms.
+Keywords-Path planning;
+Emergency rescue vehicle
+
+Deep
+
+reinforcement
+
+Our main contributions are as follows:
+1. A Transformer-based prediction algorithm is proposed to
+perceive changes in road conditions in urban road networks and
+predict the probability of congestion or risk on the path.
+2. A global path planning algorithm framework based on
+deep reinforcement learning is proposed to adjust the global
+path of emergency rescue vehicles in real time, improve vehicle
+rescue efficiency, and ensure driving safety.
+3.The path travel time planned by the algorithm proposed in
+this thesis is lower than that of the benchmark algorithm, the
+safety is higher than that of the benchmark algorithm.
+II. RELATED WORK
+In this section, path planning methods based on deep
+reinforcement learning are introduced. In vehicle routing
+planning, deep reinforcement learning methods can
+continuously optimize route selection strategies through
+interactive learning with the environment. This approach not
+only handles static obstacles and fixed routes but also adapts to
+dynamic changes such as traffic flow, weather conditions, and
+unexpected events. Such problems are well-suited for deep
+reinforcement learning, and deep reinforcement learning-based
+routing methods are gradually becoming a research hotspot.
+Their unique self-learning and adaptive capabilities provide
+new ideas for solving complex routing problems.
+
+learning;
+
+I. INTRODUCTION
+In urban road networks, traffic accidents occur suddenly.
+Traffic accidents not only easily cause traffic congestion, but in
+more serious cases may also cause casualties [1]. After an
+accident occurs, the key to reducing accident losses is that
+emergency rescue vehicles such as police cars, fire trucks, and
+tow trucks arrive at the accident site in a timely manner to carry
+out rescue work. Emergency rescue vehicle path planning is the
+most critical part of emergency rescue work. Rescue vehicles
+need to plan the safest and shortest path in a dynamic road
+network environment. During emergency rescue, rapid
+response rescue is very important. The best rescue path can
+improve rescue efficiency, protect the lives of the people, and
+reduce property losses [2].
+
+Jin [3] et al. proposed a deep reinforcement learning
+algorithm assisted by A∗ to address traffic congestion. This
+algorithm transforms the global path planning problem for
+vehicles into a Markov decision problem, achieving path
+optimization in complex environments by maximizing total
+rewards. Experiments show that this algorithm converges faster
+and can more effectively handle dynamic and complex
+environments. Chen [4] et al. introduce the transformer
+architecture into neural networks and propose a new imitation
+reinforcement learning framework to address the training
+difficulties of policy neural networks after incorporating the
+transformer structure. This approach aims to improve the
+success rate of path planning. Wen [5] et al. proposed a
+
+The actual road network environment is dynamic and
+changeable, and there are various uncertainties. For example,
+during peak hours, the traffic volume is large, and the urban
+road network is prone to long-term congestion, which reduces
+the rescue efficiency of rescue vehicles. In sharp turns or
+relatively narrow roads, vehicles are prone to accidents when
+driving on these roads, which is risky and unsafe. In these cases,
+it is difficult to ensure that the rescue vehicles arrive safely at
+the accident site before the rescue time limit.
+
+979-8-3315-2874-4/24/$31.00 ©2024 IEEE
+
+1
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:06:45 UTC from IEEE Xplore. Restrictions apply.
+
+co-evolutionary optimization algorithm to solve the problem of
+low efficiency of emergency rescue. The algorithm reduces the
+vehicle driving time and improves the stability of the vehicle
+during driving. Cao [6] et al. proposed an attention-based deep
+reinforcement learning method to solve the vehicle path
+problem, and adjust the path in real time according to changes
+in the surrounding environment. Astrid [7] et al. proposed a
+reinforcement learning method based on model prediction to
+plan paths and ensure that the intelligent agent can navigate to
+the target location safely and without collision in different
+environments.
+
+The constraints are:
+
+(
+
+−
+∩
+
+≤
+
+) +(
+
+=∅
+
+−
+
+∩
+
+) ≥
+
+=∅
+
+(2)
+
+(3)
+
+(4)
+
+Among them, objective function 1 represents minimizing
+the driving time of emergency rescue vehicles; formula 2
+indicates that the operating driving time of emergency rescue
+vehicles must be before the specified deadline; formula 3
+indicates that a certain safety distance should be maintained
+between emergency rescue vehicles and static obstacles in the
+environment
+; formula 4 indicates that emergency rescue
+vehicles should avoid paths that may be risky and congested
+during driving.
+
+This paper proposes a global path planning algorithm based
+on deep reinforcement learning, incorporating a path situation
+awareness module within the DQN algorithm framework. A
+prediction algorithm based on Transformer is introduced to
+perceive future road conditions in real-time and dynamically
+adjust the global path. This approach not only improves the
+efficiency of vehicle rescue operations but also ensures the
+safety of vehicles during their journey.
+III.
+
+(1)
+
+DEFINITION AND PROBLEM STATEMENT
+
+IV.
+PATH S ITUATION AWARENESS
+Due to the complex urban road network environment, road
+conditions may change at any time. A previously unobstructed
+path may become congested when a vehicle arrives, or risks and
+emergencies may occur, causing emergency rescue vehicles to
+have safety accidents during rescue missions. Therefore, this
+section designs a Transformer-based prediction algorithm,
+which predicts whether a path is congested or at risk based on
+the environmental and resource characteristics of the path, and
+adds nodes in congested or risky states to the congested node
+set and risk node
+set
+, updates the road network node
+status in real time, and adjusts the global path in real time.
+
+This section defines and describes the problem of
+emergency rescue vehicle path planning in the urban road
+network environment.
+Definition 1: Urban road network graph. The urban road
+network graph in this thesis is a weighted directed graph
+abstracted from the real road network =< , , >of the
+city. is a set of nodes. In this thesis, the urban roads are
+regarded
+as vertices
+( = 1,2, … , ) . Each node
+represents a path, which represents the number of paths in the
+road network. Each node has its own path feature attribute
+= ( , , )is represented by a triple
+information, which
+of environmental features, operation features and resource
+features.
+= { , = → } is a directed edge set.
+∈
+represents the path length of the node . According to
+whether the road network node is in a congested state or a risky
+state, the nodes are divided into a safe passing node set
+,a
+congested node set
+, and a risk node set
+, that is =
+{ , , }.
+
+The specific process of the Transformer-based prediction
+the
+algorithm proposed in this chapter is as follows: First,
+two types of features, environmental features
+× 8 and
+resource features, are merged through concat as the input of the
+multi-head self-attention layer in the Transformer [8] module.
+the
+After passing through the encoder and decoder,
+dimension feature matrix is extracted
+, and the feature
+matrix
+is mapped to a × 2dimension vector through a
+fully connected neural network with a convolution kernel of.
+This vector represents the probability of the node being in a
+congested state 2 × 8 and the probability of a risky state in the
+future . Nodes whose congestion probability
+and risk
+probability are greater than a certain threshold are added to
+the congested node set
+and the risk node set
+. The
+Transformer-based prediction model framework is shown in
+Figure 1 below.
+
+According to the above definition, the path planning
+problem of emergency rescue vehicles in the urban road
+network environment is modeled as follows: When the
+emergency rescue vehicle performs the rescue mission, there
+are safe passing nodes
+, congested nodes , and risk nodes
+in the urban road network G. Given the accident point ,
+under the premise of satisfying the time constraint T, space
+constraint K and safety constraint C, a risk-free,
+congestion-free, and collision-free optimal path
+= <
+, , . . . , , > is planned , keeping a certain safety distance
+from obstacles , avoiding congested paths and risky paths
+, and arriving at the accident point before the deadline to
+carry out rescue work .To avoid congested paths and risky
+paths while meeting safety constraints, minimize vehicle travel
+time, improve vehicle operating efficiency, and ensure vehicle
+safety during driving. The mathematical model is expressed as
+follows:
+
+V. GLOBAL PATH P LANNING METHOD BASED ON D EEP
+REINFORCEMENT LEARNING
+This section designs a global path planning algorithm based
+on deep reinforcement learning, which dynamically perceives
+urban road information and predicts whether the path will be
+congested or at risk. That is, it can judge future road condition
+changes based on the current time and historical data
+information, predict whether each path will be congested in the
+future, adjust the path of emergency rescue vehicles in real time,
+
+2
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:06:45 UTC from IEEE Xplore. Restrictions apply.
+
+path nodes that may be at risk and congested are added to the
+risk node set
+and the congestion node set . The status of
+all nodes in the road network is updated, and the DQN network
+selects actions according to the state characteristics and
+adjusts the global path of the emergency rescue vehicle in real
+time. After executing the action, the agent obtains the reward
+value and current state characteristics of the environment
+feedback ′ , which are ( , , , ′ )stored in the experience pool.
+The backbone network and target network of DQN respectively
+obtain a batch of data from the experience pool for calculating
+the loss function, and update the backbone network according
+to the gradient of the error function. At regular intervals, the
+network parameters of the backbone network are copied to the
+target network.
+
+minimize vehicle driving time, and improve the operating
+efficiency of emergency rescue vehicles; at the same time, it
+predicts paths may be at risk, and the vehicle tries to avoid paths
+that may cause safety accidents during driving to ensure vehicle
+driving safety.
+The framework diagram of the global path planning
+algorithm model based on deep reinforcement learning
+constructed in this thesis is shown in Figure 1. First,
+environmental features
+and resource features are extracted
+from the urban
+road network graph G, and the extracted
+features are input into the path situation awareness module. The
+probability of risk and congestion states on the path is predicted
+through the Transformer-based prediction algorithm, and the
+
+Figure 1.
+
+Global path planning algorithm framework based on deep reinforcement learning
+
+learns effective strategies during training, exploration is
+gradually reduced to 0.1 over subsequent training phases.
+
+VI.
+EXPERIMENTAL ANALYSIS
+In order to compare and analyze the planning effect of the
+global path planning algorithm in this thesis, the greedy
+algorithm, DQN algorithm and PDQN proposed in this thesis
+are selected for comparison.
+
+B.
+
+Evaluation indicators
+In the context of vehicle global path planning, four metrics
+are selected to evaluate the effectiveness of algorithms: vehicle
+pathfinding success rate, safety, travel time, and reward
+function.
+
+A.
+
+Experimental parameter settings
+In this section, a two-dimensional grid map is constructed
+using Python to represent the overall environment of the city
+road network. The appropriateness of parameter settings
+significantly affects the learning efficiency and update
+performance
+of
+algorithms.
+Consistent
+parameter
+configurations are employed across different algorithm
+experiments in this study. The simulations are implemented
+using Python 3.7, with algorithms realized using libraries such
+as PyTorch, and experimental results plotted using the
+Matplotlib library. During experiments, the experience replay
+buffer is set with a maximum capacity of C=20000, and each
+minibatch consists of 128 samples. The total number of training
+iterations is 15000. Since the objective is to maximize total
+rewards, a discount factor γ=0.99 is chosen to be as small as
+possible. To ensure sufficient exploration in the initial stages of
+training, ε-greedy exploration starts at ε=0.9. As the agent
+
+(1) Vehicle route finding success rate. If the emergency
+rescue vehicle does not collide with obstacles in the
+environment from the starting point to the end point and
+completes the route finding within the specified time, it means
+that the planning result is successful. The success rate is the
+proportion of the number of successful route finding of
+emergency rescue vehicles in the total number. The higher the
+success rate, the better the planning result.
+The actual time used by
+perform the operation is
+time of the vehicle routing.
+
+≤
+
+(5)
+
+the emergency rescue vehicle to
+the specified latest completion
+
+(2) Safety levels [9]. The sum of the deviations between any
+trajectory segment and the nearest obstacle area. The smaller
+
+3
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:06:45 UTC from IEEE Xplore. Restrictions apply.
+
+the value, the better the safety. The calculation formula is as
+follows:
+
+=
+
+0,
+
+=
+,
+
+>
+
+≤
+
+different scenarios, computing path safety levels. One hundred
+sets of data are randomly sampled after convergence to
+calculate the average path length and the average travel time of
+vehicles from the starting point to the destination. Specific
+experimental results are shown in Table 1 below.
+
+(6)
+
+Table 1 Evaluation indicators data of different algorithms in different
+scenarios
+
+(7)
+
+Among them,
+represents the deviation degree of the i-th
+trajectory segment from the nearest obstacle area;
+denotes
+the minimum distance between the i-th trajectory segment and
+the nearest obstacle area;
+is the safety threshold between the
+vehicle and the obstacle area.
+
+Evaluation
+indicators
+
+Scenario 1
+
+Scenario 2
+
+Scenario 3
+
+Security
+Path Lengths(m)
+success rate
+Driving Time(s)
+
+32.2
+20.6
+71%
+37
+
+11.4
+13.9
+78%
+34
+
+0
+11
+84%
+27
+
+Greedy
+Algorithm
+
+Security
+Path Lengths(m)
+success rate
+Driving Time(s)
+
+57.9
+47.6
+50%
+56
+
+20.7
+17.6
+51%
+45
+
+0
+13.4
+65%
+39
+
+PDQN
+
+Security
+Path Lengths(m)
+success rate
+Driving Time(s)
+
+4.5
+24.8
+85%
+32
+
+2.8
+15.2
+87%
+24
+
+0
+10.9
+91%
+20
+
+DQN
+
+(3) Vehicle driving time. Driving time is the total time taken
+by the emergency rescue vehicle to travel from the departure
+area to the target area. The shorter the time, the higher the
+operating efficiency of the emergency rescue vehicle.
+(4) The reward function R. R is the total sum of rewards
+provided by the environment. This metric indicates the total
+rewards obtained by the agent during a training round. Faster
+convergence of the reward function signifies stronger learning
+capabilities of the algorithm.
+
+(1) Algorithm convergence analysis
+A comparative experiment was conducted between the
+proposed method and the DQN algorithm. After 15,000 training
+iterations, the average value was taken every 30 iterations. The
+changes in reward values with the number of iterations in
+different scenarios are shown in Figure 2 below.
+
+C. Experimental results analysis
+The paper calculates the success rates of different
+algorithms in various scenarios. It conducts quantitative safety
+analysis of the planning results of these three algorithms in
+
+Figure 2 Comparison of rewards between PDQN and baseline algorithms in different scenarios
+
+(2) Vehicle route finding success rate
+
+In Scenario 1, the proposed algorithm begins to converge at
+6000 episodes, while the DQN algorithm starts to converge at
+9000 episodes. In Scenario 2, the proposed algorithm begins to
+converge after 5400 episodes of training, whereas the DQN
+algorithm starts to slowly converge after 9000 episodes of
+training, with minor fluctuations in the later stages. In Scenario
+3, the convergence speeds of both the proposed algorithm and
+the DQN algorithm are similar, with both beginning to
+converge at around 6000 episodes, and experiencing slight
+fluctuations after convergence. In different environments, the
+convergence speed of the proposed algorithm is generally faster
+than that of the DQN algorithm. Additionally, the proposed
+algorithm is more stable after convergence and achieves higher
+reward values compared to the DQN algorithm. Therefore, the
+proposed algorithm is suitable for vehicle global path planning
+problems in various complex environments.
+
+In Scenario 1, the success rate of the DQN algorithm is 71%,
+the success rate of the greedy algorithm is only 50%, and the
+success rate of the proposed algorithm is 85%, which is 14%
+higher than that of the DQN algorithm and 35% higher than that
+of the greedy algorithm. In Scenario 2, the success rate of the
+DQN algorithm is 78%, the success rate of the greedy algorithm
+is 51%, and the success rate of the proposed algorithm is 87%,
+which is 9% higher than that of the DQN algorithm and 36%
+higher than that of the greedy algorithm. In Scenario 3, the
+success rate of the DQN algorithm is 84%, the success rate of
+the greedy algorithm is 65%, and the success rate of the
+proposed algorithm is 91%, which is 7% higher than that of the
+DQN algorithm and 26% higher than that of the greedy
+algorithm. In different scenarios, the success rate of the
+proposed algorithm is higher than that of the baseline
+
+4
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:06:45 UTC from IEEE Xplore. Restrictions apply.
+
+algorithms, demonstrating better
+performance.
+
+global path planning
+
+REFERENCES
+[1]
+
+Ozbay K, Iyigun C, Baykal-Gursoy M, et al. Probabilistic programming
+models for traffic incident management operations planning[J]. Annals of
+Operations Research, 2013, 203: 389-406.
+[2] Lv M, Zheng J, Tong Q, et al. Modeling and simulation of scheduling
+medical materials using graph model for complex rescue[J]. Journal of
+Information Processing Systems, 2017, 13(5): 1243-1258.
+[3] Jin C, Wu Y, Li C. Vehicle-Road Collaborative Path Planning Based on
+A∗ -assisted Deep Reinforcement Learning[C]. 2022 IEEE 25th
+International Conference on Intelligent Transportation Systems (ITSC).
+IEEE, 2022: 3010-3015.
+[4] Chen L, Wang Y, Miao Z, et al. Transformer-based imitative
+reinforcement learning for multi-robot path planning[J]. IEEE
+Transactions on Industrial Informatics, 2023.
+[5] Wen H, Lin Y, Wu J B. Co-evolutionary optimization algorithm based on
+the future traffic environment for emergency rescue path planning[J]. Ieee
+Access, 2020, 8: 148125-148135.
+[6] Cao Y, Hou T, Wang Y, et al. Ariadne: A reinforcement learning approach
+using attention-based deep networks for exploration[C]. International
+Conference on Robotics and Automation (ICRA). IEEE, 2023:
+10219-10225.
+[7] Vanneste A, Vanneste S, Vasseur O, et al. Safety aware autonomous path
+planning using model predictive reinforcement learning for inland
+waterways[C]. Annual Conference of the IEEE Industrial Electronics
+Society. IEEE, 2022: 1-6.
+[8] Vaswani A, Shazeer N, Parmar N, et al. Attention is all you need[J].
+Advances in neural information processing systems, 2017, 30.
+[9] Wang X, Zhang G, Zhao J, et al. A modified membrane-inspired
+algorithm based on particle swarm optimization for mobile robot path
+planning[J]. 2015.
+[10] Nickelson A, Tumer K, Smart W D. Contextual Multi-Objective Path
+Planning[C]. International Conference on Robotics and Automation
+(ICRA). IEEE, 2023: 10240-10246.
+
+(3) Safety Analysis
+As shown in Table 1, in Scenarios 1 and 2, the safety of the
+proposed algorithm is higher than that of the DQN algorithm
+and the greedy algorithm. In Scenario 3, since there are no
+obstacles, the safety score is 0, indicating that the path planned
+by the proposed algorithm has the highest safety, while the path
+planned by the greedy algorithm has the lowest safety. As
+shown in Table 1, in Scenario 3, the path lengths planned by the
+proposed algorithm and the DQN algorithm are similar. In
+Scenarios 1 and 2, the path lengths planned by the DQN
+algorithm are shorter than those planned by the proposed
+algorithm. However, the paths planned by the proposed
+algorithm in these two scenarios are safer than those planned by
+the DQN algorithm. This is because the proposed algorithm
+considers potential risks when planning paths, avoiding routes
+that may pose risks, and trading off some path length to ensure
+safe travel from the start point to the end point.
+(4) Driving time
+As shown in Table 1, the path lengths planned using the
+proposed method are slightly longer than those planned by the
+DQN algorithm. However, the travel times of the paths planned
+by the proposed method are shorter than those planned by the
+DQN algorithm and the greedy algorithm, with the greedy
+algorithm resulting in the longest travel times. This is because
+the proposed method considers future changes in road
+conditions and adjusts the global path in real-time to avoid
+congested areas.
+Through the above four evaluation indicators, the proposed
+method is compared with the DQN algorithm and the greedy
+algorithm in different scenarios. The proposed algorithm
+predicts the paths that may appear in risky and congested states
+in the future road network, and the vehicle avoids these areas
+during driving, ensuring the driving safety of the vehicle,
+minimizing the driving time of the vehicle, and improving the
+vehicle operation efficiency.
+VII. SUMMARY AND OUTLOOK
+This thesis models the path planning problem of emergency
+rescue vehicles in urban road network environments , proposes
+a global path planning algorithm based on deep reinforcement
+learning , adds a path situation awareness module to the global
+path planning algorithm based on DQN , and proposes a
+Transformer-based prediction algorithm to perceive road
+condition changes, adjust the global path in real time, avoid
+congested paths and risky paths , improve the rescue efficiency
+of emergency rescue vehicles , and ensure driving safety .
+This thesis studies a single accident point, but in actual
+environment, there may be multiple accident points. Our next
+work will focus on the multi-objective path planning [10]
+problem, which is more practical.
+ACKNOWLEDGMENTS
+Thanks to tutors and classmates for their help.
+
+5
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:06:45 UTC from IEEE Xplore. Restrictions apply.
+
+

@@ -1,0 +1,652 @@
+Proceedings of the 3rd International Conference on Inventive Computing and Informatics (ICICI-2025)
+IEEE Xplore Part Number: CFP25L34-ART; ISBN: 979-8-3315-3830-9
+
+2025 3rd International Conference on Inventive Computing and Informatics (ICICI) | 979-8-3315-3830-9/25/$31.00 ©2025 IEEE | DOI: 10.1109/ICICI65870.2025.11069577
+
+Adaptive Reinforcement Learning Framework for
+Environmentally Sustainable Route Optimization
+1st Gurwinder Singh
+
+2nd Ranjan Walia
+
+3rd Khushbu Cheetu
+
+Department of AIT-CSE
+Chandigarh University
+Punjab, India
+singh1001maths@gmail.com
+
+Department of CSE-APEX & UCRD
+Chandigarh University
+Punjab, India
+ranjan.e14288@cumail.in
+
+Department of Computer Science & Engineering
+Chandigarh University
+Punjab, India
+khushbu.e16075@cumail.in
+
+4th Veeramanickam M.R.M
+Department of Computer Science & Engineering
+Chandigarh University
+Mohali, Punjab, India
+manic.veera@gmail.com
+Abstract—In the era of rapid urbanization and environmental challenges, achieving sustainable transportation solutions
+has become a critical focus for researchers and policymakers.
+This paper proposes an adaptive reinforcement learning framework for environmentally sustainable route optimization utilizing
+the Proximal Policy Optimization (PPO) approach. The proposed framework integrates live traffic updates, road-conditions,
+weather information and emissions metrics to dynamically adjust
+routes, minimizing travel time and environmental impact. A
+reward function is designed to prioritize emission reduction, fuel
+efficiency, and travel time, with adaptive weights that shift based
+on changing environmental priorities. Extensive evaluations are
+conducted, comparing the proposed PPO-based framework with
+existing methods such as Deep Q-Networks (DQN), Genetic
+Algorithm, A*, and Hybrid RL-Metaheuristics. The results
+demonstrate significant improvements in fuel efficiency (35.2%),
+emission reduction (40.8%), and travel time reduction (30.5%)
+compared to other methods. The framework’s adaptability and
+real-time decision-making capabilities make it highly suitable
+for large-scale, dynamic transportation networks. This study
+highlights the potential of reinforcement learning in transforming
+route optimization into a sustainable and data-driven process,
+offering a scalable solution for smart cities and future mobility
+systems.
+Index Terms—Sustainable route optimization, reinforcement
+learning, adaptive framework, Proximal Policy Optimization (PPO), environmental sustainability, traffic management,
+scheduling, fuel efficiency.
+
+I. INTRODUCTION
+Amidst accelerating urban growth and rising ecological
+concerns, the need for sustainable transport solutions has significantly become important. Traditional scheduling or routing
+techniques often prefer time and cost -effectiveness of travel
+without assessing the environmental impact or footprints.
+This work addresses the gap by suggesting an adaptive reinforcement learning framework that integrates real-time data
+to adapt the routes for environmental stability. Framework
+benefits from Proximal Policy Optimization (PPO) algorithm
+to dynamically adjust the routes based on traffic density, road
+conditions, weather and emission data in real time.
+
+Recent advancements in machine learning (ML) models
+has ensured considerable progress in transport, focusing on
+improving fuel efficiency and reducing emissions. This study
+evaluates the proposed method against other existing methods
+such as Deep Q-Networks (DQN), genetic algorithm, A* and
+hybrid RL-Matahuristics as other existing algorithms. The
+goal is to achieve a balance between travel time and reduce
+the environmental impact, and ensure adaptability in relation
+to the real world conditions. This article emphasizes how
+learning reinforcement can make the traditional route plan a
+sustainable, data-driven process, which can contribute to smart
+cities and green urbanization.
+The primary objectives are as follows:
+1) To develop an adaptive reinforcement learning platform
+based on PPO algorithm for conducting environmentally
+sustainable route optimization.
+2) To Integrate the route optimization system with real-time
+data of traffic density and road conditions with emission
+statistics.
+3) To evaluate and prove its ability in fuel efficiency
+improvement and emission reduction along with travel
+time optimisation.
+The problem of route optimization with sustainable transport is conceived as a decision-making scheduling process
+aimed at reducing the environmental impact while maintaining
+travel efficiency. The aim is to adapt the routes depending
+on traffic-flow, weather-information, road and other dynamic
+conditions. Using reinforcement learning agents explore and
+learn to maximize multiple reward values which represent
+environmental longevity and increased efficiency together with
+time reduction objectives. The framework incorporates a reward system which selects between different operational targets based on present environmental conditions. The decision
+framework gives priority to pollution reduction in time periods
+when air pollution reaches high levels yet focuses on time
+efficiency in low-traffic situations. By taking advantage of
+
+979-8-3315-3830-9/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:35:29 UTC from IEEE Xplore. Restrictions apply.
+
+828
+
+Proceedings of the 3rd International Conference on Inventive Computing and Informatics (ICICI-2025)
+IEEE Xplore Part Number: CFP25L34-ART; ISBN: 979-8-3315-3830-9
+
+PPO, the proposed framework adapt dynamically as per roadconditions and emission levels, and also ensures a balance between efficiency and stability. Unlike traditional route planning
+methods that mainly focus on travel time or cost, this study
+introduces an adaptive, intelligent decision -making system
+that optimizes the routes in response to the environmental
+variables. The findings from this study can provide valuable
+insight to urban planners and decision makers, who contribute to the development of smart, environmentally friendly
+transport systems that correspond to the wide goals of green
+urbanization and sustainable mobility.
+
+trial applications [24] and sustainable traffic management in
+cities [23]. Efforts to integrate AI-driven routing and communication protocol optimization for autonomous vehicles have
+also enhanced the reliability of vehicle communication networks [25]. These diverse studies provide a strong foundation
+for this research, which seeks to develop a novel framework
+for environmentally sustainable route planning using ML and
+reinforcement learning approaches.
+III. METHODOLOGY
+A. Data Integration and Preprocessing
+
+II. LITERATURE SURVEY
+The progressive growth of sustainable transportation system
+has witnessed significant improvements with the integration
+of machine learning models and optimization techniques by
+using different hybrid techniques. Likewise some studies have
+focused on designing green route systems as a method to decrease distribution-related environmental effects [1] along with
+developing time-based solutions for two-level vehicle routing
+problems [2]. Dynamic traffic assignment models laid a solid
+foundation for environmentally sustainable road transportation
+[3], while innovative energy supply security models addressed
+risk-based routing challenges for the Aegean Islands [4]. The
+rise of deep learning significantly improved traffic flow prediction [5], further supported by real-time traffic flow prediction
+models using ML [6]. Implementations of deep Q-networks
+(DQN) highlighted the potential of reinforcement learning in
+real-time vehicle route optimization for urban resilience [7].
+Beyond traffic optimization, ML models were applied for ecofriendly logistics in road freight with profit prediction [8]
+and in optimizing fresh fruit supply chains under resource
+constraints [9]. More recently, machine learning-based secure
+communication technologies have enhanced the Internet of
+Vehicles (IoV), ensuring robust and efficient vehicular communication [10]. ML-enabled intelligent transportation systems
+have contributed to sustainable urban mobility by improving
+traffic management and reducing environmental impact [11].
+Recent studies have expanded the scope of ML applications in transportation, focusing on stochastic multi-objective
+vehicle routing models for customer satisfaction in green
+environments [12]. Last-mile logistics optimization using ML
+has gained significant traction, especially in creating more
+efficient and sustainable parcel delivery networks [13]. Reinforcement learning has been instrumental in traffic signal
+control optimization [14], while predictive models for metro
+ridership influenced by urban zoning strategies have facilitated
+better public transit planning [17]. Adaptive large neighborhood search methods using deep reinforcement learning have
+further improved capacitated electric vehicle routing [22]. In
+addition, multi-criteria deep reinforcement learning framework
+have optimized transit signal priority for traffic safety and
+efficiency [20]. Advanced reinforcement learning and metaheuristic combinations have addressed safe and sustainable
+tourist trip design problems [21]. Other studies investigated
+machine learning frameworks for traffic management in indus-
+
+The proposed framework leverages the Indian Cities Distance Dataset [26] for route optimization, integrating static
+city-to-city distance data with simulated real-time information viz. traffic density, weather conditions, and emissions
+levels. This combination ensures dynamic and context-aware
+decision-making within the reinforcement learning framework.
+The data preprocessing involves several key steps to clean,
+transform, and integrate the static and real-time data streams
+effectively.
+•
+
+•
+
+•
+
+•
+
+•
+
+Data Collection: The Indian Cities Distance Dataset provides a foundational set of city pairings with their corresponding distances. To simulate real-world conditions,
+additional data on traffic density, weather information,
+and emissions is incorporated from sources such as simulated traffic APIs and weather services. This allows the
+model to adjust routing decisions based on dynamically
+changing conditions.
+Data Cleaning and Validation: Although the dataset provides accurate distance information, the simulated realtime data may contain missing or inconsistent values.
+Redundant and incomplete records are filtered out, and
+missing values are imputed using interpolation methods.
+Outlier detection is applied to ensure data quality.
+Data Transformation and Normalization: The static distance data and real-time variables are transformed into
+a consistent format for seamless integration. Continuous
+variables such as traffic density and emissions are normalized to a fixed range, ensuring stable training of the
+reinforcement learning agent.
+Real-Time Data Simulation and Integration: Since the
+Indian Cities Distance Dataset is static, real-time conditions such as traffic congestion and weather effects are
+simulated and updated at regular intervals. This simulated
+data is integrated into the reinforcement learning agent,
+enabling it to make dynamic decisions that adapt to
+current conditions.
+Feedback Loop and Continuous Learning: The framework
+incorporates a feedback loop where routing decisions
+are evaluated based on travel time, fuel efficiency, and
+emissions reduction. This evaluation allows the policy to
+be continuously refined using updated data, improving the
+overall performance and adaptability of the model over
+time.
+
+979-8-3315-3830-9/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:35:29 UTC from IEEE Xplore. Restrictions apply.
+
+829
+
+Proceedings of the 3rd International Conference on Inventive Computing and Informatics (ICICI-2025)
+IEEE Xplore Part Number: CFP25L34-ART; ISBN: 979-8-3315-3830-9
+
+B. Reinforcement Learning Framework Design
+The proposed framework employs Reinforcement Learning
+(RL) to optimize route planning by considering environmental
+sustainability. The following components form the basis of the
+RL framework:
+1) State Space (S): The state space represents all possible
+conditions affecting the routing decisions. It is modeled as a
+multidimensional vector:
+(1)
+
+St = [vt, ρt, rt, wt, et]
+
+where:
+• vt: Vehicle type (categorical variable for electric, hybrid,
+combustion engine)
+• ρt: Traffic density (vehicles/km)
+• rt: Road conditions (discrete rating from 1 to 5)
+• wt: Weather conditions (categorical for clear, rain, fog,
+etc.)
+• et: Real-time emissions data (CO2, NOx, PM2.5 in
+µg/m3)
+2) Action Space (A): The action space consists of decisions
+that can be made at each state. The possible actions are:
+• Selecting
+between alternative routes A
+=
+{a1, a2, . . . , an}
+• Adjusting speed (as ∈ [vmin, vmax])
+• Dynamic rerouting based on changing conditions
+3) Reward Function (R): The reward function incentivizes
+actions that reduce environmental impact while maintaining
+efficiency. It is defined as:
+(2)
+
+Rt = α · ∆Et + β · Ft − γ · Tt
+
+where:
+• ∆Et: Reduction in emissions compared to the baseline
+route (measured in CO2 equivalents)
+• Ft: Fuel efficiency gain (measured in liters saved per
+kilometer)
+• Tt: Travel time penalty (in minutes)
+The weights α, β, and γ dynamically adjust based on the
+context:
+• α > β > γ during high pollution hours to prioritize
+emissions reduction
+• γ > α, β during traffic congestion to prioritize faster
+travel
+4) Dynamic Weight Adaptation: The weights α, β, and γ
+are updated using a time-dependent adjustment rule:
+αt = α0 · e−λt,
+
+βt = β0 + κt,
+
+γt = γ0 + µ sin(ωt) (3)
+
+C. Algorithm Selection
+Given the high-dimensional state space, two algorithms are
+considered:
+1) Deep Q-Networks (DQN): Employs a neural network
+to estimate the Q-value function Q(s, a) and refines it
+through the Bellman equation:
+Q(st, at) = rt + γ max Q(st+1, a′)
+a′
+
+(4)
+
+where γ is the discount factor.
+2) Proximal Policy Optimization (PPO): A policygradient method that minimizes the following clipped
+objective for stable learning:
+LPPO(θ) = Et [min (rt(θ)At, clip(rt(θ), 1 − ϵ, 1 + ϵ)At)]
+t
+(5)
+where rt(θ) represents the likelihood ratio of updated
+versus previous policies, while At denotes the advantage
+function.
+Algorithm 1 Proximal Policy Optimization (PPO) Workflow
+for Environmentally Sustainable Route Optimization
+1: Initialization: Policy parameters θ, establish the value
+function V , and empty memory buffer
+2: for each episode do
+3:
+Set the initial state S0 based on live traffic conditions
+and environmental factors
+4:
+while episode not terminated do
+5:
+Select action At as per policy πθ(St)
+6:
+Perform action At, record reward Rt and transition
+to the next state St+1
+7:
+Save transition tuple (St, At, Rt, St+1) in memory
+buffer
+8:
+end while
+9:
+Compute advantage estimates At for all transitions in
+the memory buffer
+10:
+for Iterate through each step do
+11:
+Update policy parameters θ using the PPO objective:
+12:
+LPPO
+t (θ) = Et [min (rt(θ)At, clip(rt(θ), 1 − ϵ, 1 + ϵ)At)]
+13:
+14:
+15:
+16:
+
+Update value function Vθ(St) using mean squared
+h
+i
+error loss:
+2
+LValue(θ) = 1 Et (Vθ(St) − Rt)
+2
+
+end for
+end for
+
+1) Pseudo-code for PPO-Based Reinforcement Learning
+Framework:
+D. Environmental Impact Integration
+1) Emission Models: The emission models are based on the
+calculation of Emissions from Road Transport methodology.
+For each vehicle type, the emissions Et are calculated as:
+Et = f (V, S, Fuel Type, Driving Conditions)
+
+(6)
+
+where f is a nonlinear function that accounts for speed, vehicle
+type, and road conditions.
+IV. RESULTS AND DISCUSSION
+In Figure 1, the basic graph representation of cities is shown,
+where each node represents a city, and edges represent the
+possible travel routes between them. This graph provides the
+foundational structure for the proposed routing framework. By
+mapping these connections, the framework begins its process
+
+979-8-3315-3830-9/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:35:29 UTC from IEEE Xplore. Restrictions apply.
+
+830
+
+Proceedings of the 3rd International Conference on Inventive Computing and Informatics (ICICI-2025)
+IEEE Xplore Part Number: CFP25L34-ART; ISBN: 979-8-3315-3830-9
+
+of analyzing traffic flow and identifying key intersections that
+influence route planning decisions. This visualization serves
+as a starting point for applying centrality-based analysis and
+community detection algorithms, which play a critical role in
+subsequent stages of optimization.
+
+Fig. 3. Community Detection in the Transportation Network for Regional
+Route Optimization.
+
+Fig. 1. Graph Representation of Cities and Route Connections in the
+Transportation Network.
+
+community are grouped together and marked with distinct
+colors. These communities represent clusters of cities with
+stronger internal connections. Using community detection algorithms, the proposed framework targets localized optimization within these clusters, enabling regional improvements in
+travel efficiency and environmental sustainability. This step
+helps in designing region-specific strategies for fuel reduction
+and emissions control.
+
+Fig. 2. Centrality Analysis: Identification of Critical Nodes Using Betweenness and Closeness Centrality
+
+Figure 2 highlights centrality measures such as betweenness,
+closeness, and eigenvector centrality, which are computed to
+identify influential nodes in the transportation network. Nodes
+with higher betweenness centrality, for instance, represent critical hubs that control traffic flow across multiple routes. The
+insights derived from these metrics help prioritize which routes
+should be optimized for reducing congestion and improving
+overall travel time, aligning with the methodology’s focus on
+traffic flow efficiency and sustainability.
+Figure 3 presents a community-based visualization of the
+transportation network, where nodes belonging to the same
+
+Fig. 4. Road Condition Analysis: Visualization of Poor Road Conditions and
+Recommended Alternative Routes
+
+In Figure 4, the focus shifts to road condition analysis. Areas
+with poor road conditions are marked in red, while alternative,
+safer routes are suggested in green. This visualization is
+derived from real-time data integration, as described in the
+methodology, where IoT sensors and crowd-sourced data are
+fused to detect road hazards and inform the route adjustment
+process. These insights empower decision-makers to avoid
+
+979-8-3315-3830-9/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:35:29 UTC from IEEE Xplore. Restrictions apply.
+
+831
+
+Proceedings of the 3rd International Conference on Inventive Computing and Informatics (ICICI-2025)
+IEEE Xplore Part Number: CFP25L34-ART; ISBN: 979-8-3315-3830-9
+
+and better sustainability outcomes, albeit with a slightly higher
+execution time than A*. Notably, the Deep Q-Network (DQN)
+algorithm, although close in accuracy at 85.4%, shows less improvement in fuel efficiency and emission reduction compared
+to the proposed method. The Hybrid Reinforcement Learningmetaheuristic algorithm also works well in many calculations,
+but its long performance time (1.85s) makes it less suitable for
+real -time applications. This insight reveals the adaptability of
+the PPO structure and the ability to make real -time decisions,
+which is important for dynamic and large transport networks.
+Overall, the proposed framework provides a balanced solution, which effectively addresses trades between performance,
+environmental impact and calculation efficiency.
+V. CONCLUSION AND FUTURE SCOPE
+
+Fig. 5. Dynamic Route Adjustment Based on Real-Time Traffic and Environmental Data
+
+high-risk areas, improving safety and travel quality.
+Finally, Figure 5 presents a comprehensive view of recommended routes after integrating data from traffic density, weather conditions, and emissions analysis. This figure
+demonstrates how the proposed Proximal Policy Optimization
+(PPO)-based reinforcement learning framework dynamically
+adjusts routes to balance multiple objectives—minimizing
+emissions, improving fuel efficiency, and reducing travel time.
+The adaptive approach ensures that the framework can respond
+to real-time conditions and continuously learn from new data
+to improve future recommendations.
+TABLE I
+EVALUATION METRICS COMPARISON OF PROPOSED PPO-BASED
+FRAMEWORK WITH EXISTING ALGORITHMS
+Algorithm
+
+Accuracy (%)
+
+Fuel Efficiency
+(%)
+
+Travel Time Reduction (%)
+
+Execution
+Time (s)
+
+35.2
+
+Emission
+Reduction
+(%)
+40.8
+
+Proposed PPO
+Framework
+DQN [7]
+A* Algorithm [3]
+Genetic
+Algorithm [2]
+Hybrid
+RLMetaheuristic
+[21]
+
+92.5
+85.4
+78.2
+80.6
+
+30.5
+
+1.25
+
+25.3
+20.0
+24.8
+
+30.5
+22.5
+25.3
+
+20.1
+18.2
+22.0
+
+1.45
+0.95
+2.35
+
+88.1
+
+30.5
+
+35.1
+
+28.7
+
+1.85
+
+The results presented in Table I demonstrate a comprehensive comparison between the proposed Proximal Policy
+Optimization (PPO)-based framework and several existing
+algorithms commonly used in route optimization and sustainable transportation. The proposed framework significantly
+outperforms other algorithms across most evaluation metrics,
+particularly in fuel efficiency improvement (35.2%), emission
+reduction (40.8%), and travel time reduction (30.5%). These
+results validate the effectiveness of the PPO-based approach
+in optimizing routes while prioritizing environmental sustainability and operational efficiency.
+Compared to traditional algorithms such as A and Genetic
+Algorithm*, the proposed framework offers higher accuracy
+
+This study introduces a dynamic reinforcement learning
+approach for optimizing environmentally sustainable routes
+using the Proximal Policy Optimization (PPO) approach. By
+integrating the live traffic analytics, road-conditions, weather
+information, the proposed framework adjusts the routes to reduce travel-duration while reducing the environmental impact.
+The results show that PPO-based frameworks outperforms
+the traditional methods such as Deep Q-networks (DQN),
+genetic algorithms, A* and hybrid RL in terms of metrics
+such as fuel efficiency, emission reduction and travel time
+optimization. These improvements validate the efficiency of
+the proposed framework of balanced operating efficiency with
+environmental stability. The insight gained from this study
+contributes to the growing field with smart transport systems,
+and provides a scalable and adaptable approach to making
+real-time decisions in urban dynamic networks.
+The proposed framework opens several ways for future
+research in modelling the long-term traffic and pollution
+patterns for the active decision-making ability. In addition,
+the extension of the framework to include routing of electric
+vehicles (EV) with battery optimization and the availability
+of charging stations will make it very relevant to the growing
+EV ecosystem. Finally, the distribution of structures in the real
+urban environment and performing mass experiments will help
+to validate its practical efficiency and scalability.
+REFERENCES
+[1] M. S. Gajanand and T. T. Narendran,” Green route planning to reduce the
+environmental impact of distribution,” International Journal of Logistics
+Research and Applications, vol. 16, no. 5, pp. 410–432, 2013.
+[2] M. Soysal, J. M. Bloemhof-Ruwaard, and T. Bektas¸,” The timedependent two-echelon capacitated vehicle routing problem with environmental considerations,” International Journal of Production Economics, vol. 164, pp. 366–378, 2015.
+[3] Y. Wang, W. Y. Szeto, K. Han, and T. L. Friesz,” Dynamic traffic assignment: A review of the methodological advances for environmentally
+sustainable road transportation applications,” Transportation Research
+Part B: Methodological, vol. 111, pp. 370–394, 2018.
+[4] C. Iliopoulou, K. Kepaptsoglou, and O. Schinas,” Energy supply security
+for the Aegean islands: A routing model with risk and environmental
+considerations,” Energy Policy, vol. 113, pp. 608–620, 2018.
+[5] Guo, Qi, Rui Li, Changjiang Zheng, and Gwanggil Jeon. "Design of
+low-carbon planning model for vehicle path based on adaptive multistrategy ant colony optimization algorithm." PeerJ Computer Science 11
+(2025): e2611.
+[6] Pitakaso, Rapeepan, Kanchana Sethanan, Chen-Fu Chien, Thanatkij
+Srichok, Surajet Khonjun, Natthapong Nanthasamroeng, and Sarayut
+Gonwirat. "Integrating reinforcement learning and metaheuristics for
+safe and sustainable health tourist trip design problem." Applied Soft
+Computing 161 (2024): 111719.
+
+979-8-3315-3830-9/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:35:29 UTC from IEEE Xplore. Restrictions apply.
+
+832
+
+Proceedings of the 3rd International Conference on Inventive Computing and Informatics (ICICI-2025)
+IEEE Xplore Part Number: CFP25L34-ART; ISBN: 979-8-3315-3830-9
+
+[7] S. S. Koh, Realtime Vehicle Route Optimisation via DQN for Sustainable
+and Resilient Urban Transportation Network, Liverpool John Moores
+University, United Kingdom, 2020.
+[8] A. Budak and P. A. Sarvari,” Profit margin prediction in sustainable
+road freight transportation using machine learning,” Journal of Cleaner
+Production, vol. 314, p. 127990, 2021.
+[9] T.-D. Nguyen, T. Nguyen-Quang, U. Venkatadri, C. Diallo, and M.
+Adams, ”Mathematical programming models for fresh fruit supply
+chain optimization: a review of the literature and emerging trends,”
+AgriEngineering, vol. 3, no. 3, pp. 519–541, 2021.
+[10] E. S. Ali, M. K. Hasan, R. Hassan, R. A. Saeed, M. B. Hassan, S. Islam,
+N. S. Nafi, and S. Bevinakoppa,” Machine learning technologies for
+secure vehicular communication in internet of vehicles: recent advances
+and applications,” Security and Communication Networks, vol. 2021, no.
+1, pp. 8868355, 2021.
+[11] krishna Vaddy, Rama. "Ai and ml for transportation route
+optimization." International Transactions in Machine Learning 5, no. 5
+(2023): 1-19.
+[12] N. Elgharably, S. Easa, A. Nassef, and A. El Damatty,” Stochastic multiobjective vehicle routing model in green environment with customer
+satisfaction,” IEEE Transactions on Intelligent Transportation Systems,
+vol. 24, no. 1, pp. 1337–1355, 2022.
+[13] N. Giuffrida, J. Fajardo-Calderin, A. D. Masegosa, F. Werner, M.
+Steudter, and F. Pilla,” Optimization and machine learning applied to
+last-mile logistics: A review,” Sustainability, vol. 14, no. 9, p. 5329,
+2022.
+[14] Mane, Saniya Prasad, Gireesh Babu CN, Sai Shriyank DH, Soumyadeep
+Ghosh, and Srujana S. Mavintop. "Optimizing Travel for a Greener
+Future: AI-Driven Route Planning and Eco-Conscious Mobility."
+In 2025 International Conference on Computing for Sustainability and
+Intelligent Future (COMP-SIF), pp. 1-6. IEEE, 2025.
+[15] R. V. Krishna,” AI and ML for transportation route optimization,”
+International Transactions in Machine Learning, vol. 5, no. 5, pp. 1–19,
+2023.
+[16] M. M. Mamoudan, A. Jafari, Z. Mohammadnazari, M. M. Nasiri, and M.
+Yazdani,” Hybrid machine learning-metaheuristic model for sustainable
+agri-food production and supply chain planning under water scarcity,”
+Resources, Environment and Sustainability, vol. 14, p. 100133, 2023.
+[17] A. H. AlKhereibi, T. G. Wakjira, M. Kucukvar, and N. C. Onat,”
+P r e d i c t i v e machine learning algorithms for metro ridership based
+on urban land use policies in support of transit-oriented development,”
+Sustainability, vol. 15, no. 2, p. 1718, 2023.
+[18] A. Ram´ırez-Villamil, J. R. Montoya-Torres, A. Jaegler, and J. M.
+Cuevas-Torres,” Reconfiguration of last-mile supply chain for parcel
+delivery using machine learning and routing optimization,” Computers
+& Industrial Engineering, vol. 184, p. 109604, 2023.
+[19] W. Yang, Y. Li, Y. Liu, P. Fan, and W. Yue,” Environmental factors
+for outdoor jogging in Beijing: Insights from using explainable spatial
+machine learning and massive trajectory data,” Landscape and Urban
+Planning, vol. 243, p. 104969, 2024.
+[20] Y. Dong, H. Huang, G. Zhang, and J. Jin,” Adaptive Transit Signal
+Priority Control for Traffic Safety and Efficiency Optimization: A MultiObjective Deep Reinforcement Learning Framework,” Mathematics, vol.
+12, no. 24, p. 3994, 2024.
+[21] R. Pitakaso, K. Sethanan, C.-F. Chien, T. Srichok, S. Khonjun, N.
+Nanthasamroeng, and S. Gonwirat,” Integrating reinforcement learning
+and metaheuristics for safe and sustainable health tourist trip design
+problem,” Applied Soft Computing, vol. 161, p. 111719, 2024.
+[22] C. Wang, M. Cao, H. Jiang, X. Xiang, and X. Zhang,” A Deep
+Reinforcement Learning-Based Adaptive Large Neighborhood Search
+for Capacitated Electric Vehicle Routing Problems,” IEEE Transactions
+on Emerging Topics in Computational Intelligence, 2024.
+[23] A. Louati,” Machine learning framework for sustainable traffic management and safety in AlKharj city,” Sustainable Futures, vol. 9, p. 100407,
+2025.
+[24] A. B. Ige, P. A. Adepoju, A. O. Akinade, and A. I. Afolabi,” Machine
+learning in industrial applications: An in-depth review and future directions,” 2025.
+[25] A. K. Y. Dafhalla, M. E. Elobaid, A. E. Tayfour, A. Filali, N. M. O.
+SidAhmed, T. A. Attia, B. A. I. Mohajir, J. S. Altamimi, and T. Adam,”
+C o m p u t e r -Aided Efficient Routing and Reliable Protocol
+Optimization for Autonomous Vehicle Communication Networks,”
+Computers, vol. 14, no. 1, p. 13, 2025.
+[26] K. B. Dharun, ”A-Star Algorithm Route Planning Dataset,”
+Kaggle,
+Available:
+https://www.kaggle.com/datasets/kbdharun/
+a-star-algorithm-route-planning-dataset/data, 2023.
+
+979-8-3315-3830-9/25/$31.00 ©2025 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:35:29 UTC from IEEE Xplore. Restrictions apply.
+
+833
+
+

@@ -1,0 +1,208 @@
+{
+ "episodes": 3000,
+ "seeds": 10,
+ "trained_on": "closed",
+ "premise": {
+  "steps": 16427,
+  "steps_carrying_sentinel": 9073,
+  "share_of_steps": 55.2,
+  "cells_presenting_sentinel": 16,
+  "cells_total": 25,
+  "share_of_cells": 64.0
+ },
+ "cells": {
+  "high_time_min": {
+   "scored_closed": [
+    100.0,
+    100.0,
+    100.0,
+    99.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+   ],
+   "scored_open": [
+    7.0,
+    22.0,
+    19.5,
+    8.5,
+    19.5,
+    14.5,
+    24.5,
+    18.0,
+    27.5,
+    9.5
+   ],
+   "closed_mean": 99.9,
+   "open_mean": 17.05,
+   "open_ci": [
+    12.95,
+    21.1
+   ]
+  },
+  "high_aligned": {
+   "scored_closed": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+   ],
+   "scored_open": [
+    51.5,
+    46.0,
+    41.5,
+    28.5,
+    45.5,
+    43.5,
+    42.5,
+    35.0,
+    34.0,
+    35.5
+   ],
+   "closed_mean": 100.0,
+   "open_mean": 40.35,
+   "open_ci": [
+    36.198750000000004,
+    44.35
+   ]
+  },
+  "matched_time_min": {
+   "scored_closed": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    95.0,
+    100.0,
+    99.5
+   ],
+   "scored_open": [
+    24.5,
+    46.5,
+    21.0,
+    14.0,
+    18.5,
+    26.0,
+    22.5,
+    18.0,
+    14.0,
+    21.5
+   ],
+   "closed_mean": 99.45,
+   "open_mean": 22.65,
+   "open_ci": [
+    18.1,
+    28.7
+   ]
+  },
+  "matched_aligned": {
+   "scored_closed": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+   ],
+   "scored_open": [
+    69.5,
+    53.5,
+    56.0,
+    64.5,
+    63.5,
+    60.5,
+    72.0,
+    47.5,
+    79.5,
+    65.5
+   ],
+   "closed_mean": 100.0,
+   "open_mean": 63.2,
+   "open_ci": [
+    57.65,
+    68.7
+   ]
+  }
+ },
+ "reproduces_published": true,
+ "paired": {
+  "high": {
+   "mean": 23.3,
+   "ci": [
+    17.798750000000002,
+    29.3
+   ],
+   "excludes_zero": true,
+   "printed_cells": [
+    17.1,
+    40.4
+   ],
+   "printed_difference": 23.3,
+   "printed_ci": [
+    17.8,
+    29.3
+   ]
+  },
+  "matched": {
+   "mean": 40.55,
+   "ci": [
+    31.0,
+    49.25
+   ],
+   "excludes_zero": true,
+   "printed_cells": [
+    22.7,
+    63.2
+   ],
+   "printed_difference": 40.5,
+   "printed_ci": [
+    31.0,
+    49.3
+   ]
+  }
+ },
+ "paired_closed": {
+  "high": {
+   "mean": 0.1,
+   "ci": [
+    0.0,
+    0.3
+   ],
+   "excludes_zero": false,
+   "printed_difference": 0.1,
+   "printed_ci": [
+    0.0,
+    0.3
+   ]
+  },
+  "matched": {
+   "mean": 0.55,
+   "ci": [
+    0.0,
+    1.55
+   ],
+   "excludes_zero": false,
+   "printed_difference": 0.6,
+   "printed_ci": [
+    0.0,
+    1.6
+   ]
+  }
+ }
+}

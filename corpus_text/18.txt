@@ -1,0 +1,888 @@
+2023 IEEE 98th Vehicular Technology Conference (VTC2023-Fall) | 979-8-3503-2928-5/23/$31.00 ©2023 IEEE | DOI: 10.1109/VTC2023-Fall60731.2023.10333741
+
+Dynamic Route Guidance System Based on Real-time Vehicle-Road
+Collaborations with Deep Reinforcement Learning
+Zhongqing Su and Congduan Li∗
+School of Electronics and Communication Engineering, Sun Yat-sen University, Shenzhen, China
+Shenzhen Key Laboratory of Navigation and Communication Integration, Shenzhen, China
+
+Abstract— To address the potential traffic congestion in
+urban transportation systems, an intelligent dynamic Route
+Guidance System (RGS) is proposed, which calculates the road
+weights with real-time traffic flow predictions using the reinforcement learning method. Additionally, a training strategy
+is proposed for the Road Agents (RAs), which optimizes RA
+through interaction with the traffic environment. The effectiveness of the proposed method is verified through simulation
+on the Urban Mobility Simulation (SUMO) platform, and it
+is shown that the proposed method performs well in complex
+and changing urban traffic environments with different driver
+participation rates. Therefore, it provides a feasible solution to
+the congestion problem and will push forward the development
+of intelligent transportation systems.
+Index Terms— Reinforcement Learning, Route Guidance,
+Traffic Congestion, Urban Transportation
+
+I. INTRODUCTION
+Urban traffic congestion is a problem that affects many
+cities around the world. While government-led strategies,
+such as Singapore’s congestion charging, can increase revenue, they may not fully meet expectations for alleviating
+congestion [1]. According to the 2021 Urban Traffic Report
+[2], even though congestion levels have decreased due to the
+impact of COVID-19, the congestion problem is making a
+comeback as the pandemic subsides. Therefore, we need to
+find a more effective solution to alleviate the problem.
+During this period, Intelligent Transportation Systems
+(ITSs) have been extensively studied and widely applied in
+many countries. At present, a large part of the research is
+about ”traffic light control” and ”rerouting”. In traffic light
+control-related research, applications based on reinforcement
+learning have been very popular [3] [4]. We have also noticed that reinforcement learning methods have been further
+applied in some studies related to vehicle navigation systems,
+such as the problem of vehicle intersection turning [5].
+However, there are few relevant technological applications
+in the work associated with the ”rerouting” system.
+In the following ”rerouting” literatures, congestion is regarded as a systematic problem. Therefore, it is necessary
+to optimize the vehicle path planning strategy of RGS from
+a global perspective to further alleviate congestion. RGS is
+divided into two basic categories, ”static” and ”dynamic” [6].
+The former is based on historical data, while the latter is
+based on real-time data. Static RGS are no longer applicable
+today, but some classic shortest path algorithms such as
+Dijkstra [7] and A* [8] are still widely used.
+
+Fig. 1: System architecture
+Combined with dynamic information, more complex systems have also been proposed. For example, [9] uses intelligent transportation management systems to detect traffic
+congestion and improve traffic efficiency using k-nearest
+neighbor classifiers. At the same time, based on the idea
+of route assignment, the k-shortest paths [10] has also been
+revitalized in some systems. In [11], a systematic paradigm
+is proposed to select a new route for vehicles from k paths,
+considering random, entropy balance, and flow balance. [12],
+[13], and others have further improved this aspect of the
+work, resulting in a more complex and refined system, which
+has been deployed in more distributed communication and
+computing scenarios. [14] proposed a new system based on
+decisive road weights, considering the maximization of realtime traffic information and road utilization.
+While previous works have improved RGS, it still lacks
+an intelligent road weight prediction method that combines
+real-time traffic information to enable vehicles to calculate
+updated routes and avoid congestion. In this paper, we
+propose a dynamic road weight calculation method based
+on Deep Reinforcement Learning (DRL) and introduce
+multidimensional observation information from vehicle-road
+collaboration to design a more effective dynamic RGS (see
+Figure 1). Our main contributions in this work are as follows:
+(1) We propose the design process of DRL road agent,
+including its states, actions, and rewards. (2) We propose
+a training method for RGS, with the goal of using the experience gained from observations of all RAs to train a neural
+network model that is generalizable to the road network.
+(3) We made improvements to RGS, such as enhancing the
+vehicle rerouting selection and streamlining the process of
+recalculating a new path, reducing unnecessary computation
+and route changes.
+
+979-8-3503-2928-5/23/$31.00
+©2023
+Authorized licensed
+use IEEE
+limited to: Sejong Univ. Downloaded on June 04,2026 at 01:26:08 UTC from IEEE Xplore. Restrictions apply.
+
+II. S YSTEM A RCHITECTURE
+The proposed system, as illustrated in Figure 1, uses multiple edge devices for storage and fog computing. Assuming
+that the RAs are deployed in the roadside units (RSUs) at
+the network edge, and each RA corresponds to a road, which
+works in conjunction with a Traffic Management Center
+(TMC) to transmit and receive data, thus implementing a
+rerouting strategy and providing service recommendations to
+the drivers. We assume that each road has an RSU with a
+usable RA. This allows the calculation of road weights to
+be completed locally in the RSUs. TMC is used to learn the
+latest RL agent.
+A. Collection and Processing of Traffic Data
+Real-time traffic data collection is crucial for dynamic
+RGS, such as density, speed, and road capacity. We can
+combine the collected data to calculate a real-time road
+weight for our system. For example, we can calculate road
+density:
+(i)
+
+L(i)
+
+(i)
+
+Cjam =
+
+,
+
+(i)
+
+D(i) =
+
+Lveh + Gmin
+
+Nv
+
+(i)
+
+,
+
+(1)
+
+Cjam
+
+Fig. 2: Route guidance system framework
+as Random k Shortest Paths (RkSP), Entropy Balanced k
+Shortest Paths (EBkSP), and Flow Balanced k Shortest Paths
+(FBkSP) [11], [12]. The second one is to accurately estimate
+the travel time required for a vehicle to pass through a
+particular road or have more reasonable road weights, such
+as Re-routing with FOg-CloUd System (ReFOCUS+) [13],
+Decisive Weights k Shortest Paths (DWkSP) [14], and others.
+This paper makes improvements in both aspects, as will be
+shown in Section III.
+
+(i)
+
+where Cjam is the maximum vehicle capacity of segment i,
+which is the number of vehicles allowed on the road, L(i)
+is the length of the segment, Gmin is the minimum distance
+(i)
+between vehicles, and Lveh is the average length of vehicles
+(i)
+on the segment. D is the density of segment i, represented
+(i)
+(i)
+by the current number of vehicles Nv divided by Cjam .
+B. Selection of the Vehicles to be Rerouted
+Referring to [11]–[14], we need to detect congested road
+segments in the network before selecting vehicles for each
+time period. We can obtain input segments for these congested roads by performing a breadth-first search (BFS),
+using parameter L to define their degree of influence. Finally,
+we select the vehicles on these road segments to update their
+routes and ease the congestion. The level of road congestion
+can be measured as in [13], [14]:
+(i)
+
+CD
+
+(i)
+
+=λ
+
+Vf
+
+(i)
+
+− Vavg
+(i)
+
++ (1 − λ)D(i) ,
+
+(2)
+
+III. P ROPOSED S TRATEGIES
+An overview of the reinforcement learning-based RGS
+training framework proposed by us is shown in Figure 2,
+which consists of three parts. The first part is the SUMO
+environment, which includes road network parsing, realtime Traffic Data (TD) collection, vehicle route updates, and
+reward acquisition. The second part is the controller policy,
+training and optimizing RA, and dynamically updating the
+vehicle’s route based on the Road Weight (RW). We assume
+that each RSU is equipped with an offline agent and is iteratively updated by TMC online learning agent. At the same
+time, in each iteration, we also need to complete the selection
+of rerouted vehicles and the computation of routes to ensure
+the efficient operation of the system. The third part is the
+interface connecting RA and the environment, responsible
+for storing transitions, providing feedback rewards on RA’s
+actions, and controlling the simulation.
+
+Vf
+
+where CD(i) denotes the congestion measurement of road
+(i)
+(i)
+i, Vf is the free-flow speed, Vavg is the average speed of
+road i, and λ is a prespecified weighting factor.
+Assuming the congestion threshold is δ and vehicles to
+be rerouted are selected when CD(i) > δ. We improve
+the above method by not selecting vehicles that are within
+L segments of the destination. It is beneficial for saving
+computational resources and for the vehicles themselves.
+C. Computation of Alternative Routes and Rerouting
+Computing new routes for vehicles is a crucial stage that
+affects the efficiency of dynamic RGS. There are two main
+research hotspots at this stage. First one is to optimize the
+process of selecting one of the k paths for the vehicle, such
+
+A. Decisive Weight Road Agent
+We propose a real-time intelligent Decisive Weight Road
+Agent (DWRA) based on the DQN architecture. At each
+learning step t, the agent selects an action at to obtain a
+reward rt . The Q function is then updated, and the agent
+moves to the next state st+1 to maximize the action value
+function Q(s, a), as defined in equation (3):
+Q(s, a) = E [Rt | st = s, at = a]
+
+(3)
+
+In DQN, we approximate Q(s, a; θ) as Q(s, a), where θ
+is the network parameters. According to equation (3) and
+the Markov Decision Process (MDP) property, the target
+value function is approximated as rt +γ maxπ q (st+1 , at ; θ),
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:26:08 UTC from IEEE Xplore. Restrictions apply.
+
+where 0 < γ ≤ 1 is a discount factor. Using TemporalDifference (TD), we can obtain the following iterative optimization method for the action-value function:
+h
+q (st , at ; θ) ←q (st , at ; θ) + α · rt + γ max q (st+1 , at ; θ)
+π
+
+−q (st , at ; θ)] ,
+(4)
+where α is the learning rate. The loss function is defined as:
+h
+
+Li (θ i ) =E(s,a,r,si )∼U (D) r + γ max
+q s0 , ai ; θ −
+i
+0
+a
+i
+(5)
+2
+−q (s, a; θ i )) ,
+where θi is the parameter of the neural network at the i-th
+iteration, while θi − is the parameter of the target network.
+The target network is used for stabilization and its parameters
+are updated regularly from the online network. The target
+network calculates the target value function, while the online
+network calculates the current value function. Referring to
+[19], we also used mechanisms such as experience replay.
+The three elements of DQN (state, action, and reward) in
+are presented as follows.
+1) State: The following are effective representations of
+current traffic conditions:
+• Nvl : total number of vehicles that leave the current road
+during iteration period t.
+• Vavg : average speed observed on the current road.
+• Vmax : maximum speed on the current road.
+• D: vehicle density of the current road.
+It is important to note that we do not update the state
+at every time step, but rather at fixed intervals of one
+time period. Additionally, to ensure that the state features
+are universal for all roads, we removed some unique road
+features, such as road length. Therefore, the collected state
+information for the road at learning step t is as follows:
+St = [Nvl , Vavg /Vmax , D] ,
+
+(6)
+
+where the state variables include multiple environmental
+parameters that reflect the current roads in urban traffic. To
+facilitate the training of the neural network, Vavg /Vmax and
+D are normalized to the range of [0, 1].
+2) Action: Our inspiration comes from [14], updating the
+decisive weights through action decisions made by RAs. In
+other words, actions are discrete values that correspond to the
+congestion levels of roads related to RAs. These levels are
+provided by the agent based on the state of the environment.
+For instance, when there are no vehicles on the road, the
+congestion level can be set to 1. In case of heavy congestion,
+the congestion level can be set to the highest level, say 5.
+This study maps different congestion levels to five different
+numerical values of actions.
+3) Reward: The overall principle of reward setting is to
+maximize the expected value of future discounted return. The
+expected reward is described as follows:
+Rt =
+
+∞
+X
+k=0
+
+γ k rt+k+1
+
+(7)
+
+(a) Map1
+
+(b) Map2
+
+Fig. 3: City maps used in the experiments.
+where γ is the discount factor, and rt+k+1 is the reward at
+learning step t + k + 1. The function rst = Nst+1 − Nst
+is designed to provide instantaneous rewards to the agent
+based on the number of departing vehicles in the current
+state. Nst+1 and Nst represent the number of vehicles leaving
+a particular road in state st+1 and st , respectively.
+B. DRL Process
+Unlike the common RL-based traffic lights and vehicles,
+the impact of the actions of an RA on the environment
+is indirect, which makes us to design alternative training
+methods. We assume that there are some common characteristics among the roads in the network, and they will lead
+to similar actions in response to changes in the state. For
+example, congested roads are still congested in the next time
+slice. Based on this shared common characteristic, this paper
+proposes to train a road agent using experiences collected
+from all roads, thus achieving a generalizable approach.
+C. Rerouting Policy
+In this subsection, we introduce our approach and explain
+how to combine it with RA. Our approach improves previous
+rerouting policies in two main ways. Firstly, RW calculation
+is closely related to RA’s action, enabling more adaptive
+prediction of road conditions for the next interval. Secondly,
+we remove routes with obvious congestion conditions in
+advance, which is often highly advantageous for individual
+vehicles.
+The proposed dynamic RGS initializes the parameters
+in Table II and starts the rerouting procedure (line 2).
+Then, at each time interval, the system updates real-time
+traffic information, where the system detects congested road
+segments, as detailed in Section II. With the help of RA,
+the decisive weight for each road combined with actions is
+updated. If congestion occurs, the system selects vehicles for
+rerouting according to the method described in Section II.
+For each rerouted vehicle, the k shortest paths are calculated
+using road weights, and the average density of each path is
+calculated by taking the average of the densities of the first
+L road segments of the path. We remove some particularly
+congested routes, where δ is consistent with the previous definition, which fully considers the current traffic conditions.
+Then, we select the least popular path from the remaining
+paths (which may be k −1 or k paths), and finally update the
+footprint counter. The popularity and footprint counter are
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:26:08 UTC from IEEE Xplore. Restrictions apply.
+
+TABLE I
+HYPER-PARAMETERS FOR TRAINING
+
+64
+
+61
+
+60
+
+62
+
+59
+
+Average travel time
+
+Value
+100
+50000 − 500000
+0.000001
+1 → 0.001
+10000
+100
+0.99
+32
+
+Average travel time
+
+Parameter
+Episodes
+Maximum number of learning steps
+Adam optimizer learning rate
+Exploration rate
+Replay memory size
+Target network update per learning step
+Discount factor
+Mini-batch for update
+
+60
+
+58
+
+56
+
+58
+
+57
+
+56
+54
+
+55
+
+52
+
+54
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+80
+
+Episode
+
+(a) Map1
+
+90
+
+100
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+80
+
+90
+
+100
+
+Episode
+
+(b) Map2
+
+TABLE II
+
+Fig. 4: Average travel time of vehicles in different maps.
+
+PARAMETERS PERTINENT TO THE SIMULATION
+
+calculate current state returns, future rewards are crucial,
+so we set the discount factor to 0.99. In order to prevent
+overfitting and learn a generalized RA, we set a very small
+learning rate of 0.000001. RA updates the experience pool
+during continuous training iterations while maintaining a
+high exploration rate in the early stages. As RA learns, it
+matures and the exploration rate decreases. We only need a
+limited number of episodes and a maximum learning step
+since we consider the experience generated by all roads.
+We adjust the maximum number of learning steps within
+a dynamic range to achieve better training results as traffic
+maps and conditions change. Once we reach this learning
+step, we stop training the RA agent.
+
+δ
+k
+L
+λ
+interval
+Total edges
+Total nodes
+
+City Map1
+0.7
+3
+3
+0.5
+30
+91
+30
+
+City Map2
+0.7
+3
+3
+0.5
+30
+106
+42
+
+explained in detail in EBkSP [11], which can be understood
+as considering the impact of new vehicle paths on future
+traffic conditions. This explains how our work contributes
+to this field and is different from existing strategies in the
+literature, revealing the novelty of this article.
+IV. E VALUATION
+A. Simulation Setup
+We constructed our simulated traffic system using SUMO
+1.11.0 [20] and TraCI [21]. Based on TraCI, we implemented
+the proposed dynamic RGS and tested its performance using
+the Selfless Traffic Routing (STR) model [22]. Essentially,
+SUMO is started with TraCI options, the scene is loaded,
+and then it waits for commands. This allows for real-time
+operations, such as assigning new routes to specific vehicles.
+Our goal is to optimize the average driving time of
+vehicles, which refers to the average time for all vehicles
+to travel from the source to the destination. To verify the
+effectiveness of the proposed algorithm, we use two city
+maps and convert them from OpenStreetMap [23] to NETCONVERT using the SUMO, as shown in Figure 3. We use
+randomT rips.py provided by SUMO to generate a portion
+of the vehicles that are not controlled by the system, while
+using the vehicle generation function of STR to obtain the
+vehicles controlled by the system. The ratio between them is
+called the participation rate. Experiments are conducted with
+different traffic volumes set on each map, and the proposed
+DWRAkSP algorithm is used to control the rerouting of
+participating vehicles. To demonstrate the performance of
+the proposed method, we compare it to SP and DWkSP in
+dynamic RGS.
+B. DRL Parameter Initialization
+Table I presents the hyperparameters used to train our
+DQN agent. Our policy neural network takes in a threedimensional vector and outputs a five-dimensional vector. We
+optimize for the global average travel time (ATT) instead
+of the optimal traffic conditions for any specific road. To
+
+C. Results and Analysis
+Table II contains detailed information on two city maps.
+Map1 has more similar road attributes, which may be more
+conducive to the training of RA. Map2, on the other hand,
+is more complex than Map1, including some expressways,
+which undoubtedly poses greater challenges for the learning
+of intelligent agents.
+We trained our agents in the two maps, and Figure 4 shows
+the convergence of the proposed algorithm. Each map had
+200 simulated vehicles, assuming a participation rate of 1
+and maximum learning step of 70,000. We can observe the
+changes in ATT during the training process, and the ATT
+decreases as the RA converges in both maps. This validates
+the feasibility of the proposed algorithm.
+We assume a fixed number of 200 participating vehicles
+with participation rates of 1/3 and 1/4. To adapt to the more
+complex environment and achieve better performance, we
+set the maximum learning steps to 200,000 and 400,000
+for Map1, and 100,000 and 300,000 for Map2. Despite the
+more pronounced training fluctuations under low participation rates and in more complex environments, RA can still
+converge in the end, as shown in Figure 5. These results
+further validate the effectiveness of our method.
+Figure 6 shows the ATT of our proposed algorithm compared to other algorithms. The experimental results demonstrate that our method outperforms other algorithms in the
+vast majority of traffic conditions, especially in scenarios
+with worsening congestion. It is worth noting that in Map2
+with a participation rate of 1, the performance of SP is the
+best as frequent route changes actually lead some vehicles to
+take longer routes when congestion is low. However, at low
+participation rates, as congestion increases, the superiority of
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:26:08 UTC from IEEE Xplore. Restrictions apply.
+
+1000
+
+Average reward
+
+Average travel time
+
+1100
+
+900
+800
+
+-40
+
+900
+
+-50
+
+800
+
+-60
+
+700
+
+-70
+-80
+-90
+
+700
+600
+500
+400
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+80
+
+90
+
+400
+
+200
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+80
+
+90
+
+100
+
+Episode
+
+(a)
+
+(b)
+
+-40
+
+-80
+-100
+
+100
+0
+
+Episode
+
+0
+-20
+
+-60
+
+-110
+
+100
+
+20
+
+500
+
+300
+
+-120
+0
+
+40
+
+600
+
+-100
+
+Participation rate=1/4
+Participation rate=1/3
+
+60
+Participation rate=1/4
+Participation rate=1/3
+
+Average reward
+
+Participation rate=1/4
+Participation rate=1/3
+
+1200
+
+Average travel time
+
+1300
+
+Participation rate=1/4
+Participation rate=1/3
+
+-120
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+Episode
+
+(c)
+
+60
+
+70
+
+80
+
+90
+
+100
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+80
+
+90
+
+100
+
+Episode
+
+(d)
+
+Fig. 5: Training curves under different low participation rate. (a) and (b) are for Map1, (c) and (d) are for Map2.
+1200
+SP(Map1)
+DWkSP(Map1)
+DWRAkSP(Map1)
+SP(Map2)
+DWkSP(Map2)
+DWRAkSP(Map2)
+
+Average travel time
+
+1000
+
+800
+
+600
+
+400
+
+200
+
+0
+1
+
+1/3
+
+1/4
+
+1
+
+1/3
+
+1/4
+
+Participation rate
+
+Fig. 6: Comparing performance of other algorithms.
+DWRAkSP (proposed) becomes more apparent. Compared to
+DWkSP [14], in Map1, the ATT under different participation
+rates is reduced by 0.7%, 16.2%, and 27.2%, and in Map2,
+it is reduced by 9.4%, 16.3%, and 1.4%, respectively.
+V. CONCLUSIONS
+In this paper, we propose a dynamic RGS based on DRL.
+By combining DRL algorithms with route guidance, the
+proposed system can provide more adaptive predictions of
+road conditions. Experimental results show that the system
+has significant advantages in reducing average travel time
+and alleviating traffic congestion. This algorithm also has
+good performance in complex environments.
+ACKNOWLEDGMENT
+Supports by the National Science Foundation of China
+(NSFC) with grant number 62271514, the Science, Technology and Innovation Commission of Shenzhen Municipality with grant numbers JCYJ20210324120002007, and
+ZDSYS20210623091807023 are gratefully acknowledged.
+R EFERENCES
+[1] D. Metz, ”Tackling urban traffic congestion: The experience of London, Stockholm and Singapore,” Case Studies on Transport Policy,
+vol. 6, no. 4, pp. 494-498, 2018.
+[2] D. Schrank, L. Albert, B. Eisele, and T. Lomax, 2021 urban mobility
+report, Texas AM Transp. Inst., College Station, Texas, USA, Tech.
+Rep., Aug. 2021.
+[3] H. Wei, G. Zheng, H. Yao, and Z. Li, ”Intellilight: A reinforcement
+learning approach for intelligent traffic light control,” in Proceedings
+of the 24th ACM SIGKDD International Conference on Knowledge
+Discovery and Data Mining, Jul. 2018, pp. 2496-2505.
+[4] J. Liu, S. Qin, Y. Luo, Y. Wang and S. Yang, ”Intelligent Traffic Light
+Control by Exploring Strategies in an Optimised Space of Deep QLearning,” in IEEE Transactions on Vehicular Technology, vol. 71, no.
+6, pp. 5960-5970, June 2022, doi: 10.1109/TVT.2022.3160871.
+[5] C. Jin, Y. Wu and C. Li, ”Vehicle-Road Collaborative Path
+Planning Based on A∗ -assisted Deep Reinforcement Learning,”
+2022 IEEE 25th International Conference on Intelligent Transportation Systems (ITSC), Macau, China, 2022, pp. 3010-3015, doi:
+10.1109/ITSC55140.2022.9921845.
+
+[6] D. Rosen, F. Mammano, and R. Favout, ”An electronic route-guidance
+system for highway vehicles,” IEEE Transactions on Vehicular Technology, vol. 19, pp. 143-152, 1970, doi: 10.1109/T-VT.1970.23442.
+[7] E. W. Dijkstra, A note on two problems in connexion with graphs,
+Numerische Mathematik, 1959.
+[8] A. Patel, Introduction to the a* algorithm, 2014, https://www.
+redblobgames.com/pathfinding/a-star/introduction.html.
+[9] A. M. de Souza, R. S. Yokoyama, G. Maia, A. Loureiro, and L.
+A. Villas, Real-time path planning to prevent traffic jam through
+an intelligent transportation system, in Proc. IEEE Symp. Comput.
+Commun., 2016, pp. 726731.
+[10] D. Eppstein, ”Finding the k shortest paths,” SIAM Journal on Computing, vol. 28, no. 2, pp. 652-673, 1998.
+[11] J. Pan, I. S. Popa, K. Zeitouni, and C. Borcea, Proactive vehicular
+traffic rerouting for lower travel time, IEEE Trans. Veh. Technol., vol.
+62, no. 8, pp. 35513568, Oct. 2013.
+[12] J. Pan, I. S. Popa, and C. Borcea, DIVERT: A distributed vehicular
+traffic re-routing system for congestion avoidance, IEEE Trans. Mob.
+Comput., vol. 16, no. 1, pp. 5872, Jan. 2017.
+[13] M. Rezaei, H. Noori, M. Mohammadkhani Razlighi and M. Nickray,
+”ReFOCUS+: Multi-Layers Real-Time Intelligent Route Guidance
+System With Congestion Detection and Avoidance,” in IEEE Transactions on Intelligent Transportation Systems, vol. 22, no. 1, pp. 50-63,
+Jan. 2021, doi: 10.1109/TITS.2019.2952524.
+[14] Y. -T. Tseng and H. -W. Ferng, ”An Improved Traffic Rerouting
+Strategy Using Real-Time Traffic Information and Decisive Weights,”
+in IEEE Transactions on Vehicular Technology, vol. 70, no. 10, pp.
+9741-9751, Oct. 2021, doi: 10.1109/TVT.2021.3102706.
+[15] D. Jiang and L. Delgrossi, IEEE 802.11p: Towards an international
+standard for wireless access in vehicular environments, in Proc. IEEE
+Veh. Technol. Conf., 2008, pp. 20362040.
+[16] Z. Mir and F. Filali, LTE and IEEE 802.11p for vehicular networking:
+A performance evaluation, Eurasip J. Wireless Commun. Netw., vol.
+2014, no. 1, pp. 115, May 2014.
+[17] J. Gozlvez, M. Sepulcre, and R. Bauza, IEEE 802.11p vehicle to infrastructure communications in urban environments, IEEE Commun.
+Mag., vol. 50, no. 5, pp. 176183, May 2012.
+[18] H. Noori and B. Olyaei, A novel study on beaconing for VANET-based
+vehicle to vehicle communication: Probability of beacon delivery in
+re- alistic large-scale urban area using 802.11p, in Proc. Int. Conf.
+Smart Commun. Netw. Technol., vol. 1, Nov. 2013, pp. 16.
+[19] V. Mnih, K. Kavukcuoglu, D. Silver, A.A. Rusu, J. Veness, M.G.
+Bellemare, A. Graves, M. Riedmiller, A.K. Fidjeland, G. Ostrovski,
+et al., ”Human-level control through deep reinforcement learning,”
+Nature, vol. 518, no. 7540, pp. 529, 2015.
+[20] M. Behrisch, L. Bieker, J. Erdmann, and D. Krajzewicz, SumoSimulation of urban mobility: An overview, in Proc. 3rd Int. Conf.
+Adv. Syst. SIMUL, Barcelona, Spain, 2011, pp. 6368.
+[21] A. Wegener, M. Pirkowski, M. Raya, H. J. Hellbrck, S. Fischer, and J.P. Hubaux, TraCI: An interface for coupling road traffic and network
+simulators, in Proc. 11th Commun. Netw. Simul. Symp., 2008, pp.
+155163.
+[22] G. Dai, P. K. Paluri, T. Carmichael, A. M. K. Cheng and R. Miikkulainen, ”Work-in-Progress: Leveraging the Selfless Driving Model
+to Reduce Vehicular Network Congestion,” 2019 IEEE Real-Time
+Systems Symposium (RTSS), Hong Kong, China, 2019, pp. 548-551,
+doi: 10.1109/RTSS46320.2019.00061.
+[23] M. Haklay and P. Weber, Openstreetmap: User-generated street maps,
+IEEE Pervasive Comput., vol. 7, no. 4, pp. 1218, Oct.Dec. 2008.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:26:08 UTC from IEEE Xplore. Restrictions apply.
+
+

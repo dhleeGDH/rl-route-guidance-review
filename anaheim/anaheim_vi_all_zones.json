@@ -1,0 +1,1018 @@
+{
+ "zones": 38,
+ "nodes": 416,
+ "links": 914,
+ "mean_cost": 0.882353374601751,
+ "max_cost": 3.579924242,
+ "per_zone_geometry": {
+  "1": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 14.931216931216932,
+   "min_hops_to_any_other_zone": 1
+  },
+  "2": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 15.955026455026456,
+   "min_hops_to_any_other_zone": 1
+  },
+  "3": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 14.867724867724867,
+   "min_hops_to_any_other_zone": 1
+  },
+  "4": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 13.984126984126984,
+   "min_hops_to_any_other_zone": 1
+  },
+  "5": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 15.394179894179894,
+   "min_hops_to_any_other_zone": 1
+  },
+  "6": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 15.156084656084657,
+   "min_hops_to_any_other_zone": 1
+  },
+  "7": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 15.206349206349206,
+   "min_hops_to_any_other_zone": 1
+  },
+  "8": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 15.076719576719576,
+   "min_hops_to_any_other_zone": 1
+  },
+  "9": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 13.06084656084656,
+   "min_hops_to_any_other_zone": 1
+  },
+  "10": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 12.095238095238095,
+   "min_hops_to_any_other_zone": 1
+  },
+  "11": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 12.933862433862434,
+   "min_hops_to_any_other_zone": 1
+  },
+  "12": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 13.724867724867725,
+   "min_hops_to_any_other_zone": 1
+  },
+  "13": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 12.08994708994709,
+   "min_hops_to_any_other_zone": 1
+  },
+  "14": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 13.685185185185185,
+   "min_hops_to_any_other_zone": 1
+  },
+  "15": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 13.359788359788359,
+   "min_hops_to_any_other_zone": 1
+  },
+  "16": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 13.317460317460318,
+   "min_hops_to_any_other_zone": 1
+  },
+  "17": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 12.857142857142858,
+   "min_hops_to_any_other_zone": 1
+  },
+  "18": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 12.931216931216932,
+   "min_hops_to_any_other_zone": 1
+  },
+  "19": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 14.272486772486772,
+   "min_hops_to_any_other_zone": 1
+  },
+  "20": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 16.40740740740741,
+   "min_hops_to_any_other_zone": 1
+  },
+  "21": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 11.714285714285714,
+   "min_hops_to_any_other_zone": 1
+  },
+  "22": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 11.994708994708995,
+   "min_hops_to_any_other_zone": 1
+  },
+  "23": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 12.66931216931217,
+   "min_hops_to_any_other_zone": 1
+  },
+  "24": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 9.933862433862434,
+   "min_hops_to_any_other_zone": 1
+  },
+  "25": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 10.03968253968254,
+   "min_hops_to_any_other_zone": 1
+  },
+  "26": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 10.986772486772487,
+   "min_hops_to_any_other_zone": 1
+  },
+  "27": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 8.96031746031746,
+   "min_hops_to_any_other_zone": 1
+  },
+  "28": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 9.029100529100528,
+   "min_hops_to_any_other_zone": 1
+  },
+  "29": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 11.333333333333334,
+   "min_hops_to_any_other_zone": 1
+  },
+  "30": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 9.621693121693122,
+   "min_hops_to_any_other_zone": 1
+  },
+  "31": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 8.73015873015873,
+   "min_hops_to_any_other_zone": 1
+  },
+  "32": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 8.912698412698413,
+   "min_hops_to_any_other_zone": 1
+  },
+  "33": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 11.105820105820106,
+   "min_hops_to_any_other_zone": 1
+  },
+  "34": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 10.044973544973544,
+   "min_hops_to_any_other_zone": 1
+  },
+  "35": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 9.738095238095237,
+   "min_hops_to_any_other_zone": 1
+  },
+  "36": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 12.071428571428571,
+   "min_hops_to_any_other_zone": 1
+  },
+  "37": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 11.634920634920634,
+   "min_hops_to_any_other_zone": 1
+  },
+  "38": {
+   "reachable_origins": 378,
+   "mean_hops_to_dest": 11.103174603174603,
+   "min_hops_to_any_other_zone": 1
+  }
+ },
+ "results": {
+  "closed_time_min": {
+   "total": {
+    "arrive": 14364,
+    "exit": 0,
+    "stuck": 0
+   },
+   "pairs": 14364,
+   "exit_rate": 0.0,
+   "arrive_rate": 100.0,
+   "by_zone": {
+    "1": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "2": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "3": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "4": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "5": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "6": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "7": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "8": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "9": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "10": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "11": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "12": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "13": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "14": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "15": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "16": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "17": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "18": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "19": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "20": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "21": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "22": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "23": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "24": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "25": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "26": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "27": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "28": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "29": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "30": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "31": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "32": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "33": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "34": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "35": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "36": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "37": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "38": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    }
+   }
+  },
+  "closed_aligned": {
+   "total": {
+    "arrive": 14364,
+    "exit": 0,
+    "stuck": 0
+   },
+   "pairs": 14364,
+   "exit_rate": 0.0,
+   "arrive_rate": 100.0,
+   "by_zone": {
+    "1": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "2": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "3": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "4": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "5": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "6": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "7": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "8": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "9": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "10": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "11": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "12": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "13": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "14": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "15": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "16": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "17": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "18": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "19": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "20": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "21": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "22": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "23": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "24": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "25": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "26": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "27": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "28": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "29": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "30": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "31": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "32": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "33": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "34": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "35": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "36": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "37": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    },
+    "38": {
+     "arrive": 378,
+     "exit": 0,
+     "stuck": 0
+    }
+   }
+  },
+  "open_time_min": {
+   "total": {
+    "arrive": 378,
+    "exit": 13986,
+    "stuck": 0
+   },
+   "pairs": 14364,
+   "exit_rate": 97.36842105263158,
+   "arrive_rate": 2.6315789473684212,
+   "by_zone": {
+    "1": {
+     "arrive": 2,
+     "exit": 376,
+     "stuck": 0
+    },
+    "2": {
+     "arrive": 8,
+     "exit": 370,
+     "stuck": 0
+    },
+    "3": {
+     "arrive": 6,
+     "exit": 372,
+     "stuck": 0
+    },
+    "4": {
+     "arrive": 16,
+     "exit": 362,
+     "stuck": 0
+    },
+    "5": {
+     "arrive": 2,
+     "exit": 376,
+     "stuck": 0
+    },
+    "6": {
+     "arrive": 2,
+     "exit": 376,
+     "stuck": 0
+    },
+    "7": {
+     "arrive": 5,
+     "exit": 373,
+     "stuck": 0
+    },
+    "8": {
+     "arrive": 1,
+     "exit": 377,
+     "stuck": 0
+    },
+    "9": {
+     "arrive": 2,
+     "exit": 376,
+     "stuck": 0
+    },
+    "10": {
+     "arrive": 2,
+     "exit": 376,
+     "stuck": 0
+    },
+    "11": {
+     "arrive": 1,
+     "exit": 377,
+     "stuck": 0
+    },
+    "12": {
+     "arrive": 1,
+     "exit": 377,
+     "stuck": 0
+    },
+    "13": {
+     "arrive": 1,
+     "exit": 377,
+     "stuck": 0
+    },
+    "14": {
+     "arrive": 1,
+     "exit": 377,
+     "stuck": 0
+    },
+    "15": {
+     "arrive": 1,
+     "exit": 377,
+     "stuck": 0
+    },
+    "16": {
+     "arrive": 1,
+     "exit": 377,
+     "stuck": 0
+    },
+    "17": {
+     "arrive": 3,
+     "exit": 375,
+     "stuck": 0
+    },
+    "18": {
+     "arrive": 3,
+     "exit": 375,
+     "stuck": 0
+    },
+    "19": {
+     "arrive": 5,
+     "exit": 373,
+     "stuck": 0
+    },
+    "20": {
+     "arrive": 1,
+     "exit": 377,
+     "stuck": 0
+    },
+    "21": {
+     "arrive": 2,
+     "exit": 376,
+     "stuck": 0
+    },
+    "22": {
+     "arrive": 2,
+     "exit": 376,
+     "stuck": 0
+    },
+    "23": {
+     "arrive": 1,
+     "exit": 377,
+     "stuck": 0
+    },
+    "24": {
+     "arrive": 30,
+     "exit": 348,
+     "stuck": 0
+    },
+    "25": {
+     "arrive": 22,
+     "exit": 356,
+     "stuck": 0
+    },
+    "26": {
+     "arrive": 11,
+     "exit": 367,
+     "stuck": 0
+    },
+    "27": {
+     "arrive": 46,
+     "exit": 332,
+     "stuck": 0
+    },
+    "28": {
+     "arrive": 9,
+     "exit": 369,
+     "stuck": 0
+    },
+    "29": {
+     "arrive": 26,
+     "exit": 352,
+     "stuck": 0
+    },
+    "30": {
+     "arrive": 33,
+     "exit": 345,
+     "stuck": 0
+    },
+    "31": {
+     "arrive": 20,
+     "exit": 358,
+     "stuck": 0
+    },
+    "32": {
+     "arrive": 13,
+     "exit": 365,
+     "stuck": 0
+    },
+    "33": {
+     "arrive": 8,
+     "exit": 370,
+     "stuck": 0
+    },
+    "34": {
+     "arrive": 12,
+     "exit": 366,
+     "stuck": 0
+    },
+    "35": {
+     "arrive": 13,
+     "exit": 365,
+     "stuck": 0
+    },
+    "36": {
+     "arrive": 32,
+     "exit": 346,
+     "stuck": 0
+    },
+    "37": {
+     "arrive": 22,
+     "exit": 356,
+     "stuck": 0
+    },
+    "38": {
+     "arrive": 12,
+     "exit": 366,
+     "stuck": 0
+    }
+   }
+  },
+  "open_aligned": {
+   "total": {
+    "arrive": 11180,
+    "exit": 3184,
+    "stuck": 0
+   },
+   "pairs": 14364,
+   "exit_rate": 22.166527429685324,
+   "arrive_rate": 77.83347257031467,
+   "by_zone": {
+    "1": {
+     "arrive": 320,
+     "exit": 58,
+     "stuck": 0
+    },
+    "2": {
+     "arrive": 292,
+     "exit": 86,
+     "stuck": 0
+    },
+    "3": {
+     "arrive": 292,
+     "exit": 86,
+     "stuck": 0
+    },
+    "4": {
+     "arrive": 355,
+     "exit": 23,
+     "stuck": 0
+    },
+    "5": {
+     "arrive": 210,
+     "exit": 168,
+     "stuck": 0
+    },
+    "6": {
+     "arrive": 292,
+     "exit": 86,
+     "stuck": 0
+    },
+    "7": {
+     "arrive": 306,
+     "exit": 72,
+     "stuck": 0
+    },
+    "8": {
+     "arrive": 248,
+     "exit": 130,
+     "stuck": 0
+    },
+    "9": {
+     "arrive": 298,
+     "exit": 80,
+     "stuck": 0
+    },
+    "10": {
+     "arrive": 307,
+     "exit": 71,
+     "stuck": 0
+    },
+    "11": {
+     "arrive": 298,
+     "exit": 80,
+     "stuck": 0
+    },
+    "12": {
+     "arrive": 275,
+     "exit": 103,
+     "stuck": 0
+    },
+    "13": {
+     "arrive": 243,
+     "exit": 135,
+     "stuck": 0
+    },
+    "14": {
+     "arrive": 243,
+     "exit": 135,
+     "stuck": 0
+    },
+    "15": {
+     "arrive": 256,
+     "exit": 122,
+     "stuck": 0
+    },
+    "16": {
+     "arrive": 292,
+     "exit": 86,
+     "stuck": 0
+    },
+    "17": {
+     "arrive": 316,
+     "exit": 62,
+     "stuck": 0
+    },
+    "18": {
+     "arrive": 280,
+     "exit": 98,
+     "stuck": 0
+    },
+    "19": {
+     "arrive": 224,
+     "exit": 154,
+     "stuck": 0
+    },
+    "20": {
+     "arrive": 151,
+     "exit": 227,
+     "stuck": 0
+    },
+    "21": {
+     "arrive": 196,
+     "exit": 182,
+     "stuck": 0
+    },
+    "22": {
+     "arrive": 190,
+     "exit": 188,
+     "stuck": 0
+    },
+    "23": {
+     "arrive": 218,
+     "exit": 160,
+     "stuck": 0
+    },
+    "24": {
+     "arrive": 340,
+     "exit": 38,
+     "stuck": 0
+    },
+    "25": {
+     "arrive": 335,
+     "exit": 43,
+     "stuck": 0
+    },
+    "26": {
+     "arrive": 323,
+     "exit": 55,
+     "stuck": 0
+    },
+    "27": {
+     "arrive": 359,
+     "exit": 19,
+     "stuck": 0
+    },
+    "28": {
+     "arrive": 349,
+     "exit": 29,
+     "stuck": 0
+    },
+    "29": {
+     "arrive": 339,
+     "exit": 39,
+     "stuck": 0
+    },
+    "30": {
+     "arrive": 358,
+     "exit": 20,
+     "stuck": 0
+    },
+    "31": {
+     "arrive": 361,
+     "exit": 17,
+     "stuck": 0
+    },
+    "32": {
+     "arrive": 345,
+     "exit": 33,
+     "stuck": 0
+    },
+    "33": {
+     "arrive": 339,
+     "exit": 39,
+     "stuck": 0
+    },
+    "34": {
+     "arrive": 309,
+     "exit": 69,
+     "stuck": 0
+    },
+    "35": {
+     "arrive": 358,
+     "exit": 20,
+     "stuck": 0
+    },
+    "36": {
+     "arrive": 345,
+     "exit": 33,
+     "stuck": 0
+    },
+    "37": {
+     "arrive": 285,
+     "exit": 93,
+     "stuck": 0
+    },
+    "38": {
+     "arrive": 333,
+     "exit": 45,
+     "stuck": 0
+    }
+   }
+  },
+  "open_aligned_2.5x": {
+   "total": {
+    "arrive": 13735,
+    "exit": 629,
+    "stuck": 0
+   },
+   "pairs": 14364,
+   "arrive_rate": 95.62099693678641
+  }
+ }
+}

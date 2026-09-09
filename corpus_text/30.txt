@@ -1,0 +1,2322 @@
+Received: 1 June 2023
+
+Accepted: 11 October 2023
+
+DOI: 10.1111/mice.13115
+
+RESEARCH ARTICLE
+
+Dynamic urban traffic rerouting with fog-cloud
+reinforcement learning
+Runjia Du1
+Samuel Labi1
+
+Sikai Chen2
+
+Jiqian Dong1
+
+Tiantian Chen3
+
+Xiaowen Fu4
+
+1 Lyles School of Civil Engineering, Purdue
+
+University, West Lafayette, Indiana, USA
+2 Department
+
+of Civil and Environmental
+Engineering, University of
+Wisconsin-Madison, Madison, Wisconsin,
+USA
+3 Cho Chun Shik Graduate School of
+Mobility, Korea Advanced Institute of
+Science and Technology, Daejeon, South
+Korea
+4 Department
+
+of Industrial and Systems
+Engineering, The Hong Kong Polytechnic
+University, Hung Hom, Kowloon, Hong
+Kong
+Correspondence
+Sikai Chen, Department of Civil and
+Environmental Engineering, University of
+Wisconsin-Madison, Madison, 53706, WI,
+USA.
+Email: sikai.chen@wisc.edu
+Funding information
+US Department of Transportation,
+Grant/Award Number: #69A3551747105
+
+Abstract
+Dynamic rerouting has been touted as a solution for urban traffic congestion.
+However, its implementation is stymied by the complexity of urban traffic. To
+address this, recent studies suggest the efficacy of novel technologies like fog
+computing and deep reinforcement learning. However, there exist significant
+challenges in this regard: (1) sorting massive amounts of data associated with
+large urban networks, (2) large action space that hinders learning efficiency,
+(3) impairment of rerouting efficacy due to overreliance on regional/local information, and (4) the issue of congestion shifting. To overcome these challenges,
+this paper presents a novel two-step approach that integrates graph attention Q
+network (GAQ) with entropy-balanced k shortest path (EBkSP) via fog-cloud
+information framework to carry out vehicle rerouting in dynamic traffic environments typical of large cities. The first challenge is addressed by GAQ that
+uses attention mechanism to evaluate traffic and assign region indices based
+on the relative importance of information. The second challenge is addressed
+using fog nodes that reduce the action space, and the third is addressed using
+fog computing combined with cloud computing to facilitate the computation
+of global optimal information in a centralized planning decentralized execution pattern. The fourth challenge is addressed using EBkSP, which identifies
+vehicle optimal routes based on route popularity and vehicle priority. After
+conducting a numerical experiment involving two other cutting-edge vehicle
+rerouting models as baselines, it was established that the proposed model delivers
+results that are 14%–54% superior from perspectives of the mean travel speed and
+congestion. The superior efficacy of the proposed learning-based (compared to
+rule-based) models is pronounced when rerouting ratios are low. As the rerouting
+ratio increases, both the learning-based and rule-based model outcomes exhibit
+reduced likelihoods of severe congestion. However, the learning-based model
+consistently outperforms the rule-based model across all scenarios. The proposed
+
+This is an open access article under the terms of the Creative Commons Attribution-NonCommercial-NoDerivs License, which permits use and distribution in any medium,
+provided the original work is properly cited, the use is non-commercial and no modifications or adaptations are made.
+© 2023 The Authors. Computer-Aided Civil and Infrastructure Engineering published by Wiley Periodicals LLC on behalf of Editor.
+Comput Aided Civ Inf. 2024;39:793–813.
+
+wileyonlinelibrary.com/journal/mice
+
+793
+
+794
+
+DU et al.
+
+model can effectively reroute vehicles under different situations of rerouting ratio
+and total count of vehicles and can help improve traffic mobility and reduce
+congestion in urban areas. It can be implemented easily by urban road agencies.
+
+1
+
+INTRODUCTION
+
+1.1
+Urban congestion mitigation
+strategies
+Urbanization continues to exacerbate traffic congestion,
+negatively impacting urban commuting. Over 50% of the
+world’s population resides in cities, set to rise to 80% by
+2050 (United Nations, 2018). With over 1.5 billion vehicles worldwide, motorization continues to outpace urban
+road expansion, and both demand-side and supply-side
+solutions are being sought by transportation agencies.
+Strategies to manage congestion can be placed into three
+broad categories (US Department of Transportation, 2012):
+providing more capacity (supply), reducing demand by
+promoting favorable travel and land-use patterns, and
+utilizing existing supply (capacity) more efficiently.
+The first category involves building new corridors or
+adding to existing lanes. However, this often leads to
+induced demand, which ultimately defeats the purpose
+of the intervention. The second category, travel demand
+reduction, includes initiatives such as carpooling and congestion pricing (Jung et al., 2016). The latter is a promising
+solution but could lead to inequitable or narrowly framed
+outcomes (Eliasson & Mattsson, 2006; Goulden et al., 2014;
+Owens, 1995). The third category leverages Information
+and Communication Technology (ICT) and artificial intelligence (AI; through vehicle automation and connectivity),
+the Internet of Things, and related advanced technologies,
+all supported by real-time traffic monitoring, to optimize
+the use of existing roadway capacity. These developments
+are altering the transportation landscape in a profound
+manner (Adeli & Jiang, 2009; Hashemi & Abdelghany,
+2018; NHTSA, 2011).
+The integration of ICT and AI in civil engineering
+has significantly enhanced various disciplines, including
+transportation, construction, and structural engineering
+(Adeli, 2001; Adeli & Wu, 1998; Adeli & Yeh, 1989; X. Jiang
+& Adeli, 2005; Rafiei & Adeli, 2016; Rafiei et al., 2017). In
+transportation, ICT and AI enable real-time traffic information for road users, facilitate vehicle-to-vehicle (V2V)
+and vehicle-to-infrastructure interactions, and leverage
+technologies like Wi-Fi, smartphones, and cellular networks to improve connectivity and gather precise road
+environment data (S. Chen et al., 2023; X. Jiang & Adeli,
+2004; Mittal et al., 2018; Shi et al., 2022; D. Zhao & Liu, 2022;
+
+Zheng et al., 2021). This increased vehicle connectivity provides essential real-time traffic data crucial for congestion
+control efforts (Guériau et al., 2016; Ha et al., 2023; Mousavi
+et al., 2021).
+One of these advanced technology-based initiatives for
+congestion mitigation is vehicle rerouting. In investigating
+the efficacy of vehicle rerouting, the present study evaluates existing models and addresses challenges including
+dynamic traffic and data overload. This study examines the
+applicability of novel technologies like V2V connectivity
+(Ha et al., 2020; Olovsson et al., 2022), deep reinforcement learning (RL), and attention mechanisms to vehicle
+rerouting.
+
+1.2
+
+Optimize capacity–Vehicle rerouting
+
+Vehicle rerouting (also known as vehicle routing guidance) is an intelligent transportation system (ITS)-related
+initiative that has proven to be efficacious in reducing
+congestion through dynamic traffic management and facilitates capacity utilization of existing roads (Liao, 2017).
+Typically, at urban networks, specific corridors tend to
+experience congestion, while others are often relatively
+clear; this provides an opportunity to reroute vehicles to
+avoid more congested areas.
+Widely applied in everyday contexts, rerouting application examples include Google Maps and TomTom that suggest to their customers, optimal routes for time-efficient
+travel (Wang et al., 2016). Dynamic real-time platforms,
+such as Variable Message Signs in cities, redirect drivers
+based on current traffic conditions (Zeng et al., 2020). A
+demonstrated drawback of the above approaches is that it
+leads to uniform rerouting guidance for drivers with comparable locations and intended destinations. As a result,
+drivers adopting the same recommended route inadvertently amplify traffic flow on specific links, leading to the
+translocation of congestion from one part of the network
+to another (Tang et al., 2020).
+To address congestion shifting, researchers have developed rerouting algorithms using techniques like anticipatory route guidance and multiple-route planning. Chen
+and Underwood used dynamic programming to develop an
+anticipatory system that minimizes time-dependent driver
+costs and identified challenges including efficient updating of link costs and accounting for diversion timing (K.
+
+DU et al.
+
+Chen & Underwood, 1991). Bottom’s framework ensures
+consistent information generation through fixed-point
+problems (Bottom, 2000) and acknowledges problems of
+scalability and adaptability associated with urban networks and dynamic traffic. Brennand et al.’s assignment of
+K routes randomly to vehicles achieved systemwide optimality (Brennand et al., 2016) but may not be ideal for
+individual drivers and could worsen congestion. Pan et al.’s
+entropy-balanced k shortest path (EBkSP) algorithm allocates vehicles efficiently (Pan et al., 2013), but its success
+hinges on driver compliance. In other work, researchers
+have accounted for network uncertainties and developed
+centralized and decentralized optimization algorithms for
+vehicle rerouting guidance (Farver & Chabini, 2003; Gao &
+Chabini, 2002). Some of these algorithms adeptly manage
+slight network variations in small-scale settings. Nevertheless, their performance and computational efficiency
+regarding larger networks with real-time information
+remain uncertain.
+The key challenges in traditional routing algorithms, as
+recognized in most previous studies, include: (1) the need
+for efficient communication, (2) the difficulty in attaining optimal solutions for extensive urban networks, (3)
+the limited adaptability to rapidly changing environments,
+and (4) non-consideration of driver compliance (Brennand
+et al., 2016; Doolan & Muntean, 2013; Wang et al., 2016).
+
+1.3
+Improved Deep Reinforcement
+Learning (DRL) with fog-cloud and
+attention mechanism
+To address the issue of traditional routing algorithms, DRL
+is engaged in this study to allow direct acquisition of optimal routing choices from the environment; this boosts the
+adaptability to changes and scalability potential (S. Chen
+et al., 2020; Ding et al., 2022; Dong et al., 2022; Ha et al.,
+2022; Liu et al., 2023; Peng et al., 2021), in a bid to bridge the
+gap in the literature regarding the use of RL for dynamic
+rerouting. In addition, in past literature, multiple agent RL
+has been explored for vehicle path determination (Arokhlo
+et al., 2011; Dong et al., 2023; Tang et al., 2020; J. Zhao et al.,
+2022).
+DRL holds promise for dynamic rerouting but faces challenges due to the vast action space, especially in complex
+urban road systems. For instance, considering all possible
+physical network links, the action space can reach a size
+of 𝑎𝑒 , where “𝑎” is the total number of possible actions,
+and “𝑒” is the total number of network links, making training time-consuming and potentially hindering algorithm
+convergence. Additionally, the abundance of irrelevant
+information in road traffic data slows down the learning
+process. The complexity of urban road networks under-
+
+795
+
+F I G U R E 1 Collaboration between fog and cloud: the data
+collected by fogs and information flow from fog to cloud.
+
+scores the need for efficient real-time information sharing,
+even though cloud-based communication can encounter
+delays due to centralized data sources (Aazam et al., 2018;
+Arabi et al., 2020).
+To overcome these challenges, we adopt a fog-cloud
+structure. Fog nodes, distributed computing entities, facilitate fog service deployment for data sensing and processing
+(Marín-Tordera et al., 2017). As depicted in Figure 1, a fog
+node area corresponds to the coverage region of a specific fog node, varying in size per deployment scenario.
+Adaptable to different contexts, fog nodes offer computing resources and services to designated devices, collecting
+vehicle data such as location, speed, and density. The processed data are then sent to the cloud for analysis and
+storage. This fog-cloud architecture accelerates information access, making it a promising choice for dynamic
+rerouting (Du et al., 2022).
+Recent studies, such as Brennand et al.’s ITS fog-based
+architecture, have recognized the vast potential of fog
+computing in dynamic rerouting (Brennand et al., 2017).
+However, communication gaps between fog nodes might
+restrict optimal routing to local (rather than global) optimality. Researchers have incorporated fog computing in
+ITS congestion-mitigation strategies, but localized computation may hinder the achievement of system-wide
+effectiveness (Cao et al., 2019). Combining fog and cloud
+computing has shown promise; nevertheless, the computational limitations associated with fog computing (compared to cloud computing) remain a challenge (Rezaei
+et al., 2018). Therefore, in this study, we introduce a
+fog-cloud architecture with centralized control and decentralized execution, in a bid to overcome these limitations.
+By doing this, we promote efficient and effective information sharing, which helps to ultimately realize dynamic
+rerouting in an urban environment.
+
+796
+
+FIGURE 2
+
+DU et al.
+
+Fog nodes physical dependencies.
+
+The establishment of fog nodes that oversee specific
+local regions and collaboratively make decisions for
+constituent road segments can help in the optimization
+of decision processes within designated coverage zones.
+This streamlined approach reduces the action space from
+𝑎𝑒 to 𝑎𝑓 (𝑓 ≪ 𝑒; 𝑒 = number of edges in the network
+and 𝑓 = number of fog nodes), leading to improved
+decision-making efficiency. Graph networks (Figure 2)
+depict fog nodes, their interdependence, and information
+flow. The network nodes represent fog nodes (covering
+local fog areas), and the network edges are the connectors
+of neighboring fog nodes.
+In networks reliant on neighboring data, attention
+mechanisms are commonly used for decision-making,
+Veličković et al. introduced graph attention networks
+(GATs), merging graph neural networks (GNNs) and attention for node classification (Velicković et al., 2017). This
+method is notably beneficial for extracting essential information from vast datasets. In this paper, we employ
+GAT’s self-attention mechanism (Vaswani et al., 2017) to
+calculate hidden representations within nodes by considering network adjacency information and traffic data. This
+approach leverages the connections between nodes and
+their graph neighbors, a crucial element for understanding
+the driving environment.
+GNN and DRL integration has shown promise. In recent
+work, GNN was applied to serve as an encoder in a graph
+convolutional RL setup, fostering cooperative strategies (J.
+Jiang et al., 2018). In addition, graph convolutional neural
+networks (GCNs) and deep Q learning were combined in
+a graph convolution Q network (GCQ) framework for precise lane-change decisions for connected and autonomous
+vehicle operations (S. Chen et al., 2021). Table 1 presents a
+chronological list and brief description of past studies on
+vehicle rerouting for urban traffic congestion mitigation.
+
+1.4
+Contribution and organization of
+the paper
+Methodological contributions in this paper encompass: (1)
+the development of a fog-cloud architecture to enhance
+
+information exchange efficiency by combining local data
+collection through fog nodes and DRL training for congestion identification, (2) the integration of GAT and
+DRL to efficiently extract crucial information from local
+and neighboring areas, improving RL efficiency. (3) Integration of DRL and EBkSP within the framework for
+guided optimal routes considering vehicle priorities and
+congestion prevention, with experiments covering both
+connected and unconnected vehicles and introducing distinct criteria for vehicle priority to simulate real-world
+scenarios.
+The remaining sections are structured as follows: Section 2 defines problem settings and the framework’s
+structure, covering DRL and route assignment phases. Section 3 provides a comprehensive methodology summary.
+Section 4 explains simulation parameters and baseline
+models. Section 5 analyzes training and testing results.
+Last, Section 6 highlights research findings, draws conclusions, and suggests future research directions.
+
+1.5
+
+Framework description
+
+Our dynamic rerouting framework, an extension of the
+DRL + fog-cloud architecture introduced by Du et al.
+(2021) leverages fog and cloud computing for efficient
+data gathering and analysis. Fog nodes collect decentralized data transmitted to the cloud, where an attention
+mechanism selects vital information and predicts congestion levels, proactively guiding the rerouting framework
+toward optimal routes for congestion relief. This adaptable
+framework is well-suited for various urban transportation
+networks in terms of size and complexity, capable of creating customized rerouting models by inputting network
+data and fog node configurations. In this two-phase framework (Figure 3), network flow information serves as the
+input to the DRL phase, with the fog paradigm network
+depicted as a graph, where nodes represent individual fog
+nodes, and edges represent the links connecting them.
+In the DRL phase, the Markov decision process guides
+agent decisions using state, action, and reward, with the
+central platform employing GAQ to create region indices
+for road segments in fog node areas, serving as control
+variables for vehicle rerouting. During route assignment,
+region-level data are integrated into the decision-making
+process, enabling the calculation of road weights based
+on road vehicle density and region indices, which in
+turn determine the 𝐾 shortest paths for each vehicle.
+The allocation of optimal routes in the traffic network
+utilizes an entropy-balanced approach, considering vehicle priority and route popularity to ensure efficient and
+congestion-aware assignments. After routes are assigned,
+the network’s state is updated, and data are collected for
+
+Proactive vehicular
+traffic rerouting to
+reduce travel time
+
+An intelligent traffic Developed multi-route
+management
+planning algorithms
+system for
+through calculating 𝐾
+identifying and
+alternative routes and
+regulating traffic
+assigning them to the
+congestion in urban
+vehicles randomly
+areas
+
+Fog-based traffic
+Proposed “FOg RoutE
+Distributed (fog
+management
+VEhiculaR,” an
+computing)
+system: a novel
+intelligent transportation
+approach for urban
+system architecture
+congestion
+based on fog nodes
+mitigation
+
+A hybrid intelligent
+Developed a
+Centralized
+system for
+fog-cloud-based
+(fog-cloud
+rerouting of traffic,
+architecture to provide
+computing)
+based on fog-cloud
+additional data when the
+fog nodes provide
+inadequate information
+
+Pan (2013)
+
+Brennand
+(2016)
+
+Brennand
+(2017)
+
+Rezaei
+(2018)
+
+Yes
+
+No
+
+No
+
+No
+
+Global info
+
+Local info
+
+Local info
+
+Global info
+
+Local info
+
+Yen’s algorithm is used for Yes
+rerouting and simulated
+in SUMO, high efficiency
+due to small real-world
+network
+
+Information message
+No
+through fog nodes tested
+in SUMO, high efficiency
+
+Contingency-based
+No
+simulation in real
+network; highly efficient
+because it used a
+distributed system
+
+Five strategies tested
+Yes
+through Simulation of
+Urban Mobility (SUMO)
+simulations. Low
+efficiency under large
+network
+
+(Continues)
+
+No
+
+No
+
+No
+
+No
+
+No
+
+Addressed Addressed
+congestion congestion
+prediction
+shifting
+
+Multiple agent RL (MARL) No
+used to determine the
+shortest path between
+specific origins and
+destinations; high
+efficiency under a simple
+network
+
+Considered driver
+Training/simulation
+Routes calculate
+compliance and
+based on local info efficiency/dimensional
+CV/CAV
+problem
+penetration rates or global info
+
+Distributed RSUs No
+across the city to
+obtain the total
+coverage
+
+A dynamic vehicle
+Centralized
+rerouting algorithm,
+termed entropy-balanced
+k shortest path (EBkSP),
+was developed to
+consider priority in
+determining the best
+routes
+
+Multi-agent RL-based Developed a multi-agent
+Distributed,
+route guidance
+method based on
+multi-agent
+system
+reinforcement learning
+(RL), to establish shortest
+origin–destination (OD)
+paths
+
+Arokhlo
+(2011)
+
+Approach
+
+Broad objective
+
+Information
+architecture
+
+Overview of the literature on congestion-mitigation via vehicle rerouting.
+
+Authors
+
+TA B L E 1
+
+DU et al.
+797
+
+DRL phase
+
+MARL used to give route
+No
+guidance to each vehicle;
+dimensional problem,
+low efficiency
+Local info
+
+Yes
+
+Yes
+ETCS vehicle rerouting
+algorithm is used and
+tested in SUMO with real
+network, high efficiency
+with edge computing
+Local info
+
+Abbreviation: CAV, connected and autonomous vehicle; CV, connected vehicle; RSUs, roadside units.
+
+Yes
+A highly adaptable
+Suggested a multi-agent
+urban traffic route
+approach based on
+guidance approach
+reinforcement learning
+for diverse traffic
+and 𝐴∗ trajectory
+scenarios using
+rejection
+machine learning
+Tang (2020)
+
+Distributed,
+multi-agent
+
+Approach
+
+Edge computing
+Used fog nodes to
+communicate and share
+information to
+characterize overall
+traffic conditions;
+identified 𝐾 alternative
+routes to avoid repetitive
+selection of same route
+
+Broad objective
+
+No
+
+Four key factors are considered in the DRL phase: agent,
+state space, agents, reward function, and the action space.
+
+Efficient Traffic
+Congestion
+Scheduling with
+Edge Computing
+(ETCS)
+
+Authors
+
+Information
+architecture
+
+future enhancements, making this framework a robust
+and effective solution for dynamic rerouting in urban
+transportation networks.
+The deployment of connectivity technology in vehicles, particularly in urban regions, continues to be limited
+(Dong et al., 2021; Montanaro et al., 2019; Xu et al., 2022).
+This makes it challenging to implement dynamic rerouting in most metropolitan areas. In this study, we define
+two classes of vehicles with different capabilities regarding rerouting. The first class, termed rerouting vehicles
+(RVs), can receive information through connectivity and
+follow instructions accordingly. The second class, termed
+background vehicles (BVs), does not have access to this
+information and cannot be rerouted.
+By considering both RVs and BVs in the numerical
+experiments of this study, we seek to replicate real-world
+scenarios and introduce dynamics into the traffic network.
+RVs follow rerouting instructions, while BVs lend diversity
+and unpredictability to the traffic network. Additionally,
+both BVs and RVs have various origins and destinations,
+and they can be identified by the fog nodes.
+
+1.6
+
+Cao (2019)
+
+Considered driver
+Training/simulation
+Routes calculate
+compliance and
+based on local info efficiency/dimensional
+CV/CAV
+problem
+penetration rates or global info
+(Continued)
+TA B L E 1
+
+No
+
+DU et al.
+
+Addressed Addressed
+congestion congestion
+prediction
+shifting
+
+798
+
+1.6.1
+
+Agent
+
+At every discrete time interval 𝑡, which we set at 200 time
+steps, each fog node 𝑖 engages in a decision-making process
+to select various actions {𝑎𝑖𝑡 , 𝑖 = 1, .., 𝑁}. These actions
+are chosen based on a careful assessment of the prevailing
+environmental conditions and are guided by a predefined
+policy. The deliberate choice of a time interval of 200 time
+steps is particularly salient as it provides the system with
+adequate duration to respond to the outcomes of previous
+decisions.
+After the fog nodes have executed their selected actions,
+the system transitions to a new state, and the participating
+agents are subsequently rewarded based on this updated
+state. These rewards serve as reinforcement, motivating
+the agents to continuously refine their decision-making
+strategies in pursuit of favorable outcomes.
+
+1.6.2
+
+State space
+
+The agent assesses its current state and makes policyguided decisions in a state space with two distinct components: (1) 𝑋𝑡 indicates fog node characteristics at time
+step 𝑡, (2) 𝐴𝑡 represents physical adjacency feature at time
+
+DU et al.
+
+799
+
+F I G U R E 3 Two-phased urban dynamic rerouting framework structure (shaded elements indicate the input information to DRL model
+(in DRL stage) and routing model (at the route-assignment stage). DQN, Double Q Network; GAQ, graph attention Q network; GAT, graphic
+attention network.
+
+step 𝑡. Since fog nodes can detect RVs’ and BVs’ location at
+each 𝑡, network information average speed 𝑣̄𝑖 and congestion condition 𝑐𝑖 can be extracted from each fog node area
+and represented in the node feature matrix.
+∙ 𝑣̄𝑖 =
+
+∑
+
+𝑘
+𝑘=1,…,𝑛 𝑣𝑖
+
+𝐾𝑖
+
+denotes the mean speed of vehicles in fog
+
+node area 𝑖, while 𝑣𝑖𝑘 represents the speed of vehicle 𝑘 in
+node area 𝑖, 𝐾𝑖 is the number of vehicles present in traffic
+in the node area𝑟 𝑖.
+∑
+
+∙ 𝑐𝑖 =
+
+𝑁
+𝑣𝑒ℎ
+𝑟=1,…,𝑚 𝑟 ×𝑁 𝑟
+𝑙𝑒𝑛
+𝑙𝑎𝑛𝑒
+
+𝑅𝑖
+
+indicates the congestion level of
+
+the roadways located within the fog node area 𝑖.
+𝑟
+represents the vehicle counts on road 𝑟, the length
+𝑁𝑣𝑒ℎ
+𝑟
+describes the count
+of road 𝑟 is indicated by 𝑟𝑙𝑒𝑛 , and 𝑁𝑙𝑎𝑛𝑒
+of lanes of road 𝑟. 𝑅𝑖 represents the overall number of road
+sections in the node area 𝑖.
+𝐴𝑡 , also referred to as an adjacency binary 𝑁 × 𝑁 matrix
+that captures the topology of the information and interdependencies among the 𝑁 fog nodes within the network.
+𝐴𝑖𝑗 = 1 means that a link exists to connect fog nodes 𝑖
+and 𝑗. The graph representing the physical road network
+is a directed graph. On the other hand, the graph that
+portrays the fog layer for disseminating information is an
+undirected graph.
+
+1.6.3
+
+Action space
+
+Based on the collected state space (network feature and
+node feature), at every time step, each fog node receives
+
+five action choices known as region indices, representing
+different potential congestion levels within their respective areas. These congestion levels are categorized as: 0
+for free flow, 1 for light congestion, 2 for moderate congestion, 3 for heavy congestion, and 4 for standstill, which
+can be represented as: 𝑎𝑖 = {0, 1, 2, 3, 4}. The cloud utilizes
+RL to aggregate all the possible actions from each fog node
+into the action space  = [𝑎𝑖 ], 𝑖 = 1, … , 𝑁. These actions
+contribute to a concise, region-based congestion distribution insight, helping to comprehend the dynamics of traffic
+congestion.
+During the route-assignment phase, the road weight calculation is heavily reliant on the region index, which is
+used to help generate route assignments for vehicles that
+require rerouting.
+
+1.6.4
+
+Reward function
+
+Congestion occurs when there are too many vehicles on
+a roadway segment at a time, which results in speeds
+significantly lower than normal (US Department of Transportation, 2012). Thus, congestion is often characterized by
+a sudden reduction in the average speed of vehicles. The
+reward calculation was derived from the collective average
+speed of the RVs within specific regions, with a focus on the
+regional level rather than the individual link level. To distinguish between substantial congestion and flowing traffic, we establish the threshold speed of 11 mph. This threshold was chosen with the intention of distinguishing RV
+movement conditions effectively. RVs operating at sluggish
+speeds (below 11 mph) are suggestive of severe congestion
+
+800
+
+DU et al.
+
+TA B L E 2
+Priority
+standard
+
+Explanation of various priority standards.
+Explanation
+
+High priority and Low priority
+
+Routes assigned
+
+Priority-Near
+
+Rerouting vehicles (RVs) located
+nearer to their destinations are
+assigned higher priority
+
+High priority: Priority rank 1, … , 𝑗
+Low priority: Priority rank 𝑗 + 1, … , 𝑁𝑅𝑉
+
+Assigned to shortest route
+Assigned to appropriate routes
+considering route popularities
+
+Priority-Far
+
+RVs located farther from their
+destinations are assigned higher
+priority
+
+High priority: Priority rank 1, … , 𝑗
+Low priority: Priority rank 𝑗 + 1, … , 𝑁𝑅𝑉
+
+Assigned to shortest route
+Assigned to appropriate routes
+considering route popularities
+
+top 𝑗 RVs are placed in a high-priority set and given the
+shortest route. The remaining vehicles from 𝑗 + 1 to 𝑁𝑅𝑉
+are assigned routes that consider their route popularity
+and vehicle priority.
+
+2
+FIGURE 4
+
+Workflow of route-assignment stage.
+
+within the region in question. In response, the proposed
+model levies a penalty to account for this unfavorable situation. Conversely, RVs operating at speeds exceeding the
+threshold of 11 mph, are indicative of successful rerouting
+and optimal assignment of routes by the model, resulting
+in an improved traffic flow at the region in question.
+
+1.7
+
+Route-assignment phase
+
+In the route assignment phase, RVs are recommended
+to follow appropriate paths based on road weights and
+vehicle positions. This process consists of two phases
+(Figure 4): route computation and route selection. In the
+route computation phase, K shortest paths are calculated
+for each rerouted vehicle, considering its present location. In the route selection phase, a balanced-entropy
+technique is applied to choose suitable routes from the
+computed K alternative shortest paths, considering two
+crucial aspects: the vehicle’s priority and the route’s popularity. This approach helps prevent the translocation (shift)
+of congestion from one region to another.
+The priority of RVs, denoted by 𝑅𝑉 =
+(𝑅𝑉1 , 𝑅𝑉2 , … , 𝑅𝑉𝑛 ), is determined based on the distance between their current position and destination.
+High-priority RVs may choose the shortest route irrespective of that route’s popularity, while low-priority RVs
+must select the least popular route to avoid congestion
+shift. Two different standards are used to calculate the
+priorities during the training stage of the model (Table 2).
+All RVs have their priorities calculated and ranked. The
+
+2.1
+
+METHODOLOGY
+DRL model architecture
+
+At this phase, the architecture is designed in conjunction with the fog-cloud infrastructure, using a centralized
+learning decentralized execution methodology. At each
+time step, fog nodes receive different actions, aiming to
+reduce congestion and to increase the efficiency of RVs.
+GAT is applied to help select relatively important information and deep Q learning is used as the decision
+processor.
+The model input is the state (𝑠𝑡 ) at each time step 𝑡,
+which is a tuple consisting of fog nodes feature matrix 𝑋𝑡
+(with dimension 𝑁 × 𝐹, 𝐹 denotes the number of features
+that are taken into account within a fog node area, where 𝑁
+is the number of fog nodes) and adjacency matrix 𝐴𝑡 (with
+dimension 𝑁 × 𝑁). Features considered within a fog node
+area incorporate two elements: the average speed and the
+degree of congestion. These data are collected through the
+fog nodes.
+The DRL model (Figure 5) consists of several different
+components, including a fully connected network (FCN)
+encoder, a GAT layer, a Q network, and a layer for the output. Within time step 𝑡, the feature matrix 𝑋𝑡 of the fog
+nodes serves as an input for the FCN encoder 𝜑, which
+produces node embeddings 𝐻𝑡 in a multi-dimensional (𝑑
+dimensions) embedding space:
+𝐇𝐭 = 𝜑 (𝐗𝐭 ) ∈ ,  ⊂ 𝑅𝑁×𝑑
+
+(1)
+
+Afterward, the node embeddings 𝐇𝐭 are subjected to
+graph convolution in conjunction with the attention mechanism. Unlike the GCN layer, which employs the normalized Laplacian technique for assigning weights to the
+adjacency matrix, the GAT layer incorporates the attention
+
+DU et al.
+
+FIGURE 5
+
+801
+
+Proposed DRL architecture. GAT, graphic attention network.
+
+mechanism to incorporate information from surrounding
+neighbors in the learning process.
+𝐇′𝐭
+
+= 𝑔𝑎𝑡 (𝐇𝐭 , 𝐀𝐭 ) = 𝛼𝐇𝐭 𝑊 + 𝑏
+
+(2)
+
+An attention mechanism and adjacency matrix are combined in the formula to calculate 𝛼𝑖𝑗 , which denotes the
+weighting coefficient of the fog node 𝑗 ∈ 𝑖 (the set of
+neighboring nodes adjacent to fog node 𝑖 also encompasses
+node 𝑖 itself). Weight factor 𝑇 ⊺ parameterizes the attention
+mechanism 𝑇:
+))
+(
+(
+exp LeakyReLU 𝑇 ⊺ [(𝐇𝐭 𝑊)𝑖 ‖(𝐇𝐭 𝑊)𝑗 ]
+𝛼ij = ∑
+]))
+(
+( [
+⊺
+𝑘∈𝑖 exp LeakyReLU 𝑇 (𝐇𝐭 𝑊)𝑖 ‖(𝐇𝐭 𝑊)𝑘
+(3)
+The GAT layer produces node embedding 𝐇′𝐭 . Then 𝐇′𝐭 is
+fed into a Q network 𝜌 for calculating Q values, which are
+subsequently utilized to assess the corresponding actions
+(a). One approach to characterizing the model involves
+integrating FCN, GAT, and Q network (these represent the
+neural network blocks) into a cohesive structure, denoted
+by 𝑄̂ 𝜓 (𝜓 represents the combined weights):
+)
+(
+ˆ𝜓 (𝐬𝐭 , 𝐚𝐭 ) = 𝜌 𝐇′ , 𝐚𝐭
+𝑄
+𝐭
+
+(4)
+
+Target network and experience replay are applied to
+improve the learning efficiency of the model training (Van
+Hasselt et al., 2016). To ensure consistent performance, 𝑄̂ is
+trained using randomly selected batches of size 𝐵 from the
+replay buffer 𝑅. Optimal loss function values are obtained
+for each batch as follows:
+𝐿𝜓 =
+
+1 ∑
+ˆ𝜓 (𝐬𝐭 , 𝐚𝐭 )
+𝑦 −𝑄
+𝐵 𝑡 𝑡
+
+(5)
+
+ˆ𝜓 (𝐬𝐭+𝟏 , 𝐚𝐭 ). The network compowhere 𝑦𝑡 = 𝑟𝑡 + 𝛾max 𝑄
+
+A L G O R I T H M 1 Graph attention Q Network
+Initialization:
+Initialize 𝑅, 𝜓Set target network 𝑄̂ 𝑡 = 𝑄̂ 𝜓
+Warm-up:
+For time step 𝑡 from 1 to 𝑇𝑤 doRandom actions assigned to
+𝑎𝑖
+each fog node: 𝐚𝐭 = [ ⋮ ] Gather state, action reward and
+𝑎𝑛
+updated state (𝐬𝐭 , 𝐚𝐭 , 𝑟𝑡 , 𝐬𝐭+𝟏 ) and push into the memory
+buffer 𝑅
+Training start:
+For time step 𝑡 from 𝑇𝑤 + 1 to 𝑇 doMemory 𝑅 refreshed, new
+batch samples picked
+State 𝐬𝐭 = 𝐗𝐭 , 𝐀𝐭 (feature and adjacency) and encode the
+node features into a node feature embedding 𝐇𝐭 = 𝜑(𝐗𝐭 )
+Apply graph attention mechanism 𝐇′𝐭 = gat(𝐇𝐭 , 𝐀𝐭 )
+Compute Q values for each action combination 𝑎𝑡 :
+ˆ𝜓 (𝐬𝐭 , 𝐚𝐭 ) = 𝜌(𝐇′𝐭 , 𝐚𝐭 )
+𝑄
+ˆ𝜓 (𝐬𝐭 , 𝐚𝐭 )
+Select optimal action 𝐚𝐭∗ = argmax 𝑄
+𝑎𝑡
+
+Apply 𝐚𝐭∗ to the network and then obtain the reward 𝑟𝑡 and next
+state 𝐬𝐭+𝟏
+Add the (𝐬𝐭 , 𝐚𝐭∗ , 𝑟𝑡 , 𝐬𝐭+𝟏 ) into the memory buffer.
+Move from state 𝐬𝐭 to state 𝐬𝐭+𝟏
+From replay memory buffer 𝑅, get a random batch size 𝐵
+For each training example with the batch, the target of Q value
+𝑦𝑡 is calculated:
+ˆ𝜓 (𝐬𝐭+𝟏 , 𝐚𝐭 )
+If 𝐬𝐭+𝟏 is not done: 𝑦𝑡 = 𝑟𝑡 + 𝛾max 𝑄
+𝑎𝑡
+
+If 𝐬𝐭+𝟏 is not done: 𝑦𝑡 = 𝑟𝑡
+Losses are calculated by the loss function:
+1 ∑
+ˆ𝜓 (𝐬𝐭 , 𝐚𝐭 )
+𝐿𝜓 =
+𝑦 −𝑄
+𝑡 𝑡
+𝐵
+The target network is updated based on the target updating
+frequency value.
+
+∙ Q network 𝜌: Dense (32) + Dense (32) + Dense (64) +
+Dense (64).
+∙ Output layer: Dense (5).
+
+𝑎
+
+nents’ detailed design is as follows:
+∙ FCN encoder 𝜑: Dense (32) + Dense (32).
+∙ GAT layer 𝑔𝑎𝑡: GATCONV (32).
+
+Before training, an initial exploration phase lets the
+agent randomly explore the environment. Following this
+warm-up, training aims to maximize rewards and minimize losses as described in Algorithm 1.
+
+802
+
+2.2
+
+DU et al.
+
+Routes assigned model architecture
+
+A L G O R I T H M 2 Route assigned by EBkSP
+Get roads weights:
+For 𝑅𝑉𝑚 in set 𝑅𝑉 do
+Find K-alternative shortest path based on current location:
+𝑐𝑢𝑟𝑟𝑒𝑛𝑡
+{𝑘𝑆𝑃}𝑚 = 𝑘𝑠𝑝(𝑅𝑉𝑚
+)
+Calculate the priority based on the current location and add
+to the set  = (𝑑𝑅𝑉𝑚 )
+Sorted priority:
+Based on 𝑠𝑜𝑟𝑡𝑒𝑑(), let the top priority RVs into set 𝑅𝑉ℎ and
+others are low-priority RVs into set 𝑅𝑉𝑙
+Route popularity:
+For 𝑅𝑉𝑚 in set 𝑅𝑉ℎ doAssign the shortest route:
+𝑝𝑠∗ = m𝑖𝑛{𝑘𝑆𝑃}𝑚 to 𝑅𝑉𝑚 Update the road weight footprint:
+𝑓𝑐𝑠𝑧 , 𝑧 = 1, … , 𝑁𝑝𝑠
+For 𝑅𝑉𝑚 in set 𝑅𝑉𝑙 do
+Based on the updated footprint, for the routes in {𝑘𝑆𝑃}𝑚 ,
+calculate: 𝑃𝑜𝑝 (𝑝𝑠 ) = 𝑒𝐸(𝑝𝑠 ) Assign the least popular route:
+𝑝𝑠∗ = m𝑖𝑛{𝑃𝑜𝑝(𝑝𝑠 )} to 𝑅𝑉𝑚 Update the road weight
+footprint: 𝑓𝑐𝑠𝑧 , 𝑧 = 1, … , 𝑁𝑝𝑠 .
+
+A local search technique is utilized during the vehicle
+route assignment phase to allocate appropriate routes to
+the RVs. At each time interval 𝑡, after obtaining the region
+index of fog node area 𝑖: 𝐼𝑖 and vehicle density of road 𝑟:
+𝑟
+, the weight for all the roads in fog node area 𝑖 can be
+𝑁𝑣𝑒ℎ
+computed as
+1
+⎡𝑁𝑣𝑒ℎ
+⎤
+⎡ 𝑊1 ⎤
+⎥
+⎢
+⎥
+⎢
+⎢ ⋮ ⎥ = 𝐼𝑖 × 1 𝐼 + 2 ⎢ ⋮ ⎥
+⎢ 𝑅𝑖 ⎥
+⎢𝑊 ⎥
+⎣𝑁𝑣𝑒ℎ ⎦
+⎣ 𝑅𝑖 ⎦
+𝑖
+
+(6)
+
+𝑖
+
+To ensure a balanced consideration between vehicle
+density and region index, which have disparate scales, 1
+and 2 are introduced as equalizing factors. Given the
+RV set: 𝑅𝑉 = {𝑅𝑉𝑚 , 𝑚 = 1, … , 𝑁𝑅𝑉 }. For time step 𝑡, 𝐾
+shortest alternative paths will be provided based on the
+𝑡
+𝑚 = 1, … , 𝑁𝑅𝑉 . As denoted in EquaRVs’ location 𝑥𝑚
+tion (7), the 𝐾 shortest alternative routes 𝑝𝑠 = 1,..,𝐾 are
+generated based on the road weights 𝑊𝑟 , and a set {𝑘𝑆𝑃}𝑚
+is formed to store these routes.
+( 𝑡 )
+𝑝𝑠 = 1,..,𝐾 ∈ {𝑘𝑆𝑃}𝑚 = 𝑘𝑠𝑝 𝑥𝑚
+
+(7)
+
+The distance between an RV’s location at time step 𝑡 and
+𝑡
+, which is a cruits destination can be represented as 𝑑𝑚
+cial factor in the route’s assigned phase, determining the
+priority set  for RVs (as shown in Equation 8).  can
+be sorted differently based on various priority standards.
+As mentioned earlier, the methodology involves two distinct priority standards. The first is priority-Near, which
+assigns higher priority to vehicles closer to their destination. The second is priority-Far, which assigns higher
+priority to vehicles further away from their destination.
+𝑠𝑜𝑟𝑡𝑝𝑟𝑖𝑜𝑟𝑖𝑡𝑦 𝑠𝑡𝑎𝑛𝑑𝑎𝑟𝑑 () =
+
+( 𝑡 )
+𝑑𝑚
+
+(8)
+
+The first 𝑥 vehicles in the priority set  are placed in
+the “high priority” set category: {𝑅𝑉ℎ } (different 𝑥 values
+are investigated at the model training stage). The remaining vehicles are categorized as low priority and placed
+in the set {𝑅𝑉𝑙 }. Congestion shift occurs when vehicles
+are rerouted to the same routes. Therefore, the proposed
+methodology strives to prevent the assignment of vehicles
+to popular routes, that is, routes that have previously been
+assigned to vehicles regularly. To address this problem, the
+proposed approach encompasses both the route popularity
+and vehicle priority when allocating the routes:
+∙ 𝑅𝑉𝑚 as a high-priority vehicle: The shortest path available in its {𝑘𝑆𝑃}𝑚 set (denoted as 𝑝𝑠∗ = m𝑖𝑛{𝑘𝑆𝑃}𝑚 ) will
+be assigned to 𝑅𝑉𝑚 .
+
+∙ 𝑅𝑉𝑚 as a low-priority vehicle: The path assigned to
+𝑅𝑉𝑚 will be the least popular path from the {𝑘𝑆𝑃}𝑚
+set, indicated as 𝑝𝑠∗ = m𝑖𝑛{𝑃𝑜𝑝(𝑟𝑠 )}. Doing this helps
+avoid congestion shifts and prevents needlessly lengthy
+detours when RVs to their final assigned routes.
+The prevalence of a route 𝑝𝑠 , denoted as 𝑃𝑜𝑝(𝑝𝑠 ), can be
+computed as follows:
+𝑃𝑜𝑝 (𝑝𝑠 ) = 𝑒𝐸(𝑝𝑠 )
+(
+
+𝑁
+
+𝐸 (𝑝𝑠 ) = −
+
+𝑝𝑠
+∑
+
+𝑧=1
+
+𝑓𝑐𝑠𝑧
+𝑁𝑝𝑠
+
+(9)
+
+)
+
+(
+ln
+
+𝑓𝑐𝑠𝑧
+𝑁𝑝𝑠
+
+)
+(10)
+
+𝑁𝑝𝑠 represents the total number of road segments in 𝑝𝑠 .
+For each road segment 𝑧 = 1, … , 𝑁𝑝𝑠 , the road-weighted
+footprint 𝑓𝑐𝑠𝑧 is calculated as the product of 𝑛𝑧 and 𝜔𝑧
+(𝑓 𝑐𝑧 = 𝑛𝑧 × 𝜔𝑧 ). In this case, 𝑛𝑧 refers to the overall count
+of vehicles that are assigned to those routes that contain
+road segment 𝑧, while the weight 𝜔𝑧 (as indicated in Equation 11) is determined based on the segment length, the
+free-flow speed of road segment 𝑧, and the number of lanes.
+(
+𝜔𝑧 =
+
+𝑙𝑒𝑛𝑎𝑣𝑔
+𝑙𝑒𝑛𝑧
+
+)
+
+(
+× 𝑙𝑎𝑛𝑒𝑧 ×
+
+𝑉𝑓𝑎𝑣𝑔
+𝑉𝑓𝑧
+
+)
+(11)
+
+Algorithm 2 outlines the specific steps of the route
+assignment process.
+
+3
+
+EXPERIMENT SETTINGS
+
+In this study, we utilize the Simulation of Urban Mobility
+(SUMO) to create a dynamic simulation environment
+
+DU et al.
+
+803
+
+F I G U R E 6 OpenStreetMap (OSM) Manhattan network, Simulation of Urban Mobility (SUMO) Manhattan network, and Manhattan
+network with fog nodes added. (a) Manhattan network from OSM, (b) Cleaned network using SUMO, and (c) Network with fog node areas
+inserted.
+
+for our framework. SUMO enables the generation and
+integration of network information and traffic flow
+data, offering two key advantages: precise emulation
+of real-world traffic scenarios and efficient exploration
+of rerouting strategies. We use SUMO’s built-in vehicle
+settings and driver controllers, which are well-regarded
+in transportation simulation (Krajzewicz et al., 2012). For
+model training and testing, we employ the road network of
+Manhattan, NY, sourced from OpenStreetMap contributors (2017) and cleaned with SUMO. Leveraging high-band
+5G frequencies, fog nodes can cover a maximum range of
+approximately 0.7 miles (Horwitz, 2019), roughly 1 km.
+To match this range and experiment region, we divide
+the dense network into six equivalent local areas, each
+spanning around 1 square km and comprising 50 road
+sections. Each local area is assigned to a fog node, creating
+the integrated training network, as shown in Figure 6c.
+Further details regarding simulation settings and baseline
+models are discussed below.
+
+3.1
+
+Simulation settings
+
+Precisely setting SUMO’s parameters is crucial for accurate results. Subsections cover network characteristics,
+scenarios, vehicle control, priority, and training settings.
+
+3.1.1
+
+Network characteristics
+
+The proposed framework was demonstrated using a dense
+study network covering 5.926 square km in Manhattan.
+This selection is driven by two key factors. First, Manhattan experiences severe congestion, making it a relevant
+and challenging real-world scenario to test the effectiveness of our framework in mitigating congestion-related
+issues. Second, the high road density in the Manhattan
+
+area presents a complex and intricate transportation network that poses a significant challenge for the rerouting
+problem.
+The Manhattan network comprises 287 roads (edges)
+and 120 intersections (nodes), encompassing both oneway and two-way roads with varying numbers of lanes. To
+ensure realistic simulations, we obtained information from
+OpenStreetMap, aligning the speed limits in the simulated
+network with real-world conditions. The speed limits in
+the network vary depending on the type of road, ranging
+from 11 to 28 m/s.
+
+3.1.2
+
+Scenario settings
+
+To replicate the dynamic characteristics of an urban road
+network and introduce intricacy to the analysis, the designated study zone features several entryways for BVs and
+RVs, each characterized by distinct travel patterns and endpoints. There are 25 BV entry locations with three moving
+directions. (i) entry from the middle, moving to the top;
+(ii) entry from the right, moving to the left; (iii) entry from
+the middle, moving to the bottom; and (iv) entry from the
+left, moving to the right. RVs enter the network via three
+roads on the right of the network, with two destinations on
+the left of the network (one from the bottom and the other
+from the middle).
+Throughout the phase of training, the rates of vehicle
+inflow for both RVs and BVs are established at a rate of
+100 veh/h. One of the significant factors that affect rerouting performance in mixed traffic is the RV penetration rate.
+This represents the ratio of vehicles that could be rerouted
+𝑁𝑅𝑉
+). During the trainto the total number of vehicles:
+𝑁𝐵𝑉 +𝑁𝑅𝑉
+
+ing phase, a total count of 1000 vehicles is established,
+with a rerouting ratio of 0.1. In the testing phase, however, different vehicle quantities and rerouting ratios are
+evaluated.
+
+804
+
+3.1.3
+
+DU et al.
+
+Vehicle control settings
+
+This paper incorporates two types of vehicle control:
+behavior control and routing control. Behavior control
+is further divided into lane-changing control and carfollowing control. All vehicles in the network (RVs and
+BVs) use lane-changing and car-following controllers in
+SUMO. The routing controller for RVs utilizes (1) the
+proposed GAQ-EBkSP model, which is a learning-based
+routing control model, and (2) a learning-based routing
+control baseline model, namely, GCQ-EBkSP. The routing controller for BVs, on the other hand, is a rule-based
+model based on the shortest path. The routing controllers’
+efficacy can be evaluated by comparing their performance
+across various rerouting models.
+
+T A B L E 3 Comparison of training performance in terms of the
+episode rewards across various priority standards.
+Parameter
+Priority-Near
+
+Priority-Far
+
+3.1.5
+
+1478
+1513
+
+Std. dev.
+
+314
+
+Mean
+
+1211
+
+Median
+
+1194
+
+Std. dev.
+
+199
+
+5
+
+Mean
+
+983
+
+Median
+
+944
+
+Std. dev.
+
+334
+
+15
+
+Mean
+
+1478
+
+Median
+
+1513
+
+Std. dev.
+
+314
+
+Mean
+
+1441
+
+Median
+
+1442
+
+Std. dev.
+
+426
+
+Bolded numbers indicate the optimal Mean, Median, and Std. dev. values.
+
+2. Learning-based model (GCQ-EBkSP): RVs are redirected through EBkSP and a learning stage that gathers
+information about potential network congestion. The
+learning process is carried out using the GCQ model.
+
+Training phase settings
+
+Around 800 episodes (which is around 105 training steps)
+are involved in the model training process, where the initial 200 episodes are designated as warm-up episodes. In
+the training phase, the model is presented with transition
+batches of size 32 for sampling purposes. This research
+used Adam as an optimization parameter (Kingma & Ba,
+2015) whose initial learning rate 𝛾, i𝑠 10−4 .
+
+To evaluate the efficacy of learning in dynamic vehicle
+rerouting, learning models (proposed model and baseline learning models: GCQ-EBkSP) are compared with
+the rule-based model. Moreover, to evaluate the performance of various DRL models in large urban networks,
+the proposed learning model (with attention mechanism
+considered) is compared with the baseline learning model.
+
+4
+3.2
+
+Mean
+Median
+
+High priority set size
+
+Vehicle priority settings
+
+As mentioned previously, vehicle priority can be calculated using two methods: priority-Near and priority-Far,
+both of which are applied to the proposed framework
+and trained during the training stage. Furthermore, as
+discussed in Section 3.2, a high-priority set may contain different numbers of vehicles (multiple sizes can be
+deployed). Therefore, at the training stage, high-priority
+sets with multiple sizes are evaluated and compared.
+
+Value of the
+statistic
+
+Priority standards
+
+10
+
+3.1.4
+
+Statistic
+
+RESULTS
+
+Baseline models
+4.1
+
+To serve as a basis for validating the proposed methodology, this study uses two baseline SOTA models: a
+rule-based model (EBkSP) and a learning-based model
+(GCQ-EBkSP):
+1. Rule-based model (EBkSP): RVs are redirected using
+only EBkSP, without any learning stage to incorporate network congestion information. The road weight
+calculation only considers the road density (number
+of vehicles) and does not consider potential network
+congestion.
+
+Training
+
+During the training phase, our main objective is to evaluate how effectively the training process works for different
+models. The training performance was assessed by examining the reward value achieved after convergence was
+reached. To start, we compared our proposed model to
+different priority criteria (priority-Near and priority-Far)
+during the training. The reward curves (Figure 7a) and
+outcomes (Table 3) demonstrate that priority-Near outperforms priority-Far. We calculated the average reward
+lines based on the section where convergence is observed,
+
+DU et al.
+
+805
+
+F I G U R E 7 Training performance of proposed model with different priority standards and training performance comparison among
+proposed model and the baseline (benchmark) models. (a) Episode reward curve of Priority2-far and Priority1-near, (b) probability of reach
+travel time limit of Priority2-far and Priority1-near, (c) episode reward curve of the high-priority set sizes, (d) probability of reaching the travel
+time limit of different high-priority set size, (e) reward comparison of different models for each episode, and (f) comparison of training
+performance (mean, median, standard deviation). GAQ-EBkSP, graph attention Q network–entropy-balanced k shortest path; GCQ-EBkSP,
+graph convolution Q network–entropy-balanced k shortest path.
+
+806
+
+which is after 400 episodes. These lines reveal that priorityNear possesses an average reward that is approximately
+300 units higher, compared to that of priority-Far.
+In order to guarantee that all RVs complete their trips,
+an appropriate simulation duration is established by incorporating 10 training steps per episode, equivalent to 2000
+time units. If all RVs manage to complete their trips
+within this 2000 time unit interval, the current episode
+concludes automatically, and the subsequent one begins.
+However, if the simulation extends beyond the 2000 time
+units, it indicates that rerouted vehicles are unable to complete their journeys, resulting in an average travel speed
+of approximately 0 m/s. This situation is referred to as
+“severe congestion” within the simulation framework. In
+Figure 7b, the probability of exceeding the episode step for
+different priority standards is illustrated throughout the
+training period. It is important to clarify that in this paper,
+the term “probability of frequency” specifically refers to
+the likelihood of encountering severe congestion areas
+during various training stages.
+The x-axis in both Figure 7b,d represents the training
+episode number, grouped into intervals of 200 episodes
+(with a total of 800 episodes), while the y-axis represents
+the probability. As illustrated, the training process leads
+to a clear improvement in both priority standards, resulting in a reduced probability of exceeding the maximum
+episode step. Nonetheless, in the case of the priority-Near
+scenario, the probability of experiencing significant traffic congestion is 13% lower than that of the priority-Far
+scenario, indicating that priority-Near is more effective in
+mitigating severe congestion.
+Besides the priority criteria, another crucial aspect is
+the size of the high-priority set, as it determines the quantity of high-priority vehicles. To explore this, we examined
+three different set sizes (5, 10, and 15) within the priorityNear standard. Notable differences are exhibited across
+various set sizes as shown in Figure 7c and Table 3. A
+set size of 5 displayed inferior performance with an average reward of 983. This is attributed to the set being too
+small for the average number of vehicles in the network.
+Comparatively, set sizes 10 (average reward of 1478) and
+15 (average reward of 1441) showcased better performance.
+Interestingly, when contrasting set sizes 10 and 15, size
+10 outperformed size 15. The reason for this observation
+is that a larger set size prompts vehicles to prioritize the
+shortest route solely based on distance, disregarding route
+popularity. Consequently, this can lead to congestion shifts
+within the network, thereby affecting performance.
+Moreover, as illustrated in Figure 7d, a high-priority
+set size of 15 resulted in a higher probability of severe
+congestion, compared to a set size of 10. Throughout the
+training, it became evident that the combination of the
+“priority-Near” criterion along with a high-priority set size
+
+DU et al.
+
+T A B L E 4 Comparison of training performance in terms of the
+episode reward across the various models.
+Model
+
+Statistic
+
+Value of the
+statistic
+
+Graph attention Q
+network (GAQ) (the
+proposed model)
+
+Mean
+
+1478
+
+Median
+
+1513
+
+Std. dev.
+
+314
+
+Graph convolution Q
+network (GCQ model)
+
+Mean
+
+1277
+
+Median
+
+1256
+
+Std. dev.
+
+287
+
+Mean
+
+435
+
+The rule-based model
+
+Median
+
+503
+
+Std. dev.
+
+304
+
+Bolded numbers indicate the optimal Mean, Median, and Std. dev. values.
+
+of 10 exhibited superior performance, compared to other
+combinations. Therefore, this specific combination was
+integrated into the proposed model.
+Incorporating the chosen combination into the proposed model, we proceeded to train it alongside other
+baseline models. Figure 7e illustrates the reward curve
+encompassing all models, which includes the GCQ-EBkSP
+model, the rule-based model, and the proposed GAQEBkSP model. It is worth noting that the learning-based
+models outshine the rule-based model due to the absence
+of a learning phase in the latter. In contrast, the proposed model demonstrates a remarkable average reward,
+surpassing the rule-based model by approximately 1000
+units (see Figure 7f and Table 4). The key to this improved
+performance lies in the proposed model’s utilization of
+the attention mechanism from the GAQ model, in contrast to the statically normalized convolution operation
+of the GCQ model. This strategic choice enhances the
+learning efficiency of the proposed model by considering
+neighboring information more effectively. The efficiency
+is improved further by the GAQ model’s integration of
+the region index, which considers varying information
+weights from adjacent sources. Furthermore, the proposed
+model outperforms the baseline GCQ-EBkSP model by a
+significant 16% in terms of reward units, emphasizing its
+superiority.
+
+4.2
+
+Testing
+
+In assessing the models across various testing scenarios, several critical variables were adjusted (as shown in
+Table 5). These adjustments are associated with the rerouting ratio (RV ratio), the inflow rate into the network, the
+overall volumes of vehicles (both RVs and BVs) within
+
+DU et al.
+
+TA B L E 5
+
+807
+
+Model performance during various testing scenarios.
+
+Parameter
+Rerouting ratio
+
+Inflow-rate to the network
+(28 entrances)
+
+Scenarios
+
+GAQ-EBkSP
+Avg.
+%
+
+GCQ-EBkSP
+Avg.
+%
+
+EBkSP (rule-based)
+Avg.
+%
+
+10% RV, 90% BV
+
+22.5
+
+30%
+
+20.4
+
+40%
+
+13.0
+
+51%
+
+30% RV, 70% BV
+
+17.1
+
+50%
+
+15.4
+
+50%
+
+11.2
+
+60%
+
+50% RV, 50% BV
+
+17.3
+
+30%
+
+14.9
+
+40%
+
+12.5
+
+55%
+
+70% RV, 30% BV
+
+18.2
+
+25%
+
+15.3
+
+30%
+
+12.7
+
+45%
+
+90% RV, 10% BV
+
+20.7
+
+10%
+
+17.8
+
+25%
+
+13.0
+
+40%
+
+1400 veh∕h
+
+20.3
+
+5%
+
+18.4
+
+15%
+
+11.2
+
+35%
+
+2100 veh∕h
+
+18.5
+
+25%
+
+17.5
+
+35%
+
+10.6
+
+60%
+
+2800 veh∕h
+
+16.8
+
+50%
+
+14.9
+
+50%
+
+10.8
+
+65%
+
+3500 veh∕h
+
+10.2
+
+80%
+
+10.4
+
+85%
+
+8.6
+
+100%
+
+4200 veh∕h
+Total vehicle quantities
+
+Various OD pairs
+
+8.8
+
+85%
+
+8.8
+
+90%
+
+6.6
+
+100%
+
+1000
+
+17.1
+
+50%
+
+15.4
+
+50%
+
+11.2
+
+60%
+
+1500
+
+26.7
+
+50%
+
+17.5
+
+70%
+
+11.3
+
+90%
+
+2000
+
+21.6
+
+65%
+
+12.4
+
+80%
+
+10.8
+
+100%
+
+28
+
+17.3
+
+45%
+
+15.6
+
+55%
+
+10.9
+
+65%
+
+50
+
+16.7
+
+50%
+
+14.3
+
+60%
+
+7.6
+
+90%
+
+75
+
+12.6
+
+80%
+
+12.3
+
+80%
+
+4.8
+
+100%
+
+75 random
+
+14.2
+
+55%
+
+13.7
+
+60%
+
+4.6
+
+100%
+
+Abbreviation: BV, background vehicle; RV, rerouting vehicle.
+
+the network, and the varying counts of origin–destination
+(OD) pairs.
+In the beginning, the model’s performance was tested in
+five different situations, each with varying rerouting ratios.
+These ratios ranged from 10% to 90%: 10% meaning 10% RVs
+and 90% BVs, and so on, up to 90% RVs and 10% BVs. The
+plans for BV trips remained consistent across these tests.
+The flow of vehicles entering the network was a critical
+consideration in these experiments as it directly influenced
+the traffic dynamics and ultimately the road congestion
+The study examined five different rates at which vehicles
+entered the network (at all 28 specific entry points). This
+rate varied from 50 to 150 veh/h at each entry point. Overall, this added up to a network-wide inflow ranging from
+1400 to 4200 veh/h.
+Next, the study explored different total numbers of vehicles (1000, 1500, 2000) in the tests. Three scenarios were
+created, each representing a different number of vehicles, while the proportion of RVs in the mix remained the
+same. Last, to further gauge the robustness of the proposed
+framework, additional investigations (involving more OD
+pairs and diverse OD matrices) were undertaken. The OD
+pairs expanded from an initial count of 28 to 50 and 75
+pairs, allowing for a more comprehensive assessment of
+the model’s performance.
+The performance metrics used to evaluate the models
+under the various scenarios are: (1) the mean speed and (2)
+the probability of encountering severe traffic congestion.
+As shown in Figure 8a, the proposed model (represented
+
+by the solid white-colored bars in the figure) demonstrates
+superior performance in terms of average speed across
+various rerouting ratios. It exhibits a considerable improvement of 14% and 54% over the baseline models while also
+showcasing enhanced proficiency in reducing the probability of severe congestion by 8% and 21% (see Figure 8b
+and Table 5).
+It is worthy to note that the learning-based models (that
+is, the white-colored and hatched bars, viz., GAQ-EBkSP
+and GCQ-EBkSP) consistently outperform the rule-based
+model (dotted bars in the figure) across all the scenarios considered. The rule-based model hinges solely on
+redirecting vehicles based on existing network density,
+disregarding congestion potentially existing at other road
+sections. Consequently, in the rule-based model, vehicles
+lack proactive “future planning,” rendering them incapable of collaboratively selecting optimal routes. On the
+other hand, the learning-based models inherently possess
+more favorable reward profiles. Furthermore, the superior
+efficacy of the learning-based models becomes particularly
+pronounced when rerouting ratios are low, signifying that
+fewer vehicles follow the recommended alternative routes;
+this increases the probability of encountering significant
+congestion.
+In Figure 8b, it is evident that at lower rerouting ratios
+(≤30%), the learning-based model exhibits a 43% probability of encountering severe traffic congestion, while
+the rule-based model displays a higher probability of
+56% (13% greater than the learning-based model) in such
+
+808
+
+DU et al.
+
+F I G U R E 8 Rule-based models versus reinforcement learning (RL)-based models—performance under different testing scenarios
+(rerouting ratios & inflow rates). (a) Comparison of average speed for proposed and baseline models at different rerouting ratios, (b)
+comparison of probability of reaching travel time limit at different rerouting ratios, (c) comparison of average speed for proposed and baseline
+models at various inflow rate, and (d) comparison of probability of reaching travel time limit at different rerouting ratios. GAQ-EBkSP, graph
+attention Q network–entropy-balanced k shortest path; GCQ-EBkSP, graph convolution Q network–entropy-balanced k shortest path.
+
+situations. As the rerouting ratio increases, both learningbased and rule-based models exhibit reduced likelihoods
+of severe congestion. Nevertheless, it remains consistent
+that the learning-based model consistently outperforms
+the rule-based model across all scenarios.
+In addition, it is observed that GAQ-EBkSP improves
+the primary aggregation of the GCQ-EBkSP’s GCN layer
+through the incorporation of the GAT layer, which assigns
+different degrees of importance to each edge using attention coefficients. Consequently, the GAT layer is capable
+of acquiring considerably more relevant information customized to the specific problem when compared to the
+GCN layer. This phenomenon is demonstrated in both
+Figure 8a,b, where GAQ-EBkSP consistently surpasses
+GCQ-EBkSP across all examined scenarios. Regarding the
+
+average speed, the model outcome exhibits a notable
+increase of 2.4 m/s, accompanied by an 8% reduction in the
+likelihood of encountering severe congestion.
+When examining the impact of different inflow rates or
+varying vehicle quantities, it is crucial to maintain a consistent rerouting ratio to prevent any unintended influence
+on the outcomes. With reference to the findings presented
+in Figure 8a,b, it becomes apparent that the most challenging scenario arises when the RV ratio is set at 30%. This
+selection guarantees that the outcomes derived from altering vehicle quantities remain uninfluenced by shifts in the
+rerouting ratio. As a result, 30% was identified as the fixed
+rerouting ratio for all other testing scenarios.
+As illustrated in Figures 8c,d, a compelling pattern
+emerges concerning the influx of vehicles. Specifically,
+
+DU et al.
+
+when the rate of incoming vehicles remains below 2800
+veh/h, both the proposed model and the GCQ-EBkSP
+model exhibit excellent performance, achieving average
+speeds of 14.92 and 14 m/s, the average probability of
+encountering severe congestion of 26.7% and 31.7%, respectively. In contrast, the rule-based model falls behind in
+performance, with an average speed of 11 m/s and an
+average probability of encountering severe congestion of
+53.3%. As noted earlier, such performance discrepancy
+stems from the rule-based model’s limitations in dealing
+with intricate traffic dynamics.
+Conversely, when the inflow rate exceeds 3500 veh/h, a
+noticeable decline in performance becomes evident across
+all models. It is worth highlighting that under these heightened inflow rate conditions, the performance gap between
+the proposed model and the GCQ-EBkSP model becomes
+narrower. In spite of the capability of the GAT attention
+mechanism in facilitating the consideration of more pertinent information, the network might encounter challenges
+related to congestion in scenarios of high inflow rates,
+affecting all routes in a similar fashion. In such instances,
+the nuanced insights afforded by using the GAT might not
+distinctly differentiate the performance of different routes.
+Nevertheless, it is crucial to recognize that learning-based
+models still outperform the rule-based model (with about
+2 m/s higher and 15% lower than the rule-based model).
+This is because they can capitalize on their trained knowledge to make contextually informed decisions even in such
+challenging situations.
+Figure 9a,b provides an overview of the model performance with total vehicle counts of 1000, 1500, and 2000.
+As one might intuit, an increase in the total number of
+vehicles, moving from 1000 to 1500, tends to elevate the
+possibility of encountering congestion. However, Figure 9a
+reveals an intriguing observation: Under the proposed
+model, when the total vehicle count rises from 1000
+to 1500, the mean velocity of RVs improves. This phenomenon arises due to the presence of fast-traveling RVs
+overtaking slower ones as their count increases.
+Furthermore, Figure 9b demonstrates the proposed
+model’s capacity to maintain a relatively stable likelihood
+of RVs facing significant traffic congestion, even as the total
+vehicle count grows. It is interesting to observe that, when
+the network accommodates 1500 and 2000 vehicles, the
+proposed model consistently achieves RVs’ average speeds
+nearly 10 m/s higher than those of other learning-based
+baseline models. In contrast, the baseline model indicates
+that with high overall vehicle counts, RVs are prone to
+a substantial 75% chance of encountering severe congestion. By adopting the suggested model, such likelihood is
+significantly reduced to 57.5% for RVs; this is indicative
+of the effectiveness of the proposed model in mitigating
+congestion under these circumstances.
+
+809
+
+In the final phase of the experiment, the models are subjected to testing scenarios involving an expanded set of OD
+pairs. In the testing configurations of previous phases, the
+OD matrices were held constant (as a total of 28 OD pairs).
+However, to delve deeper into the proposed model’s versatility and robustness, it is imperative to extend the testing to
+scenarios that have a higher number of OD pairs and with
+diverse OD matrices. The fixed parameters of rerouting
+ratio, inflow rate, and vehicle quantities remain consistent
+(30%, 2800 veh/h, and 1000 vehicles). In earlier setups, the
+arrangement of OD matrices was designed to create congestion within the network, with a focus on four primary
+travel directions (mentioned in the Experiment Settings).
+In the first three testing scenarios, we maintain these
+travel directions but increase the number of OD pairs to
+50, and then to 75. Figure 9c,d illustrates that even as the
+number of OD pairs grows, the proposed model continues to outperform other models when the travel directions
+remain similar. Remarkably, the proposed model sustains a
+performance level (even when the OD pairs are elevated to
+50) that is akin to that of scenarios with 28 OD pairs. However, as anticipated, the performance of all models falters
+notably with an increase in OD pairs to 75. Overall, when
+the OD pairs increased and travel directions remained the
+same, the learning-based models’ average speed decreased
+from 17.3 to 14.74 m/s and from 15.6 to 13.3 m/s. However, the rule-based model has a decrease from 10.9 to
+7.2 m/s. Moreover, when OD pairs increased, the learningbased model had nearly 20% lower probability of encountering severe congestion, compared to the rule-based
+model.
+An interesting addition to the model testing is the
+randomization of the 75 OD pairs. In contrast to the erstwhile 75 OD pairs test (which was based on the four
+travel directions), the OD pairs in the randomized test
+were selected randomly from the network. In the randomized test, the relative performance of the learning-based
+model improves noticeably, with average speeds of 14.2 and
+13.7 m/s, and the probability of encountering severe congestion drops to 55% and 60%, compared to the erstwhile
+75 OD pairs test. Meanwhile, the rule-based model’s performance remains the poorest as indicated in Table 5. Overall,
+this result underscores the benefits of incorporating DRL
+into rerouting frameworks. The proposed model consistently outperforms other baseline models, highlighting the
+effectiveness of embedding GAT within DRL frameworks.
+
+5
+
+CONCLUDING REMARKS
+
+In recognition of the highly dynamic nature of urban
+traffic and the limitations of the rerouting guidance methods in the literature, this study proposes a fog-cloud
+
+810
+
+DU et al.
+
+F I G U R E 9 Rule-based models versus RL-based models—performance under different testing scenarios (various vehicle quantity and
+origin–destination [OD] pairs). (a) Average speed associated with the proposed model and the baseline models, for varying vehicle counts; (b)
+probability of attaining the travel time limit, for varying vehicle counts; (c) comparison of average speed for proposed and baseline models
+with various OD pairs; and (d) comparison of probability of reaching travel time limit with various OD pairs. GAQ-EBkSP, graph attention Q
+network–entropy-balanced k shortest path; GCQ-EBkSP, graph convolution Q network–entropy-balanced k shortest path.
+
+architecture-based GAQ-EBkSP model to improve learning efficiency and effectively reduce the incidence of congestion translocation (shifting) that is typically associated
+with urban traffic rerouting guidance. With a fog-cloud
+architecture and a graph attention-based DRL (GAQ),
+the learning efficiency is boosted. The proposed model
+also incorporates EBkSP techniques that help address the
+limitations of previous methods by effectively assigning
+routes to each vehicle based on its priority and the relative
+popularity of routes within the network.
+The study tested several scenarios using the Manhattan
+(NY) road network. The baseline models used for comparison were two state-of-the-art models: a rule-based model
+(EBsSP) and a learning-based model (GCQ-EBkSP). Based
+on the testing outcomes, it is apparent that the attention learning-based model (GAQ-EBkSP) proposed in this
+
+study outperforms the baseline models concerning the
+mean speed and the probability of encountering significant traffic congestion in diverse scenarios. The suggested
+model attains a 2.4 m/s higher mean speed and an 8%
+decreased probability of encountering substantial traffic
+congestion over the baseline GCQ-EBkSP model. In addition, when the network is very busy (a relatively high
+number of vehicles in the network), the proposed GAQEBkSP has a 17.5% less probability of encountering severe
+congestion, compared to the other learning-based baseline
+model (GCQ-EBkSP).
+The superior efficacy of the learning-based (compared
+to rule-based) models is pronounced when rerouting ratios
+are low. As the rerouting ratio increases, both learningbased and rule-based models exhibit reduced likelihoods
+of severe congestion. However, the learning-based model
+
+DU et al.
+
+consistently outperforms the rule-based model across all
+scenarios.
+The pivotal role of the fog nodes layer stands out in
+the proposed framework. In the context of this study,
+a total of six fog nodes were deployed strategically to
+cover the network area. It is worth noting that the
+telecommunication technology employed by the fog computing system can impact the number of fog nodes,
+emphasizing the need for a closer examination. In light
+of this, future research could delve into investigating
+various quantities and sizes of fog nodes, taking into
+account the influence of telecommunication technology.
+This exploration would provide valuable insights into
+how different fog node configurations affect the rerouting
+instructions.
+Furthermore, the efficacy of rerouting instructions
+hinges on a thorough consideration of physical and institutional road attributes. These attributes include elements
+such as facility type, land-use patterns, left-turn opportunities, and tolls. In future research, consideration of these
+attributes in the route assignment process could contribute
+to more reliable and efficient rerouting optimization for
+vehicles in a congested urban network.
+In future research, we plan to explore the effects of different time step intervals and assess their applicability in
+capturing the dynamic nature of various urban scenarios
+more comprehensively. Additionally, our proposed framework could be further fortified by incorporating other
+rerouting considerations, such as proactiveness, predictive
+capabilities, personalized considerations, driver response
+to information, and consistent anticipatory route guidance that were introduced by pioneers in the field of
+rerouting.
+AC K N OW L E D G M E N T S
+This work was supported by Purdue University’s Center
+for Connected and Automated Transportation (CCAT), a
+part of the larger CCAT consortium, a USDOT Region
+5 University Transportation Center funded by the US
+Department of Transportation, Award #69A3551747105.
+The paper is also a part of the Center for Innovation
+in Control, Optimization, and Networks (ICON) and the
+Autonomous and Connected Systems (ACS) initiatives
+at Purdue University’s College of Engineering. The map
+data are from OpenStreetMap contributors and are available from www.openstreetmap.org. The project report that
+spawned this paper is available at https://docs.lib.purdue.
+edu/cgi/viewcontent.cgi?article=1000&context=ccat. The
+contents of this paper reflect the views of the authors, who
+are responsible for the facts and the accuracy of the data
+presented herein and do not necessarily reflect the official
+views or policies of the sponsoring organization.
+
+811
+
+REFERENCES
+Aazam, M., Zeadally, S., & Harras, K. A. (2018). Fog computing
+architecture, evaluation, and future research directions. IEEE
+Communications Magazine, 56(5), 46–52.
+Adeli, H. (2001). Neural networks in civil engineering: 1989–2000.
+Computer-Aided Civil and Infrastructure Engineering, 16(2), 126–
+142.
+Adeli, H., & Jiang, X. (2009). Intelligent infrastructure. Neural networks, wavelets, and chaos theory for intelligent transportation
+systems and smart structures. CRC Press.
+Adeli, H., & Wu, M. (1998). Regularization neural network for
+construction cost estimation. Journal of Construction Engineering and Management, 124(1), https://doi.org/10.1061/(ASCE)07339364(1998)124:1(18)
+Adeli, H., & Yeh, C. (1989). Perceptron learning in engineering
+design. Computer-Aided Civil and Infrastructure Engineering, 4(4),
+247–256.
+Arabi, S., Haghighat, A., & Sharma, A. (2020). A deep-learningbased computer vision solution for construction vehicle detection.
+Computer-Aided Civil and Infrastructure Engineering, 35(7), 753–
+767.
+Arokhlo, M. Z., Selamat, A., Hashim, S. Z. M., & Selamat, M.
+H. (2011). Route guidance system using multi-agent reinforcement learning. 2011 7th International Conference on Information
+Technology in Asia: Emerging Convergences and Singularity of
+Forms—Proceedings of CITA’11, Sarawak, Malaysia.
+Bottom, J. A. (2000). Consistent anticipatory route guidance. (Doctoral
+dissertation, Massachusetts Institute of Technology).
+Brennand, C. A. R. L., Boukerche, A., Meneguette, R., & Villas,
+L. A. (2017). A novel urban traffic management mechanism
+based on FOG. Proceedings—IEEE Symposium on Computers and
+Communications, Heraklion, Greece (pp. 377–382).
+Brennand, C. A. R. L., De Souza, A. M., Maia, G., Boukerche, A.,
+Ramos, H., Loureiro, A. A. F., & Villas, L. A. (2016). An intelligent
+transportation system for detection and control of congested roads
+in urban centers. Proceedings—IEEE Symposium on Computers
+and Communications, 2016, Messina, Italy.
+Cao, A., Fu, B., & He, Z. (2019). ETCS: An efficient traffic congestion scheduling scheme combined with edge computing.
+Proceedings—21st IEEE International Conference on High Performance Computing and Communications, 17th IEEE International
+Conference on Smart City and 5th IEEE International Conference on Data Science and Systems, HPCC/SmartCity/DSS 2019,
+Zhangjiajie, China.
+Chen, K., & Underwood, S. E. (1991). Research on anticipatory route
+guidance (Technical Paper 912787). SAE. https://doi.org/10.4271/
+912787
+Chen, S., Leng, Y., & Labi, S. (2020). A deep learning algorithm for
+simulating autonomous driving considering prior knowledge and
+temporal information. Computer-Aided Civil and Infrastructure
+Engineering, 35(4), 305–321.
+Chen, S., Dong, J., Ha, P. Y. J., Li, Y., & Labi, S. (2021). Graph neural
+network and reinforcement learning for multi-agent cooperative
+control of connected autonomous vehicles. Computer-Aided Civil
+and Infrastructure Engineering, 36(7), 838–857.
+Chen, S., Zong, S., Chen, T., Huang, Z., Chen, Y., & Labi, S. (2023).
+A taxonomy for autonomous vehicles considering ambient road
+infrastructure. Sustainability, 15(14), 11258.
+
+812
+
+Ding, H., Li, W., Xu, N., & Zhang, J. (2022). An enhanced eco-driving
+strategy based on reinforcement learning for connected electric
+vehicles: Cooperative velocity and lane-changing control. Journal
+of Intelligent and Connected Vehicles, 5(3), 316–332.
+Dong, J., Chen, S., Li, Y., Du, R., Steinfeld, A., & Labi, S. (2021). Spaceweighted information fusion using deep reinforcement learning:
+The context of tactical control of lane-changing autonomous vehicles and connectivity range assessment. Transportation Research
+Part C: Emerging Technologies, 128, 103192.
+Dong, J., Chen, S., Miralinaghi, M., Chen, T., & Labi, S. (2022).
+Development and testing of an image transformer for explainable
+autonomous driving systems. Journal of Intelligent and Connected
+Vehicles, 5(3), 235–249.
+Dong, J., Chen, S., Miralinaghi, M., Chen, T., Li, P., & Labi,
+S. (2023). Why did the AI make that decision? Towards an
+explainable artificial intelligence (XAI) for autonomous driving
+systems. Transportation Research Part C: Emerging Technologies,
+156, 104358.
+Doolan, R., & Muntean, G. M. (2013). VANET-enabled eco-friendly
+road characteristics-aware routing for vehicular traffic. IEEE
+Vehicular Technology Conference, Dresden, Germany.
+Du, R., Chen, S., Dong, J., Ha, P. Y. J., & Labi, S. (2021). GAQEBkSP: A DRL-based urban traffic dynamic rerouting framework
+using fog-cloud architecture. 2021 IEEE International Smart Cities
+Conference, ISC2 2021, Manchester, UK.
+Du, R., Ha, P. Y. J., Dong, J., Chen, S., & Labi, S. (2022). Large network
+multi-level control for CAV and smart infrastructure: AI-based FogCloud collaboration (CCAT Report #55). The Center for Connected
+and Automated Transportation, Purdue University.
+Eliasson, J., & Mattsson, L. G. (2006). Equity effects of congestion
+pricing: Quantitative methodology and a case study for Stockholm. Transportation Research Part A: Policy and Practice, 40(7),
+602–620.
+Farver, J., & Chabini, I. (2003). A vehicle-centric algorithm for hybrid
+route guidance. Proceedings of the IEEE International Conference
+on Systems, Man and Cybernetics, Washington, DC.
+Gao, S., & Chabini, I. (2002). Best routing policy problem in stochastic
+time-dependent networks. Transportation Research Record, 1783,
+188–196.
+Goulden, M., Ryley, T., & Dingwall, R. (2014). Beyond “predict and
+provide”: UK transport, the growth paradigm and climate change.
+Transport Policy, 32, 139–147.
+Guériau, M., Billot, R., El Faouzi, N.-E., Monteil, J., Armetta, F., &
+Hassas, S. (2016). How to assess the benefits of connected vehicles? A simulation framework for the design of cooperative traffic
+management strategies. Transportation Research Part C: Emerging
+Technologies, 67, 266–279.
+Ha, P., Chen, S., Du, R., Dong, J., Li, Y., & Labi, S. (2020). Vehicle
+connectivity and automation: A sibling relationship. Frontiers in
+Built Environment, 6, 590036.
+Ha, P. Y. J., Chen, S., Du, R., & Labi, S. (2022). Scalable traffic signal
+controls using fog-cloud based multiagent reinforcement learning.
+Computers, 11(3), 38.
+Ha, P., Chen, S., Dong, J., & Labi, S. (2023). Leveraging vehicle
+connectivity and autonomy for highway bottleneck congestion
+mitigation using reinforcement learning. Transportmetrica A:
+Transport Science. Advance online publication. https://doi.org/10.
+1080/23249935.2023.2215338
+
+DU et al.
+
+Hashemi, H., & Abdelghany, K. (2018). End-to-end deep learning methodology for real-time traffic network management.
+Computer-Aided Civil and Infrastructure Engineering, 33(10), 849–
+863.
+Horwitz, J. (2019). The definitive guide to 5G low, mid, and high band
+speeds. https://venturebeat.com/mobile/the-definitive-guide-to5g-low-mid-and-high-band-speeds/
+Jiang, J., Dun, C., Huang, T., & Lu, Z. (2018). Graph convolutional
+reinforcement learning. http://arxiv.org/pdf/1810.09202.pdf
+Jiang, X., & Adeli, H. (2004). Wavelet packet-autocorrelation function
+method for traffic flow pattern analysis. Computer-Aided Civil and
+Infrastructure Engineering, 19(5), 324–337.
+Jiang, X., & Adeli, H. (2005). Dynamic wavelet neural network
+model for traffic flow forecasting. Journal of Transportation Engineering, 131(10), https://doi.org/10.1061/(ASCE)0733-947X(2005)
+131:10(771)
+Jung, J., Jayakrishnan, R., & Park, J. Y. (2016). Dynamic sharedtaxi dispatch algorithm with hybrid-simulated annealing.
+Computer-Aided Civil and Infrastructure Engineering, 31(4), 275–
+291.
+Kingma, D. P., & Ba, J. L. (2015). Adam: A method for stochastic
+optimization. 3rd International Conference on Learning Representations, ICLR 2015–Conference Track Proceedings, San Diego,
+CA.
+Krajzewicz, D., Erdmann, J., Behrisch, M., & Bieker, L. (2012).
+Recent development and applications of SUMO—Simulation of
+urban mobility. International Journal On Advances in Systems and
+Measurements, 5(3), https://www.iariajournals.org/systems_and_
+measurements/
+Liao, T.-Y. (2017). On-line vehicle routing problems for carbon
+emissions reduction. Computer-Aided Civil and Infrastructure
+Engineering, 32(12), 1047–1063.
+Liu, C., Sheng, Z., Chen, S., Shi, H., & Ran, B. (2023). Longitudinal
+control of connected and automated vehicles among signalized
+intersections in mixed traffic flow with deep reinforcement learning approach. Physica A: Statistical Mechanics and its Applications,
+629, 129189.
+Marín-Tordera, E., Masip-Bruin, X., García-Almiñana, J., Jukan, A.,
+Ren, G. J., & Zhu, J. (2017). Do we all really know what a fog
+node is? Current trends towards an open definition. Computer
+Communications, 109, 117–130.
+Mittal, A., Kim, E., Mahmassani, H. S., & Hong, Z. (2018). Predictive dynamic speed limit in a connected environment for aweather
+affected traffic network: A case study of Chicago. Transportation
+Research Record, 2672(19), 13–24.
+Montanaro, U., Dixit, S., Fallah, S., Dianati, M., Stevens, A., Oxtoby,
+D., & Mouzakitis, A. (2019). Towards connected autonomous
+driving: Review of use-cases. Vehicle System Dynamics, 57(6),
+779–814.
+Mousavi, S. M., Osman, O. A., Lord, D., Dixon, K. K., & Dadashova, B.
+(2021). Investigating the safety and operational benefits of mixed
+traffic environments with different automated vehicle market penetration rates in the proximity of a driveway on an urban arterial.
+Accident Analysis and Prevention, 152, 105982.
+NHTSA. (2011). USDOT connected vehicle research program:
+Vehicle-to-vehicle safety application research plan (USDOT
+Report No. DOT HS 811373). US Department of Transportation:
+National Highway Traffic Safety Administration.
+
+DU et al.
+
+Olovsson, T., Svensson, T., & Wu, J. (2022). Future connected
+vehicles: Communications demands, privacy and cyber-security.
+Communications in Transportation Research, 2, 100056.
+OpenStreetMap contributors. (2017). Planet OSM. https://planet.
+osm.org
+Owens, S. (1995). From “predict and provide” to “predict and prevent”?: Pricing and planning in transport policy. Transport Policy,
+2(1), 43–49.
+Pan, J., Popa, I. S., Zeitouni, K., & Borcea, C. (2013). Proactive vehicular traffic rerouting for lower travel time. IEEE Transactions on
+Vehicular Technology, 62(8), 3551–3568.
+Peng, B., Keskin, M. F., Kulcsár, B., & Wymeersch, H. (2021). Connected autonomous vehicles for improving mixed traffic efficiency
+in unsignalized intersections with deep reinforcement learning.
+Communications in Transportation Research, 1, 100017.
+Rafiei, M. H., & Adeli, H. (2016). A novel machine learning model
+for estimation of sale prices of real estate units. Journal of
+Construction Engineering and Management, 142(2), 04015066.
+Rafiei, M. H., Khushefati, W. H., Demirboga, R., & Adeli, H. (2017).
+Supervised deep restricted Boltzmann machine for estimation of
+concrete. ACI Materials Journal, 114(2), 237–244.
+Rezaei, M., Noori, H., Rahbari, D., & Nickray, M. (2018). ReFOCUS:
+A hybrid fog-cloud based intelligent traffic re-routing system. 2017
+IEEE 4th International Conference on Knowledge-Based Engineering and Innovation, KBEI 2017, Tehran, Iran.
+Shi, H., Nie, Q., Fu, S., Wang, X., Zhou, Y., & Ran, B. (2022). A distributed deep reinforcement learning–based integrated dynamic
+bus control system in a connected environment. Computer-Aided
+Civil and Infrastructure Engineering, 37(15), 2016–2032.
+Tang, C., Hu, W., Hu, S., & Stettler, M. E. J. (2020). Urban traffic route guidance method with high adaptive learning ability
+under diverse traffic scenarios. IEEE Transactions on Intelligent
+Transportation Systems, 22(5), 2956–2968.
+United Nations. (2018). 68% of the world population projected
+to live in urban areas by 2050, says UN. UN DESA, United
+Nations Department of Economic and Social Affairs. United
+Nations
+News.
+https://www.un.org/development/desa/
+en/news/population/2018-revision-of-world-urbanizationprospects.html#:∼:text=News-,68%25%20of%20the%20world%
+20population%20projected%20to%20live%20in,areas%20by%
+202050%2C%20says%20UN&text=Today%2C%2055%25%20of%
+20the%20world’s,increase%20to%2068%25%20by%202050
+US Department of transportation. (2012). Traffic congestion and reliability: Trends and advanced strategies for congestion mitigation.
+Office of Operation, US Department of Transportation, Federal
+
+813
+
+Highway Administration. https://ops.fhwa.dot.gov/congestion_
+report/executive_summary.htm
+Van Hasselt, H., Guez, A., & Silver, D. (2016). Deep reinforcement learning with double Q-Learning. 30th AAAI Conference on
+Artificial Intelligence, AAAI 2016, Phoenix, AZ.
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez,
+A. N., . . . & Polosukhin, I. (2017). Attention is all you need.
+Advances in neural information processing systems, 30.
+Velicković, P., Cucurull, G., Casanova, A., Romero, A., Liò, P., &
+Bengio, Y. (2017). Graph attention networks. arXiv. https://arxiv.
+org/pdf/1710.10903.pdf
+Wang, S., Djahel, S., Zhang, Z., & Mcmanis, J. (2016). Next road
+rerouting: A multiagent system for mitigating unexpected urban
+traffic congestion. IEEE Transactions on Intelligent Transportation
+Systems, 17(10), 2888–2899.
+Xu, Q., Li, K., Wang, J., Yuan, Q., Yang, Y., & Chu, W. (2022). The
+status, challenges, and trends: An interpretation of technology
+roadmap of intelligent and connected vehicles in China (2020).
+Journal of Intelligent and Connected Vehicles, 5(1), 1–7.
+Zeng, M., Wang, M., Liu, Y., & Sheu, J.-B. (2020). Modeling evacuation route choices under influence of variable message signs.
+Computer-Aided Civil and Infrastructure Engineering, 35(8), 793–
+817.
+Zhao, D., & Liu, F. (2022). Cross-condition and cross-platform
+remaining useful life estimation via adversarial-based domain
+adaptation. Scientific Reports, 12(1), 878.
+Zhao, J., Ma, X., Yang, B., Chen, Y., Zhou, Z., & Xiao, P. (2022).
+Global path planning of unmanned vehicle based on fusion of A*
+algorithm and Voronoi field. Journal of Intelligent and Connected
+Vehicles, 5(3), 250–259.
+Zheng, X., Huang, H., Wang, J., Zhao, X., & Xu, Q. (2021). Behavioral decision-making model of the intelligent vehicle based on
+driving risk assessment. Computer-Aided Civil and Infrastructure
+Engineering, 36(7), 820–837.
+
+How to cite this article: Du, R., Chen, S., Dong,
+J., Chen, T., Fu, X., & Labi, S. (2024). Dynamic
+urban traffic rerouting with fog-cloud
+reinforcement learning. Computer-Aided Civil and
+Infrastructure Engineering, 39, 793–813.
+https://doi.org/10.1111/mice.13115
+
+

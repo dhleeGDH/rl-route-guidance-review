@@ -1,0 +1,759 @@
+2024 IEEE International Conferences on Internet of Things (iThings) and IEEE Green Computing & Communications (GreenCom) and IEEE Cyber, Physical & Social Computing (CPSCom) and IEEE Smart Data (SmartData) and IEEE Congress on Cybermatics | 979-8-3503-5163-7/24/$31.00 ©2024 IEEE | DOI: 10.1109/iThings-GreenCom-CPSCom-SmartData-Cybermatics62450.2024.00058
+
+2024 IEEE International Conferences on Internet of Things (iThings) and IEEE Green Computing & Communications
+(GreenCom) and IEEE Cyber, Physical & Social Computing (CPSCom) and IEEE Smart Data (SmartData) and IEEE Congress
+
+A Dynamic Risk-aware Routing Recommendation
+Using Deep Reinforcement Learning
+Difeng Zhu† , Hang Zhou‡ , Anchen Lin† , Binbin Zhou†,∗
+†
+
+School of Computer and Computing Science, Hangzhou City University, Hangzhou, China
+‡
+College of Computer Science and Technology, Zhejiang University, Hangzhou, China
+1062505054@qq.com, hangz@zju.edu.cn, 2230101009@stu.hzcu.edu.cn, bbzhou@hzcu.edu.cn
+
+Abstract—Crime risks in urban environments vary over time
+and space, making it challenging to find a safe and efficient
+route. Previous solutions to this problem were too simplistic and
+static, relying on exhaustive searches that were not practical. In
+this paper, we present a new approach using deep reinforcement
+learning for dynamic risk-aware path planning. Our method
+evaluates crime risks and distances to suggest optimal routes
+that adapt to changing conditions. We have designed a reward
+system that considers road length, risk levels, and the decay of
+risks over time. This innovative approach allows our model to
+make decisions that balance distance and crime risk. Through
+extensive experiments, we demonstrate the effectiveness of our
+model compared to traditional path-planning methods, especially
+as the road network grows in size.
+Index Terms—Routing recommendation, Urban risk, Multiobjective path planning
+
+I. I NTRODUCTION
+Path planning problem is to identify a secure and convenient
+route within a complex and dynamically evolving environment, which is a long-standing problem that has been the focus
+of research for centuries, and it has a wide range of applications. It plays an important role in vehicle navigation, robot
+path-finding, drone flight control, logistics transportation, and
+many other fields.
+Traditional path planning methods, such as Dijkstra and A*,
+have often been used to obtain good results in static maps
+relying on greedy enumeration methods [1]. They can quickly
+compute the optimal route to reach the destination using the
+computational power of computers. However, these algorithms
+simplify the problem setting by frequently assuming that
+the information on the map is constant, which is clearly
+not true. The simplistic approach may make it difficult to
+effectively express some changes in the real world, resulting in
+certain errors. At the same time, using static map algorithms
+requires collecting accurate map information prior to each
+computation, which incurs significant costs in map collection
+and processing.
+To address the limitations of traditional algorithms in dynamic and large-scale maps, in recent years, various approaches have been explored, such as graph-based algorithms, heuristic search algorithms, evolutionary algorithms,
+ant colony algorithms, deep learning algorithms, etc. Machine
+learning algorithms such as deep reinforcement learning have
+also been gradually applied to path planning problems. Deep
+
+reinforcement learning can better capture the specific nature
+of traffic conditions changes. It dynamically learns more
+optimized and timely paths by interacting with agents in the
+map. Additionally, the application of neural networks [2] helps
+save computational costs associated with large-scale maps.
+Some existing reinforcement learning methods may not have
+adopted deep learning to cope with large-scale problems, or
+may not have adopted multi-agent frameworks, resulting in
+low processing efficiency in some cases. In addition, when
+deep reinforcement learning is employed to address specific
+problems, beyond setting up the appropriate reinforcement
+learning framework, including defining agents, environments,
+and actions, the development of an effective reward mechanism is crucial [3]. The reward mechanism allows the agent to
+receive rewards when taking expected actions and punishments
+when taking other actions, so that the agent understands what
+it should and should not do during the learning process. A
+suitable reward mechanism can help the agent better achieve
+its goals.
+To address this challenge, we introduce a unique reward
+mechanism considering the length of the road segment, associated risk values, and the temporal decay of risks. Then, we
+propose a dual objective dynamic perception path planning
+method based on multi-agent deep reinforcement learning,
+where users can obtain safe and convenient routes in complex
+and dynamic road networks by providing only the starting
+point and destination.
+The primary contributions of this study are as follows:
+•
+
+•
+
+•
+
+* Binbin Zhou is the corresponding author.
+
+We design a novel reward mechanism: Three reward evaluation mechanisms are established to compute rewards
+and penalties for the agent’s actions. These mechanisms
+encompass path distance loss and risk loss, rewards
+and penalties for alterations in the relative distance to
+the destination before and after actions, and additional
+rewards upon reaching the destination.
+We introduce dynamic elements to the map: Risk values
+fluctuate depending on the interaction between the agent
+and the map, simulating daily changes in risk values
+according to established rules.
+The devised IMADQN algorithm exhibits superior performance compared to the baseline, particularly on largescale maps, yielding more favorable results than on smallscale maps.
+
+2836-3701/24/$31.00 ©2024 IEEE
+235
+DOI 10.1109/iThings-GreenCom-CPSCom-SmartData-Cybermatics62450.2024.00058
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:41:19 UTC from IEEE Xplore. Restrictions apply.
+
+The subsequent sections of this paper are organized as follows. Section II provides a review of related work. Section III
+outlines the problem statement, and Section IV introduces the
+IMADQN algorithm. Section V details the experimental setup
+and results. Finally, section VI concludes with a summary of
+our work.
+
+networks for model training. This method using multi-agent
+reinforcement learning is not only better than traditional
+algorithms, but also has less computation time. It can be seen
+that for real-world problems with multiple objects, multi-agent
+deep reinforcement learning is also a good choice. Multiagent deep reinforcement learning is generally divided into
+homogeneous agents and heterogeneous agents based on the
+relationship between agents. In homogeneous agents, each
+agent can be regarded as the same, while in heterogeneous
+agents, each agent may not be the same. Because too many
+agents may lead to redundant learning and large computational
+time and space costs, it is necessary to grasp the appropriate
+number.
+
+II. R ELATED W ORK
+In recent years, a research trend for path-planning problems
+has been to use machine learning methods, such as reinforcement learning, to provide optimal paths. Many traditional VRP
+problems related to our work have achieved certain results
+through these machine learning methods [4]. In addition, with
+the advent of the information age and the application of 5G
+networks, many path planning problems have also begun to
+gradually focus on the study of dynamic problems. In [5], the
+author proposed a two-stage hybrid algorithm to solve DVRP,
+which allows vehicles to dynamically process information and
+choose appropriate routes during real-time travel.
+In the past decades, there have been some efforts to model
+path planning problems with reinforcement learning. Reinforcement [6] learning enables agents to learn how to make
+decisions through trial and error. In reinforcement learning,
+the agent needs to explore the environment and interact with
+it, constantly adjusting its strategy according to feedback
+from the environment, in order to obtain better results. An
+excellent strategy is very important for reinforcement learning
+throughout [7], which strongly affects the performance of the
+final agent. However, ordinary reinforcement learning requires
+a Q table [8] to record state rewards and actions. However,
+this method can be used quickly for small problems. Once it
+encounters large problems, the huge volume of the problem
+will bring a huge space and time consumption, which is not
+suitable for use in large maps.
+Deep learning has a wide range of applications, including
+High-precision modeling [9] [10], network association mining
+[11], real-time and efficient model processing [12], control
+management systems [13] [14], and even data privacy and
+security [15] [16] [17]. Deep reinforcement learning networks
+combine reinforcement learning and deep learning, using deep
+learning networks to replace Q tables for recording. In this
+way, only the parameters on the neural network need to be
+recorded, saving space and time. [18]proposed an autonomous
+path planning model based on DRL, which performs intelligent path planning for unmanned ships in unknown environments. These works have demonstrated the feasibility and
+effectiveness of deep reinforcement learning in path-planning
+problems. However, the learning capacity of a single agent is
+limited. If deep reinforcement learning has only one agent, it
+may not cover various actions and may lead to a long learning
+time in a changing environment.
+Multi-agent deep reinforcement learning uses multiple
+agents for deep reinforcement learning. In [19], the author
+proposed a novel reinforcement learning algorithm called the
+multi-agent attention model and also developed a multi-agent
+reinforcement learning method with unsupervised auxiliary
+
+III. P ROBLEM S TATEMENT
+This article addresses real-time navigation in a dynamically
+changing road environment, with risk perception updating in
+real-time based on current road traffic. Specifically, as road
+traffic intensifies, the risk value decreases and vice versa.
+Our objective is to offer optimal path recommendations in a
+dynamically changing road network, promoting low-risk and
+short-distance travel. We advocate the use of deep reinforcement learning to learn dynamic road information from the
+map through continuous agent-map interaction, enabling the
+acquisition of low-risk and short-distance routes.
+Input: Given a set of source and destination points, the road
+network G = (V, E) is provided, where V is the set of all
+nodes on the graph, i.e., road intersections, and E is the set
+of edges; any e in E represents multi-attribute edges, with
+attributes including distance and crime risk.
+Output: A set of routes from the source node to the
+destination node.
+
+
+d1 1
+ d2 1
+
+D= .
+ ..
+
+d1 2
+d2 2
+..
+.
+
+...
+...
+..
+.
+
+dm 1 dm 2 . . .
+
+
+
+d1 N
+d2 N 
+
+.. 
+. 
+dm n
+
+
+. . . r1 N
+. . . r2 N 
+
+.. 
+..
+.
+. 
+rm 1 rm 2 . . . rm n
+
+r1 1
+ r2 1
+
+R= .
+ ..
+
+(1)
+
+r1 2
+r2 2
+..
+.
+
+(2)
+
+We now provide further explanation of the road grid information. In this paper, we use a quad-grid world to represent
+the map. We employ two n × n two-dimensional matrices to
+represent the road environment with n nodes. One matrix is
+used to represent distance and is called the D matrix, while
+the other matrix represents crime risk and is referred to as the
+R matrix. For specific points in the matrices, such as d[i][j]
+or r[i][j], they respectively denote the distance or crime risk
+parameter from node i to node j. In particular, if the value
+of d[i][j] is 0, this means that there is no direct connection
+between node i and node j. It should be noted that the risk
+matrix varies based on the volume of traffic along that edge
+
+236
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:41:19 UTC from IEEE Xplore. Restrictions apply.
+
+over time t. We use a decay function to depict this variation
+and achieve a realistic effect.
+Simultaneously, this paper introduces a temporal dimension
+that mirrors the real world, where each day corresponds to a
+round, and the day’s duration is partitioned into T = 144 time
+intervals (each interval representing 10 minutes). The agent
+within the mapped environment is required to make action
+decisions at each time interval. With the beginning of each day,
+i.e., each round, the map environment undergoes initialization
+to simulate the onset of a new day. This process aims to
+distinguish the varying conditions on the road at different times
+of the day.
+To solve this problem, we propose using multi-agent reinforcement learning to formalize the problem. Formally, this
+article models the problem as a Markov game [20]G with N
+agents, defined by the tuple G = (N, S, a, R, γ), where N,
+S, a, P, R, γ are the number of agents, the set of states, the
+set of actions, the reward function and the discount factor,
+respectively. The definitions are as follows.
+Agent: In this paper, agents can be pedestrians, drivers, cyclists, etc. Depending on the mode of transportation and their
+roles, they can also be divided into students, office workers,
+etc. We consider agents with the same state as homogeneous
+agents. Specifically, agents of the same type on the same
+grid at the same time can be considered homogeneous, which
+means that they have the same strategy. In experiments, the
+generation time, quantity, and location of agents on the map
+have certain regularities [21], which enhances the simulation
+of specific areas and populations. Generally, people always
+leave home, which is the same point, and the number of
+drivers in different areas of the city varies. For example,
+residential areas usually have more residents than commercial
+areas and the number of drivers is roughly the same. Due to
+the constraints of work hours, daily travel times are usually
+the same. The total number of agents will change over time.
+State: sgt ϵS , they represent the situation of agents in the
+environment. tϵT is the time index and is the region index
+where the driver is located. The state of an agent can be defined
+by the point on the grid at a certain moment. Agents on the
+same grid at the same time have the same state.
+Action: agt ϵA , they are the actions taken by agents in
+the environment. tϵT is the time index and g is the region
+index where the driver is located. We set four possible values
+representing the four directions (up, down, left, right) on the
+grid. For example, agt = 0 equals a move upward.
+agt = {up, down, lef t, right} = {0, 1, 2, 3}
+
+Fig. 1. An Overview of our IMADQN Model
+
+penalize the agent when it passes through high-risk longdistance road sections, thereby reducing the probability of
+choosing these road sections and selecting low-risk shortdistance road sections instead; ri2 represents the reward based
+on the change in relative distance between the current position
+and the destination before and after the action, encouraging the
+agent to move closer to the destination and penalizing moving
+away from it, thereby helping the agent to have a general idea
+of which direction to go after each action, improving learning
+efficiency instead of wandering aimlessly; ri3 , which represents
+the additional reward for reaching the destination, allowing
+agents who successfully reach the destination to receive a
+reward that is propagated to the previous actions through
+the discount factor γ,thus increasing the probability of those
+actions being taken correctly and increasing the probability of
+navigating to the destination correctly. Agents that make the
+same action (from the same position to another of the same
+position) have the same reward function. It should also be
+noted that, at any given moment, if multiple agents take the
+same action from one point to another, the reward generated by
+this behavior will be averaged. This means that this experience
+will only be recorded once to prevent agents from congregating
+and giving too much reward to a certain action.
+Discount factor: γ, this parameter represents the foresight
+of the agent for the future, with a value ranging from 0 to 1.
+A higher value indicates a clearer view of future rewards for
+the agent.
+State transition probability: it gives the probability of
+transitioning to the next state when taking an action in the
+current state. Please note that the actions are deterministic.
+When there are multiple identical transition probability values,
+one will be randomly selected.
+
+(3)
+
+Furthermore, the agent’s action is also influenced by its
+location, as agents located in the corners will have fewer
+available action directions. The time index t increases by 1
+after each action.
+Reward: Ri ϵR, rewards are obtained by the agents after
+completing an action in each time interval. Ri is the reward
+obtained by a single agent after taking a single action, and
+each Ri consists of three parts: ri1 ,ri2 ,ri3 , which ri1 represents the distance cost and risk cost on the action, ri1 can
+
+IV. A LGORITHM I NTRODUCTION
+In this section, we introduce a new multi-agent RL
+method called the Integrated Multi-Agent Deep Q-Network
+(IMADQN) algorithm. We first provide a brief overview of
+the basic DQN method in Section A, and then outline the
+specific steps of our IMADQN algorithm in Section B.
+
+237
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:41:19 UTC from IEEE Xplore. Restrictions apply.
+
+instead of using a single network as in DQN. This approach
+avoids conflicts or interference between Q-value functions.
+Specifically, IMADQN first establishes two separate neural
+networks (Q-real and Q-estimated) for each agent, with the
+input being the state corresponding to the agent and the output
+being the Q-value of the agent’s action. At each time step, each
+agent executes the action with the highest Q-value in the environment according to the neural network, from one network to
+another, and observes new states and reward signals fed back
+to the neural network to update the network, while storing
+this information in its experience replay buffer. An experience
+consists of an agent taking action1 from a certain state to reach
+another state and obtaining a reward. The Q-estimated neural
+network is updated at each time step according to the agent’s
+behavior based on the loss function, while the Q-real neural
+network synchronizes parameters with the Q-estimated neural
+network after a few rounds. In addition, all agents share the
+same experience replay buffer, and then every once in a while,
+a certain number of experience tuples are randomly sampled
+from it, so that the agent can learn from others’ experiences
+to speed up the training of a comprehensive neural network
+adapted to the entire road grid.
+It is important to note that all agents share the same experience replay, allowing agents to learn from the experiences
+of other agents and update their individual neural networks
+accordingly.
+The reward formula is as follows:
+
+A. Overview of the DQN Method
+The main idea behind DQN (Deep Q-Network) is to use
+a deep neural network to estimate the Q-value function and
+improve the policy. The key component of the DQN algorithm
+is the construction and training of the deep neural network.
+In DQN, the state is used as input, and the Q-values for
+each possible action are outputted. During the training process,
+DQN utilizes experience replay [22], which involves randomly
+sampling from historical experiences to train and improve
+stability.
+According to the Q-learning algorithm, updating the Qtable requires both the Q-target and Q-estimate, which are
+themselves generated by the Q-table.
+Q(S, a) ← Q(S, a) + α[R + γ ∗ maxQ(S ′ , a′ ) − Q(S, a)] (4)
+Where a is action, R is the reward obtained after a round
+of actions, γ is the discount factor.Q-target is Q (S, a), and
+Q-estimate is [R + γ * maxQ(S’, a’)].
+This formula can be further derived as:
+Q(S, a) ← (1−α)∗Q(S, a)+α∗[R +γ ∗maxQ(S ′ , a′ )] (5)
+It’s important to note that the Q-estimate neural network has
+the latest parameters and is updated after each agent’s action in
+each round of the grid. On the other hand, the Q-target neural
+network uses previous parameters and is only updated after
+multiple rounds of agent actions, remaining the same as the
+Q-estimate. The networks are updated using a loss function:
+Loss = (R + γ(max(Q(S ′ , a′ ))) − Q(S, a))2
+
+Ri = α ∗ ri1 + β ∗ ri2 + ri3
+
+(7)
+
+Reward based on discount factor γ The formula passed to
+the previous action can be expressed as:
+
+(6)
+
+In simple terms, it resembles ordinary least squares [23]
+and minimizes the squared difference between the actual and
+predicted values.
+Overall, DQN leverages a deep neural network to approximate the Q-value function, allowing for more complex
+strategies to be learned. By utilizing experience replay and
+updating the neural network based on the Q-target and Qestimate.
+It should be noted that the initial neural network parameters
+are randomized.
+
+Ri (sgt11 , agt11 )′ = Ri (sgt11 , agt11 ) + γ ∗ Ri (sgt22 , agt22 )
+
+(8)
+
+This formula can be further derived as:
+Ri (sgt11 , agt11 )′ = Ri (sgt11 , agt11 )+γ∗(Ri (sgt22 , agt22 )+γ∗Ri (sgt33 , agt33 ))
+(9)
+Overall, the IMADQN algorithm uses a separate learning method, effectively avoiding interference between agents
+and better coordinating behavior between multiple agents to
+achieve excellent performance in multi-agent environments.
+
+B. IMADQN
+V. E XPERIMENTS
+
+The IMADQN algorithm used in this paper combines independent Q-learning with DQN, as shown in Fig. 1. Traditional
+DQN typically involves a single agent, which can result in
+lower learning efficiency. Therefore, IMADQN is employed,
+which consists of multiple agents differentiated by their IDs
+(i). Multiple agents enable rapid exploration of the map and
+achieve efficient learning.
+IMADQN extends upon DQN. Compared to a single agent,
+the interaction between multiple agents is more complex,
+requiring a more efficient and accurate learning approach. The
+core idea of IMADQN is to use multiple independent neural
+networks to estimate the Q-value function for each agent,
+
+A. Experimental settings
+We conducted experiments on virtual quad-grid maps of
+sizes 10x10 and 20x20, which correspond to 100 and 400
+nodes respectively. Each pair of connected nodes on the map
+has two attributes: distance and crime risk. At the beginning of
+each experiment, agents are generated on the map in a regular
+pattern. As time T progresses, in each round, agents choose
+to move one grid cell up, down, left, or right until they reach
+their destination. It is important to note that the movement of
+agents in each round alters the crime risk values. Specific map
+settings are based on three considerations:
+
+238
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:41:19 UTC from IEEE Xplore. Restrictions apply.
+
+1. Different map sizes: Just as when traveling from Beijing
+to Hangzhou, different starting points and destinations within a
+city require maps of different sizes. Therefore, since different
+individuals may have different starting points and destinations,
+there is a demand for maps of various sizes. This paper
+conducts experiments on multiple maps of different sizes.
+2. Risk sparsity coefficient: Considering that road risk levels
+vary in different regions in reality, some roads may have
+lower risk values due to better safety conditions, even close
+to zero risk, while other areas may have higher road risks
+due to relatively weak regulations. To test the applicability in
+various environments, this paper designs maps with different
+risk sparsity coefficients, where some edges of the map do not
+have risk. Specifically, on a map with a sparsity coefficient of
+60%, approximately 60% of the road edge attributes have a
+risk value of 0. A higher sparsity coefficient indicates a denser
+distribution of risk values on roads.
+3. Risk value variation coefficient: Additionally, considering
+that road conditions can be complex and changeable, the risk
+values of some roads may vary significantly due to time
+restrictions and monitoring, while other roads may remain
+relatively stable and unchanged due to the sparse traffic. This
+paper simulates different degrees of road variation by setting
+a variation coefficient of the risk value. A higher coefficient
+indicates faster changes in road risk attribute values.
+
+250
+
+ % D V H O L Q H  5 L V N  & R V W
+ 5 /  5 L V N  & R V W
+
+200
+150
+100
+50
+0
+
+60%
+
+70%
+
+80%
+
+90%
+
+100%
+
+90%
+
+100%
+
+(a) in 10*10 map
+
+800
+700
+600
+500
+400
+300
+200
+100
+0
+
+ % D V H O L Q H  5 L V N  & R V W
+ 5 /  5 L V N  & R V W
+
+60%
+
+70%
+
+80%
+
+(b) in 20*20 map
+Fig. 2. Risk values of different methods under different risk value sparsity
+
+sparsity. The results are summarized in Fig. 2 (a) and (b).
+Although RL’s method obtained a higher risk value on a 60%,
+sparse 10*10 map, which may be due to the existence of a
+large number of risk-free roads that prevent the RL method
+from demonstrating its advantages, in other groups, the RL
+method achieved lower risk value scores. Overall, we can see
+that the higher the risk sparsity of the map, and the denser the
+map information, the better our RL method can learn highquality routes that are superior to the baseline, resulting in
+relatively lower risk value scores.
+
+B. Performance comparison
+In this section, the performance of the following methods
+was evaluated:
+1. Dijkstra: This algorithm is based on a single source point
+and calculates the shortest distance from each node to the
+source point, gradually expanding the information coverage
+until the entire graph is covered. It can find the shortest path
+between any two nodes in the graph.
+2. A*: The A* algorithm is a heuristic search algorithm
+commonly used for path-finding problems. It can find the
+shortest path between a start and an end point in a graph data
+structure. This algorithm improves upon Dijkstra’s algorithm
+by incorporating a heuristic function to select more optimized
+paths, leading to improved efficiency.
+3.IMADQN: As described in Section 4.2, this is an independent multi-agent deep reinforcement learning method that
+learns policies through interactions between multiple agents
+of different types and the environment.
+The performance of the above three methods was mainly
+compared in two aspects. First, the time taken to generate
+the paths (time) was evaluated. Second, the distance and risk
+values associated with the generated paths were compared.
+The metric used for the evaluation was α × distance + β ×
+crime.
+
+D. Impact of the coefficient of change in risk value
+Specifically, in this experiment, the variability of information is reflected in the magnitude of the changes in risk values.
+In this section, we compared the distance and risk value scores
+of the baseline and our RL method on maps with different
+degrees of risk value change. The results are summarized in
+Fig. 3 (a) and (b). Due to the ability of the RL method to learn
+and update decisions in real-time based on the information in
+the environment, it performs better in dynamically changing
+environments. In general, the greater the degree of change
+in risk value on the map, the more effectively reinforcement
+learning can learn high-quality routes that are superior to the
+baseline.
+VI. C ONCLUSION
+
+C. Influence of Sparse Coefficient of Risk Value
+
+In this paper, we proposed a path recommendation system
+based on deep reinforcement learning that learns efficient
+routes through deep learning networks of multiple intelligent
+agents in complex and volatile map information. Additionally,
+
+Specifically, in this experiment, the information density is
+reflected in the sparsity of higher risk values. In this section,
+we compared the distance and risk scores of the baseline and
+our RL method on maps with different levels of risk value
+
+239
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:41:19 UTC from IEEE Xplore. Restrictions apply.
+
+[6] A. K. Shakya, G. Pillai, and S. Chakrabarty, “Reinforcement learning algorithms: A brief survey,” Expert Systems with Applications, p. 120495,
+2023.
+[7] M. Andrychowicz, A. Raichuk, P. Stańczyk, M. Orsini, S. Girgin,
+R. Marinier, L. Hussenot, M. Geist, O. Pietquin, M. Michalski, et al.,
+“What matters in on-policy reinforcement learning? a large-scale empirical study,” arXiv preprint arXiv:2006.05990, 2020.
+[8] B. Jang, M. Kim, G. Harerimana, and J. W. Kim, “Q-learning algorithms:
+A comprehensive classification and applications,” IEEE access, vol. 7,
+pp. 133653–133667, 2019.
+[9] X. Zhou, Q. Yang, X. Zheng, W. Liang, K. I.-K. Wang, J. Ma, Y. Pan,
+and Q. Jin, “Personalized federated learning with model-contrastive
+learning for multi-modal user modeling in human-centric metaverse,”
+IEEE Journal on Selected Areas in Communications, vol. 42, no. 4,
+pp. 817–831, 2024.
+[10] X. Zhou, X. Ye, K. I.-K. Wang, W. Liang, N. K. C. Nair, S. Shimizu,
+Z. Yan, and Q. Jin, “Hierarchical federated learning with social context
+clustering-based participant selection for internet of medical things
+applications,” IEEE Transactions on Computational Social Systems,
+vol. 10, no. 4, pp. 1742–1751, 2023.
+[11] X. Zhou, W. Liang, K. I.-K. Wang, and L. T. Yang, “Deep correlation
+mining based on hierarchical hybrid networks for heterogeneous big
+data recommendations,” IEEE Transactions on Computational Social
+Systems, vol. 8, no. 1, pp. 171–178, 2021.
+[12] X. Zhou, X. Zheng, X. Cui, J. Shi, W. Liang, Z. Yan, L. T. Yang,
+S. Shimizu, and K. I.-K. Wang, “Digital twin enhanced federated
+reinforcement learning with lightweight knowledge distillation in mobile
+networks,” IEEE Journal on Selected Areas in Communications, vol. 41,
+no. 10, pp. 3191–3211, 2023.
+[13] X. Zhou, X. Zheng, T. Shu, W. Liang, K. I.-K. Wang, L. Qi, S. Shimizu,
+and Q. Jin, “Information theoretic learning-enhanced dual-generative
+adversarial networks with causal representation for robust ood generalization,” IEEE Transactions on Neural Networks and Learning Systems,
+pp. 1–14, 2023.
+[14] X. Zhou, W. Liang, A. Kawai, K. Fueda, J. She, and K. I.-K. Wang,
+“Adaptive segmentation enhanced asynchronous federated learning for
+sustainable intelligent transportation systems,” IEEE Transactions on
+Intelligent Transportation Systems, pp. 1–9, 2024.
+[15] X. Zhou, W. Huang, W. Liang, Z. Yan, J. Ma, Y. Pan, and K. I-Kai Wang,
+“Federated distillation and blockchain empowered secure knowledge
+sharing for internet of medical things,” Information Sciences, vol. 662,
+p. 120217, 2024.
+[16] X. Zhou, W. Liang, K. I.-K. Wang, Z. Yan, L. T. Yang, W. Wei, J. Ma,
+and Q. Jin, “Decentralized p2p federated learning for privacy-preserving
+and resilient mobile robotic systems,” IEEE Wireless Communications,
+vol. 30, no. 2, pp. 82–89, 2023.
+[17] X. Zhou, Q. Yang, Q. Liu, W. Liang, K. Wang, Z. Liu, J. Ma, and
+Q. Jin, “Spatial–temporal federated transfer learning with multi-sensor
+data fusion for cooperative positioning,” Information Fusion, vol. 105,
+p. 102182, 2024.
+[18] S. Guo, X. Zhang, Y. Zheng, and Y. Du, “An autonomous path planning
+model for unmanned ships based on deep reinforcement learning,”
+Sensors, vol. 20, no. 2, p. 426, 2020.
+[19] K. Zhang, F. He, Z. Zhang, X. Lin, and M. Li, “Multi-vehicle routing
+problems with soft time windows: A multi-agent reinforcement learning
+approach,” Transportation Research Part C: Emerging Technologies,
+vol. 121, p. 102861, 2020.
+[20] X. Xiang and S. Foo, “Recent advances in deep reinforcement learning
+applications for solving partially observable markov decision processes
+(pomdp) problems: Part 1—fundamentals and applications in games,
+robotics and natural language processing,” Machine Learning and
+Knowledge Extraction, vol. 3, no. 3, pp. 554–581, 2021.
+[21] A. Kazeem, L. Jensen, and C. S. Stokes, “School attendance in nigeria: Understanding the impact and intersection of gender, urban-rural
+residence, and socioeconomic status,” Comparative education review,
+vol. 54, no. 2, pp. 295–319, 2010.
+[22] T. L. Hayes, G. P. Krishnan, M. Bazhenov, H. T. Siegelmann, T. J.
+Sejnowski, and C. Kanan, “Replay in deep learning: Current approaches
+and missing biological elements,” Neural computation, vol. 33, no. 11,
+pp. 2908–2950, 2021.
+[23] J. F. Hair Jr, M. Sarstedt, L. Hopkins, and V. G. Kuppelwieser, “Partial
+least squares structural equation modeling (pls-sem) an emerging tool in
+business research,” European business review, vol. 26, no. 2, pp. 106–
+121, 2014.
+
+ % D V H O L Q H  5 L V N  & R V W
+ 5 /  5 L V N  & R V W
+200
+
+150
+
+100
+
+50
+
+0
+0.02
+
+0.04
+
+0.06
+
+0.08
+
+0.10
+
+(a) in 10*10 map
+500
+
+ % D V H O L Q H  5 L V N  & R V W
+ 5 /  5 L V N  & R V W
+
+400
+
+300
+
+200
+
+100
+
+0
+0.02
+
+0.04
+
+0.06
+
+0.08
+
+0.10
+
+(b) in 20*20 map
+Fig. 3. Risk values of different methods under different degrees of risk value
+changes
+
+we demonstrate through specific datasets that the proposed
+method achieves better results when faced with larger map
+sizes and significant changes in map information.
+Future work includes conducting experiments on larger
+maps and real-world datasets, as well as designing more
+suitable agents and rewards for different populations based
+on this framework.
+VII. ACKNOWLEDGEMENTS
+This work is partially supported by the Zhejiang Provincial
+Natural Science Foundation (No. LTGG24F020002) and the
+National Natural Science Foundation of China (62102349).
+The authors would like to acknowledge the Supercomputing
+Center of Hangzhou City University for the support of the
+advanced computing resources.
+R EFERENCES
+[1] Y. Liu, E. K. Chong, A. Pezeshki, and Z. Zhang, “Submodular optimization problems and greedy strategies: A survey,” Discrete Event Dynamic
+Systems, vol. 30, pp. 381–412, 2020.
+[2] Z. Li, F. Liu, W. Yang, S. Peng, and J. Zhou, “A survey of convolutional
+neural networks: analysis, applications, and prospects,” IEEE transactions on neural networks and learning systems, 2021.
+[3] R. T. Icarte, T. Q. Klassen, R. Valenzano, and S. A. McIlraith, “Reward
+machines: Exploiting reward function structure in reinforcement learning,” Journal of Artificial Intelligence Research, vol. 73, pp. 173–208,
+2022.
+[4] T. Erdelić, T. Carić, et al., “A survey on the electric vehicle routing
+problem: variants and solution approaches,” Journal of Advanced Transportation, vol. 2019, 2019.
+[5] M. Abdirad, K. Krishnan, and D. Gupta, “A two-stage metaheuristic
+algorithm for the dynamic vehicle routing problem in industry 4.0
+approach,” Journal of Management Analytics, vol. 8, no. 1, pp. 69–83,
+2021.
+
+240
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:41:19 UTC from IEEE Xplore. Restrictions apply.
+
+

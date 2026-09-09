@@ -1,0 +1,685 @@
+2025 IEEE International Conference on Recent Advances in Systems Science and Engineering (RASSE) | 979-8-3315-4435-5/25/$31.00 ©2025 IEEE | DOI: 10.1109/RASSE64831.2025.11315346
+
+A Deep Reinforcement Learning Framework
+for Real-Time Vehicle Routing
+with Dynamic Traffic Conditions
+Antonio Salcuni
+
+Gaetano Volpe
+
+Agostino Marcello Mangini
+
+Maria Pia Fanti
+
+Politecnico di Bari
+Bari, Italy
+antonio.salcuni@poliba.it
+
+Politecnico di Bari
+Bari, Italy
+gaetano.volpe@poliba.it
+
+Politecnico di Bari
+Bari, Italy
+agostinomarcello.mangini@poliba.it
+
+Politecnico di Bari
+Bari, Italy
+mariapia.fanti@poliba.it
+
+Abstract—Urban route planning is a critical challenge for
+Autonomous Vehicles (AVs) due to the high variability of traffic
+conditions and the topological complexity of road networks. Traditional routing systems often rely on static maps or algorithms
+that do not account for the temporal evolution of traffic, resulting
+in suboptimal solutions in real-world scenarios. This work proposes a Deep Reinforcement Learning (DRL) based framework
+for optimal path generation in realistic urban environments,
+leveraging historical traffic data provided by TomTom APIs. The
+road network of the city of Bari is used as a case study, and
+traffic conditions are modeled across three distinct time slots to
+capture typical daily traffic fluctuations. The routing problem
+is formally modeled as a Markov Decision Process, where the
+agent interacts with a dynamic environment and learns a policy
+that minimizes travel time and avoids congestion. The agent
+is trained using the Proximal Policy Optimization algorithm, a
+state-of-the-art actor-critic method that ensures stable learning
+in complex environments. The simulation environment is built
+using Simulation of Urban MObility, with traffic flows generated
+coherently with the data collected from TomTom. Experimental
+results show that the agent trained with time-dependent traffic
+information outperforms static-data-based strategies, demonstrating the effectiveness of the proposed approach for intelligent
+and adaptive transportation systems.
+Index Terms—Deep Reinforcement Learning, Vehicle Routing,
+Autonomous Vehicles, Traffic Simulation, Intelligent Transportation Systems.
+
+I. I NTRODUCTION
+Autonomous driving represents one of the most transformative and ambitious challenges of modern engineering, with the
+potential to redefine urban transportation, significantly enhance
+road safety, and mitigate the environmental impact caused
+by excessive traffic emissions. Autonomous vehicles (AVs)
+are not merely a technological innovation but a fundamental
+component in the development of sustainable urban mobility
+systems [1]. As urban populations expand and congestion
+worsens, the paradigm of smart cities has gained prominence.
+In such cities, advanced technologies are employed to manage
+resources efficiently, optimize urban services, and improve the
+quality of life for citizens [2].
+Smart mobility constitutes a key pillar of this paradigm,
+aiming to streamline traffic flow, minimize travel times, and
+This study is part of the IN2CCAM project that has received funding from
+the European Union’s Horizon Europe research and innovation programme
+under grant agreement No 101076791.
+978-1-6654-XXXX-X/25/$31.00 © 2025 IEEE
+
+foster safer and more environmentally sustainable transportation [3]. Among the core challenges in AV deployment is
+the problem of efficient route planning. Traditional algorithms
+such as Dijkstra and A* have served as the backbone of
+pathfinding but are increasingly inadequate for modern cities
+characterized by dynamic, unpredictable traffic conditions [4].
+These methods also struggle to adapt in real-time and to scale
+effectively within large, complex urban road networks.
+To address these limitations, Deep Reinforcement Learning
+(DRL) has emerged as a powerful methodology. DRL techniques enable systems to learn optimal routing strategies by
+interacting with both simulated and real environments, offering
+robust adaptability in the face of stochastic and variable traffic
+conditions, demonstrated superior performance in learning and
+adapting to complex routing challenges where conventional
+algorithms fail [5]. Notably, DRL has been applied to traffic
+signal control with significant success, indicating its broader
+potential within intelligent transportation systems [6].
+Nonetheless, existing DRL-based path planning methods often neglect real-time traffic dynamics or rely on oversimplified
+traffic models, which limits their applicability in realistic smart
+city contexts [7]. While efforts have been made to integrate
+traffic prediction into routing, such as deep clustered convolutional networks for traffic state prediction [8], comprehensive
+frameworks that unify route planning with dynamic traffic
+conditions remain scarce.
+This paper proposes an advanced DRL-based route planning
+framework for AVs that explicitly incorporates real-time traffic
+conditions in an approach based on the systems of systems
+paradigm. The originality of this contribution lies in several
+key aspects: (i) traffic scenarios are modeled with high fidelity
+using the Simulation of Urban MObility (SUMO) tool [9];
+(ii) real-time traffic data is integrated through the TomTom
+APIs [10], allowing accurate representation of current road
+conditions; (iii) the urban road network is systematically
+partitioned into geographic clusters, enabling scalable and
+efficient route computation; (iv) traffic patterns are captured
+using time-slot segmentation, allowing the model to anticipate
+and adapt to temporal variations in traffic flow. The integration of simulation with Artificial Intelligence tools enables
+the proposed framework to achieve enhanced adaptability to
+dynamic traffic conditions, improved scalability for large urban
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:34:07 UTC from IEEE Xplore. Restrictions apply.
+
+networks, and more accurate route predictions that consider
+both real-time and forecasted traffic states.
+The remainder of this paper is structured as follows: Section
+II reviews related work on route planning optimization within
+the broader field of intelligent transportation systems, with a
+particular focus on DRL-based approaches. Section III defines
+the problem formulation and the modeling framework. Section
+IV describes in detail the proposed framework. Section V
+discusses the case study used to validate the approach, along
+with the experimental results. Section VI concludes the paper
+and outlines directions for future research.
+II. R ELATED W ORK
+Route planning represents a fundamental problem across
+multiple domains, including robotics, autonomous driving, and
+aerial mobility, and has thus become a cornerstone of intelligent transportation systems and smart city development. In the
+context of aerial navigation, for instance, DRL-based planners
+have demonstrated robustness both in simulation and in realworld Unmanned Aerial Vehicle flight tests, confirming their
+applicability in highly dynamic and uncertain environments
+[11]. Similarly, in safety-critical driving scenarios, hybrid
+solutions that combine trajectory prediction via graph-based
+models with model predictive control have proven effective in
+ensuring both adaptability and safety [12]. These contributions
+highlight the versatility of DRL-based route planning across
+heterogeneous application domains.
+Building upon this general foundation, research has progressively focused on ground vehicles and autonomous mobility.
+Early works emphasized the role of reward design in improving DRL-based path planning, enabling smoother and more
+efficient trajectories compared to classical algorithms [13].
+Subsequent hybrid approaches integrated DRL with potential
+field methods or model-based local planners such as Dynamic
+Window Approach, thereby enhancing convergence, obstacle
+avoidance, and real-world applicability [14], [15]. These studies demonstrated that combining learning-based and classical
+paradigms can yield effective solutions for small-scale motion
+planning tasks.
+The research focus has since shifted toward large-scale vehicular routing. DRL has been framed as a sequential decisionmaking process for dynamic traffic networks, where simulation
+environments such as SUMO have provided realistic testbeds
+to validate adaptive routing strategies [16]. These works consistently showed that DRL-based routing policies outperform
+traditional optimization baselines under congested and nonstationary conditions. More advanced approaches addressed
+scalability issues through hierarchical architectures enriched
+with transformer-based attention mechanisms, allowing realtime routing decisions even in dense metropolitan environments with numerous agents and fluctuating traffic demands
+[17].
+Parallel to these developments, attention has been devoted
+to enriching the objectives of route planning. Bi-criteria frameworks have shown how DRL can balance travel efficiency with
+
+additional dimensions such as safety or environmental sustainability [18]. Other works introduced context-aware routing
+models, where external factors such as demand patterns or
+user preferences are explicitly incorporated into the decisionmaking process [19]. Moreover, the integration of graph neural
+networks with DRL has enabled the representation of complex traffic interactions, while parallel simulation approaches
+have improved scalability, allowing policies to approximate
+Dynamic User Equilibrium solutions in realistic traffic regimes
+[20].
+Within this context, the framework proposed in this paper
+extends the state of the art by explicitly integrating real-world
+traffic data with DRL-based path planning in a high-fidelity
+simulation environment. Unlike prior approaches that rely
+primarily on synthetic or simulation-only traffic scenarios [16],
+[17], our method incorporates historical traffic patterns via the
+TomTom APIs directly into SUMO, enabling the training and
+evaluation of routing policies under conditions that closely
+replicate real-world dynamics. Additionally, the systematic
+clustering of the urban road network and the temporal slotting
+of traffic flows allow the framework to scale efficiently to large
+metropolitan networks and to adapt to temporal variations in
+traffic, addressing limitations in both scalability and temporal
+awareness present in existing methods [17], [20]. These enhancements collectively support the development of adaptive
+and deployable routing strategies suitable for next-generation
+smart city applications.
+III. P ROBLEM F ORMULATION
+Efficient route planning for AVs in dynamic urban environments is inherently a sequential decision-making problem,
+where the agent must select optimal actions (routes) while
+adapting to stochastic and time-varying traffic conditions. This
+process is best modeled as a Markov Decision Process, which
+provides a mathematical framework for modeling decisionmaking in environments where outcomes are partly random
+and partly under the control of the agent.
+The urban road network is modeled as a directed graph
+G = (V, E), where V represents intersections or waypoints
+and E denotes road segments.
+Fig. 1 shows an example traffic scenario used for route
+planning.
+A. Markov Decision Process
+The Markov Decision Process (MDP) is formally defined
+by the tuple (S, A, T , R, γ), where:
+• S (State space): encodes the current location of the
+vehicle, the current traffic slot, and the normalized time
+slot to represent the vehicle’s temporal and spatial context
+in the network;
+• A (Action space): representing the set of possible outgoing edges (roads) that the vehicle can choose from at its
+current location;
+• T (Transition probability function): models the state
+evolution driven by the selected route and real-time traffic
+conditions simulated in SUMO;
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:34:07 UTC from IEEE Xplore. Restrictions apply.
+
+E. Reward Function
+The agent aims to find the shortest route toward the destination while avoiding congested roads. The total reward rtot (t)
+at each time t is composed of multiple sub-functions:
+rtot (t) = rshortest (t) + rtraf f ic (t) + rarrival (t) + rinvalid (t)
+
+Fig. 1. Representation of generic traffic scenario used for route planning:
+the autonomous vehicle (red circle, labeled AV) is located at an intersection
+and must decide among possible routing options (white arrows). Surrounding
+vehicles highlighted in yellow circles represent real-time traffic density, which
+influences the AV’s routing decision.
+
+•
+
+•
+
+R (Reward function): defined to encourage the agent to
+select paths that minimize travel time, avoid congested
+roads, and reach the destination efficiently;
+γ (Discount factor): controls the trade-off between immediate travel cost reductions and long-term route efficiency.
+
+B. State Space
+The state s(t) represents the current situation of the autonomous vehicle in the system and is defined as:
+s(t) = {e(t), tslot (t), tnorm (t)}
+where:
+• e(t) ∈ E identifies the edge (by index) where the vehicle
+is located at time t;
+• tslot (t) ∈ {0, 1, 2, 3} identifies the current traffic time
+slot (0: no traffic, 1: morning, 2: afternoon, 3: evening);
+• tnorm (t) ∈ [0, 1] is the normalized time within the current
+traffic time slot, defined as:
+tsim
+tnorm (t) =
+|Tslot |
+
+a) Shortest Path Reward: Rewards the agent for moving
+closer to the destination:
+(
++α, if d(t) ≤ d(t − 1)
+rshortest (t) =
+−β, otherwise
+where d(t) is the distance between the current edge and the
+destination edge at time t.
+b) Traffic Density Penalty: Penalizes the agent for selecting congested roads:
+(
+−δ · vehicle count, if vehicle count ≥ θ
+rtraf f ic (t) =
+0,
+otherwise
+where vehicle count is the number of vehicles on edge
+e(t). In this work, an edge is considered congested only if
+vehicle count > θ; otherwise, the edge is treated as freeflowing.
+c) Arrival Reward: Rewards the agent when it reaches
+the destination:
+(
+λ, if e(t) = eend
+rarrival (t) =
+0, otherwise
+d) Invalid Action Penalty: Penalizes the agent for selecting invalid actions:
+(
+−µ, if e(t) ∈
+/ [outEdgesList]
+rinvalid (t) =
+0,
+otherwise
+e) Parameter Values: The values chosen for these parameters in this work are determined empirically:
+
+where Tslot is the duration of the time slot.
+
+α = 0.5,
+
+C. Action Space
+
+These values were selected based on preliminary experiments
+to balance route efficiency, congestion avoidance, and penalty
+enforcement.
+
+Actions represent the possible routing choices for the vehicle. At each node, the vehicle can select one of the available
+outgoing roads:
+A(t) = {e1 , e2 , . . . , en }
+where n is the total number of outgoing roads from the current
+node, evaluated by SUMO.
+
+β = 0.5,
+
+δ = 0.2,
+
+θ = 4,
+
+λ = 50,
+
+µ = 100
+
+IV. D EEP R EINFORCEMENT L EARNING F RAMEWORK
+To address the route planning problem under dynamic traffic
+conditions, a DRL framework is proposed, combining an actorcritic structure with traffic-aware decision-making.
+A. Actor-Critic Framework
+
+D. Transition Function
+The transition from state s(t) to next state s′ = s(t + 1)
+depends on:
+• the action a(t), which determines the next edge e(t + 1);
+• the traffic dynamics, influenced by time slots and SUMO
+simulation behavior.
+Thus, T (s′ |s, a) is not explicitly known but is simulated
+through TraCI and SUMO APIs.
+
+The DRL model adopts an Actor-Critic Architecture [21],
+composed of two neural networks:
+• Actor network: maps states to actions using a probabilistic policy π(a|s). It outputs the probability of taking
+each possible action in a given state;
+• Critic network: estimates the value of a state or the
+advantage of an action using the value function V (s) or
+Q(s, a).
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:34:07 UTC from IEEE Xplore. Restrictions apply.
+
+The Actor and Critic work synergistically: the Actor selects
+actions based on its policy, while the Critic evaluates those
+actions using an estimate of the advantage function. The
+advantage function A(s, a) is defined as:
+A(s, a) = Q(s, a) − V (s)
+where Q(s, a) is the action-value function and V (s) is the
+state-value function. This difference quantifies how much
+better an action is compared to the average action in that state.
+The advantage function is closely related to the Temporal
+Difference (TD) error, computed as:
+δ = r + γV (s′ ) − V (s)
+where r is the reward, γ the discount factor, and s, s′ are the
+current and next states, respectively.
+B. Policy Optimization
+To train the Actor-Critic model, Proxy Policy Optimization
+(PPO) algorithm [22] is adopted, known for its robustness and
+stability. PPO updates the policy using a clipped surrogate
+objective that prevents large and destructive updates. The loss
+function is defined as:
+LP P O (θ) = Et [min (rt (θ)At , clip(rt (θ), 1 − ϵ, 1 + ϵ)At )]
+where:
+πθ (at |st )
+is the ratio between new and old
+• rt (θ) = π
+θold (at |st )
+policy probabilities;
+• ϵ is a hyperparameter limiting policy updates;
+• At is the advantage estimate.
+This clipped objective ensures that policy updates remain
+within a conservative range, improving training stability —
+a critical feature in complex environments like urban traffic
+networks. PPO is particularly effective in problems where the
+decision space is sequential, dynamic, and must adapt to realtime conditions.
+
+planner in an urban environment characterized by dynamic
+congestion patterns and complex road topologies.
+The city of Bari was selected as the testbed due to its diverse
+traffic conditions, ranging from low-congestion residential
+zones to highly congested urban centers. To ensure realistic
+simulation, the urban map was extracted from OpenStreetMap
+[24] and converted for use in SUMO. Historical and real-time
+traffic data were retrieved from TomTom APIs, providing a
+reliable basis for modeling traffic dynamics.
+A critical feature of this work is the partitioning of the
+Bari road network into geographic clusters using K-means
+clustering. This clustering approach enables scalable simulation by managing traffic flows at the cluster level rather than
+at the individual road segment level, significantly reducing
+computational complexity during training while preserving
+traffic realism.
+The DRL agent, implemented using Ray RLlib [25] with
+PPO, was trained to optimize routes that balance path efficiency with traffic avoidance. The simulation environment
+integrates SUMO for traffic modeling, TraCI for real-time
+control, and Ray RLlib for DRL training, creating a cohesive
+platform for evaluating route planning strategies.
+Fig. 2 illustrates the road network of Bari used in the simulation scenario. The image was extracted from OpenStreetMap
+and processed for use in the simulation, highlighting the
+complexity and structure of the urban traffic topology.
+The following subsections describe in detail the simulation
+environment setup, clustering methodology, performance metrics used, training and testing processes, and simulation results.
+
+C. Traffic-Aware Routing
+The framework integrates real traffic data retrieved from
+TomTom APIs, aggregated into three traffic slots: morning,
+afternoon, and evening. Each slot reflects distinct congestion
+patterns and is used to simulate traffic dynamics in SUMO.
+The agent observes the current traffic slot and normalized time,
+allowing it to adapt its routing policy to temporal variations
+in traffic. Additionally, the urban map is partitioned into
+geographic clusters using K-means [23], facilitating scalable
+simulation and efficient policy learning. By combining actorcritic DRL with real-time traffic modeling and clustering-based
+partitioning, the proposed framework enables dynamic and
+traffic-aware route planning for autonomous vehicles.
+V. C ASE S TUDY
+To validate the proposed DRL framework, an extensive case
+study was conducted using the real-world traffic network of
+Bari, Italy. This case study aims to demonstrate the practical
+applicability and effectiveness of the traffic-aware DRL route
+
+Fig. 2. Map of the Bari urban traffic network used in the simulation scenario.
+The figure shows major intersections, roundabouts, and road connections extracted from OpenStreetMap and prepared for SUMO-based traffic simulation.
+
+A. Simulation Environment
+The simulation environment integrates multiple components
+to ensure realism and scalability within a systems-of-systems
+approach. The novelty of the proposed framework lies in this
+integration of different tools, which includes the following
+elements:
+• SUMO: used for microscopic traffic simulation, modeling vehicle behaviors and traffic flows;
+• OpenStreetMap: provides the base map of Bari, imported and converted into SUMO-readable format;
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:34:07 UTC from IEEE Xplore. Restrictions apply.
+
+•
+•
+•
+
+TomTom Traffic APIs: supply historical and real-time
+traffic data to replicate realistic congestion patterns;
+TraCI API: enables real-time bidirectional communication between SUMO and the DRL agent;
+Ray RLlib: implements the PPO algorithm and manages
+DRL training sessions.
+
+B. Map Clustering
+To mitigate computational complexity, the Bari road network was partitioned into geographic clusters using the Kmeans algorithm. This approach renders the routing and traffic
+flow management problem more tractable by decomposing the
+network into smaller, localized sub-regions.
+Within each cluster, ingress and egress points were explicitly
+defined, allowing traffic flows to be generated at the cluster
+level rather than across the entire network. Junctions were
+assigned to nclusters (set to 7, reflecting the spatial extent and
+complexity of the Bari road network represented) based on
+proximity to cluster centroids, and edges were subsequently
+organized according to their cluster membership, with relevant
+information on allowed and restricted vehicle types systematically recorded. Essential data, including cluster centroids, all
+edges, internal border edges, and complete boundary edges,
+were extracted and stored to facilitate modular traffic assignment.
+Such an organization markedly enhances scalability: rather
+than addressing a combinatorial explosion of potential routes
+across the entire urban network, the framework only needs to
+manage flows within and between clusters. Consequently, the
+number of candidate routes is reduced, and traffic data can
+be allocated in a modular manner. Each cluster was assigned
+specific traffic volumes derived from TomTom density indices,
+thereby preserving heterogeneity in the simulation.
+Overall, clustering transforms the routing problem from
+a global, computationally intensive task into a modular and
+scalable framework, enabling traffic flows and route planning
+to be managed at multiple levels of spatial granularity.
+Fig. 3 illustrates the clustering of the Bari road network.
+C. Training Process
+The DRL agent was trained using Python on an 11th Gen
+Intel Core i7-11370H CPU (3.30 GHz) with 16 GB of RAM.
+Due to the constrained computational resources available in a
+home setup, the training process was limited to 260 episodes.
+This choice was driven by the high computational cost resulting from the joint execution of SUMO traffic simulation and
+the reinforcement learning algorithm.
+To optimize resource usage and reduce training time, SUMO
+was executed in non-GUI mode, leveraging a customizable
+option provided within the developed code framework. This
+setup allowed for headless simulation runs, reducing graphical
+overhead and enabling more efficient use of available computation capacity.
+The performance of the DRL agent was evaluated using
+the hyperparameters and reward settings described in Table
+I. These parameters are fundamental for the training and
+
+Fig. 3. Cluster division of the Bari road network using K-means clustering.
+Each color represents a distinct cluster used for scalable route planning.
+
+decision-making process of the agent, influencing both learning stability and routing efficiency:
+TABLE I
+DRL H YPERPARAMETERS
+Hyperparameter
+Learning rate
+Clipping parameter
+Entropy coefficient
+Truncation value for episodes
+Traffic index
+
+•
+•
+•
+•
+•
+
+Value
+0.0001
+0.2
+0.02
+70
+4
+
+Learning rate: Controls the step size during gradient
+descent optimization to ensure smooth convergence.
+Clipping parameter: Limits the size of policy updates
+to maintain training stability.
+Entropy coefficient: Encourages exploration by adding
+randomness to action selection.
+Truncation value for episodes: Limits the episode length
+preventing infinite loops.
+Traffic index: Defines the traffic density threshold for
+penalty application.
+
+Each training episode required approximately 40 minutes to
+complete. Despite limited computational resources, the agent
+demonstrated consistent improvement. Training reward trends
+showed in Fig. 4 stabilized between 14 and 16, indicating
+that the agent was approaching asymptotic convergence within
+the available training budget. Moreover, as shown in Fig. 5,
+the duration of each episode stabilized around 30–40 steps, a
+clear sign that the learning process was effectively converging.
+This reduction in episode variability reflects the agent’s ability
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:34:07 UTC from IEEE Xplore. Restrictions apply.
+
+to learn consistent routing strategies under dynamic traffic
+conditions.
+
+Fig. 4. Training rewards per episode. The plot shows minimum (red), mean
+(blue), and maximum (green) rewards. A stabilization trend is observed after
+episode 130.
+
+Fig. 5. Episode length during training. The curve shows increasing consistency over time.
+
+Google Maps baseline: The path suggested by Google
+Maps is primarily based on static shortest-path logic and
+recent traffic reports. It prefers a more direct route in the
+initial segments, even when that path may be moderately
+congested.
+• DRL-based routing: The trained agent, informed by traffic data from TomTom, learns to avoid early congestion
+and instead selects a longer but less congested initial route
+segment, resulting in more stable and predictable travel
+times.
+While Google prioritizes nominal distance and current delay
+estimations, the DRL agent leverages dynamic reward shaping
+to minimize cumulative penalties, thus exhibiting anticipatory
+behavior regarding future congestion along the route.
+Fig. 6 shows the map comparison of the two routes. The
+DRL-generated path differs from the baseline mainly in the
+early stages, where it circumvents a highly congested urban
+segment by rerouting through a secondary road network. This
+behavior demonstrates the planner’s capacity to trade off shortterm distance in favor of long-term travel time savings and
+emission reductions.
+•
+
+Fig. 6. Comparison between the DRL-based route planner (left) and Google
+Maps (right). The green-highlighted arrow shows a difference in route
+selection: the DRL approach avoids the more congested area, optimizing the
+travel time.
+
+D. Testing and Simulation Results
+Post-training, the agent was evaluated in testing scenarios
+involving unseen traffic distributions. Traffic flows were randomly generated within the historical patterns retrieved from
+the TomTom APIs, ensuring that the agent’s generalization
+capability was tested under realistic but new conditions.
+Post-training evaluations were conducted using unseen traffic data sampled from historical TomTom patterns. To test the
+effectiveness of the DRL-based planner, a practical scenario
+was executed in which an autonomous vehicle is tasked with
+navigating from a starting point to a destination point within
+the Bari road network.
+This test aimed to compare the DRL-based path—optimized
+in real-time under traffic conditions—with a conventional routing baseline obtained via the Google Maps API with the same
+starting and destination points. The comparison highlights the
+ability of the trained agent to select alternative paths when
+facing congested segments.
+The resulting comparison revealed notable differences between the two approaches:
+
+VI. C ONCLUSION
+This paper presents a traffic-aware route planning approach
+based on DRL, evaluated in a realistic urban environment. The
+experimental results show that the DRL agent achieves significant improvements over conventional routing strategies, such
+as those provided by Google Maps. In particular, the agent
+demonstrates the ability to anticipate and avoid congested
+segments, opting for alternative routes that reduce exposure
+to traffic without compromising arrival success.
+The comparison highlights how learning-based routing can
+surpass static or myopic heuristics by incorporating long-term
+traffic dynamics into decision-making. These findings support
+the practical potential of intelligent routing frameworks for
+future autonomous mobility systems and urban traffic management solutions.
+Future work will focus on refining map accuracy, improving
+computational efficiency, and expanding the framework to
+larger urban networks, further enhancing its scalability and
+practical deployment potential in smart city environments.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:34:07 UTC from IEEE Xplore. Restrictions apply.
+
+R EFERENCES
+[1] J. Li et al., ”A Sustainable Ecology of Mobility: DAO-Based Autonomous Vehicular Services,” IEEE Transactions on Intelligent Vehicles, vol. 8, no. 12, pp. 4682-4684, Dec. 2023. Available: https:
+//doi.org/10.1109/TIV.2023.3334719.
+[2] I. Santosa, S. H. Supangkat, and A. A. Arman, ”Value of Smart City
+Services in Improving the Quality of Life: A Literature Review,” in Proc.
+2023 10th Int. Conf. on ICT for Smart Society (ICISS), pp. 1-6, Sep.
+2023. Available: https://doi.org/10.1109/ICISS59129.2023.10291571.
+[3] N. Jain, R. Parwanda, and A. Chauhan, ”Real-Time Smart Traffic
+Control and Simulation: An Approach for Urban Congestion Management,” in Proc. 2023 IEEE IAS Global Conf. on Emerging Technologies
+(GlobConET), pp. 1-6, May 2023. Available: https://doi.org/10.1109/
+GlobConET56651.2023.10150057.
+[4] R. S, A. Yadav, and S. B. Pal, ”Enhanced Indoor Pathfinding Navigation
+in Multistoried Buildings Using a Hybrid of RRT-Connect and Dijkstra’s
+Algorithm,” in Proc. 2025 Int. Conf. on Multi-Agent Systems for Collaborative Intelligence (ICMSCI), pp. 292-299, Jan. 2025. Available:
+https://doi.org/10.1109/ICMSCI62561.2025.10894337.
+[5] F. Paparella, G. Olivieri, G. Volpe, A. M. Mangini, and M. P. Fanti,
+”A Deep Reinforcement Learning Approach for Route Planning of
+Autonomous Vehicles,” in Proc. 2024 IEEE Int. Conf. on Systems,
+Man, and Cybernetics (SMC), pp. 2047-2052, Oct. 2024. Available:
+https://doi.org/10.1109/SMC54092.2024.10831232.
+[6] F. Yu, X. Mi, C. Yu, and Y. Jiang, ”Distributed Traffic Signal Control
+Model for Accurate Policy Learning Under Dynamic Traffic Flow:
+A Graph Forecast-State Vector Driven Deep Reinforcement Learning
+Framework,” IEEE Trans. on Intelligent Transportation Systems, vol.
+26, no. 9, pp. 13573-13584, Sep. 2025. Available: https://doi.org/10.
+1109/TITS.2025.3567841.
+[7] T. A. Haddad, ”Traffic Signal Control for Large-Scale Scenario: A Deep
+Reinforcement Learning-Based Cooperative Approach,” in Proc. 2024
+12th Int. Conf. on Systems and Control (ICSC), pp. 412-417, Nov. 2024.
+Available: https://doi.org/10.1109/ICSC63929.2024.10928884.
+[8] B. Du, X. Hu, L. Sun, J. Liu, Y. Qiao, and W. Lv, ”Traffic Demand
+Prediction Based on Dynamic Transition Convolutional Neural Network,” IEEE Trans. on Intelligent Transportation Systems, vol. 22, no.
+2, pp. 1237-1247, Feb. 2021. Available: https://doi.org/10.1109/TITS.
+2020.2966498.
+[9] D. Krajzewicz, J. Erdmann, M. Behrisch, and L. Bieker, ”Recent Development and Applications of SUMO – Simulation of Urban MObility,”
+International Journal On Advances in Systems and Measurements, vol.
+5, no. 3-4, pp. 128–138, Dec. 2012. Available at: https://sumo.dlr.de/
+docs/
+[10] TomTom International BV, ”TomTom Routing API Documentation,”
+Accessed: Nov. 2024. [Online]. Available: https://developer.tomtom.
+com/routing-api/documentation/tomtom-maps/calculate-route.
+[11] J. Shim, J. Park, N. C. Song, J. Jang, J.-Y. Choi, G. Lee, R. Prasad,
+and S. Choi, ”Real-Time Optimal Route Planning by Deep Reinforcement Learning and Validation with Flight Test,” in AIAA AVIATION
+Forum, AIAA 2023-3623, June 2023. Available: https://doi.org/10.2514/
+6.2023-3623.
+[12] W. Chu, K. Yang, S. Li, et al., ”Motion Planning for Autonomous
+Driving with Real Traffic Data Validation,” Chinese Journal of Mechanical Engineering, vol. 37, no. 6, pp. 1-12, 2024. Available: https:
+//doi.org/10.1186/s10033-023-00968-5.
+[13] R. Jaramillo-Martı́nez, E. Chavero-Navarrete, and T. Ibarra-Pérez,
+”Reinforcement-Learning-Based Path Planning: A Reward Function
+Strategy,” Applied Sciences, vol. 14, no. 17, 7654, 2024. Available:
+https://doi.org/10.3390/app14177654.
+[14] Y. Wang, B. Shen, Z. Nan, and W. Tao, ”An End-to-End Path Planner
+Combining Potential Field Method With Deep Reinforcement Learning,”
+IEEE Sensors Journal, vol. 24, no. 16, pp. 26584-26591, Aug. 2024.
+Available: https://doi.org/10.1109/JSEN.2024.3425530.
+[15] J. Wang and R. Huang, ”A Mapless Navigation Method Based on
+Deep Reinforcement Learning and Path Planning,” in Proc. IEEE Int.
+Conf. on Robotics and Biomimetics (ROBIO), pp. 1781-1786, Dec. 2022.
+Available: https://doi.org/10.1109/ROBIO55434.2022.10011923.
+[16] S. Koh, B. Zhou, H. Fang, et al., ”Real-time deep reinforcement learning
+based vehicle routing and navigation,” Applied Soft Computing, vol.
+96, 106694, Nov. 2020. Available: https://doi.org/10.1016/j.asoc.2020.
+106694.
+
+[17] Y. Li, Q. Guan, J. Gu, X. Jiang, and Y. Li, ”A hierarchical deep reinforcement learning method for solving urban route planning problems under
+large-scale customers and real-time traffic conditions,” International
+Journal of Geographical Information Science, vol. 37, no. 6, pp. 12211245, 2024. Available: https://doi.org/10.1080/13658816.2024.2413394.
+[18] C. Chen, L. Li, M. Li, R. Li, Z. Wang, F. Wu, and C. Xiang, ”cuRL:
+A Generic Framework for Bi-Criteria Optimum Path-Finding Based
+on Deep Reinforcement Learning,” IEEE Transactions on Intelligent
+Transportation Systems, vol. 24, no. 2, pp. 1949-1961, Feb. 2023.
+Available: https://doi.org/10.1109/TITS.2022.3219543.
+[19] Y. Wang and P. Hu, ”Deep Reinforcement Learning-Based Multi-Object
+Adaptive Route Planning for Traveling Recommender Systems,” IEEE
+Access, pp. 1-1, 2023. Available: https://doi.org/10.1109/ACCESS.2023.
+3327273.
+[20] R. Zhang, P. Lin, C. Zhou, and L. Miao, ”Deep Reinforcement Learning
+for Vehicle Swarm Navigation and Urban Traffic Optimization,” Transactions on Emerging Telecommunications Technologies, vol. 36, no. 1,
+e70227, 2025. Available: https://doi.org/10.1002/ett.70227.
+[21] Sutton, R. S., and A. G. Barto. Reinforcement Learning: An Introduction. 2nd ed. Cambridge, MA: MIT Press, 2018. Available: http:
+//incompleteideas.net/book/RLbook2020.pdf.
+[22] J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov. ”Proximal Policy Optimization Algorithms.” arXiv preprint arXiv:1707.06347,
+2017. Available: https://arxiv.org/abs/1707.06347.
+[23] M. Mardi and M. R. Keyvanpour. ”GBKM: A New Genetic Based KMeans Clustering Algorithm.” In 2021 7th Int. Conf. on Web Research
+(ICWR), pp. 222–226. Tehran, Iran: IEEE, 2021. Available: https://doi.
+org/10.1109/ICWR51868.2021.9443113.
+[24] M. Haklay and P. Weber. ”OpenStreetMap: User-Generated Street
+Maps.” IEEE Pervasive Computing 7, no. 4 (2008): 12–18. Available:
+https://doi.org/10.1109/MPRV.2008.80.
+[25] E. Liang, R. Liaw, P. Moritz, R. Nishihara, R. Fox, K. Goldberg, J.
+E. Gonzalez, M. I. Jordan, and I. Stoica. ”RLlib: Abstractions for
+Distributed Reinforcement Learning.” arXiv preprint arXiv:1712.09381,
+2018. Available: https://doi.org/10.48550/arXiv.1712.09381
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:34:07 UTC from IEEE Xplore. Restrictions apply.
+
+

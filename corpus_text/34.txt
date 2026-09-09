@@ -1,0 +1,896 @@
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 23, NO. 7, JULY 2022
+
+8037
+
+Urban Multiple Route Planning Model Using
+Dynamic Programming in Reinforcement Learning
+Ningyezi Peng , Yuliang Xi, Jinmeng Rao, Xiangyuan Ma , and Fu Ren
+
+Abstract— With the development of the economy and the
+acceleration of urbanization, traffic congestion has become a
+worldwide problem. Advances in mobile Internet and sensor
+technologies have increased real-time data sharing, providing a
+new opportunity for urban route planning. However, due to the
+difficulty of handling complex global information, making correct
+decisions in large-scale and complex traffic environments is a
+problem that urgently needs to be solved. In this paper, a multiple
+route planning model (multi-route dynamic programming (DP)
+model) is proposed to solve the urban route planning problem
+with traffic flow information. In particular, we adopt the DP
+algorithm in this model, design a reward function suitable for
+urban path planning problems, and generate multiple routes
+based on the Q values. In addition, we design different scenarios
+using real-world road networks to test our model. Through the
+experiments, we demonstrate that our model has the potential
+to yield optimal results under large-scale scenarios with high
+efficiency. The advantages of integrating the distance contribution
+index (DCI) in the reward function are also elaborated. Moreover,
+our model can provide alternative routes to divert traffic from
+the optimal route, thus mitigating the congestion drift problem.
+Index Terms— Dynamic programming, model-based, multiple
+route planning reinforcement learning, route planning.
+
+I. I NTRODUCTION
+S COUNTRIES undergo economic development and
+urbanization, traffic congestion has become a universal
+problem that increases fuel consumption and environmental
+
+A
+
+Manuscript received 20 August 2019; revised 16 July 2020,
+7 December 2020, and 14 April 2021; accepted 17 April 2021. Date
+of publication 25 May 2021; date of current version 8 July 2022. This work
+was supported by the National Key Research and Development Program of
+China under Grant 2016 YFC 0803106 and in part by the National Natural
+Science Foundation of China under Project 42071448. The Associate Editor
+for this article was P. Wang. (Ningyezi Peng and Yuliang Xi are co-first
+authors.) (Corresponding author: Fu Ren.)
+Ningyezi Peng is with the School of Resources and Environmental Science,
+Wuhan University, Wuhan 430079, China, also with the Key Laboratory of
+Geographic Information Systems, Ministry of Education, Wuhan University,
+Wuhan 430079, China, and also with the Department of Land Surveying and
+Geo-Informatics, The Hong Kong Polytechnic University, Hong Kong (e-mail:
+ningyezi.peng@connect.polyu.hk).
+Yuliang Xi is with the School of Resources and Environmental Science,
+Wuhan University, Wuhan 430079, China, also with the Key Laboratory of
+Geographic Information Systems, Ministry of Education, Wuhan University,
+Wuhan 430079, China, and also with the School of Internet, Anhui University,
+Hefei 231699, China (e-mail: yuliangwhu@163.com).
+Jinmeng Rao is with the GeoDS Lab, Department of Geography,
+University of Wisconsin–Madison, Madison, WI 53706 USA (e-mail:
+jinmeng.rao@wisc.edu).
+Xiangyuan Ma and Fu Ren are with the School of Resources and Environmental Science, Wuhan University, Wuhan 430079, China, and also with
+the Key Laboratory of Geographic Information Systems, Ministry of Education, Wuhan University, Wuhan 430079, China (e-mail: renfu@whu.edu.cn;
+maxiangyuan@whu.edu.cn).
+Digital Object Identifier 10.1109/TITS.2021.3075221
+
+pollution. When a city has no measure to mitigate this
+problem, traffic congestion can lead to many serious social
+and economic issues [1], [2]. For governments, building new
+roads is an effective choice, but this solution is expensive and
+inefficient. For vehicle drivers, the most effective way to avoid
+traffic jams is to obtain the latest traffic information and plan
+reasonable routes.
+Many classic algorithms aim to solve the route planning
+problem, including four main categories: deterministic methods, heuristic methods, nature-inspired metaheuristic methods,
+and reinforcement learning methods. Among the deterministic
+methods, the representative algorithms are Dijkstra [3] and
+Floyd [4]. Dijkstra calculates the shortest path from the origin
+to all other nodes. Although many other algorithms have been
+proposed since Dijkstra it is still an excellent algorithm that
+reduces the amount of computational time and power needed
+to find the shortest path [5]. Slightly different from Dijkstra,
+Floyd calculates the shortest path between all node pairs.
+The heuristic methods include A∗ [6], D∗ [7], and D∗
+Lite [8] algorithms. The A∗ algorithm not only considers
+the distance from the origin to the current node but also
+uses a heuristic function to estimate the distance between
+the current node and the destination [6]. Many scholars have
+proposed a series of improvements based on the A∗ algorithm.
+For example, the D∗ algorithm was successfully applied to
+unmanned vehicle projects and achieved higher efficiency than
+A∗ algorithms [7]. Later, Koenig proposed D∗ Lite, which is
+a simpler version of the D∗ algorithm [8].
+The deterministic and heuristic methods mentioned above
+can achieve good results with simple objectives (normally the
+shortest distance or travel time). However, with complex tasks,
+it is difficult for human experts to design appropriate cost
+functions for the Dijkstra algorithm or heuristic functions for
+the A∗ algorithm. Nature-inspired metaheuristic methods have
+the potential to address complex objectives. The ant colony
+optimization (ACO) algorithm. [9], [10] is representative of
+this category. It simulates the natural behaviour of ant foraging.
+Each ant leaves a pheromone trail along the path it explores;
+the optimal path contains the strongest pheromone. However,
+the ACO algorithm needs to run long enough to find the
+optimal result if the environment is large and complex.
+RL methods are also good at making decisions under
+a complicated transportation environment with a complex
+objective. Model-free RL can generate a near-optimal
+result without any prior knowledge of the transportation
+system. In contrast, previous methods require an analytical
+
+1558-0016 © 2021 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+8038
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 23, NO. 7, JULY 2022
+
+TABLE I
+C OMPARISON OF D IFFERENT ROUTE P LANNING A LGORITHMS
+
+model of the underlying transportation system derived from
+significant assumptions and simplifications. Many scholars
+have adopted model-free RL methods to solve routing
+problems. Bazzan and Grunitzki [11] designed a multi-agent
+route planning model based on Q-learning, in which each
+agent determined the next direction at each intersection.
+Similarly, Arokhlo et al. [12] developed a multi-agent RL
+algorithm to plan the shortest route in real time and applied
+it to simple and abstract network graphs. Koh et al. [13]
+adopted Q-learning to help a vehicle find the right path in the
+Simulation of Urban Mobility (SUMO) simulator. However,
+it is difficult to apply model-free RL methods to large road
+networks due to the long environmental exploration process.
+Existing studies [11]–[14] experimented only on small road
+networks (normally 10 to 50 nodes). Therefore, we adopt the
+model-based RL method, which has a certain understanding of
+the environment and tends to be substantially more efficient.
+The comparison of different routing algorithms is represented
+in Table I.
+In this paper, prior knowledge of the road network structure
+is given in the dynamic programming (DP) method [15], which
+avoids unnecessary exploration and accelerates the learning
+process. Compared with model-free RL methods, our model
+has the potential to handle large-scale and complex road
+
+networks with high efficiency. Additionally, our model can
+generate multiple routes, while all the algorithms mentioned
+above can output only one planning route, which tends to
+result in the congestion drift problem [16] (traffic congestion
+drifts from the original route to the newly planned route).
+Specifically, drivers who receive route planning information
+provided by previous algorithms may tend to drive to the same
+road at the same time, thereby aggregating congestion [16].
+The remainder of this paper is organized as follows.
+Section II introduces the principle of the model-based RL
+method. Based on this theory, Section III introduces the proposed urban multiple route planning model using DP (hereafter
+called the multi-route DP model). Finally, the experiment and
+results are presented in Section IV, and Section V provides a
+conclusion and discussion.
+II. R EINFORCEMENT L EARNING
+A. Model-Based Reinforcement Learning
+RL is intended to learn an optimal policy from experiences
+in which an agent interacts with an environment, and the
+policy can lead to the maximization of a cumulative reward.
+At each time step t, the agent observes features st of the
+current environment, chooses the corresponding action at , and
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+PENG et al.: URBAN MULTIPLE ROUTE PLANNING MODEL USING DYNAMIC PROGRAMMING
+
+Fig. 1.
+
+8039
+
+Policy iteration process [15].
+
+obtains a reward rt . Expected reward Rt is defined as follows:
+T
+
+Rt =
+γ t −t rt  ,
+(1)
+
+
+Fig. 2.
+
+(a) A road network and (b) the corresponding undirected graph.
+
+t =t
+
+where T is the last time step, t  is the next time step after
+the current t, and γ ∈ [0, 1] is the discount factor. With
+Rt , the value functions, namely, state value function V π (s)
+and state-action value function Q π (s, a) estimate the expected
+reward brought by action a taken in state s according to policy
+π. The optimal policy is the π ∗ that maximizes V π (s) and
+Q π (s, a).
+Model-based RL is an important branch in the RL field.
+Based on the known environment, namely, the known or
+predictable state transition matrix among states, a model-based
+RL problem is transformed into a DP problem or an optimal
+control problem [15]. With the known environment, the DP
+algorithm has high efficiency and strong generalizability compared to its model-free counterparts because there are fewer
+unnecessary explorations. For this reason, we adopt the DP
+algorithm in this paper. Although the requirement of limited
+and discrete states and actions makes it difficult to apply DP in
+many fields, the route planning problem meets this requirement
+(see Section III-B).
+
+TABLE II
+E DGE ATTRIBUTES
+
+TABLE III
+N ODE ATTRIBUTES
+
+B. Policy Iteration
+Policy iteration is an important solution process of DP and
+consists of policy evaluation and improvement. As shown
+in Fig. 1, policy iteration starts from a random policy, and then
+V π (s) is calculated to evaluate this policy. Then, the greedy
+strategy is adopted to improve this policy. This procedure is
+repeated until the policy converges. In this process, the V value
+and Q value are calculated by the Bellman equation:
+
+a
+∗ 
+Pss
+(2)
+V ∗ (s) = max [R(s  |s, a) + γ
+ V (s )]
+a
+
+∗
+
+
+
+Q (s, a) = R(s |s, a) + γ
+
+
+s  ∈S
+
+s  ∈S
+a
+∗  
+Pss
+ max a  Q (s , a )
+
+(3)
+
+which means that the optimal value functions of the current
+state s can be obtained by the next state s  .
+III. M ULTI -ROUTE DP M ODEL
+A. Route Environments Modeling
+We use an undirected graph to represent a road network.
+The node represents the intersection, and the edge represents
+the road segment. In Fig. 2, (a) is an example of the
+vector representation of the road network, and (b) is the
+
+corresponding undirected graph, whose nodes and edges
+are V = {N1,N2, . . . ,N10} and E = {e1,e2, . . . ,e13},
+respectively. Each edge has three attributes, and the node has
+six, which are shown in Tables II and III, respectively.
+B. Reinforcement Learning Elements
+The state, action, state transfer probability, and reward
+function are the four main elements in RL. (1) Every node
+(intersection) in this route environment is a state s. (2) In
+every state, the vehicle has several (normally no more than
+6) driving directions, namely, action a, to choose from. Each
+direction can lead the vehicle to another state. (3) The state
+transfer probability refers to the probability that the vehicle
+will be led to the next intersection when it selects such
+an action at the current intersection. Clearly, it is always
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+8040
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 23, NO. 7, JULY 2022
+
+TABLE IV
+R EWARD F UNCTION
+
+100% under the route planning context, since when a driving
+direction is selected, the vehicle will be led to the specific
+intersection, not others. (4) The reward function decides the
+instant feedback to every chosen action and serves to guide the
+agent to the destination, similar to the labelling of samples in
+supervised learning. Clearly, the reward has a strong influence
+on the result of the RL task. In this paper, we adopt the
+idea of reward shaping [22], which requires the system to
+reward the agent when its decisions make progress towards
+the final goal and which requires the system to penalize
+the agent when it moves away from the goal. In this way,
+at each learning step, the agent obtains a reward or penalty,
+which accelerates the learning process. As shown in Table IV,
+the distance between the current state and the destination
+and the distance between the next possible state and the
+destination, TCI, road length, and other factors are taken into
+account.
+1) The Function of DistR and DCI in the Reward Function:
+The parameter DC I is critical to the reward function. Without
+it, Di st R will guide the agent in the wrong direction. We take
+an example to demonstrate this problem. As shown in Fig. 3,
+when the agent is at intersection A, it will head for B or
+C. These two directions are closer to the destination than A;
+therefore, Di st R is set to be positive (according to Table IV).
+If we ignore the congestion (set Conges P to 0), then
+R AB = MoveU + Di st R = L O SS × length AB + Di st R
+= −0.00002 × 1.262 + 1,
+R AC = MoveU + Di st R = L O SS × length AC + Di st R
+= −0.00002 × 6.855 + 1.
+Apparently, R AB > R AC . Therefore, the agent will choose
+the direction heading for B. However, from Fig. 3. we see
+that the subsequent road sections of B are far more distant
+than those of C. The reason for this problem is that the
+characteristics of the road network form are ignored.
+
+Fig. 3.
+
+The function of Dist R and DC I .
+
+After introducing DC I ,
+R AB = MoveU + Di st R × DC I
+= L O SS × length AB + Di st R × DC I AB
+= −0.00002 × 1.262 + 1 × 0.643,
+R AC = MoveU + Di st R × DC I
+= L O SS × length AC + Di st R × DC I AC
+= −0.00002 × 6.855 + 1 × 0.961.
+Evidently, R AB < R AC . In this case, the agent will choose
+the direction heading for C, which is a better policy. From
+this example, we find that DC I can measure how much
+of a distance reduction the next possible intersections will
+contribute to the agent. By combining DC I with Di st R,
+the agent can avoid unnecessary detours.
+C. Policy Iteration Process
+Policy literation [15] is used to reach the optimal strategy.
+By following this strategy, the vehicle can choose the right
+directions in different intersections. In this case, we can
+obtain the initial planned route. The policy iteration process
+consists of two main parts, namely, policy evaluation and
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+PENG et al.: URBAN MULTIPLE ROUTE PLANNING MODEL USING DYNAMIC PROGRAMMING
+
+8041
+
+Algorithm 1 Policy iteration (using iterative policy evaluation)
+Initialize state value function V (s) = 0, f or s ∈ S
+Initialize state-action value function Q (s, a) = 0, f or s ∈
+S, a ∈ A
+Initialize policy π0 with random value
+a
+Set state transition probability Pss
+ to 1
+Set discount factor γ to 1
+For t=0, T do
+For k=0, K do
+Policy evaluation:
+Using the Bellman
+equation and synchronous
+
+ a backups:
+π(a|s) × (Rsa S + γ
+Pss  Vk (s  )),
+Vk+1 (s) =
+a∈A
+
+s  ∈S
+
+where s  is a successor state of s and Rsa is the reward
+function
+Until Vk+1 (s) converges to a stable value
+End For
+Policy improvement:
+πt +1
+= arg Q πt (s, a), where Q πt (s, a) = Rsa
+a
+
++γ
+Pss
+ Vk+1 (s )
+s  ∈S
+
+Until πT converges to π∗
+End For
+
+policy improvement, which are shown in Algorithm 1. In the
+initialization part, we set all state value functions V (s) and
+state-action value functions Q (s, a) to zero and initialize
+random policy π0 . Then, the Bellman equation is used to
+evaluate the policy and updates Vk+1 (s) until it converges to
+a stable value. By using the updated V , we can update the Q
+function and improve the policy by selecting the action with
+the newly calculated maximum Q value. After several loops,
+we can obtain the optimal policy π∗ .
+
+Fig. 4.
+
+The process of alternative path exploration.
+
+Fig. 5.
+
+The simple road network for case analysis.
+
+D. Alternative Path Exploration
+Classic route planning algorithms (Dijkstra or A∗ ) output
+only a single result, which tends to result in the congestion
+drift problem. By providing alternative paths, our method can
+mitigate this problem. During the policy iteration process,
+the Q values of every crossing in different directions are
+recorded. The Q value is the cumulative reward expectation
+that the agent chooses a specific action in a state, and the
+initially planned result (path) follows the direction with the
+maximum Q value. However, the directions with the second
+and third largest Q values are also valuable. Therefore, we sort
+all directions of the intersection where the initial path passes
+according to the Q values. Based on the direction order, we can
+explore different driving directions and output alternative paths
+The specific exploration process is shown in Fig. 4. First,
+we sort the Q values of each intersection in descending order.
+Then, starting from the origin, all the intersections in the
+initially planned path will go through an exploration loop.
+For every intersection, the agent selects the second or third
+direction (rather than the first) as the new action and is led
+to the next possible states (intersections). For all of the next
+possible intersections, the agent chooses the first direction,
+and a new route is produced. If this new route can arrive at
+
+the destination, then it is a usable alternative path; otherwise,
+the next intersection in the initially planned path enters the
+exploration loop.
+
+E. An Example on a Simple Road Network
+To demonstrate the solution process and the underlying
+principle of our method, we first take a simple road network
+environment (shown in Fig. 5) as an example.
+1) Total Reward and Q Values: As suggested by Bellemare
+et al. [23], we use the total reward and the policy’s estimated
+action-value function Q to evaluate the solution process of the
+simple environment. The total reward is the sum of all the
+rewards that an agent collects in an episode. Fig. 6 shows that
+the total reward is unstable at the beginning. After 10 episodes,
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+8042
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 23, NO. 7, JULY 2022
+
+TABLE V
+T HE Q VALUES OF E VERY A CTION AT THE PASSED I NTERSECTIONS IN
+I NITIAL PATH
+
+TABLE VI
+T HE Q VALUES OF E VERY A CTION AT THE S UBSEQUENT
+I NTERSECTIONS OF C0
+Fig. 6.
+
+The change in the total reward.
+
+it achieves a stable level, which means that the learning process
+is making progress and the policy is being optimized.
+Another metric, the predicted Q, is an estimate of the
+discounted future reward the agent can obtain by following
+the current policy at a certain state. As shown in Fig. 8, in the
+beginning, all Q values were set to zero. After the agent
+began to explore the intersections, the Q values all slightly
+decreased. This was because, in the early stage of training,
+the agent rarely reached the destination; therefore, it received
+more negative than positive rewards. However, after episode 5,
+the agent gradually reached the destination and received more
+positive feedback; therefore, the Q values gradually increased
+and became stable. Based on these Q values, we found the
+initial path (C0-C4-C1-C2-C3-C_f, as shown in Fig. 7), which
+followed the direction with the largest Q value.
+2) Alternative Route Exploration:
+According to
+Section III-D, we take the passed intersections in the
+initial path (C0, C4, C1, C2, C3) as the exploration objects.
+Table V shows their Q values of different directions. The
+initial path followed the largest Q values, and alternative path
+exploration could follow the second (bold format) or the
+third (italic format) largest Q values in Table V.
+We took origin C0 as an example to explore alternative
+paths. From Table VI, we know that C5 (the second largest Q
+value) is the next most valuable direction to explore. For all
+the next intersections, we choose the direction with the largest
+Q value. From Table VI, we find that the direction to C2 is
+the best action at C5. Similarly, C3 is chosen, and it leads
+to destination C_f. As shown in Fig. 7, the travel time of the
+alternative path (C0-C5-C2-C3-C_f) is 18 minutes 8 seconds,
+while that of the initial path is 18 minutes 5 seconds.
+IV. E XPERIMENTS AND R ESULTS
+A. Experimental Setup
+1) Study Area and Road Network Preprocessing: Shenzhen
+is a coastal city located in southern China, northeast of the
+Pearl River Estuary, and it is located south of the Tropic of
+Cancer, between 113◦46’ and 114◦37’ east in longitude and
+between 22◦ 27’ and 22◦ 52’ north in latitude. The total area
+of Shenzhen is approximately 1952.84 km2 [24].
+
+Fig. 7.
+
+The initial path and the alternative path.
+
+After deleting unusable roads, storing the road attributes,
+and building topological relations, the preprocessed road network in Shenzhen is shown in Fig. 9. This network contains
+3536 edges (road sections) and 2245 nodes (intersections). The
+total length of the road network is 2484.65 km. Few studies
+have experimented on such a large-scale environment. The TCI
+value of each road was obtained from the Baidu Map [21], and
+different values were assigned with different colours in Fig. 9.
+2) Evaluation Index: In the designed experiments, we use
+the travel time as the evaluation index of planned routes.
+Based on field research results [25] in Shenzhen, (4) is used
+to calculate the travel time.
+⎧
+⎪
+1,
+TCI = 0
+⎪
+⎪
+⎪
+⎪
+⎪4/4 − T C I,
+T C I ∈ (0, 1]
+length ⎨
+(4)
+× 20/19 − 4T C I, T C I ∈ (1, 2]
+T =
+⎪
+vd
+⎪
+⎪20/17 − 3T C I, T C I ∈ (2, 3]
+⎪
+⎪
+⎪
+⎩5/5 − T C I,
+T C I ∈ (3, +∞)
+where v d is the expectation speed.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+PENG et al.: URBAN MULTIPLE ROUTE PLANNING MODEL USING DYNAMIC PROGRAMMING
+
+Fig. 8.
+
+8043
+
+The change in the Qπ (s,a) of every action at every intersection.
+
+Fig. 9. The normal road networks of Shenzhen (edges: 3536; nodes: 2245).
+
+Fig. 10.
+
+3) Test Scenarios: We randomly chose 20 origin-destination
+pairs as our test scenarios, as shown in Table VII. We compared our method with the Dijkstra algorithm. The main idea
+of Dijkstra is to calculate the shortest path between any two
+nodes step by step, starting from the origin to the destination.
+It can guarantee to find the globally optimal result in a fully
+known environment. Therefore, we used its results as the
+optimal results to verify the correctness of our model.
+The ArcGIS Network Analyst (NA) module (ArcGIS 10.2,
+Esri, Redlands, State of California., USA, 2013.) was used
+to solve for the optimal result of the Dijkstra algorithm. The
+ArcGIS NA module has been widely used to derive optimal
+routes in different studies [26]–[29]. In these experiments,
+we took the TCI of every road section as the edge weight
+in Dijkstra.
+Apart from the correctness of our planned results, the model
+efficiency was also tested. Model efficiency can reflect the
+application value of our method. To test the sensitivity of
+our model to different road network densities, we simplified
+the original road network (Fig. 9) to Fig. 10. Specifically,
+
+we deleted the roads with a width of less than 10 km and
+kept the roads of level 3 and above. After the simplification,
+Fig. 10 contains 719 edges and 495 nodes. The total length of
+the road network is 1260.05 km. We slightly changed some
+origin-destinations pairs in Table VII to make sure that the
+points could exist in the two kinds of road networks (see
+Appendix 2).
+All experiments were tested on a ThinkPad-W540 notebook
+(CPU i7-4790MQ, 16 G RAM, 1T SSD). Windows 10,
+the.NET framework, and C# language were used to develop
+all of the tested methods.
+
+Simplified road networks (edges: 719; nodes: 495).
+
+B. Experiments on Shenzhen City
+1) Route Planning Results: The route planning results
+of 20 test scenarios are shown in Fig. 11, and several map
+visualization results are shown in Appendix 1. Fig. 11 shows
+the travel time of the routes planned by our method as
+percentages relative to the result of the Dijkstra algorithm.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+8044
+
+Fig. 11.
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 23, NO. 7, JULY 2022
+
+The time costs of our method relative to those of Dijkstra.
+
+TABLE VII
+20 T EST S CENARIOS
+
+Thus, the Dijkstra algorithm always scores 100% and results
+that score above 100% are worse than the optimal result.
+These results show that the optimal results of our method
+are consistent with the results of Dijkstra, which means our
+method has the potential to find the optimal results under
+different scenarios. In addition, our method generates two or
+three alternative routes with comparable time costs (Dijkstra
+outputs only one optimal result), which can mitigate the
+congestion drift problem caused by a single result. Our method
+explores the road network environment thoroughly and obtains
+comprehensive knowledge by trial and error. In this case, our
+results yield not only an optimal path but also the driving
+policy at each intersection. This driving policy can provide
+diverse route options for vehicles, so that traffic can be
+diverted to different routes, thus mitigating traffic congestion.
+Furthermore, in these optimal results (marked by red boxes
+in Fig. 11), 10 are the initial results of our method, and
+10 are from the alternative results, indicating the importance
+
+Fig. 12. Route planning efficiency comparison of our method and Dijkstra
+on (a) normal and (b) simplified road networks.
+
+of the alternative results. The alternative routes with similar
+travel times complement the initial result of our method and
+guarantee to find the optimal result.
+2) Model Efficiency: We compared the route planning efficiency of our method and optimized Dijkstra in the ArcGIS
+NA module. The performance of the built-in Dijkstra is
+further improved by using better data structures such as
+d-heaps.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+PENG et al.: URBAN MULTIPLE ROUTE PLANNING MODEL USING DYNAMIC PROGRAMMING
+
+Fig. 13.
+
+8045
+
+Comparison of the results of our method and the Dijkstra algorithm under scenarios 1, 6 and 20.
+
+Fig. 12 shows that our method can deal with two different
+road network densities with high efficiency. Specifically, under
+the simplified road network, our method takes only 513 ms on
+average to output four routes, that is, 131 ms per route, which
+is even better than ArcGIS NA (480 ms per route). Under the
+normal road network, our method takes 3685 ms on average to
+plan four routes, that is, 921 ms per route. Although this result
+is worse than that of Dijkstra, the time cost (less than 1 s) is
+still acceptable in a real-world application. At the same time,
+note that the tested Dijkstra is equipped with a well-designed
+data structure, but our method does not use any data structure
+optimization. In conclusion, this result indicates that with the
+increasing road network density, the time cost of our model
+also increases significantly. However, regardless of how dense
+the road network is, our model can meet the response time
+requirements of drivers in real-world applications and has
+promising application value.
+
+V. C ONCLUSION AND D ISCUSSION
+In this paper, we proposed a multi-route DP model to solve
+the route planning problem and demonstrated its ability to
+find the optimal policy that can plan a vehicle route with the
+shortest travel time while using only limited information as
+input. We can draw some conclusions concerning the proposed
+method.
+First, by introducing the distance contribution index, DC I ,
+into the reward function, our method ensures that the
+agent can choose a better action and avoids unnecessary
+detours.
+Second, our method yields not only an optimal path but
+also the driving policy at each intersection. This policy can
+provide several comparable alternatives to the optimal route
+for vehicles, so that traffic can be diverted to different routes,
+thus mitigating the congestion drift problem. Note that all the
+methods mentioned in the Introduction section output only one
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+8046
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 23, NO. 7, JULY 2022
+
+TABLE VIII
+S CENARIOS FOR MODEL EFFICIENCY TEST
+
+A PPENDIX II
+See Table VIII.
+R EFERENCES
+
+planning route, which tends to result in the congestion drift
+problem and thus aggregate congestion.
+Third, all of the experimental results show that our model
+can be applied in a city-scale road network with high
+efficiency. Note that it is difficult for model-free RL methods
+(Q-learning, etc.) to achieve high efficiency in such a large
+road environment because they need a long learning time
+to explore the whole road network structure. However, such
+explorations are not necessary since, normally, the road
+networks in the real world do not change frequently.
+However, some limitations should be noted. To achieve high
+efficiency, our method requires modelling the environment
+(including road network structure modelling and state transfer
+probability design) in advance, which puts some restrictions
+on the practical application of our method.
+In the future, more complicated route planning objectives,
+such as user equilibrium and system optimum, can be taken
+into account. Due to the intelligent nature of RL methods,
+our method has great potential to solve this kind of problem.
+Furthermore, based on this paper, future research directions
+include considering more realistic road network models and
+further improving the model efficiency of our method under
+a greater road network density. Although we considered the
+whole road network in Shenzhen city, some details were
+ignored. For instance, the viaduct was not taken into account
+in this paper. A more realistic road environment needs to be
+described in the future so that a more accurate travel time
+can be estimated. In addition, the model efficiency of our
+method is sensitive to the road network density. If the scale of
+the road network environment is further expanded, the time
+cost for path planning will be further increased, which may
+not meet the user’s requirements for the algorithm response
+time. Therefore, in future research, the algorithm needs to be
+further improved to reduce its sensitivity to the complexity
+of the road network.
+A PPENDIX I
+See Figure 13.
+
+[1] E. Walraven, M. T. J. Spaan, and B. Bakker, “Traffic flow optimization:
+A reinforcement learning approach,” Eng. Appl. Artif. Intell., vol. 52,
+pp. 203–212, Jun. 2016.
+[2] Y. Wang et al., “Analysing the spatial configuration of urban bus
+networks based on the geospatial network analysis method,” Cities,
+vol. 96, Jan. 2020, Art. no. 102406, doi: 10.1016/j.cities.2019.102406.
+[3] E. W. Dijkstra, “A note on two problems in connexion with graphs,”
+Numerische Math., vol. 1, no. 1, pp. 269–271, Dec. 1959.
+[4] R. W. Floyd, “Algorithm 97: Shortest path,” Commun. ACM, vol. 5,
+no. 6, p. 345, Jun. 1962.
+[5] N. V. Karadimas, M. Kolokathi, G. Defteraiou, and V. Loumos, “Ant
+colony system vs ArcGIS network analyst: The case of municipal solid
+waste collection,” in Proc. 5th WSEAS Int. Conf. Environ., Ecosyst.
+Develop., 2007, pp. 34–128.
+[6] P. Hart, N. Nilsson, and B. Raphael, “A formal basis for the heuristic
+determination of minimum cost paths,” IEEE Trans. Syst. Sci. Cybern.,
+vol. SSC-4, no. 2, pp. 100–107, Oct. 1968.
+[7] A. Stentz, “Optimal and efficient path planning for partially known
+environments,” in Intelligent Unmanned Ground Vehicles. San Diego,
+CA, USA: Springer, 1997, pp. 203–220.
+[8] S. Koenig and M. Likhachev, “D* lite,” in Proc. AAAI, vol. 15, 2002,
+pp. 476–483.
+[9] M. Dorigo and G. Di Caro, “Ant colony optimization: A new metaheuristic,” in Proc. Congr. Evol. Comput. (CEC), vol. 2, Jul. 1999,
+pp. 1470–1477.
+[10] M. Dorigo, G. D. Caro, and L. M. Gambardella, “Ant algorithms for
+discrete optimization,” Artif. Life, vol. 5, no. 2, pp. 137–172, Apr. 1999.
+[11] A. L. C. Bazzan and R. Grunitzki, “A multiagent reinforcement learning
+approach to en-route trip building,” in Proc. Int. Joint Conf. Neural Netw.
+(IJCNN), Jul. 2016, pp. 5288–5295.
+[12] M. Z. Arokhlo, A. Selamat, S. Z. M. Hashim, and M. H. Selamat, “Route
+guidance system using multi-agent reinforcement learning,” in Proc. 7th
+Int. Conf. Inf. Technol. Asia, Jul. 2011, pp. 1–5.
+[13] S. S. Koh, B. Zhou, P. Yang, Z. Yang, H. Fang, and J. Feng, “Reinforcement learning for vehicle route optimization in SUMO,” in Proc.
+IEEE 20th Int. Conf. High Perform. Comput. Commun., Jun. 2018,
+pp. 1468–1473.
+[14] M. P. Deisenroth, G. Neumann, and J. Peters, “A survey on policy search
+for robotics,” Found. Trends Robot., vol. 2, nos. 1–2, pp. 388–403, 2013.
+[15] R. S. Sutton and A. G. Barto, Reinforcement Learning: An Introduction.
+Cambridge, MA, USA: MIT Press, 2018.
+[16] R. Arnott, A. de Palma, and R. Lindsey, “Does providing information to
+drivers reduce traffic congestion?” Transp. Res. A, Gen., vol. 25, no. 5,
+pp. 309–318, Sep. 1991.
+[17] H. Yang and H.-J. Huang, “The multi-class, multi-criteria traffic network
+equilibrium and systems optimum problem,” Transp. Res. B, Methodol.,
+vol. 38, no. 1, pp. 1–15, Jan. 2004.
+[18] W. Zeng and R. L. Church, “Finding shortest paths on real road
+networks: The case for A,” Int. J. Geographical Inf. Sci., vol. 23, no. 4,
+pp. 531–543, Apr. 2009.
+[19] M. Dorigo and C. Blum, “Ant colony optimization theory: A survey,”
+Theor. Comput. Sci., vol. 344, nos. 2–3, pp. 243–278, Nov. 2005.
+[20] W. Chen, Z. Duan, Z. Zhou, and J. Song, “Road traffic performance
+index algorithm and application based on travel time,” Fuzhou, Fujian,
+China, Tech. Rep., 2012, pp. 1722–1730.
+[21] Y. Wen et al., “Mapping dynamic road emissions for a megacity by
+using open-access traffic congestion index data,” Appl. Energy, vol. 260,
+Feb. 2020, Art. no. 114357.
+[22] O. Marom and B. Rosman, “Belief reward shaping in reinforcement
+learning,” in Proc. AAAI Conf. Artif. Intell., Apr. 2018, vol. 32, no. 1,
+pp. 3762–3769, Art. no. 1. Accessed: Apr. 19, 2021. [Online]. Available:
+https://ojs.aaai.org/index.php/AAAI/article/view/11741
+[23] M. G. Bellemare, Y. Naddaf, J. Veness, and M. Bowling, “The arcade
+learning environment: An evaluation platform for general agents,”
+J. Artif. Intell. Res., vol. 47, pp. 253–279, Jun. 2013.
+[24] Y. Xi, Q. Du, B. He, F. Ren, Y. Zhang, and X. Ye, “The dynamic
+optimization of the departure times of metro users during rush hour in
+an agent-based simulation: A case study in Shenzhen, China,” Appl. Sci.,
+vol. 7, no. 11, p. 1102, Oct. 2017, doi: 10.3390/app7111102.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+PENG et al.: URBAN MULTIPLE ROUTE PLANNING MODEL USING DYNAMIC PROGRAMMING
+
+[25] C. Sun, H. M. Zhang, and X. Chen, “Road traffic operation assessment
+based on multi-source floating car data fusion,” Tongji Daxue Xuebao J.
+Tongji Univ., vol. 46, pp. 46–52, Jan. 2018, doi: 10.11908/j.issn.0253374x.2018.01.007.
+[26] H. Karimipour, V. W. Y. Tam, H. Burnie, and K. N. Le, “Vehicle routing
+optimization for improving fleet fuel efficiency: A case study in Sydney,
+Australia,” Int. J. Environ. Sci. Dev., vol. 4, pp. 776–780, Oct. 2017, doi:
+10.18178/ijesd.2017.8.11.1056.
+[27] N. V. Karadimas, M. Kolokathi, G. Defteraiou, and V. Loumos, “Municipal waste collection of large items optimized with ArcGis network
+analyst,” in Proc. ECMS, I. Zelinka, Z. Oplatkova, and A. Orsoni, Eds.,
+Jun. 2007, pp. 202–207.
+[28] K. A. Eldrandaly and A. F. Abdallah, “A novel GIS-based decisionmaking framework for the school bus routing problem,” Geo-Spatial
+Inf. Sci., vol. 15, no. 1, pp. 51–59, Mar. 2012.
+[29] V. Sanjeevi and P. Shahabudeen, “Optimal routing for efficient municipal
+solid waste transportation by using ArcGIS application in Chennai,
+India,” Waste Manag. Res., vol. 34, no. 1, pp. 11–21, Jan. 2016, doi:
+10.1177/0734242X15607430.
+
+Ningyezi Peng received the B.S. degree in geographic information system and the M.S. degree
+in cartography and geographic information system
+from Wuhan University, China, in 2017 and 2020,
+respectively. She is currently pursuing the Ph.D.
+degree with the Department of Land Surveying
+and Geo-Informatics, The Hong Kong Polytechnic
+University, Hong Kong. Her major research interests
+include route planning, urban spatial analysis, and
+spatial epidemiology.
+
+Yuliang Xi received the B.S. degree in geography
+from Anhui Normal University, China, in 2012,
+and the M.S. and Ph.D. degrees in cartography and
+geographical information system from the School of
+Resource and Environmental Sciences, Wuhan University, China, in 2015 and 2020, respectively. He is
+currently a Lecturer with the School of Internet,
+Anhui University, China. His research focuses on big
+data analysis and mining, intelligent transportation,
+including route planning, and multi-agent simulation
+in commuting.
+
+8047
+
+Jinmeng Rao received the B.S. degree in geographic information system and the M.S. degree
+in cartography and geographic information system
+from Wuhan University, China, in 2016 and 2019,
+respectively. He is currently pursuing the Ph.D.
+degree in geography with the Geospatial Data Science Laboratory, University of Wisconsin-Madison,
+USA, with a focus on cartography and geographic
+information system. His research interests include
+geospatial artificial intelligence, privacy-preserving
+machine learning, computer vision, and trajectory
+data mining.
+
+Xiangyuan Ma received the B.S. degree from the
+Department of Geography, Central China Normal
+University, in 2013, and the M.S. degree from
+the Department of Geographic Information Science,
+Central China Normal University, in 2017. He is currently pursuing the Ph.D. degree in cartography and
+geographic information science with Wuhan University, China. His major research interests include
+reinforcement learning and ITS, semantic segmentation and urban environment representation, and
+geovisualization.
+
+Fu
+Ren
+received the B.S. degree in
+computer-assisted cartography and the M.S.
+and Ph.D. degrees in cartography and geographic
+information system from Wuhan University, China,
+in 1999, 2002, and 2006, respectively. He is
+currently a Professor of cartography and the
+Department Chair of GIS and cartography with
+Wuhan University. He is also the Vice Director
+of commission on cartography and geographic
+information system with The Geographical
+Society of China. He has published more than
+100 peer-reviewed scientific articles in the area of theoretical cartography
+and GIScience and technology. His research interests include online thematic
+cartography, geographical information services, and spatial information
+visualization, which is applied in mapping, land, agriculture, and ocean.
+He has been the PI for four nation-level projects and received six national
+and ministerial scientific awards.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:49 UTC from IEEE Xplore. Restrictions apply.
+
+

@@ -1,0 +1,1849 @@
+Transportation Research Part B 189 (2024) 103014
+
+Contents lists available at ScienceDirect
+
+Transportation Research Part B
+journal homepage: www.elsevier.com/locate/trb
+
+Providing real-time en-route suggestions to CAVs for congestion
+mitigation: A two-way deep reinforcement learning approach
+Xiaoyu Ma, Xiaozheng He ∗
+Department of Civil and Environmental Engineering, Rensselaer Polytechnic Institute, Troy, NY 12180, United States
+
+ARTICLE
+
+INFO
+
+Keywords:
+Information provision
+Correlated equilibrium
+Reinforcement learning
+Connected autonomous vehicles
+Congestion mitigation
+
+ABSTRACT
+This research investigates the effectiveness of information provision for congestion reduction
+in Connected Autonomous Vehicle (CAV) systems. The inherent advantages of CAVs, such
+as vehicle-to-everything communication, advanced vehicle autonomy, and reduced human
+involvement, make them conducive to achieving Correlated Equilibrium (CE). Leveraging these
+advantages, this research proposes a reinforcement learning framework involving CAVs and an
+information provider, where CAVs conduct real-time learning to minimize their individual travel
+time, while the information provider offers real-time route suggestions aiming to minimize
+the system’s total travel time. The en-route routing problem of the CAVs is formulated as a
+Markov game and the information provision problem is formulated as a single-agent Markov
+decision process. Then, this research develops a customized two-way deep reinforcement
+learning approach to solve the interrelated problems, accounting for their unique characteristics.
+Moreover, CE has been formulated within the proposed framework. Theoretical analysis
+rigorously proves the realization of CE and that the proposed framework can effectively mitigate
+congestion without compromising individual user optimality. Numerical results demonstrate
+the effectiveness of this approach. Our research contributes to the advancement of congestion
+reduction strategies in CAV systems with the mitigation of the conflict between system-level and
+individual-level goals using CE as a theoretical foundation. The results highlight the potential of
+information provision in fostering coordination and correlation among CAVs, thereby enhancing
+traffic efficiency and achieving system-level goals in smart transportation.
+
+1. Introduction
+Congestion reduction has been one of the core research topics in highway traffic management for a long time. Central to this
+topic is the conflict between user optimality (UO) and system optimality (SO). Under UO, travelers attempt to minimize their own
+travel disutility selfishly, often leading to increased traffic congestion. On the other side, traffic management authorities strive to
+deploy effective strategies to improve traffic efficiency, usually requiring travelers to deviate from UO to minimize the total system
+travel time, defined as SO. However, due to operational and policy-making challenges, achieving this goal is never trivial in practice
+for most theoretically effective instruments.
+One promising approach to resolve the UO-SO conflict is to foster correlation or coordination among travelers through the
+involvement of a third party. This allows the system to deviate from UO. Information provision is an example of such a thirdparty approach, which has been extensively analyzed and implemented in Advanced Traveler Information Systems (Ma et al., 2016;
+Paz and Peeta, 2009; Du et al., 2015; Spana et al., 2022). However, challenges arise when the trustworthiness of the third party
+
+∗ Corresponding author.
+E-mail address: hex6@rpi.edu (X. He).
+
+https://doi.org/10.1016/j.trb.2024.103014
+Received 16 January 2024; Received in revised form 1 May 2024; Accepted 12 June 2024
+Available online 21 June 2024
+0191-2615/© 2024 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies.
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+is concerned if the travelers perceive that their UO is compromised. This highlights the importance of developing a third-party
+mechanism that can achieve system-level goals without compromising individual UO. In game theory, the concept of Correlated
+Equilibrium (CE) (Aumann, 1987) offers an opportunity to resolve the UO-SO conflict, where players can mutually obtain higher
+payoffs by following the guidance of a third party pursuing system-level goals (Marris et al., 2021).
+In transportation literature, Correlated Equilibrium (CE) has been applied to routing problems, where an information provider
+acts as the third party (Gairing et al., 2008; Liu and Whinston, 2019; Ning and Du, 2023). However, existing studies are limited to
+static information provision on small networks due to the computational burden and poor analytical properties of the underlying
+optimization sub-problems, especially in dynamic contexts. For general networks, even the design of a static pre-trip routing strategy
+is proved to be non-convex and nonlinear (Ning and Du, 2023). In addition, behavioral issues such as traveler compliance, perception
+error, and inertia hinder the effectiveness of information provision in practice. Therefore, achieving CE in large-scale networks
+remains challenging, especially in a dynamic context of a real-world traffic system with human-driven vehicles.
+This research aims to answer a natural question: Can information providers effectively foster the realization of CE in emerging
+smart transportation systems, leveraging the power of Connected Autonomous Vehicle (CAV) technology? CAV systems possess
+inherent advantages for achieving CE. First, the connected-vehicle technology enables information providers to promote correlated
+behaviors among CAVs through Vehicle-to-Infrastructure communications by disseminating properly designed travel information
+aligned with system-level goals. Second, advanced vehicle autonomy, supported by edge computing capabilities, allows vehicles
+to learn and update their travel strategies in real-time and in a distributed manner to pursue their individual goals. Third, since
+CAV systems involve less human actions, concerns regarding behavior-related issues can be mitigated. These advantages facilitate
+a smarter transportation system with coordinated behaviors among users, offering new opportunities for simultaneously achieving
+system-level and individual-level goals.
+This research concentrates on congestion reduction in CAV systems by fostering CE. Our modeling approach considers CAVs and
+the information provider as reinforcement learning agents pursuing individual- and system-level goals, respectively. CAVs conduct
+en-route learning in real-time, aiming to minimize their travel time. The information provider offers real-time en-route routing
+suggestions to CAVs, aiming to minimize the total travel time of the system. The learning capabilities of the agents in CAV systems
+allow us to formulate a multi-agent Markov routing game for CAVs and a single-agent Markov decision process for the information
+provider. To capture the unique features of the problem and enhance learning performance, this research develops a customized
+two-way reinforcement learning approach for the CAVs and the information provider. Theoretical analysis of CE within the proposed
+framework provides insights and a foundation for mitigating UO-SO conflict. Numerical results also demonstrate reduction in total
+system travel time without compromising individual goals.
+The contributions of this research are summarized as follows:
+• Formulation of a Markov game for CAVs conducting en-route choices, considering the unique characteristics of the problem;
+• Formulation of a single-agent Markov decision process for the information provider, providing en-route suggestions based on
+real-time traffic conditions;
+• Development of a two-way deep reinforcement learning framework and algorithm for CAVs and the information provider,
+capturing their real-time interactions;
+• Customization of reinforcement learning methods to accommodate the unique characteristics of the formulated problems and
+enhance learning performance;
+• Formulation and theoretical analysis of CE within the proposed framework, with rigorous proof that the learning converges
+towards SO without compromising UO.
+The remainder of the paper is structured as follows. Section 2 presents the related literature review and emphasizes the research
+gap. Section 3 first presents some preliminary, then formulates the multi-agent Markov game for CAVs and the Markov decision
+process for the information provider. Section 4 proposes the customized two-way deep reinforcement learning approach and
+algorithm. Section 5 introduces, formulates, and theoretically analyzes CE in the proposed framework. Section 6 conducts numerical
+examples. The paper is concluded by Section 7.
+2. Literature review
+This section conducts the literature review in three domains relevant to our research focus: (1) Information provision in CAV
+systems; (2) Markov game and multi-agent reinforcement learning for vehicle routing; (3) Applications of CE in transportation.
+In the literature related to information provision in CAV systems, one stream of research focuses on improving local traffic
+performance (Zhou et al., 2023; Liang et al., 2023) or safety (Kim et al., 2019; Jo et al., 2022; Ko et al., 2023). This branch of studies
+is less related to our research. Therefore, we omit the details of them. Another stream of research focuses on achieving network-wide
+goals, e.g., SO, by information provision. Among them, Wang et al. (2021) consider enhancing traffic efficiency for CAV systems by
+providing route suggestions. The routing strategy relies on monetary incentives to ensure user participation and requires behavior
+assumptions such as honesty. Du et al. (2015) propose a coordinated routing mechanism with intentional information provision
+perturbation to balance UO and SO, by exploiting bounded rationality of the users. Spana et al. (2022) integrate strategic real-time
+traffic information perturbation into a coordinated routing mechanism for CAVs using a mixed-strategy congestion game to mitigate
+congestion. Spana and Du (2022) solve the optimal information perturbation for traffic congestion mitigation, based on Gaussian
+process regression and optimization. These three studies, i.e., (Du et al., 2015; Spana et al., 2022; Spana and Du, 2022), present
+solid efforts in integrating, analyzing, and solving the information perturbation on travel time to mitigate congestion. However, the
+2
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+loss of UO still exists when pursuing SO, which can cause user dissatisfaction. In addition, none of the above research considers
+en-route choices and the dynamical features of the CAV system.
+Markov game and multi-agent reinforcement learning have been applied in dynamic routing behavior for transportation systems.
+There are two main types of route decisions considered: the decision of a complete route choice and en-route decisions. In the
+research focusing on complete route choice behaviors, e.g., (Stefanello et al., 2016; de O. Ramos et al., 2018; Zhou et al., 2020),
+the action space for an agent is the route set from origin to destination. These studies assume that agents follow the chosen routes
+until they reach their destination without en-route changes. The problems are similar to using reinforcement learning to find the
+shortest routes without response to traffic dynamics. For the research focusing on the en-route context, two studies (Grunitzki et al.,
+2014) and Bazzan and Grunitzki (2016) model the multi-agent en-route behaviors using reinforcement learning, with location as
+state and next-to-go link as action. However, these studies assume each agent is an independent learner and ignores the interaction
+among agents, which is not realistic and suffers from instability issues. Shou et al. (2022) formulate a Markov routing game for
+agents and solves it using mean field multi-agent reinforcement learning, capturing the competition among agents and congestion
+effects. However, the research does not explicitly factor the unique features of en-route behaviors in the modeling. For example,
+in their algorithm, agents take joint actions every time without factoring the different en-route statuses of different agents. In
+addition, Su et al. (2023) propose a multi-agent reinforcement learning framework for traffic signal control for emergency vehicle
+routing to reduce congestion. Our research formulates the en-route Markov game and designs the multi-agent reinforcement learning
+framework for CAVs, capturing the competition among agents, congestion effect, and the unique features of en-route behaviors.
+Additionally, we also integrate the learning of an information provider with the CAVs and propose a two-way reinforcement learning
+framework to achieve individual and system-level goals simultaneously.
+The concept of CE receives little attention in transportation research. The topics include applying CE in traffic management with
+unmanned aerial vehicles (Tony et al., 2022), minimizing delay at intersections (Adkins et al., 2019), and mitigating network-level
+congestion through information provision (Liu and Whinston, 2019; Gairing et al., 2008; Ning and Du, 2023). Among the three
+studies in the third category that relates to this paper, Liu and Whinston (2019) and Gairing et al. (2008) use simple and small
+networks to study and analyze the CE with information provision. Specifically, Liu and Whinston (2019) propose an information
+design framework through Bayes correlated equilibrium to improve the traffic efficiency. Gairing et al. (2008) propose a Bayesian
+routing game for selfish users with incomplete information. The study proved the existence of CE in the routing game and analyzed
+the computation complexity on simple networks. Recently, Ning and Du (2023) propose a routing mechanism for traffic congestion
+mitigation built upon CE, and design robust algorithms to solve the optimal routing. Their work addresses the conflict between UO
+and SO by involving an information provider providing pre-trip route suggestions.
+While sharing the research interests similar to Ning and Du (2023), our research presented in this paper focuses on a dynamic
+en-route context for the systems with self-learning CAVs and an information provider who is also learning the optimal information
+provision strategy. We intend to address the challenges in solving the UO-SO conflict and reduce the behavior constraints and
+implementation complexity of CE in practice by leveraging emerging technologies.
+3. Model formulation
+This research considers a traffic system where the vehicles are intelligent CAVs that possess self-learning capabilities supported by
+advanced computation resources. Each vehicle behaves selfishly with the aim of minimizing its own travel time. While an information
+provider is a central agency with the objective of minimizing the total travel time of the system by disseminating travel information
+to each CAV.
+Each CAV is an intelligent agent making individual en-route choices according to its observed traffic condition. Their actual travel
+times are affected by other CAVs’ behaviors. Since each CAV behaves selfishly, there is competition for the shared resources (road
+capacity) among CAVs. And the resulting joint behaviors usually lead to compromise in system-wide efficiency, i.e., an increase in
+congestion. In this research, the routing problem of CAVs is formulated as a Markov Game (Littman, 1994), in which each agent
+behaves non-cooperatively, and their payoffs are influenced by each other. Each CAV conducts reinforcement learning to learn its
+optimal policy (en-route strategy), and this forms a Multi-Agent Reinforcement Learning (MARL) problem.
+The information provider provides en-route suggestions to each CAV based on the real-time traffic condition to influence the
+CAVs’ behaviors, with the objective of minimizing the total travel time of the system. After disseminating the suggestions to CAVs,
+in real time, the information provider can observe the aggregate travel behaviors of CAVs and the change in traffic conditions.
+From such observation, the information provider can adjust its strategy to minimize the total travel time of the system. This
+forms a learning process on the information provider’s side. In this research, the information provision problem is formulated as a
+single-agent Markov Decision Process (MDP) (Puterman, 2008) that will be solved by reinforcement learning.
+The shared environment for the CAVs and the information provider is the traffic condition in the system, which is dynamic
+as the traffic evolves. Essentially, both the CAV side and the information provider side learn their optimal policies by interacting
+with the environment, in which the behaviors of both sides influence each other. Therefore, a two-way reinforcement learning
+setting is established, which contains the CAV side and the information provider side. Fig. 1 shows the conceptual framework.
+In the following, Section 3.1 introduces preliminaries of the definitions of single-agent MDP and multi-agent Markov game. Then
+Section 3.2 and Section 3.3 present the proposed formulations for the Markov game of CAVs and the MDP for the information
+provider, respectively.
+3
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Fig. 1. Conceptual framework.
+
+3.1. Preliminaries of MDP and Markov game
+The Markov Decision Process (MDP) is concerned with a single agent learning a policy that optimizes a numerical objective
+by making sequential decisions. The agent interacts with an environment of unknown dynamics in a trial-and-error fashion and
+receives feedback after executing a decision (Gronauer and Diepold, 2022; Zhang et al., 2021). The standard formulation for such
+a sequential decision-making process, i.e., MDP, is defined as follows (Bellman, 1957; Puterman, 2008; Zhang et al., 2021).
+Definition 1. A Markov decision process is defined by a tuple (𝑆, 𝐴, 𝑃 , 𝑅, 𝛾), where S and A denote the state and action spaces,
+respectively; 𝑃 ∶ 𝑆 × 𝐴 → 𝛥(𝑆) denotes the transition probability from any state 𝑠 ∈ 𝑆 to any state 𝑠′ ∈ 𝑆 for any given action
+𝑎 ∈ 𝐴; 𝑅 ∶ 𝑆 × 𝐴 × 𝑆 → R is the reward function that determines the immediate reward received by the agent for a transition from
+(𝑠, 𝑎) to 𝑠′ ; 𝛾 ∈ [0, 1] is the discount factor that trades off the instantaneous and future rewards.
+In an MDP, at each time 𝑡, the agent chooses an action 𝑎𝑡 ∈ 𝐴 to execute, given any non-terminal state 𝑠𝑡 ∈ 𝑆. After execution,
+it observes a new state 𝑠𝑡+1 ∈ 𝑆 with probability 𝑃 (𝑠𝑡+1 |𝑠𝑡 , 𝑎𝑡 ) and receives a reward 𝑟(𝑠𝑡 , 𝑎𝑡 , 𝑠𝑡+1 ) ∈ R. The goal of solving the MDP
+is to find a policy 𝜋 ∶ 𝑆 → 𝛥(𝐴), a mapping from the state space 𝑆 to the distribution over the action space 𝐴, so that 𝑎𝑡 ∼ 𝜋(⋅|𝑠𝑡 )
+and the expected discounted accumulative reward (Eq. (1)) is maximized,
+[
+]
+∑
+|
+E
+𝛾 𝑡 𝑟(𝑠𝑡 , 𝑎𝑡 , 𝑠𝑡+1 )||𝑎𝑡 ∼ 𝜋(⋅|𝑠𝑡 ), 𝑠0
+(1)
+|
+𝑡≥0
+where 𝑠0 is the initial state, and 𝛾 is the discount factor. When 𝛾 = 1, the agent does not differentiate future rewards from immediate
+rewards. As 𝛾 gets smaller, the agent cares less about rewards received in the distant future.
+Accordingly, the state-value function (V-function) and action-value function (Q-function) under policy 𝜋 are defined as Eq. (2)
+and Eq. (3), respectively.
+[
+]
+∑
+|
+𝑡
+|
+𝑉𝜋 (𝑠) = E
+𝛾 𝑟(𝑠𝑡 , 𝑎𝑡 , 𝑠𝑡+1 )|𝑎𝑡 ∼ 𝜋(⋅|𝑠𝑡 ), 𝑠0 = 𝑠
+(2)
+|
+𝑡≥0
+[
+]
+∑
+|
+𝑄𝜋 (𝑠, 𝑎) = E
+𝛾 𝑡 𝑟(𝑠𝑡 , 𝑎𝑡 , 𝑠𝑡+1 )||𝑎𝑡 ∼ 𝜋(⋅|𝑠𝑡 ), 𝑎0 = 𝑎, 𝑠0 = 𝑠
+(3)
+|
+𝑡≥0
+For any state 𝑠 ∈ 𝑆 and action 𝑎 ∈ 𝐴, 𝑉𝜋 (𝑠), 𝑉𝜋 (𝑠) is the expected discounted accumulative reward starting from 𝑠0 = 𝑠, and
+𝑄𝜋 (𝑠, 𝑎) is the expected discounted accumulative reward starting from (𝑠0 , 𝑎0 ) = (𝑠, 𝑎).
+An optimal policy, 𝜋 ∗ , is the policy that maximizes the value function, i.e., 𝜋 ∗ = 𝑎𝑟𝑔𝑚𝑎𝑥𝜋 𝑉 𝜋 (𝑠), ∀𝑠 ∈ 𝑆. The functions 𝑉𝜋∗ (𝑠)
+and 𝑄∗𝜋 (𝑠, 𝑎) corresponding to the optimal policy 𝜋 ∗ are called the optimal value function and the optimal action-value function,
+respectively. The optimal value function, 𝑉𝜋∗ (𝑠), can be written in a recursive way as shown in Eq. (4), in relation to the next state
+𝑠′ given state 𝑠.
+[
+]
+𝑉 ∗ (𝑠) = max E𝑠′ ∼𝑃 (⋅|𝑠,𝑎) 𝑟(𝑠, 𝑎, 𝑠′ ) + 𝛾 𝑉 ∗ (𝑠′ )
+(4)
+𝑎
+
+Mathematically, 𝑉 ∗ (𝑠) = max𝑎 𝑄∗ (𝑠, 𝑎), and the following holds.
+[
+]
+𝑄∗ (𝑠, 𝑎) = E𝑠′ ∼𝑃 (⋅|𝑠,𝑎) 𝑟(𝑠, 𝑎, 𝑠′ ) + 𝛾 max 𝑄∗ (𝑠′ , 𝑎′ )
+
+(5)
+
+𝑎′
+
+4
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+The optimal policy can be derived as 𝜋 ∗ (𝑠) = 𝑎𝑟𝑔𝑚𝑎𝑥𝑎 𝑄∗ (𝑠, 𝑎), ∀𝑠 ∈ 𝑆.
+Extended from MDP where there is only a single agent, Markov game describes the sequential decision process for multiple
+agents. In particular, the environment state and reward received by each agent are influenced by the joint actions of all agents.
+Each agent has its own cumulative reward to optimize, which now becomes a function of the policies of all other agents, in contrast
+to the single-agent case. The Markov game is defined as follows (Littman, 1994; Zhang et al., 2021).
+Definition 2. A Markov game is defined by a tuple (𝑁, 𝑆, {𝐴𝑖 }𝑖∈𝑁 , 𝑃 , {𝑅𝑖 }𝑖∈𝑁 , 𝛾), where 𝑁 = {1, … , 𝑛} denotes the set of 𝑛 agents,
+𝑆 denotes the state space observed by all agents, 𝐴𝑖 denotes the action space of agent 𝑖. Let 𝐴 ∶= 𝐴1 × ⋯ × 𝐴𝑛 , then 𝑃 ∶ 𝑆 × 𝐴 → 𝛥(𝑆)
+denotes the transition probability from any state 𝑠 ∈ 𝑆 to any state 𝑠′ ∈ 𝑆 for any joint action a ∈ 𝐴; 𝑅𝑖 ∶ 𝑆 × 𝐴 × 𝑆 → R is the
+reward function that determines the immediate reward received by agent 𝑖 for a transition from (𝑠, a) to 𝑠′ ; 𝛾 ∈ [0, 1] is the discount
+factor.
+At time 𝑡, each agent 𝑖 ∈ 𝑁 executes an action 𝑎𝑖,𝑡 , according to the environment state 𝑠𝑡 . Then the environment transitions to
+the next state 𝑠𝑡+1 , and gives rewards 𝑟𝑖 (𝑠𝑡 , 𝒂𝑡 , 𝑠𝑡+1 ) to each agent 𝑖. The goal of each agent is to find a policy 𝜋𝑖 ∶ 𝑆 → 𝛥(𝐴𝑖 ) that
+optimizes its own expected cumulative reward. In the multi-agent setting, the value function 𝑉𝑖 (𝑠) and the action-value function
+𝑄𝑖 (𝑠, 𝒂) become functions of the joint actions of all agents and the environment state.
+The solution concept of a Markov game is different from that of an MDP, since the optimal performance of each agent is controlled
+not only by its own policy, but also by the policies of all other agents. There are several well-known solution concepts in Markov
+games, including Nash equilibrium (NE), correlated equilibrium (CE), and coarse correlated equilibrium (CCE) (Aumann, 1987; Chen
+et al., 2022; Mao and Başar, 2022).
+In a more general case, either in an MDP or a Markov game, the state may not be fully observable to the agents, i.e., the agents
+can only observe a part of the state. In this case, the agents take actions based on their observation and establish the (action-) value
+functions based on observation instead of state. The policy becomes a mapping from the observation space to the action space.
+3.2. Markov routing game for CAVs under information provision
+This section presents the proposed Markov routing game for CAVs under information provision, where each CAV behaves noncooperatively and tries to minimize its own individual travel time. The CAVs make en-route choices during the trip based on their
+latest observation of the traffic condition and received en-route suggestions from the information provider. In this research, the
+en-route choices are considered to be made at each intersection or interchange by selecting which subsequent link to travel. By
+constantly interacting with the environment, the CAVs accumulate trip experiences and learn their optimal en-route policies.
+The Markov game for describing CAVs’ traveling behaviors has distinct features that differ from the standard Markov game by
+definition; therefore, the formulation of the game should be customized to accommodate specific characteristics. Below presents
+three unique characteristics that must be taken into account in the formulation. In the rest of the paper, we use CAV and agent
+interchangeably.
+• In the standard Markov game, agents take actions at the same time at each step and end the game together. However, for
+traffic systems, each CAV takes action only at the time when it arrives at an intersection or interchange, which differs from
+one CAV to another since different CAVs can have different trips and do not make decisions at the same time. And they can
+finish their trips (end the game) at different times.
+• The change in environment state is defined to be triggered by the joint action of the agents at each step in a standard Markov
+game. While in the traffic system, the traffic environment changes right after any CAV takes an action instead of the joint
+action. This means that, from one CAV’s perspective, the environment can change even though it has not taken any new
+action.
+• The size of the action set of a CAV varies along the trip since the number of subsequent links that are available varies at
+different intersections/interchanges.
+Explicitly incorporating the above characteristics, this research formulates the Markov game for CAVs making en-route choices.
+Consider a traffic network 𝐺(𝑁, 𝐿) consisting of a set of nodes, 𝑛 ∈ 𝑁, and a set of directed links, 𝑎 ∈ 𝐿. Denote 𝑊 as the
+set of Origin-Destination (OD) pairs. 𝐷𝑤 , 𝑤 ∈ 𝑊 is the set of the decision nodes in OD pair 𝑤 ∈ 𝑊 , which are the nodes of
+intersections/interchanges where CAVs can make en-route decisions. Denote 𝑃 𝑛,𝑤 and 𝐴𝑛,𝑤 as the set of the sub-routes and the set
+of the actions (links) at the decision node 𝑛 for the travel in OD pair 𝑤 ∈ 𝑊 . A sub-route in 𝑃 𝑛,𝑤 is defined as a route from decision
+node 𝑛 to the destination in OD pair 𝑤. Consider a period of time of interest, discretized into time steps. Denote the set of the time
+steps as 𝑇 . Below presents the details of each component of the formulated Markov game.
+Agent. Each CAV is an agent, denoted by 𝑖 ∈ {1, 2, … , 𝐼}. The CAV 𝑖 makes en-route choices at each decision node 𝑛 ∈ 𝐷𝑤 during
+its trip in OD pair 𝑤 ∈ 𝑊 .
+State. Since it is a multi-agent problem, the state refers to the environment state. In this research, the environment state 𝑠 ∈ 𝑆 is
+the traffic condition. Specifically, we use the travel time of each link to represent the state. The environment changes at each time
+step as traffic evolves and CAVs take actions.
+Observation. Each CAV traveling in OD pair 𝑤 ∈ 𝑊 has an observation of the environment state at a time, which is part of the
+entire environment that relates to its travel in 𝑤 ∈ 𝑊 . In this research, we consider the observation 𝑜𝑖 ∈ 𝑂𝑖 , 𝑖 = 1, 2, … , 𝐼, includes
+the current time 𝑡 ∈ 𝑇 , location (decision node) 𝑛 ∈ 𝐷𝑤 , real-time travel time information of each sub-routes 𝑡𝑝 , 𝑝 ∈ 𝑃 𝑛,𝑤 (can
+5
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Fig. 2. Illustration on Nguyen-Dupuis network.
+
+be obtained by any channels such as navigation applications), and the suggested sub-route 𝑝 ∈ 𝑃 𝑛,𝑤 provided by the information
+provider. Based on the observation, the CAV takes action at each decision node in 𝑤 ∈ 𝑊 .
+Action. At each decision node 𝑛 ∈ 𝐷𝑤 , based on its observation, the CAV takes an action. That is, the CAV chooses a subsequent
+link 𝑎 to travel from its action set 𝐴𝑛,𝑤 , which contains all the available links it can take at the decision node 𝑛 ∈ 𝐷𝑤 . The action
+set varies by the decision node it arrives at.
+Reward. After taking an action at a decision node at time step 𝑡 ∈ 𝑇 , the CAV travels on the subsequent links until it reaches
+the next decision node at time 𝑡′ ∈ 𝑇 . At the new decision node, the CAV will receive a reward 𝑟 ∈ R that is associated with the
+travel time it took from the last decision node. In this research, the reward is considered to be the negative of such travel time,
+i.e., −(𝑡′ − 𝑡) × ℎ, where ℎ is the length of each time step. Then the CAV gets a new observation and takes an action at the new
+decision node.
+Episode. For each CAV, an episode means a complete trip. The objective of each CAV 𝑖 is to maximize its expected discounted
+accumulative reward in an episode,
+[
+]
+∑
+|
+E
+𝛾 𝑡 𝑟(𝑜𝑖,𝑡 , 𝑎𝑖,𝑡 , 𝑜𝑖,𝑡′ )||𝑎𝑖,𝑡 ∼ 𝜋𝑖 (⋅|𝑜𝑖,𝑡 ), 𝑜𝑖,0
+|
+𝑡
+where 𝑡 denotes the time steps when the CAV 𝑖 needs to take action and 𝑡′ is the next action time after 𝑡. Since this is a multi-agent
+problem, the reward received by a CAV is influenced by the environment state 𝑠𝑡 and the actions of other CAVs, in addition to its
+own action. However, the environment state and the actions of other CAVs are not fully observable to the agent. Therefore, in the
+above equation, we just use the observation and the action of its own in the reward function, in which the environment state and
+the actions of other CAVs are partially reflected in the observed travel times by the definition of 𝑜𝑖 . This research considers 𝛾 = 1;
+that is, each CAV wants to maximize its total travel time in a trip without any discount on the reward received later in the trip.
+From the CAV’s perspective, the episode ends when they finish their own trip. While from the perspective of the system, the episode
+ends when all CAVs arrive at their destinations.
+Policy. As trip experience accumulates, each CAV 𝑖 traveling in OD pair 𝑤 ∈ 𝑊 tries to learn an optimal policy 𝜋𝑖∗ , which is a
+mapping from its observation space 𝑂𝑖 to its action space 𝐴𝑖 = {𝐴𝑛,𝑤 , 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊 }.
+Fig. 2 illustrates the en-route process of one CAV in one episode (trip) on the Nguyen-Dupuis network. In this example, the CAV
+departs from the origin (node 4) toward the destination (node 2). At the origin, where is a decision node, the CAV chooses from
+link 3 and link 4 based on its current observation and policy. Assume it takes link 3, then it arrives at node 5 and receives a reward,
+which is the negative travel time it took from node 4 to node 5. Then the CAV chooses from link 5 and link 6 based on its current
+observation and policy. Assume it takes link 6, and then arrives at node 6. Similarly, it receives a reward that is the negative travel
+time it took from node 5 to node 6. Then it renews observation and takes action again. Now assume it takes link 14, then it will
+arrive at node 10, which is not a decision node. Note that the CAV now has only one sub-route option, which is link 11 → link
+17. Hence, the CAV continues to travel through link 11 and link 17, and finally arrives at the destination (node 2). Then the CAV
+receives a reward, which is the negative travel time it took from the last decision node (node 6) to the current location (node 2).
+The total reward received in one episode is exactly the negative of the total travel time it took during the trip. Each CAV repeats
+such a process and accumulates experience, from which they learn their optimal policies.
+3.3. MDP for the information provider
+The information provider provides en-route suggestions to CAVs, i.e., a suggested sub-route, when the CAVs take actions at a
+decision node during the trip. The objective of the information provider is to minimize the system’s total travel time, differing from
+6
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+the objective of individual CAVs. As aforementioned, the sequential decision process of the information provider, in terms of how
+to provide the suggested sub-routes, is formulated as an MDP to be solved by reinforcement learning. Below presents the details of
+each component of the MDP.
+Agent. There is one single agent, which is the information provider.
+Episode. The episode for the information provider starts from the beginning of the time period of interest and lasts until all the
+considered CAVs arrive at their destinations, e.g., a day, or the peak hours.
+State. The state of the information provider is the travel time on each link in the system. It shares the same environment as
+the CAVs. However, when the information provider provides the en-route suggestion for a CAV, it only refers to the travel times
+relevant to the specific trip of the CAV. In this research, the information provider provides suggestions based on the current travel
+times of the sub-routes at the specific decision node instead of the entire system in which the traffic condition very far away has
+little impact.
+Action. The information provider takes actions at each time step 𝑡 ∈ 𝑇 . Specifically, the action of the information provider refers
+to the probability distributions of suggesting each sub-route available at the decision nodes in all OD pairs in the system. Denote
+̂𝑛,𝑤 ∈ R𝑘 as the action at the decision node 𝑛 in OD pair 𝑤, which is a 𝑘𝑛,𝑤 dimensional vector with each element as the probability
+𝒂
+of suggesting one corresponding sub-route, where 𝑘𝑛,𝑤 is the number of sub-routes at the decision node 𝑛 ∈ 𝐷𝑤 . Therefore, the
+action of the information provider is indeed continuous. When a CAV arrives at a decision node 𝑛 ∈ 𝐷𝑤 , the information provider
+̂𝑛,𝑤 ∈ R𝑘 . From the perspective of the CAV, this suggested
+provides a suggested sub-route according to the probability distribution 𝒂
+sub-route, as previously presented, is part of its observation. In the learning, to reduce the dimension of the problem, the action
+̂𝑛,𝑤 ∈ R𝑘 can be represented as the probability distribution among the links available at a decision node since multiple sub-routes
+𝒂
+can share the same link.
+Reward. After the information provider takes the action {̂
+𝒂𝑛,𝑤 , 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊 } at time 𝑡, it will receive a reward in the next
+time step 𝑡′ . The reward is associated with the total travel time taken by all the CAVs in the previous time step. In this research,
+we use the negative total travel time of all the CAVs, i.e., −(𝑡′ − 𝑡) × ℎ × 𝐼𝑡 , as the reward received by the information provider at
+𝑡′ , where 𝐼𝑡 is the number of agents that travels in time step 𝑡. Therefore, the total reward received by the information provider in
+one episode is the negative total travel time of all CAVs.
+̂𝑛,𝑤 ∈ R𝑘 , 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊 based on its state
+Policy. The information provider seeks to learn a policy that determines its action 𝒂
+𝑠 ∈ 𝑆. The objective is to find a policy that minimizes the expected discounted accumulative reward,
+[
+]
+∑
+|
+̂𝑛,𝑤,𝑡 ∼ 𝜋̂(⋅|𝑠𝑡 ), 𝑠0
+E
+𝛾 𝑡 𝑟(𝑠𝑡 , [̂
+𝒂𝑛,𝑤,𝑡 , 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊 ], 𝑠𝑡′ )||𝒂
+|
+𝑡
+where we also let the discount factor 𝛾 = 1 for the information provider. For a training task, a value close to 1 may be used for 𝛾,
+such as 0.99, to help with convergence, according to the common practice rule in reinforcement learning.
+So far, we have formulated the Markov game for CAVs and the MDP for the information provider. The shared environment is
+indeed model-free traffic dynamics. Next, we present the approach for solving the problems.
+4. Customized two-way reinforcement learning approach
+Reinforcement learning (RL) is a typical technique used for solving model-free MDPs and Markov games. In this section, we
+propose a two-way deep RL framework, in which we have the multi-agent RL for CAVs and the single-agent RL for the information
+provider. Fig. 3 shows the main components of the framework.
+In Fig. 3, the CAVs and the information provider share the same environment of the traffic system. The CAVs take actions at each
+decision node, while the information provider takes action at each time step. To account for the characteristics of the problems, we
+apply deep Q-learning to the Markov game of CAVs and use an actor-critic method for the information provider. The subsequent
+sub-sections will provide detailed explanations of the RL processes.
+In this framework, the CAVs obtain observations from the environment and the information provider, and take actions that will
+impact the environment. The information provider obtains state from the environment and takes action that will impact the CAVs
+behaviors, and in turn, impact the environment. The information provider and the CAVs interact with other and conduct RL at the
+same time. In fact, the information provider repeatedly learns the aggregate behaviors of CAVs, from which it learns the strategy of
+providing suggestions that impact the actions of CAVs. The CAVs also interact with the environment and the information provider
+to learn the optimal policy for taking en-route actions.
+Since the problems formulated in this research have distinct characteristics, we customized a two-way RL framework in this
+study. In the following, we present the details of the multi-agent RL for CAVs and the single-agent RL for the information provider
+in Section 4.1 and Section 4.2, respectively. Then, a two-way deep RL algorithm is presented in Section 4.3.
+4.1. Multi-agent RL for CAVs
+In multi-agent RL, there usually presents two challenges: stability and the curse of dimensionality. First, since multiple agents
+learn concurrently, the environment faced by each individual agent is non-stationary. The reward and policy of one agent is affected
+by the joint behavior of other agents. Theoretically, if each individual agent ignores this issue and optimizes its own policy, assuming
+a stationary environment in a fully independent and decentralized way, the learning is easy to fail to converge (Zhang et al., 2021;
+7
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Fig. 3. The two-way deep RL framework.
+
+Fig. 4. Learning schemes in multi-agent RL (Gronauer and Diepold, 2022).
+
+Gronauer and Diepold, 2022). Second, as the number of agents and the size of state/action spaces increase, the learning becomes
+computationally intractable due to the curse of dimensionality (Zhang et al., 2021; Gronauer and Diepold, 2022).
+In the literature on multi-agent RL, one solution to the above challenges is to use a Centralized Training and Decentralized
+Execution (CTDE) scheme, which allows information sharing among agents during the learning process. Fig. 4 shows the three
+types of learning schemes in multi-agent RL. Fig. 4 (a) shows the fully centralized scheme where a central controller is required to
+maintain the joint policy and execute the joint action of all agents. Fig. 4 (b) shows the fully decentralized case where each agent
+interacts with the environment, executes actions, and updates policies independently. Fig. 4 (c) shows the CTDE scheme where
+agents can share some information, such as observations, rewards, or actions in the learning process, while they could execute
+actions independently.
+The fully centralized scheme suffers from the curse of dimensionality as the central controller has to maintain the information of
+all agents and learn a joint policy. The fully decentralized scheme suffers from instability as it ignores the interaction and influences
+between agents. CTDE addresses the instability issue by allowing information exchange among agents so that they can take actions
+with the consideration of others’ behaviors. Moreover, CTDE can also mitigate the dimensionality issue in training if some of the
+agents can share the learning experience or even share the Q-network, for example, in Q-learning. Also, the decentralized execution
+in CTDE does not require the agents to make joint actions and thus helps circumvent the dimensionality issue.
+This research follows a way similar to CTDE. However, we do not require strong assumptions on the information sharing, such as
+sharing actions, among all the agents. In fact, in the formulated Markov game for CAVs, we explicitly designed that the observation of
+each agent includes the real-time travel time information of each sub-route, which indirectly reflects the actions of some agents that
+may impact the agent. In this way, we do not require any strong assumptions on information sharing and maintain direct competition
+from the agents who act at the same time in the neighborhood. This helps mitigate the instability issue while maintaining realistic
+in practice.
+8
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Given that the observations of the CAV include both continuous values, i.e., the travel times of sub-routes, and discrete values,
+i.e., the time, location, and the suggested sub-route, we employ the deep Q-learning method. This method utilizes Deep Q-Networks
+(DQN) to approximate the Q functions. In particular, we leverage the Double Deep Q-Network (DDQN) to mitigate the overestimation
+−
+of action values. Each agent maintains a Q-network 𝑄𝑖 (𝑜𝑖 , 𝑎𝑖 |𝜃𝑖 ) parameterized by 𝜃𝑖 and a target Q-network 𝑄−
+𝑖 (⋅|𝜃𝑖 ) parameterized
+−
+−
+by 𝜃𝑖 . The parameter 𝜃𝑖 of the target Q-network is copied from the Q-network every several episodes to stabilize training. The
+DDQN updates the parameter 𝜃𝑖 by minimizing the following loss
+[
+(
+)
+]2
+′
+′
+−
+L (𝜃𝑖 ) = E𝑜𝑖 ,𝑎𝑖 ,𝑜′ 𝑟𝑖 + 𝛾𝑄−
+− 𝑄𝑖 (𝑜𝑖 , 𝑎𝑖 |𝜃𝑖 )
+(6)
+𝑖 𝑜𝑖 , 𝑎𝑟𝑔𝑚𝑎𝑥𝑎𝑖 𝑄𝑖 (𝑜𝑖 , 𝑎𝑖 |𝜃𝑖 ) ∣ 𝜃𝑖
+𝑖
+
+The agent learns the optimal 𝑄∗𝑖 (𝑜𝑖 , 𝑎𝑖 |𝜃𝑖∗ ) gradually from its experience, and the optimal policy 𝜋𝑖∗ is to choose the action that
+maximizes the optimal Q-value given an observation 𝑜𝑖 ∈ 𝑂𝑖 , i.e.,
+𝜋𝑖∗ (𝑜𝑖 ) = 𝑎𝑟𝑔𝑚𝑎𝑥𝑎𝑖 𝑄∗𝑖 (𝑜𝑖 , 𝑎𝑖 |𝜃𝑖∗ )
+
+(7)
+
+As mentioned in Section 3.2, the Markov routing game of CAVs has characteristics differing from the standard Markov game;
+hence, customization has been made in the design of the Q-networks. Since the observation includes both continuous and discrete
+values, and some of them (the location and the suggested sub-route) are even categorical instead of numerical values, we must tailor
+the input layer of the Q-networks to enhance learning performance. Moreover, the varying size of action sets at different decision
+nodes adds additional challenges in designing the Q-networks.
+To tackle these unique challenges, we designed separate but virtually connected sub-networks for each decision node given an OD
+pair. Fig. 5 shows the network structure. Given an OD pair 𝑤 ∈ 𝑊 , the set of decision nodes 𝐷𝑤 is fixed. The green nodes at the top
+of the figure represent different decision nodes. Each decision node has a sub-network, where the size of the action set is fixed. The
+bottom layer outputs the Q-values for each action. The sub-networks are virtually connected through decision nodes. These virtual
+connections are represented by dashed lines, indicating that there are no parameters to train but value transmission is allowed. The
+second row in the figure contains other inputs, including time, travel times of sub-routes, and the suggested sub-route. The network
+has two layers of inputs, with the first layer as a virtual layer. The specific structure of each sub-network is not necessarily the same
+but depends on the traffic network topology.
+
+Fig. 5. The Q-network structure.
+
+During the training process, for each batch sample with 𝑜 and 𝑜′ , the sub-networks of decision nodes in 𝑜 and 𝑜′ are connected to
+allow value transmission so that the loss in Eq. (6) can be calculated and minimized. While in each execution, only one sub-network,
+i.e., the one corresponding to the decision node where the agent takes an action, will be utilized. In this way, we can address the
+issue of varying size of action set in a trip, and at the same time, largely reduce the dimension of the input for a trip.
+For example, if we have an OD pair with 𝑚 decision nodes, associated with which we have 𝑛1 , 𝑛2 , … , 𝑛𝑚 sub-routes and
+𝑘1 , 𝑘2 , … , 𝑘𝑚 links to choose from at each decision node respectively. If we insist on using a single network for a trip, then the
+∑
+∑
+dimension of the input is [𝑚 (decision nodes, one-hot encoding) + 1 (time step) + 𝑗 𝑛𝑗 (travel times for sub-routes) + 𝑗 𝑘𝑗
+(suggested sub-route, one-hot encoding) ], where one-hot encoding is a common coding way for categorical values. In this case,
+the network contains too much redundant information that is irrelevant for a given decision node either for training or execution,
+not to mention the increase in the number of parameters to train. And we even need additional techniques to force the irrelevant
+actions for other decision nodes to be infeasible at the output layer for a single execution or fitting. However, using the virtually
+connected sub-networks, the input size reduces to 1 + 𝑛𝑗 + 𝑘𝑗 for a single execution or fitting. Note that for the input dimension of
+suggested sub-routes, it is indeed the number of actions since multiple sub-routes can share the same link.
+For better illustration, we use the Braess network shown in Fig. 6 as an example. In the Braess network, we have one OD pair
+which is from node 1 to node 4, and 𝑚 = 2 decision nodes that are nodes 1 and 2. At node 1, we have 𝑛1 = 3 sub-routes, which are
+9
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Fig. 6. Braess network.
+
+routes 1–5, 2-3-4, and 2–4; and 𝑘1 = 2 links to choose from, which are links 1 and 2. At node 2, we have 𝑛2 = 2 sub-routes, which
+are sub-routes 3–5 and 4; and 𝑘2 = 2 links to choose from, which are links 3 and 4. In this case, if we use the traditional single
+Q-network for a trip, we will have the input dimension as 2 + 1 + 3 + 2 + 2 + 2 = 12, which contains too much redundant information
+that is irrelevant for a given decision node. If we use the virtually connected sub-networks, the input size for the network associated
+with decision node 1 reduces to 1 + 3 + 2 = 6 and reduces to 1 + 2 + 2 = 5 for decision node 2, which could save even a lot in an
+execution or fitting for more complex networks. Additionally, different sub-networks can handle different number of actions in the
+output layer, i.e., different number of links to choose at different decision nodes.
+In practice, for the context of this research, the curse of dimensionality induced by a large number of agents can be addressed
+by advanced technologies such as edge computing to allow individual agents to do computation locally. Moreover, it is noteworthy
+that achieving convergence might face challenges for real-world large-scale networks, even when CAVs’ actions and rewards are
+implicitly reflected in observations accessible to other CAVs. In such cases, our approach can be extended to a more aggregate level
+by allowing agents to share their information, including observations, rewards, and used actions. For example, agents could be
+divided into groups, permitting those within the same group to share a common experience buffer and Q-network, assuming that
+information can be readily transmitted among CAVs.
+4.2. Single-agent RL for the information provider
+The information provider provides sub-route suggestions to CAVs given the real-time traffic state. In the MDP for the information
+provider, the action of the information provider is the probability distribution among the sub-routes available at a decision node
+𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊 . According to this probability distribution, the information provider provides specific suggestions to different CAVs.
+Indeed, in computation, we convert it into the probability distribution among the links available at a decision node since multiple
+sub-routes can share the same link. The action of the information provider is a vector of continuous values, i.e., the probabilities
+of suggesting different links at a decision node. Therefore, we use the Deep Deterministic Policy Gradient (DDPG) method on the
+information provider side. Other methods for continuous action space can also be used.
+DDPG is a RL approach that combines the power of deep neural networks (DNNs) with the stability of deterministic policy
+gradients. It is an actor-critic method for problems with continuous action spaces. DDPG uses DNNs to approximate both the actor
+(policy) and critic (value function). The actor network learns a deterministic policy by mapping states to continuous actions, while
+the critic network evaluates the quality of the chosen actions using a learned Q-value function.
+For the critic network, we use the DQN method to approximate the action-values (Q-values), in which the loss function Eq. (8)
+is minimized to update the parameters of the Q-network.
+[
+(
+)
+]2
+L (𝜃) = E𝑠,𝒂,𝑠′ 𝑟 + 𝛾𝑄− 𝑠′ , 𝑎𝑟𝑔𝑚𝑎𝑥𝒂 𝑄(𝑠′ , 𝒂|𝜃 − ) ∣ 𝜃 − − 𝑄(𝑠, 𝒂|𝜃)
+(8)
+The difference is now the target Q-network is updated once per main Q-network update by Polyak averaging, instead of copying
+from the main Q-network every several episodes. Namely, do the following once per update:
+𝜃 − ← 𝜌𝜃 − + (1 − 𝜌)𝜃
+where 𝜌 is a hyperparameter between 0 and 1.
+The actor network 𝜋 takes the current state as input and outputs a continuous action in the action space. The network is trained
+using gradient ascent to maximize the expected cumulative reward Eq. (9), where 𝜙 is the parameter of the actor network. We
+also have a target actor network and update the parameters of the target actor network in the same averaging way as for the critic
+network.
+(9)
+
+𝑚𝑎𝑥𝜙 E𝑠 [𝑄(𝑠, 𝜋(𝑠 ∣ 𝜙) ∣ 𝜃)]
+
+The similar complexity also exists for the information provider side, as we have presented for the Markov game of CAVs, since
+the decision nodes vary among OD pairs and the action sets vary among decision nodes. To address this, we partition the problem
+into sub-problems by different ODs that share the same objective of minimizing the total system travel time. The same structure
+10
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+that separates the sub-networks for different decision nodes, as shown in Fig. 5, is utilized for the actor and critic networks in
+each OD. However, we do not need to enable the value transmission among different sub-networks and can train the sub-networks
+independently. This also enables distributed learning on the information provider side in implementation. Additionally, to reduce the
+number of neural networks, OD pairs with the same destination can share the same actor and critic networks for any decision nodes
+they have in common, because the CAVs at a same decision node traveling to a same destination can be treated as homogeneous.
+The RL on the information provider side also faces challenges caused by the non-fixed environment that involves CAVs who are
+learning at the same time. We utilize two techniques to help improve learning performance: reward shaping and periodic exploration.
+Reward shaping is a technique used in RL to provide additional guidance to the learning agent. It involves designing a modified
+reward that encourages desired behaviors or simplifies the learning process. In this research, at the earlier stage of the learning
+process of the CAVs, they are unlikely to be influenced by the information provider as they explore the environment. And, at the
+same time, the information provider has not learned a desired policy and cannot estimate a fair approximation of Q-values as
+the CAVs do not behave in the suggested way. Hence, this may induce the information provider to provide suggestions that are
+unfavorable to the CAVs, which in turn jeopardizes the effect the information provider can have since CAVs will learn low Q-values
+for the action of following the suggestions. This reduces the learning performance of the information provider as the Q-values are
+highly uncertain and hard to learn.
+To address this, we introduce an additional reward for the CAVs that follow the received suggestion at a decision node to
+encourage desired routing behaviors from the information provider’s perspective. The total additional reward for following the
+suggestions at all encountered decision nodes, i.e., following a complete suggested route, is the same for all CAVs in all OD pairs.
+CAVs receive additional reward if they follow the suggestion at some but not all the decision nodes. Section 6.3 provides examples
+of the reward design. Moreover, Section 5 provides theoretical analysis regarding the additional reward. We will show that the
+additional reward has positive effects in reducing congestion. Note that, with the proposed framework, the resulting behaviors
+induced by the additional reward will not cause any sacrifice on individual travel times from CAVs’ perspectives. This is in contrast
+to the traditional monetary incentives used for congestion mitigation, where travelers are compensated by the incentive for their
+sacrifice in travel time.
+Periodic exploration is another technique that we use to improve learning performance. In RL, exploration is encouraged at the
+earlier stage of the learning process to help the agent explore the unknown environment. For example, 𝜖-greedy is a common method
+used in DQN, which allows the agent to randomly take an action with a probability of 𝜖. Such probability decays over time to help
+the learning converge. In DDPG, the common method used for exploration is to add noise to the action obtained from the current
+policy. The noise is also decayed over time by, for example, reducing the standard deviation of the noise.
+In this research, since the policies of CAVs update over time, from the information provider’s standpoint, the Q-values associated
+with previously explored state–action pairs may be outdated. It becomes necessary to revisit actions with low Q-values and update
+them with the latest estimated Q-values. This helps the information provider capture the policy updates of CAVs and maintains fair
+assessments of its own actions. To do this, we use periodic exploration which decays the noise within a certain period of time and
+then restores it to its original value in the new period and decays it again over time. When to restore the exploration is treated as
+a hyperparameter in this research.
+4.3. Two-way deep reinforcement learning algorithm
+This section presents the proposed two-way deep RL algorithm for CAVs and the information provider, as summarized in
+Algorithm 1. The proposed algorithm has incorporated all the unique characteristics of the models outlined in Section 3.
+First, we initialize the Q-networks, critic, and actor networks, and the corresponding target networks. Also, initialize the
+experience replay buffers for CAVs and the information provider, which are used to store the collected experiences for batch training
+and updating the networks. Then there are two loops. One is the loop for episodes, and another is the loop for time steps within
+each episode. At the end, the algorithm outputs the learned networks, from which we obtain the learned policies.
+In each episode, there are two main stages: (1) the CAVs and the information provider interact with the shared environment
+and collect experiences into buffers; (2) sample batches from the experience buffers to update the networks by minimizing the
+corresponding loss functions or maximizing the expected cumulative reward; along with certain adjustments to hyperparameters.
+In the loop of time steps, the information provider observes its state and takes actions, and stores experiences if it is not the initial
+time step. Each CAV only takes actions at a decision node, not necessarily at each time step. If the CAV arrives at the destination, it
+receives a reward and stores the experience, and then finishes the trip. The information provider provides en-route suggestions for
+the CAVs at a decision node and ends the episode once all CAVs finish their trips. On the information provider side, the learning
+is independent for each decision node but shares the same reward and objective. The transition of the environment is triggered at
+each time step, no matter how many CAVs took actions in the previous time step.
+5. Correlated equilibrium
+The proposed two-way RL addresses the UO-SO conflict upon the theoretical foundation of CE. Section 5.1 introduces the CE using
+an illustrative example. Section 5.2 formulates the CE in the present research context and analyzes how the output of the proposed
+framework is consistent with the CE structure. Section 5.3 presents theoretical analysis of the proposed framework, including its
+ability to achieve CE, its effect on congestion mitigation, and the impact of reward shaping.
+11
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Algorithm 1: Two-way deep reinforcement learning algorithm
+Input: Time step length ℎ, maximum number of episode 𝐸 and maximum time horizon 𝑡𝑚𝑎𝑥
+̂𝑛,𝑤 (𝜃𝑛,𝑤 ), 𝜋̂𝑛,𝑤 (𝜙𝑛,𝑤 ), 𝑄
+̂− (𝜃 − ), and 𝜋̂− (𝜙− ), 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊 for
+Initialization: Initialize networks 𝑄𝑖 (𝜃𝑖 ) and 𝑄−𝑖 (𝜃𝑖− ) for each CAV 𝑖; and 𝑄
+𝑛,𝑤 𝑛,𝑤
+𝑛,𝑤 𝑛,𝑤
+the Information Provider (IP)
+̂
+Initialize the experience buffers 𝐵𝑖 for each CAV 𝑖, and 𝐵𝑛,𝑤 , 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊 for the IP
+Set episode 𝑒 = 0
+while 𝑒 ≤ 𝐸 do
+Reset the environment. The IP gets an initial 𝑠𝑛,𝑤,0 ; each CAV 𝑖 draws an initial 𝑜𝑖,0
+Set 𝑑𝑜𝑛𝑒𝑖 = 0, latest execution time 𝑡̇ 𝑖 = −1 for each CAV 𝑖, and 𝑡 = 0
+while 𝑡 ≤ 𝑡𝑚𝑎𝑥 do
+if ∃ 𝑖, 𝑑𝑜𝑛𝑒𝑖 = 0 then
+if 𝑡 > 0 then
+The IP observes the state 𝑠𝑛,𝑤,𝑡 , and receive a reward ̂
+𝑟
+The IP stores experience tuples (𝑠𝑛,𝑤,𝑡−1 , a𝑛,𝑤,𝑡−1 , ̂
+𝑟, 𝑠𝑛,𝑤,𝑡 ) into buffers 𝐵̂𝑛,𝑤 , 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊
+The IP executes action a𝑛,𝑤,𝑡 according to 𝜋̂𝑛,𝑤 and 𝑠𝑛,𝑤,𝑡 , under noise
+for 𝑖 = 1 to 𝐼 do
+if CAV 𝑖 arrives at its destination then
+𝑑𝑜𝑛𝑒𝑖 = 1
+CAV 𝑖 receives a reward 𝑟𝑖 and stores experience (𝑜𝑖,𝑡̇ 𝑖 , 𝑎𝑖,𝑡̇ 𝑖 , 𝑟𝑖 , 𝑜𝑖,𝑡 ) into buffer 𝐵𝑖
+Continue
+else
+if CAV 𝑖 arrives at a decision node 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊 then
+The IP provides a sub-route suggestion to CAV 𝑖, according to a𝑛,𝑤,𝑡
+CAV 𝑖 observes 𝑜𝑖,𝑡
+if 𝑡̇ 𝑖 ≥ 0 then
+CAV 𝑖 receives a reward 𝑟𝑖 and stores (𝑜𝑖,𝑡̇ 𝑖 , 𝑎𝑖,𝑡̇ 𝑖 , 𝑟𝑖 , 𝑜𝑖,𝑡 ) into buffer 𝐵𝑖
+CAV 𝑖 executes 𝑎𝑖,𝑡 using 𝜖-greedy
+Set 𝑡̇ 𝑖 = 𝑡
+else
+The IP observes 𝑠𝑛,𝑤,𝑡 , receives ̂
+𝑟, and stores (𝑠𝑛,𝑤,𝑡−1 , a𝑛,𝑤,𝑡−1 , ̂
+𝑟, 𝑠𝑛,𝑤,𝑡 ) into 𝐵̂𝑛,𝑤
+Break
+Environment transition from 𝑠𝑡 to 𝑠𝑡+1 , 𝑡 = 𝑡 + 1
+for 𝑘𝑖 = 1 to 𝐾𝑖 do
+Sample a batch of experience tuples from the buffer 𝐵𝑖 , ∀𝑖
+Update the Q-network 𝑄𝑖 (𝜃𝑖 ), ∀𝑖
+̂ do
+for ̂
+𝑘 = 1 to 𝐾
+Sample a batch of experience tuples from the buffer 𝐵̂𝑛,𝑤 , ∀𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊
+̂𝑛,𝑤 (𝜃𝑛,𝑤 ) and actor network 𝜋̂𝑛,𝑤 (𝜙𝑛,𝑤 ), ∀𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊
+Update the critic network 𝑄
+̂− (𝜃 − ) and 𝜋̂− (𝜙− ) by Polyak averaging
+Update the target networks 𝑄
+𝑛,𝑤
+
+𝑛,𝑤
+
+𝑛,𝑤
+
+𝑛,𝑤
+
+if e mod m =0 then
+Copy the parameters of 𝑄𝑖 (𝜃𝑖 ) to the target network 𝑄−𝑖 (𝜃𝑖− ), ∀𝑖
+Decrease the exploration rate 𝜖 and learning rate of CAVs
+Decrease the learning rate of the IP and adjust the noise following the periodic exploration
+Set 𝑒 = 𝑒 + 1
+̂𝑛,𝑤 (𝜃𝑛,𝑤 ), 𝜋̂𝑛,𝑤 (𝜙𝑛,𝑤 ), 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊
+Return Networks 𝑄𝑖 (𝜃𝑖 ), ∀𝑖, and 𝑄
+
+5.1. Introduction of CE
+
+This section introduces the concept of CE and provides an illustrative example. The CE is defined as follows (Aumann, 1987).
+Definition 3. In a multi-player game, a trusted third party assigns an action to every player according to a certain joint probability
+distribution. If no player wants to deviate from the assigned action, as deviating from it will not receive better utility, assuming
+others do not deviate, then a correlated equilibrium is reached. The distribution from which the joint action is drawn is called the
+correlated equilibrium.
+Consider a game with a set of players I = {1, 2, … , 𝐼}. Let S denote the strategy set of the third party, with 𝒔 ∈ S being a
+single strategy profile. A strategy profile 𝒔 stipulates the specific suggestions provided to different players. Let 𝒔𝑖 ∈ S𝑖 be the action
+suggested to player 𝑖 by the strategy profile 𝒔, where S𝑖 is the action set of player 𝑖. The third party suggests actions to every
+player according to a strategy profile drawn from a probability distribution P(𝒔), 𝒔 ∈ S. Based on the CE definition, the probability
+distribution P(𝒔), 𝒔 ∈ S is called a CE if no player can obtain higher utility by unilaterally deviating from the received suggestion.
+12
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+Table 1
+Link characteristics of Braess network.
+Links
+
+Free flow travel time
+
+Capacity
+
+Critical density
+
+Jam density
+
+Length
+
+1
+2
+3
+4
+5
+
+5
+1
+1
+4
+3
+
+1
+3
+3
+1
+2
+
+5
+3
+3
+4
+6
+
+20
+12
+12
+16
+24
+
+1
+1
+1
+1
+1
+
+Table 2
+An example of route suggestion distribution.
+Probability
+
+1/4
+1/4
+1/2
+
+Travelers
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+1
+2
+1
+
+1
+3
+1
+
+1
+3
+1
+
+2
+1
+1
+
+2
+1
+1
+
+2
+3
+2
+
+3
+3
+3
+
+3
+1
+3
+
+3
+2
+3
+
+3
+2
+3
+
+That is, the following holds:
+∑
+(
+)
+P(𝒔𝑖 , 𝒔−𝑖 ) 𝑢𝑖 (𝒔𝑖 , 𝒔−𝑖 ) − 𝑢𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+
+(10)
+
+𝒔−𝑖
+
+where 𝑢𝑖 is the utility of player 𝑖, 𝒔′𝑖 is an action different from 𝒔𝑖 , and 𝒔−𝑖 represents the actions of all other players except 𝑖.
+CE is a generalization of Nash Equilibrium (NE), i.e., any NE must be a CE; CEs provide a richer set of solutions than NEs (Cigler
+and Faltings, 2011). The difference between CE and NE is that players behave independently to maximize their own payoffs in NE,
+while CE provides a mechanism with a third party involved for players to correlate their actions to arrive at mutually higher
+payoffs (Marris et al., 2021). The maximum total system payoff at CE is at least that any NE (Marris et al., 2021). And User
+Equilibrium (UE) must be a NE (Bell, 2000). Hence, CE offers the theoretical foundation to mitigate the UO-SO conflict in traffic
+systems since it provides the opportunity that the system and individual travelers both get better off compared to NE.
+Below we use a small example on the Braess network for a better demonstration of CE. We do not consider en-route behaviors in
+this example, since CE is defined in a static form, and the purpose here is to illustrate the concept of CE. The information provider
+here is considered to be providing suggestions of a complete route. Fig. 6 has shown the network structure previously. Assume we
+have 10 travelers departing at the same time from node 1 to node 4. The link travel times are determined by predefined fundamental
+diagrams. We use triangular fundamental diagrams in this example. The link characteristics are shown in Table 1. We do not specify
+the units of the link characteristics and use small numbers to be paired with the small travel demand of 10 travelers for the ease of
+manual calculation.
+Consider route 1 contains links 1 and 5, route 2 contains links 2, 3, and 5, and route 3 contains links 2 and 4. For this example,
+we can calculate the route flow at UE is [3, 3, 4], representing the route flows on routes 1, 2, and 3, respectively. And the travel time
+at UE is calculated as 8 for all the routes.
+Now, consider we have a third party who is an information provider providing route suggestions. The information provider
+assigns route suggestions to travelers according to a joint probability distribution P(𝒔). An example of the joint probability
+distribution is shown in Table 2. Each row represents a single strategy profile that is a combination of suggested routes to the
+10 travelers. The table indicates to provide the first joint suggestions with probability 41 , the second with 14 , and the third with 12 .
+This is a CE since no traveler can be better off by unilaterally deviating the received suggestion. Take traveler 1 as an example. If
+traveler 1 receives a suggestion of route 1, then we know either the first combination or the third combination of route choices will
+be realized. The probability of the first combination is 31 and that of the third one is 23 , on the condition that the second combination
+must not happen. Then, if the traveler 1 deviates to route 2, to finish the trip, she(he) will need 11 units of travel time when the
+first combination happens and 7 when the third combination happens. If traveler 1 deviates to route 3, she(he) will need 11 units
+of travel time when the first combination happens and 8 when the third combination happens. Hence, the expected travel time of
+deviating to route 2 is 11 × 13 + 7 × 32 = 8.33 ≥ 8. And the expected travel time for deviating to route 3 is 11 × 13 + 8 × 23 = 9 ≥ 8.
+Therefore, traveler 1 cannot get better off when deviating from the suggested route. Similarly, we can calculate the case where
+traveler 1 receives a suggestion of route 2. The expected travel time for deviating to route 1 is 8 and 9 for deviating to route 3.
+Hence, traveler 1 cannot get better off when deviating from the suggested route, either. One can verify this for all other travelers
+by simple calculations.
+At this CE, the expected total travel time is 14 × 80 + 14 × 80 + 12 × 70 = 75, which is better than UE where the total travel time is
+8 × 10 = 80.
+At the individual level, take traveler 1 and traveler 10 as examples. The expected travel time is 41 ×8+ 41 ×8+ 21 ×8 = 8 for traveler
+1 and 14 × 8 + 14 × 8 + 12 × 6 = 7 for traveler 10. One can easily calculate the values for other travelers and find that all the travelers
+either get better off or get equal travel time compared to UE. A natural question may arise about the fairness issue since different
+travelers may receive different expected travel time. This inequality can be avoided by altering the order of travelers in Table 2 in a
+rotated way, allowing equal probabilities for all travelers to access any route. In fact, following such a manner generates another CE
+13
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+that has the same expected total travel time with the one in Table 2 but has equal expected individual travel time for all travelers.
+Each CE, or a joint probability distribution in general, with unequal expected individual travel time has at least a counterpart that
+ensures such fairness by the previously mentioned way. However, doing so will largely increase the number of strategy profiles
+in S, which poses challenges for large-scale problems. Section 5.2 will show that, with the proposed framework, equal expected
+individual travel time can always be ensured for travelers departing at the same time for the same OD, addressing the challenge
+raised by the increased joint strategy set in order to ensure fairness.
+5.2. CE in the proposed framework
+This section formulates the CE within the proposed research context, presents how the probability distribution of en-route
+suggestions learned by the information provider is consistent with the structure of CE, and discusses its features.
+First, we formulate the CE in the context of this research. While the information provider provides en-route suggestions at
+decision nodes, such suggestions at the end can be realized as one suggestion of a complete route for each CAV. Consistent with the
+original definition, the CE in this research is represented by a joint probability distribution P(𝒔), 𝒔 ∈ S. Denote the set of CAVs as
+I = {1, 2, … , 𝐼}. The strategy set of the information provider is S. Each single strategy profile 𝒔 ∈ S is a set of joint route suggestions
+provided to CAVs. 𝒔𝑖 ∈ S𝑖 is the route suggested to CAV 𝑖 by 𝒔, with S𝑖 being the set of available routes for CAV 𝑖. The information
+provider’s joint route suggestion 𝒔 follows a probability distribution P(𝒔), 𝒔 ∈ S. A distribution P(𝒔) is a CE if Eq. (10) holds. For
+reader’s convenience, we rewrite it in the following.
+∑
+(
+)
+P(𝒔𝑖 , 𝒔−𝑖 ) 𝑢𝑖 (𝒔𝑖 , 𝒔−𝑖 ) − 𝑢𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+(11)
+𝒔−𝑖
+
+where 𝑢𝑖 is the utility of CAV 𝑖, 𝒔′𝑖 is a route different from 𝒔𝑖 , 𝒔−𝑖 represents the route choices of all other players except 𝑖. Here,
+because we consider reward shaping that involves an additional reward for CAVs following the received suggestions, the utility is
+formulated as follows.
+𝜂
+𝜂
+𝑢𝑖 (𝒔𝑖 , 𝒔−𝑖 ) = −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + ,
+𝑢𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) = −𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) + × 𝛽𝒔𝑖 ,𝒔′
+(12)
+𝑖
+𝛼
+𝛼
+where 𝜏𝑖 represents the travel time of CAV 𝑖, 𝜂 is the additional reward for following the en-route suggestions at all decision nodes
+(following a complete route), 𝛼 is the value of travel time, and 0 ≤ 𝛽𝒔𝑖 ,𝒔′ < 1 is the proportion of the additional reward 𝜂 that the
+𝑖
+CAV can get for using 𝒔′𝑖 with the suggestion being 𝒔𝑖 . 𝜂 = 0 is a special case when no additional reward is provided.
+The concept of CE is defined in a static context where the provided suggestion is a complete route, while suggestions are provided
+in an en-route manner in our proposed framework. Hence, in the following, we demonstrate that the action of the information
+provider, i.e., the probabilities of suggesting different links at decision nodes at different time steps, can derive a unique joint
+probability distribution of complete-route suggestions.
+Consider a general case where the adopted RL algorithm of the information provider learns stochastic policies, i.e., the actor
+neural network outputs the parameters of the distribution of action and the actual action is obtained by sampling based on the
+learned parameters of the distribution. If an RL algorithm that learns deterministic policies is adopted, it is a special case of the
+general stochastic one and the following analysis is also applicable.
+First, the action 𝑨 = {̂
+𝒂𝑛,𝑤 , 𝑛 ∈ 𝐷𝑤 , 𝑤 ∈ 𝑊 } made at all different time steps 𝑡 ∈ 𝑇 can be realized as a static profile containing
+the probabilities of suggesting different complete routes, denoted by 𝒑𝑤,𝑡 , 𝑤 ∈ 𝑊 , 𝑡 ∈ 𝑇 , where the dimension of 𝒑𝑤,𝑡 is the number
+∏
+̂𝑛,𝑤 (𝑎), for route 𝑗 in 𝑤 ∈ 𝑊 , representing the
+of routes (𝐽𝑤 ) connecting OD pair 𝑤 ∈ 𝑊 . Then 𝒑𝑤,𝑡 (𝑗) = {𝑎,𝑛|𝑎∈𝑗,𝑎∈𝐴𝑛,𝑤 ,𝑛∈𝐷𝑤 } 𝒂
+probability of being suggested route 𝑗 for CAVs departing at 𝑡 ∈ 𝑇 and traveling in 𝑤 ∈ 𝑊 . Here in 𝒑𝑤,𝑡 , we do not need to
+̂𝑛,𝑤 by time step because the CAVs departing at the same time that use a same route 𝑗 must arrive at any decision
+differentiate 𝒂
+̂𝑛,𝑤 . Therefore, just use 𝒂
+̂𝑛,𝑤 (𝑎) to represent the probability of being suggested 𝑎 at
+node simultaneously and encounter the same 𝒂
+the time when the CAVs arrive at decision node 𝑛. Denote the joint probability distribution that assigns the routes to CAVs based
+𝑨 (𝒔𝑤,𝑡 ), 𝒔𝑤,𝑡 ∈ S 𝑨 , 𝑤 ∈ 𝑊 , 𝑡 ∈ 𝑇 , where 𝒔𝑤,𝑡 is a joint route suggestion profile that assigns routes to CAVs departing at
+on 𝒑𝑤,𝑡 as P𝑤,𝑡
+𝑤,𝑡
+𝑨 is
+𝑡 in OD pair 𝑤. Here, the total number of the joint route suggestion profiles with positive probability in S𝑤,𝑡
+(
+)
+𝐽𝑤
+∑
+∏
+𝑑𝑤,𝑡 − 𝑗−1
+𝒑 (𝑖) × 𝑑𝑤,𝑡
+𝑖=1 𝑤,𝑡
+,
+𝒑𝑤,𝑡 (𝑗) × 𝑑𝑤,𝑡
+𝑗=1
+representing all possible route assignments to different CAVs, where 𝑑𝑤,𝑡 is the number of CAVs departing at 𝑡 in OD pair 𝑤. And
+𝑨 (𝒔𝑤,𝑡 ) assigns equal probabilities to each 𝒔𝑤,𝑡 ∈ S 𝑨 . Denote the probability distribution of 𝑨 output by the stochastic policy as
+P𝑤,𝑡
+𝑤,𝑡
+P ′ (𝑨), 𝑨 ∈ A. For continuous RL algorithms, P ′ (𝑨) can be estimated by taking the integral of the corresponding probability density
+function over a small interval around 𝑨 that can be determined by a pre-designed precision. Now, the joint probability distribution
+∏
+∏
+𝑨 (𝒔𝑤,𝑡 ), 𝒔 ∈ S, where S = ⋃
+𝑨
+P(𝒔) = P ′ (𝑨) 𝑤∈𝑊 ,𝑡∈𝑇 P𝑤,𝑡
+𝑤∈𝑊 ,𝑡∈𝑇 S𝑤,𝑡 , is the unique equivalent of the action 𝑨 at all 𝑡 ∈ 𝑇
+𝑨∈A
+output by the learned policy of the information provider.
+So far, we have demonstrated how the action of the information provider at all decision nodes and all time steps can be converted
+into a unique equivalent joint probability distribution of complete-route suggestions. Note that, with the proposed framework, the
+P(𝒔), 𝒔 ∈ S learned by the information provider always ensures all the CAVs departing at the same time for the same OD have the
+same expected travel time. This is because the nature of the information provider’s action, which is the probabilities of suggesting
+different en-route choices, inherently makes the route assignment completely random with no differentiation among CAVs at a
+14
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+𝑨 in P 𝑨 (𝒔𝑤,𝑡 ). As mentioned before, ensuring
+decision node. This feature results in the equal probability assigned to each 𝒔𝑤,𝑡 ∈ S𝑤,𝑡
+𝑤,𝑡
+such fairness in a joint probability distribution can greatly increase the number of joint route suggestion profiles compared to its
+counterpart with the same expected total travel time. This poses challenges for large-scale problems. In fact, the design of the
+action of the information provider in the proposed framework exactly addresses this issue, by learning the probability distribution
+of en-route suggestions at different decision nodes instead of dealing with a complicated joint probability distribution. It ensures the
+fairness, circumvents the dimensionality challenge of CE, and meanwhile captures the en-route and dynamical nature of the routing
+behavior.
+In the following analysis in Section 5.3, to avoid repeated description, we directly use the equivalent joint probability distribution
+of route suggestions as the representation of the information provider’s output actions for convenience.
+
+5.3. Theoretical analysis
+This section conducts a theoretical analysis of the CE in the proposed framework, the effect on congestion mitigation, and the
+impact of the reward shaping.
+The analysis of this section is based on the premise that the adopted RL algorithms are effective in the two-way learning
+framework. We stipulate that an RL algorithm is effective if it converges to the optimal policy. Within the proposed framework,
+different RL algorithms can be adopted and the following analysis is independent of them.
+Theorem 1. The proposed two-way RL framework must converge to a correlated equilibrium, given effective RL algorithms.
+Proof. Let P ∗ (𝒔), 𝒔 ∈ S be the joint probability distribution learned by the information provider at the converged solution. With
+∗ , where 𝜋 ∗ is the learned policies of all
+effective RL algorithms, the policy learned by each CAV 𝑖, 𝜋𝑖∗ , is the best response to 𝜋−𝑖
+−𝑖
+∗
+∗
+∗
+other CAVs except 𝑖. That is, the state-values satisfy 𝑉𝑖,(𝜋 ∗ ,𝜋 ∗ ) (𝑠) ≥ 𝑉𝑖,(𝜋 ,𝜋 ∗ ) (𝑠), ∀𝜋𝑖 ≠ 𝜋𝑖 , for 𝑠 ∈ 𝑆, 𝑖 ∈ I. The expected cumulative
+𝑖 −𝑖
+𝑖 −𝑖
+∗
+reward of CAV 𝑖 with the optimal policy 𝜋𝑖∗ is 𝑉𝑖,(𝜋
+∗ ,𝜋 ∗ ) (𝑠0 ) = E𝒔−𝑖 ∼P ∗ (⋅|𝒔𝑖 ) (−𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜂∕𝛼). Because the expected cumulative reward
+𝑖
+
+−𝑖
+
+𝑖
+
+−𝑖
+
+∗
+∗
+∗
+′
+is optimized by each CAV, i.e., 𝑉𝑖,(𝜋
+∗ ,𝜋 ∗ ) (𝑠0 ) ≥ 𝑉𝑖,(𝜋 ,𝜋 ∗ ) (𝑠0 ), ∀𝜋𝑖 ≠ 𝜋𝑖 , the following inequality holds ∀𝒔𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I.
+𝑖
+
+−𝑖
+
+E𝒔−𝑖 ∼P ∗ (⋅|𝒔𝑖 ) (−𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜂∕𝛼) ≥ E(𝒔𝑖 ,𝒔−𝑖 )∼P ∗ (𝒔) (−𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) +
+
+𝜂
+× 𝛽𝒔𝑖 ,𝒔′ )
+𝑖
+𝛼
+
+(13)
+
+That is,
+E𝒔−𝑖 ∼P ∗ (⋅|𝒔𝑖 ) (𝑢𝑖 (𝒔𝑖 , 𝒔−𝑖 ) − 𝑢𝑖 (𝒔′𝑖 , 𝒔−𝑖 )) ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+which can be written as
+∑
+P(𝒔𝑖 , 𝒔−𝑖 )(𝑢𝑖 (𝒔𝑖 , 𝒔−𝑖 ) − 𝑢𝑖 (𝒔′𝑖 , 𝒔−𝑖 )) ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+
+(14)
+
+(15)
+
+𝒔−𝑖
+
+This is exactly consistent with the definition of CE.
+
+■
+
+Denote the sets of NE and CE as 𝛺𝑁𝐸 and 𝛺𝐶𝐸 , respectively, where only travel time is considered in the utility function. Further
+denote the set of CE, where both travel time and additional reward for following suggestions are considered in the utility function,
+as 𝛺𝐶𝐸 . We have the following theorem.
+Theorem 2. 𝛺𝑁𝐸 ⊆ 𝛺𝐶𝐸 ⊆ 𝛺𝐶𝐸 holds. And the total travel time at the converged equilibrium by the proposed framework is no larger
+than the total travel time at the Nash equilibrium (or the minimum total travel time of Nash equilibria, if multiple NE exist).
+Proof. Based on the definition of CE, the following inequality holds for any joint probability distribution P(𝒔) ∈ 𝛺𝐶𝐸 :
+∑
+P(𝒔𝑖 , 𝒔−𝑖 )(−𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 )) ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+
+(16)
+
+𝒔−𝑖
+
+Introduce an additional reward to Eq. (16) for CAVs following the suggestions. The following inequality must hold since 0 ≤ 𝛽𝒔𝑖 ,𝒔−𝑖 <
+1.
+((
+))
+∑
+𝜂
+𝜂) (
+P(𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) +
+− −𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) + × 𝛽𝒔𝑖 ,𝒔′
+≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+(17)
+𝑖
+𝛼
+𝛼
+𝒔
+−𝑖
+
+which implies P(𝒔) ∈ 𝛺𝐶𝐸 based on Eq. (11) and Eq. (12). Therefore, for any P(𝒔) ∈ 𝛺𝐶𝐸 , we have P(𝒔) ∈ 𝛺𝐶𝐸 .
+Based on Eq. (17), the following holds for any P(𝒔) ∈ 𝛺𝐶𝐸 .
+(
+∑
+𝜂)
+P(𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) + (1 − 𝛽𝒔𝑖 ,𝒔′ )
+= 𝛿𝒔𝑖 ,𝒔′ ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+𝑖 𝛼
+𝑖
+𝒔
+
+(18)
+
+−𝑖
+
+Namely, for ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I, we have
+∑
+(
+) ∑
+𝜂
+P(𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) +
+P(𝒔𝑖 , 𝒔−𝑖 )(1 − 𝛽𝒔𝑖 ,𝒔′ ) = 𝛿𝒔𝑖 ,𝒔′ ≥ 0
+𝑖 𝛼
+𝑖
+𝒔
+𝒔
+−𝑖
+
+−𝑖
+
+15
+
+(19)
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+∑
+
+∑
+
+(
+
+)
+
+P(𝒔𝑖 , 𝒔−𝑖 )(1−𝛽𝒔𝑖 ,𝒔′ )𝜂∕𝛼 ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I, then we have 𝒔−𝑖 P (𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 )
+𝑖
+𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I , which implies P(𝒔) ∈ 𝛺𝐶𝐸 . Otherwise, there exist 𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I such that
+(
+)
+∑
+P(𝒔𝑖 , 𝒔−𝑖 )(1 − 𝛽𝒔𝑖 ,𝒔′ )𝜂∕𝛼 < 0, i.e., 𝒔−𝑖 P(𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) < 0, which implies P(𝒔) ∉ 𝛺𝐶𝐸 . Therefore, there
+𝑖
+can exist P(𝒔) ∈ 𝛺𝐶𝐸 while P(𝒔) ∉ 𝛺𝐶𝐸 . In particular, if 𝜂 = 0, any P(𝒔) ∈ 𝛺𝐶𝐸 is also in 𝛺𝐶𝐸 , and in fact, 𝛺𝐶𝐸 = 𝛺𝐶𝐸 when 𝜂 = 0.
+So far, we have proved ∀P(𝒔) ∈ 𝛺𝐶𝐸 , P(𝒔) ∈ 𝛺𝐶𝐸 holds, and there can exist P(𝒔) ∈ 𝛺𝐶𝐸 with P(𝒔) ∉ 𝛺𝐶𝐸 . Therefore, 𝛺𝐶𝐸 ⊆ 𝛺𝐶𝐸
+holds, and 𝛺𝐶𝐸 = 𝛺𝐶𝐸 when 𝜂 = 0.
+We have known 𝛺𝑁𝐸 ⊆ 𝛺𝐶𝐸 . Hence, 𝛺𝑁𝐸 ⊆ 𝛺𝐶𝐸 ⊆ 𝛺𝐶𝐸 holds. Therefore, the minimum total travel time in 𝛺𝐶𝐸 is not larger
+than the total travel time at any NE. Effective RL algorithms ensure the learning to converge to the optimal CE that minimizes the
+■
+total travel time in 𝛺𝐶𝐸 .
+Based on Eq. (19), if 𝛿𝒔𝑖 ,𝒔′ −
+≥ 0, ∀𝒔′𝑖 ≠
+∑
+𝛿𝒔𝑖 ,𝒔′ − 𝒔−𝑖
+𝑖
+
+𝑖
+
+𝒔−𝑖
+
+Next, we analyze the impact of the additional reward 𝜂.
+Theorem 3. The minimum total travel time the two-way learning can achieve, i.e., the lower bound of the total travel time of a CE, either
+decreases or remains unchanged as the additional reward 𝜂 increases.
+Proof. This theorem holds true as long as 𝛺𝐶𝐸−𝜂 ⊆ 𝛺𝐶𝐸−𝜂 ′ for any 𝜂 ′ > 𝜂. For any P(𝒔), 𝒔 ∈ S,
+((
+) (
+(
+)
+))
+∑
+𝜂
+𝜂′ − 𝜂
+𝜂
+𝜂′ − 𝜂
+P(𝒔𝑖 , 𝒔−𝑖 )
+−𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + +
+− −𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) +
++
+× 𝛽𝒔𝑖 ,𝒔′
+𝑖
+𝛼
+𝛼
+𝛼
+𝛼
+𝒔
+
+(20)
+
+−𝑖
+
+can be written as
+))
+((
+∑
+𝜂
+𝜂) (
+− −𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) + × 𝛽𝒔𝑖 ,𝒔′
+P(𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) +
+𝑖
+𝛼
+𝛼
+𝒔−𝑖
+( ′
+( ′
+))
+(21)
+∑
+𝜂 −𝜂
+𝜂 −𝜂
++
+P(𝒔𝑖 , 𝒔−𝑖 )
+−
+× 𝛽𝒔𝑖 ,𝒔′
+𝑖
+𝛼
+𝛼
+𝒔−𝑖
+(
+(
+))
+′
+′
+∑
+> 0. And for any P(𝒔) ∈ 𝛺𝐶𝐸−𝜂 , Eq. (17) holds. Hence, Eqs. (20) and
+Because 0 ≤ 𝛽𝒔𝑖 ,𝒔′ < 1, 𝒔−𝑖 P(𝒔𝑖 , 𝒔−𝑖 ) 𝜂 𝛼−𝜂 − 𝜂 𝛼−𝜂 × 𝛽𝒔𝑖 ,𝒔′
+𝑖
+𝑖
+(21) must be larger than zero. Namely,
+) (
+))
+((
+∑
+𝜂′
+𝜂′
+− −𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) +
+× 𝛽𝒔𝑖 ,𝒔′
+> 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+(22)
+P(𝒔𝑖 , 𝒔−𝑖 )
+−𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) +
+𝑖
+𝛼
+𝛼
+𝒔
+−𝑖
+
+which implies, P(𝒔) ∈ 𝛺𝐶𝐸−𝜂 ′ must hold for any P(𝒔) ∈ 𝛺𝐶𝐸−𝜂 .
+Now, for any P(𝒔) ∈ 𝛺𝐶𝐸−𝜂 ′ , denote the value of the left-hand side of Eq. (22), i.e., the value of Eq. (21), as 𝛿𝒔𝑖 ,𝒔′ . Then when
+𝑖
+( ′
+))
+( ′
+∑
+< 0, we have
+there exists any 𝒔′𝑖 ≠ 𝒔𝑖 , 𝒔𝑖 ∈ S𝑖 , 𝑖 ∈ I with 𝛿𝒔𝑖 ,𝒔′ − 𝒔−𝑖 P(𝒔𝑖 , 𝒔−𝑖 ) 𝜂 𝛼−𝜂 − 𝜂 𝛼−𝜂 × 𝛽𝒔𝑖 ,𝒔′
+𝑖
+𝑖
+((
+))
+∑
+𝜂) (
+𝜂
+P(𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) +
+− −𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) + × 𝛽𝒔𝑖 ,𝒔′
+<0
+(23)
+𝑖
+𝛼
+𝛼
+𝒔
+−𝑖
+
+so that P(𝒔) ∉ 𝛺𝐶𝐸−𝜂 . Namely, there may exist a P(𝒔) ∈ 𝛺𝐶𝐸−𝜂 ′ but P(𝒔) ∉ 𝛺𝐶𝐸−𝜂 . Hence, we have 𝛺𝐶𝐸−𝜂 ⊆ 𝛺𝐶𝐸−𝜂 ′ .
+
+■
+
+The next theorem explores how the system optimum can be achieved and the relationship between the additional reward 𝜂 and
+the potential in achieving SO. Here the system optimum is represented as a joint probability distribution that has the minimized
+expected total travel time. In general, the joint probability distribution at SO can be non-unique, but the one achieved by the
+proposed framework is unique because, as mentioned in Section 5.2, the nature of the information provider’s action always results
+in a unique equivalent joint probability distribution with fairness ensured and no loss in optimality.
+Theorem 4. The system optimum can be achieved if the additional reward 𝜂 is not less than a certain bound 𝜂 𝑆𝑂 = max𝒔′𝑖 ≠𝒔𝑖 ,𝒔𝑖 ∈S𝑖 ,𝑖∈I −𝛼𝛿𝒔𝑆𝑂,𝒔′ ∕
+𝑖
+
+𝑖
+
+(1 − 𝛽𝒔𝑖 ,𝒔′ ). The relationships among the optimal CE in 𝛺𝐶𝐸 , denoted as P ∗ (𝒔), 𝒔 ∈ S, the system optimum P 𝑆𝑂 (𝒔), 𝒔 ∈ S, and the lower
+𝑖
+
+bound of additional reward (𝜂) that is needed for the two-way learning to converge to P ∗ (𝒔) or P 𝑆𝑂 (𝒔), can be summarized into the following
+mutually exclusive cases.
+(A). If P 𝑆𝑂 (𝒔) ∈ 𝛺𝑁𝐸 , then P ∗ (𝒔) = P 𝑆𝑂 (𝒔) and 𝜂 = 𝜂 𝑆𝑂 = 0 for converging to P 𝑆𝑂 (𝒔).
+(B). If 0 ≤ 𝜂 < 𝜂 𝑆𝑂 , then P 𝑆𝑂 (𝒔) ∉ 𝛺𝐶𝐸 and P ∗ (𝒔) ≠ P 𝑆𝑂 (𝒔). In this case, we have the following: (a) if P ∗ (𝒔) ∈ 𝛺𝐶𝐸 , then 𝜂 = 0; (b)
+otherwise, P ∗ (𝒔) ∈ (𝛺𝐶𝐸 − 𝛺𝐶𝐸 ). 𝜂 ≥ 𝜂 = max𝒔′ ≠𝒔𝑖 ,𝒔𝑖 ∈S𝑖 ,𝑖∈I −𝛼𝛿 ∗ ′ ∕(1 − 𝛽𝒔𝑖 ,𝒔′ ) > 0, for converging to P ∗ (𝒔).
+𝒔𝑖 ,𝒔𝑖
+
+𝑖
+
+𝑖
+
+(C). If 𝜂 ≥ 𝜂 𝑆𝑂 > 0, then P 𝑆𝑂 (𝒔) ∈ (𝛺𝐶𝐸 − 𝛺𝐶𝐸 ), P ∗ (𝒔) = P 𝑆𝑂 (𝒔). 𝜂 = 𝜂 𝑆𝑂 > 0, for converging to P 𝑆𝑂 (𝒔).
+Proof. For a given problem with P 𝑆𝑂 (𝒔), 𝒔 ∈ S, the following Eq. (24), representing P 𝑆𝑂 (𝒔) ∈ 𝛺𝐶𝐸 , must be valid for the learning
+to converge to P 𝑆𝑂 (𝒔).
+((
+))
+∑
+𝜂
+𝜂) (
+P 𝑆𝑂 (𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) +
+− −𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) + × 𝛽𝒔𝑖 ,𝒔′
+≥ 0 ∀𝒔′𝑖 ≠ 𝒔𝑖 , 𝒔𝑖 ∈ S𝑖 , 𝑖 ∈ I
+(24)
+𝑖
+𝛼
+𝛼
+𝒔
+−𝑖
+
+That is,
+∑
+𝒔−𝑖
+
+(
+) ∑ 𝑆𝑂
+𝜂
+P 𝑆𝑂 (𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) +
+P (𝒔𝑖 , 𝒔−𝑖 )(1 − 𝛽𝒔𝑖 ,𝒔′ ) ≥ 0
+𝑖 𝛼
+𝒔
+−𝑖
+
+16
+
+(25)
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Let
+
+∑
+
+𝒔−𝑖
+
+(
+)
+P 𝑆𝑂 (𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) = 𝛿 𝑆𝑂′ . Eq. (25) holds if 𝜂 satisfies
+
+∑
+
+𝒔𝑖 ,𝒔𝑖
+
+𝜂
+′
+≥ −𝛿𝒔𝑆𝑂
+′ , ∀𝒔𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+𝑖 ,𝒔𝑖
+𝛼
+
+(26)
+
+𝜂 ∑ 𝑆𝑂
+′
+P (𝒔𝑖 , 𝒔−𝑖 ) ≥ −𝛿𝒔𝑆𝑂
+′ , ∀𝒔𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+𝑖 ,𝒔𝑖
+𝛼 𝒔
+
+(27)
+
+P 𝑆𝑂 (𝒔𝑖 , 𝒔−𝑖 )(1 − 𝛽𝒔𝑖 ,𝒔′ )
+𝑖
+
+𝒔−𝑖
+
+That is,
+(1 − 𝛽𝒔𝑖 ,𝒔′ )
+𝑖
+
+−𝑖
+
+Because given any 𝒔𝑖 ∈ S𝑖 ,
+
+∑
+
+𝒔−𝑖
+
+P 𝑆𝑂 (𝒔𝑖 , 𝒔−𝑖 ) = 1, then Eq. (27) becomes
+
+𝛼𝛿 𝑆𝑂′
+𝜂≥−
+
+𝒔𝑖 ,𝒔𝑖
+
+(1 − 𝛽𝒔𝑖 ,𝒔′ )
+
+, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+
+(28)
+
+𝑖
+
+It implies that Eq. (28) holds as long as the following Eq. (29) holds.
+𝛼𝛿 𝑆𝑂′
+𝜂≥
+
+max
+
+𝒔′𝑖 ≠𝒔𝑖 ,𝒔𝑖 ∈S𝑖 ,𝑖∈I
+
+−
+
+𝒔𝑖 ,𝒔𝑖
+
+(29)
+
+(1 − 𝛽𝒔𝑖 ,𝒔′ )
+𝑖
+
+Therefore, the lower bound of the additional reward is 𝜂 𝑆𝑂 = max𝒔′ ≠𝒔𝑖 ,𝒔𝑖 ∈S𝑖 ,𝑖∈I −𝛼𝛿 𝑆𝑂′ ∕(1 − 𝛽𝒔𝑖 ,𝒔′ ) for converging to P 𝑆𝑂 (𝒔).
+𝒔𝑖 ,𝒔𝑖
+
+𝑖
+
+𝑖
+
+Now we prove the three cases (A), (B), and (C).
+For (A), it is straightforward that P ∗ (𝒔) = P 𝑆𝑂 (𝒔) given P 𝑆𝑂 (𝒔) ∈ 𝛺𝑁𝐸 . Since 𝛺𝑁𝐸 ∈ 𝛺𝐶𝐸 , we have P 𝑆𝑂 (𝒔) ∈ 𝛺𝐶𝐸 . This implies
+𝑆𝑂
+𝛿 ′ ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I. Hence, max𝒔′ ≠𝒔𝑖 ,𝒔𝑖 ∈S𝑖 ,𝑖∈I −𝛼𝛿 𝑆𝑂′ ∕(1 − 𝛽𝒔𝑖 ,𝒔′ ) = 0, i.e., 𝜂 = 𝜂 𝑆𝑂 = 0.
+𝒔𝑖 ,𝒔𝑖
+
+𝒔𝑖 ,𝒔𝑖
+
+𝑖
+
+𝑖
+
+For (B), because 𝜂 < 𝜂 𝑆𝑂 , Eq. (29) does not hold. Hence, P 𝑆𝑂 (𝒔) ∉ 𝛺𝐶𝐸 and P ∗ (𝒔) ≠ P 𝑆𝑂 (𝒔). To find the lower bound 𝜂
+for converging to P ∗ (𝒔), following a similar logic in deriving 𝜂 𝑆𝑂 , replace P 𝑆𝑂 (𝒔) and 𝛿 𝑆𝑂′ with P ∗ (𝒔) and 𝛿 ∗ ′ , respectively, in
+𝒔𝑖 ,𝒔𝑖
+
+Eqs. (24)–(29). We can obtain 𝜂 = max𝒔′ ≠𝒔𝑖 ,𝒔𝑖 ∈S𝑖 ,𝑖∈I −𝛼𝛿 ∗
+
+𝒔𝑖 ,𝒔′𝑖
+
+𝑖
+
+have 𝛿 ∗
+
+𝒔𝑖 ,𝒔′𝑖
+
+𝑖
+
+≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I. Hence, max𝒔′ ≠𝒔𝑖 ,𝒔𝑖 ∈S𝑖 ,𝑖∈I −𝛼𝛿 ∗
+𝑖
+
+P ∗ (𝒔) ∉ 𝛺𝐶𝐸 . There must exist 𝒔′𝑖 ≠ 𝒔𝑖 , 𝒔𝑖 ∈ S𝑖 , 𝑖 ∈ I that satisfies 𝛿 ∗
+For (C), because 𝜂 ≥
+
+𝜂 𝑆𝑂 ,
+
+P 𝑆𝑂 (𝒔)
+
+∈ 𝛺𝐶𝐸 holds.
+
+𝒔𝑖 ,𝒔𝑖
+
+∕(1 − 𝛽𝒔𝑖 ,𝒔′ ) for converging to P ∗ (𝒔). Within (B), if (a) P ∗ (𝒔) ∈ 𝛺𝐶𝐸 , we
+𝒔𝑖 ,𝒔′𝑖
+
+∕(1 − 𝛽𝒔𝑖 ,𝒔′ ) = 0, i.e., 𝜂 = 0. If (b) P ∗ (𝒔) ∈ (𝛺𝐶𝐸 − 𝛺𝐶𝐸 ), then
+𝑖
+
+< 0. It implies max𝒔′ ≠𝒔𝑖 ,𝒔𝑖 ∈S𝑖 ,𝑖∈I −𝛼𝛿 ∗
+
+∕(1 − 𝛽𝒔𝑖 ,𝒔′ ) > 0.
+𝒔𝑖 ,𝒔′𝑖
+𝑖
+𝑖
+′
+Since
+> 0, there must exist 𝒔𝑖 ≠ 𝒔𝑖 , 𝒔𝑖 ∈ S𝑖 , 𝑖 ∈ I that satisfies 𝛿 𝑆𝑂′ < 0. This
+𝒔𝑖 ,𝒔𝑖
+∈ (𝛺𝐶𝐸 − 𝛺𝐶𝐸 ) and P ∗ (𝒔) = P 𝑆𝑂 (𝒔). 𝜂 = 𝜂 𝑆𝑂 > 0, for converging to P 𝑆𝑂 (𝒔).
+𝜂 𝑆𝑂
+
+𝒔𝑖 ,𝒔′𝑖
+
+implies P 𝑆𝑂 (𝒔) ∉ 𝛺𝐶𝐸 . Therefore, we have P 𝑆𝑂 (𝒔)
+Last, we prove that the union of the three cases, (A), (B), and (C), covers the complete feasible universe, with each case being
+mutually exclusive. To begin with, Case (A) covers all possibilities of the situation 𝜂 𝑆𝑂 = 0, because P 𝑆𝑂 (𝒔) ∈ 𝛺𝑁𝐸 is equivalent to
+𝜂 𝑆𝑂 = 0. To prove this, we only need to prove that if 𝜂 𝑆𝑂 = 0, P 𝑆𝑂 (𝒔) ∈ 𝛺𝑁𝐸 must hold, since we have proved that P 𝑆𝑂 (𝒔) ∈ 𝛺𝑁𝐸 is
+a sufficient condition of 𝜂 𝑆𝑂 = 0 when proving Case (A). Now, any 𝒔 ∈ P 𝑆𝑂 (𝒔) must be the system-optimal traffic assignment at the
+aggregate level; otherwise, the expected total travel time of P 𝑆𝑂 (𝒔) is not minimized, which contradicts with the definition of P 𝑆𝑂 (𝒔).
+)
+(
+Then, no matter how 𝒔 ∈ S is distributed by P 𝑆𝑂 (𝒔), −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) is the same for any 𝒔−𝑖 given a 𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I.
+That is,
+∑
+(
+)
+P 𝑆𝑂 (𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) = −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ), ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+(30)
+𝒔−𝑖
+
+Because 𝜂 𝑆𝑂 = 0, 𝛿 𝑆𝑂′ ≥ 0, i.e.,
+𝒔𝑖 ,𝒔𝑖
+
+∑
+
+𝒔−𝑖
+
+(
+)
+P 𝑆𝑂 (𝒔𝑖 , 𝒔−𝑖 ) −𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I. Hence,
+
+− 𝜏𝑖 (𝒔𝑖 , 𝒔−𝑖 ) + 𝜏𝑖 (𝒔′𝑖 , 𝒔−𝑖 ) ≥ 0, ∀𝒔′𝑖 ≠ 𝒔𝑖 , ∀𝒔𝑖 ∈ S𝑖 , ∀𝑖 ∈ I
+
+(31)
+
+which implies P 𝑆𝑂 (𝒔) ∈ 𝛺𝑁𝐸 since Eq. (31) is exactly consistent with the definition of NE. Therefore, P 𝑆𝑂 (𝒔) ∈ 𝛺𝑁𝐸 is equivalent
+to 𝜂 𝑆𝑂 = 0, and Case (A) covers all possibilities of the situation of 𝜂 𝑆𝑂 = 0.
+The situation of 𝜂 𝑆𝑂 > 0 is divided into (B) and (C) based on the relationship between 𝜂 and 𝜂 𝑆𝑂 . Therefore, the union of the
+three cases, (A), (B), and (C), covers all feasible possibilities, and (A) is exclusive to either (B) or (C). With 𝜂 𝑆𝑂 > 0, Case (B) and
+Case (C) are for the conditions 0 ≤ 𝜂 < 𝜂 𝑆𝑂 and 𝜂 ≥ 𝜂 𝑆𝑂 , respectively. This means Case (B) and Case (C) cover the entire situation
+of 𝜂 𝑆𝑂 > 0 and at the same time are exclusive to each other. Hence, the three cases, (A), (B), and (C), cover the complete feasible
+universe, with each case being mutually exclusive.
+■
+Fig. 7 graphically shows the three cases in Theorem 4.
+Corollary 1. Based on Theorem 4, the lower bound of 𝜂 for convergence to the system optimum equals to zero, if and only if the system
+optimum is a Nash equilibrium. Otherwise, the lower bound must be larger than zero for convergence to the system optimum.
+In summary, with effective RL algorithms, the proposed framework must converge to an optimal CE that has no larger total
+travel time than NE. The additional reward provided to CAVs has a positive effect in reducing congestion. As the additional reward
+increases, the learning can achieve a better solution with less expected total travel time and even to the SO.
+17
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Fig. 7. Demonstration of the three cases in Theorem 4.
+
+Remark 1. For a specific learning task, the additional reward needed for converging to an optimal CE or SO should be larger
+than the lower bound derived by the theoretical analysis. The reason is as follows. The premise of the concept of CE includes the
+assumption that travelers believe others must follow the third party’s suggestions. However, in the proposed framework, we do not
+enforce CAVs to follow the suggestions. Instead, they are intelligent agents that conduct learning. Therefore, the additional reward
+aimed at encouraging CAVs to follow the suggestions is needed to help meet the premise of CE. And the value of the additional
+reward that can make it effective can vary based on many factors, including the specific RL algorithms, the problem itself, and other
+hyperparameters. A small additional reward being ineffective may even lead to worse learning performance than the case without
+an additional reward since it may act as a negative perturbation or noise to the reward functions in the learning.
+The proposed research leverages RL and CAVs systems, addressing the challenges brought by the complexity and behavioral
+issues in achieving a CE. With the proposed framework, the expected travel times of the system and the individual travelers are
+both reduced. Meanwhile, the expected individual travel time is the same for all CAVs in the same OD pair, ensuring fairness.
+Therefore, this research indeed helps mitigate the UO-SO conflict effectively.
+6. Numerical example
+In this section, we demonstrate the results of implementing the proposed two-way deep RL approach on the Braess and
+Nguyen-Dupuis networks, respectively.
+6.1. Braess network
+In the numerical example on the Braess network, we continue to use the same setting as in Section 5.1 for the sake of validation
+and comparison. The difference is that we use our proposed two-way RL approach herein, which enables en-route learning and
+en-route information provision, in contrast to the static case in Section 5.1. Fig. 8 shows the learning results for the two cases with
+and without route suggestions from the information provider. The total travel times are smoothed by applying a moving average to
+every 50 adjacent episodes.
+We first discuss the results for the case without the information provider. In this case, the CAVs make decisions based on the
+time, location, and real-time travel times of sub-routes, without any suggestions. The Markov game will converge to NE, since each
+agent will find their optimal policy that is the best response to other agents’ policies (Littman, 2001; Chen et al., 2022). For the
+example of the Braess network in this paper, in addition to the UE, there is another NE, or more precisely, a weak NE. The route
+flow pattern is [4, 2, 4], and the resulting route travel time pattern is [8, 7, 7], and the total travel time is 74. This is a weak NE, since
+all travelers cannot unilaterally change their behavior to get better off. However, this is not a UE, since the travel times on each
+route are not equal. In this case, Fig. 8 shows the multi-agent RL converges to the range between 74 and 80 and can oscillate inside
+the range, since both are NE.
+If we involve an information provider conducting RL at the same time to influence the learning process of the CAVs, with the
+objective of minimizing the total travel time, the learning converges faster and to a much lower value of total travel time, as
+shown in Fig. 8. Fig. 9 shows the change in route flows by episode, in which the integers are smoothed by moving average. In
+fact, it converges to the SO for this example with an additional reward 𝜂 = 2. The route flow pattern at the SO is [5, 1, 4], the route
+travel time is [8, 6, 6], and a minimized total travel time is 70. The result does not compromise the expected individual travel times
+compared to UE while achieving the system goal. In addition, in the figure, the small peak around the 400-th episode is resulted
+from the periodic exploration we used, since we restored the strength of the exploration for the learning of the information provider
+at the 400-th episode for this example. Section 6.3 will provide more details and discussions about the reward shaping and periodic
+exploration.
+18
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Fig. 8. Total travel time by episode with and without route suggestions.
+
+Fig. 9. Route flow by episode with route suggestions.
+
+6.2. Nguyen-dupuis network
+In the Braess network example, we assume all travelers depart at the same time traveling for a single OD pair. Now, we use
+the Nguyen-Dupuis network, shown in Fig. 10, to demonstrate the case where 960 CAVs depart during a 30-minute time horizon,
+traveling between four OD pairs. In the learning process, the episode ends when all travelers finish their trips.
+This network includes two origins (nodes 1 and 4) and two destinations (nodes 2 and 3), resulting in a total of four OD pairs.
+The OD demand is assumed to be 480, 420, 540, and 480 veh/hour for the OD pair (1,2), (1,3), (4,2), and (4,3), respectively. The
+link characteristics are used as the same in Wang et al. (2023). The link travel times are computed using triangular fundamental
+diagrams. The demand of each OD is assumed to be evenly distributed in the 30-minute horizon for departure.
+Due to the limited computation resource, it is too expensive to maintain separate DNNs for every single CAV. Therefore, in this
+example, we divide the CAVs into groups in which the CAVs in the same group share the same experience buffer and the same DNNs
+so that the total amount of training work can be reduced. Specifically, we divide the CAVs into three groups for each OD pair. Note
+that each CAV still takes action individually, which refers to decentralized execution under CTDE. In practice, the individual CAV
+can conduct learning locally if supported with advanced technologies such as edge computing.
+Figs. 11(a) and (b) show the results of change in average travel time per CAV during the learning process for the cases with and
+without en-route suggestions. For each case, we ran the simulation ten times. The center line is the mean value, and the shadow
+part represents the standard deviation. As we can see, with the information on en-route suggestions, the average travel time can
+converge to a lower value compared to the case without such information.
+19
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Fig. 10. Nguyen-Dupuis network.
+
+Fig. 11. Average travel time by episode on the Nguyen-Dupuis network.
+
+6.3. Discussion
+This subsection provides further discussions on the reward shaping and periodic exploration techniques employed in numerical
+experiments.
+First, we introduce how the additional reward is designed. As presented, an additional reward will be given to CAVs that follow
+the suggestion at a decision node. The total additional reward for following suggestions all the time, i.e., following a complete-route
+suggestion at the end, must be the same for all CAVs in all OD pairs, avoiding fairness concerns. To achieve this, we first compute
+the base units of rewards allocated for different suggestions at each decision node for all routes in all OD pairs in the network. The
+additional reward for following a specific suggestion at a decision node is calculated by multiplying the total additional reward 𝜂 by
+the base unit. The base units for the Braess and Nguyen-Dupuis networks are computed as shown in Fig. 12 and Fig. 13, respectively.
+One can verify that the total unit for following any complete route in any OD pair is equal to 1.
+In each episode, if the CAV follows the received suggestion every time at a decision node, then it will receive the total additional
+reward 𝜂. If it follows the suggestions only at some of the decision nodes, it will receive a portion of the additional rewards, depending
+on the decision nodes where it follows the suggestions. These additional rewards are added upon the negative travel times in the
+reward function of CAVs during the learning.
+Assume the value of travel time of CAVs is $0.1 per minute. Fig. 14 shows the learning results on the Braess network where
+additional reward of $1, $2, and $3 is designated for following suggestions, respectively. All the three cases shown here do not use
+any periodic exploration.
+20
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Fig. 12. Base units for reward shaping in Braess network.
+
+Fig. 13. Base units for reward shaping in Nguyen-Dupuis network.
+
+Fig. 14. Effect of different additional rewards on the Braess network.
+
+21
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+The results in Fig. 14 suggest that higher additional rewards can facilitate a better learning process, consistent with Theorem 3.
+Also, as discussed before in Section 5.3, when the additional reward is small, it may worsen the learning compared with the case
+(shown in Fig. 8) where there is no information provider providing en-route suggestions. This is because that if the additional
+reward is not effective enough to encourage CAVs to follow the suggestions, it may exert a negative impact on the learning since it
+messes with the travel time in CAVs’ reward function and reduces the learning effectiveness of Q-values for CAVs and thus for the
+information provider that is learning from the CAVs as well.
+Another finding is that when the additional reward is large ($3 in this example), it does not need the periodic exploration to
+help with the learning, compared with the case where $2 is set as the additional reward and periodic exploration is employed in
+Fig. 8. This implies that, a higher additional reward can enhance the learning effectiveness of the information provider at an earlier
+stage of the learning, where its exploration has not been significantly reduced. However, it is important to consider financial factors
+when considering increasing the additional reward. Therefore, it is recommended to judiciously use periodic exploration together
+as needed in practice.
+Fig. 15 shows the learning results on Nguyen-Dupuis network with the additional reward set at $2, $4, and $6 for following a
+complete route, respectively. Similar findings can be found in the figure. That is, higher additional rewards can facilitate a better
+learning process and result. In the results in Fig. 11(b), $6 is used.
+
+Fig. 15. Effect of different additional rewards on Nguyen-Dupuis network.
+
+Note that the reward shaping here essentially differs from traditional congestion pricing/incentives schemes. In traditional
+congestion pricing/incentives schemes, pricing serves as a penalty for travelers using faster routes while incentives serve as
+compensation for travelers using slower routes. There is indeed compromise in UO in terms of travel time. However, in this paper,
+the reward shaping is used to help the two-way RL between CAVs and the information provider. Unlike traditional schemes, the
+reward shaping here does not sacrifice or compensate CAVs in terms of travel time, because the learning fosters correlation among
+CAVs so that their expected travel time are the same. The information provider provides suggestions based on its learned probability
+distributions, and the CAVs may be suggested different routes from day to day but their expected travel time does not violate UO.
+Moreover, the CAVs get the same amount of additional reward for following suggestions.
+Next, we explain how the periodic exploration on the information provider side is used in the experiments. The periodic
+exploration is not always used but serves as an auxiliary tool to tune the learning process when specific learning behaviors suggest a
+need for further exploration. For example, in the experiments for the Braess network, in the case where setting $2 as the additional
+reward (the middle curve in Fig. 14), the total travel time stops decreasing after the 200th episode (moving average is used). This
+observation motivates us to enhance the exploration after the 200th episode. Fig. 16 shows the results for the cases where no periodic
+exploration, enhanced exploration at the 200th, and the 400th episodes, respectively. This figure shows that improper adjustment
+of the exploration may worsen the learning (e.g., at the 200th episode). The learning trajectory can be different at different runs, so
+the exploration adjustment can be quite uncertain. And such uncertainty and instability can be more obvious when the additional
+reward is not large enough. Hence, the periodic exploration is used as an auxiliary tool for tuning. We did not use any periodic
+exploration in the experiments for the Nguyen-Dupuis network.
+7. Conclusions
+This research presents a pioneering endeavor to harness the advantages of correlated equilibrium in CAV systems, and
+demonstrate the potential for mitigating the conflict between system-level and individual-level goals through information provision.
+By formulating the en-route routing behavior of CAVs as a multi-agent Markov game and the information provision mechanism
+as a single-agent Markov decision process, we have designed a two-way deep reinforcement learning approach for CAVs and the
+information provider. Our customized framework captures the unique features of the Markov game of CAVs and the information
+22
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Fig. 16. Experiments of periodic exploration on Braess network.
+
+provider’s MDP. Numerical examples demonstrate the effectiveness of the proposed framework for congestion mitigation without
+compromising individual optimality.
+The key insight of this research lies in the role of the self-learning information provider, who learns the optimal en-route
+suggestions for CAVs through repeated interactions with the system. By providing correlated en-route suggestions that benefit both
+the system and individual CAVs, the information provider establishes a win-win situation. Concurrently, CAVs repeatedly explore
+the environment and learn optimal routing policies under the guidance of information provision, surpassing what they could learn
+independently without any correlation. Indeed, the proposed research leverages RL and CAVs systems to achieve CE. Theoretical
+analysis of the CE in the proposed framework provides insights and a foundation for mitigating the UO-SO conflict.
+This research opens up several promising avenues for more sophisticated and effective approaches to tackling the challenges in
+future intelligent transportation systems. First, expanding the objective of individual CAVs beyond travel time by including other
+relevant factors is an intriguing research direction. Second, considering the diverse heterogeneity among CAVs would provide more
+flexibility and insights for enhancing the overall performance of the CAV system. Finally, investigating the implications of multiple
+information providers in CAV systems would be an interesting area for further research. It will yield valuable insights by investigating
+cooperative or competitive relationships among information providers.
+CRediT authorship contribution statement
+Xiaoyu Ma: Writing – original draft, Visualization, Validation, Methodology, Investigation, Formal analysis. Xiaozheng He:
+Writing – review & editing, Conceptualization, Supervision, Resources, Project administration, Methodology, Investigation, Funding
+acquisition.
+Declaration of competing interest
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared
+to influence the work reported in this paper.
+Acknowledgments
+This work was supported in part by the U.S. National Science Foundation under Grant CMMI-2047793. The authors are grateful to
+the Center for Infrastructure, Transportation, and the Environment at RPI for its support of this research. Additionally, we extend our
+appreciation to the three anonymous reviewers for their constructive comments and suggestions. The authors are solely responsible
+for the contents of this paper.
+References
+Adkins, R.P., Mount, D.M., Zhang, A.A., 2019. A Game-Theoretic Approach for Minimizing Delays in Autonomous Intersections. Springer International Publishing,
+Cham, pp. 131–139.
+Aumann, R.J., 1987. Correlated equilibrium as an expression of Bayesian rationality. Econometrica 55, 1–18.
+Bazzan, A.L., Grunitzki, R., 2016. A multiagent reinforcement learning approach to en-route trip building. In: Proceedings of the International Joint Conference
+on Neural Networks.
+23
+
+Transportation Research Part B 189 (2024) 103014
+
+X. Ma and X. He
+
+Bell, M.G., 2000. A game theory approach to measuring the performance reliability of transport networks. Transp. Res. B 34 (6), 533–545.
+Bellman, R., 1957. A Markovian decision process. Journal of mathematics and mechanics 6, 679–684.
+Chen, Z., Ma, S., Zhou, Y., 2022. Finding correlated equilibrium of constrained Markov game: A primal-dual approach. In: NeurIPS Conference.
+Cigler, L., Faltings, B., 2011. Reaching correlated equilibria through multi-agent learning. In: 10th International Conference on Autonomous Agents and Multiagent
+Systems, AAMAS.
+de O. Ramos, G., Bazzan, A.L., da Silva, B.C., 2018. Analysing the impact of travel information for minimising the regret of route choice. Transp. Res. C 88,
+257–271.
+Du, L., Han, L., Chen, S., 2015. Coordinated online in-vehicle routing balancing user optimality and system optimality through information perturbation. Transp.
+Res. B 79, 121–133.
+Gairing, M., Monien, B., Tiemann, K., 2008. Selfish routing with incomplete information. Theory Comput. Syst. 42, 91–130.
+Gronauer, S., Diepold, K., 2022. Multi-agent deep reinforcement learning: a survey. Artif. Intell. Rev. 55, 895–943.
+Grunitzki, R., Ramos, G.O.D., Bazzan, A.L.C., 2014. Individual versus difference rewards on reinforcement learning for route choice. In: Proceedings - 2014
+Brazilian Conference on Intelligent Systems, BRACIS.
+Jo, Y., Jang, J., Ko, J., Oh, C., 2022. An in-vehicle warning information provision strategy for V2V-based proactive traffic safety management. IEEE Trans. Intell.
+Transp. Syst. 23, 1–12.
+Kim, H., Kim, W., Kim, J., Lee, S.-J., Yoon, D., 2019. A study on the effects of providing situation awareness information for the control authority transition of
+automated vehicle. In: International Conference on Information and Communication Technology Convergence. ICTC, IEEE, pp. 1394–1396.
+Ko, J., Kim, H., Oh, C., Kim, S., 2023. Impact of V2V warning information on traffic stream performance using microscopic simulation based on real-world
+connected vehicle driving behavior. IEEE Trans. Intell. Transp. Syst. 1–14.
+Liang, X., Guler, S.I., Gayah, V.V., 2023. Decentralized arterial traffic signal optimization with connected vehicle information. J. Intell. Transp. Syst.: Technol.
+Plan. Oper. 27, 145–160.
+Littman, M.L., 1994. Markov games as a framework for multi-agent reinforcement learning. In: Machine Learning Proceedings.
+Littman, M.L., 2001. Value-function reinforcement learning in Markov games. Cogn. Syst. Res. 2, 55–66.
+Liu, Y., Whinston, A.B., 2019. Efficient real-time routing for autonomous vehicles through Bayes correlated equilibrium: An information design framework. Inf.
+Econ. Policy 47, 14–26.
+Ma, J., Smith, B.L., Zhou, X., 2016. Personalized real-time traffic information provision: Agent-based optimization model and solution framework. Transp. Res.
+C 64, 164–182.
+Mao, W., Başar, T., 2022. Provably efficient reinforcement learning in decentralized general-sum Markov games. Dyn. Games Appl. 13, 165–186.
+Marris, L., Muller, P., Lanctot, M., Tuyls, K., Graepel, T., 2021. Multi-agent training beyond zero-sum with correlated equilibrium meta-solvers. In: International
+Conference on Machine Learning. pp. 7480–7491.
+Ning, Y., Du, L., 2023. Robust and resilient equilibrium routing mechanism for traffic congestion mitigation built upon correlated equilibrium and distributed
+optimization. Transp. Res. B 168, 170–205.
+Paz, A., Peeta, S., 2009. Behavior-consistent real-time traffic routing under information provision. Transp. Res. C 17 (6), 642–661.
+Puterman, M.L., 2008. Markov decision processes: Discrete stochastic dynamic programming. Wiley Ser. Probab. Stat.
+Shou, Z., Chen, X., Fu, Y., Di, X., 2022. Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for dynamic traffic assignment.
+Transp. Res. C 137, 103560.
+Spana, S., Du, L., 2022. Optimal information perturbation for traffic congestion mitigation: Gaussian process regression and optimization. Transp. Res. C 138,
+103647.
+Spana, S., Du, L., Yin, Y., 2022. Strategic information perturbation for an online in-vehicle coordinated routing mechanism for connected vehicles under
+mixed-strategy congestion game. IEEE Trans. Intell. Transp. Syst. 23, 4541–4555.
+Stefanello, F., Silva, B.C.D., Bazzan, A.L., 2016. Using topological statistics to bias and accelerate route choice: Preliminary findings in synthetic and real-world
+road networks. In: CEUR Workshop Proceedings, 1678.
+Su, H., Zhong, Y.D., Chow, J.Y., Dey, B., Jin, L., 2023. EMVLight: A multi-agent reinforcement learning framework for an emergency vehicle decentralized
+routing and traffic signal control system. Transp. Res. C 146, 103955.
+Tony, L.A., Ghose, D., Chakravarthy, A., 2022. Correlated-equilibrium-based unmanned aerial vehicle conflict resolution. J. Aerosp. Inf. Syst. 19, 283–304.
+Wang, C., Peeta, S., Wang, J., 2021. Incentive-based decentralized routing for connected and autonomous vehicles using information propagation. Transp. Res.
+B 149, 138–161.
+Wang, L., Zhao, L., Hu, X., Zhao, X., Wang, H., 2023. A reliability-based traffic equilibrium model with boundedly rational travelers considering acceptable
+arrival thresholds. Sustainability 15, 6988.
+Zhang, K., Yang, Z., Başar, T., 2021. Multi-Agent Reinforcement Learning: A Selective Overview of Theories and Algorithms. Springer, pp. 321–384.
+Zhou, B., Song, Q., Zhao, Z., Liu, T., 2020. A reinforcement learning scheme for the equilibrium of the in-vehicle route choice problem based on congestion
+game. Appl. Math. Comput. 371, 124895.
+Zhou, A., Wang, J., Peeta, S., 2023. Robust control strategy for platoon of connected and autonomous vehicles considering falsified information injected through
+communication links. J. Intell. Transporta. Syst 27, 735–751.
+
+24
+
+

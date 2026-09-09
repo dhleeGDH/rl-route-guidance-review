@@ -1,0 +1,63 @@
+{
+ "study": "[25] DRL-Router, released implementation, unmodified",
+ "arm": "the study's own released Dijkstra baseline, no training",
+ "destination": 15,
+ "origins": 30,
+ "border_nodes": 12,
+ "band": 0.0,
+ "samples": 10,
+ "results": {
+  "closed": {
+   "per_sample": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+   ],
+   "mean": 100.0
+  },
+  "open": {
+   "per_sample": [
+    93.3,
+    93.3,
+    93.3,
+    93.3,
+    93.3,
+    93.3,
+    93.3,
+    93.3,
+    93.3,
+    93.3
+   ],
+   "mean": 93.3
+  }
+ },
+ "learned_arm_published": {
+  "closed": 96.0,
+  "open": 40.0
+ },
+ "attainable": {
+  "closed": 100.0,
+  "open": 93.3
+ },
+ "relative_to_attainable": {
+  "closed": {
+   "baseline": 100.0,
+   "learned": 96.0,
+   "gap_points": 4.0,
+   "gap_points_raw": 4.0
+  },
+  "open": {
+   "baseline": 100.0,
+   "learned": 42.9,
+   "gap_points": 57.1,
+   "gap_points_raw": 53.3
+  }
+ }
+}

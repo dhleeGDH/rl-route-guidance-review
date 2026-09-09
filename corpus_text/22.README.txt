@@ -1,0 +1,4 @@
+idx 22: the archived extraction is INCOMPLETE. A blind second coder reported on 2026-08-22 that a
+page covering the scenario and network description did not survive PDF extraction. Any field for
+this study that depends on the network description should be re-read from the source PDF rather
+than from this text. The recorded coding predates the extraction and is quote-anchored.

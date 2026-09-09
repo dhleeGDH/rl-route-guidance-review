@@ -1,0 +1,74 @@
+{
+ "seeds": 10,
+ "episodes": 3000,
+ "arms": {
+  "arrival term alone": {
+   "terms": {
+    "beta": 0.0,
+    "r_goal": 10.0,
+    "r_exit": 0.0
+   },
+   "arrived_per_seed": [
+    11,
+    17,
+    18,
+    9,
+    13,
+    15,
+    14,
+    16,
+    13,
+    18
+   ],
+   "exited_per_seed": [
+    2989,
+    2983,
+    2982,
+    2991,
+    2987,
+    2985,
+    2986,
+    2984,
+    2987,
+    2982
+   ],
+   "arrived_mean": 14.4,
+   "arrived_share_pct": 0.48,
+   "exited_share_pct": 99.5
+  },
+  "all three terms": {
+   "terms": {
+    "beta": 1.0,
+    "r_goal": 10.0,
+    "r_exit": 5.0
+   },
+   "arrived_per_seed": [
+    443,
+    304,
+    152,
+    373,
+    560,
+    514,
+    525,
+    367,
+    300,
+    432
+   ],
+   "exited_per_seed": [
+    2557,
+    2696,
+    2848,
+    2627,
+    2440,
+    2484,
+    2475,
+    2633,
+    2700,
+    2568
+   ],
+   "arrived_mean": 397.0,
+   "arrived_share_pct": 13.233,
+   "exited_share_pct": 86.8
+  }
+ }
+}

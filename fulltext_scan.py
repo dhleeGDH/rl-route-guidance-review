@@ -10,7 +10,14 @@ row per study; the body counts are tallies of those columns.
 import argparse, csv, difflib, glob, json, os, re, subprocess, sys, statistics
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-CORPUS = os.path.join(ROOT, "corpus", "corpus_v9_coded.csv")
+# Two records sit in this tree from v1.6.0 on. _CURRENT is the coding the newest version
+# publishes, at the top level under its released name. _SNAPSHOT is corpus/corpus_v9_coded.csv,
+# the coding as of v1.4.0, superseded on the boundary field and kept for the screening trail that
+# resolves against it. The current one wins wherever both are present, since a tally taken over
+# the snapshot returns the withdrawn boundary counts. Set CORPUS_CSV to override either.
+_CURRENT = os.path.join(ROOT, "study_record_corpus_v9_coded.csv")
+_SNAPSHOT = os.path.join(ROOT, "corpus", "corpus_v9_coded.csv")
+CORPUS = os.environ.get("CORPUS_CSV") or (_CURRENT if os.path.exists(_CURRENT) else _SNAPSHOT)
 # The full texts are copyrighted and are not redistributed with this repository.
 # Point PDF_DIR at a directory holding them to reproduce the scan.
 PDFDIR = os.environ.get("PDF_DIR", os.path.join(ROOT, "pdfs"))
@@ -43,7 +50,7 @@ NODECOUNT = r"([0-9][0-9,]{0,6})\s+(?:nodes|intersections)\b"
 
 RULES = """
 RULES AS APPLIED
-  denominator        the 91 studies recorded as full-text in corpus/corpus_v9_coded.csv
+  denominator        the 91 studies recorded as full-text in study_record_corpus_v9_coded.csv
   text               pdftotext -layout, first 40 pages
   measure region     from the first heading matching RESULT|EXPERIMENT|EVALUATION|CASE STUDY|
                      NUMERICAL|SIMULATION to the end of the text

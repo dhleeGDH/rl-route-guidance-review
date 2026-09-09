@@ -1,0 +1,81 @@
+{
+ "network": "SUMO 5x5 replication, interior destination",
+ "interior_cells": 9,
+ "eval_pairs": 200,
+ "episodes": 3000,
+ "seeds": 10,
+ "cells": {
+  "closed_time_min": {
+   "mean": 85.55,
+   "sd": 14.838856649576028,
+   "per_seed": [
+    97.5,
+    67.5,
+    82.5,
+    88.5,
+    93.0,
+    53.5,
+    82.0,
+    95.5,
+    99.0,
+    96.5
+   ],
+   "seeds": 10,
+   "episodes": 3000
+  },
+  "open_time_min": {
+   "mean": 0.0,
+   "sd": 0.0,
+   "per_seed": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "seeds": 10,
+   "episodes": 3000
+  },
+  "closed_aligned": {
+   "mean": 100.0,
+   "sd": 0.0,
+   "per_seed": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+   ],
+   "seeds": 10,
+   "episodes": 3000
+  },
+  "open_aligned": {
+   "mean": 4.75,
+   "sd": 4.411160089288682,
+   "per_seed": [
+    2.0,
+    0.5,
+    5.0,
+    1.5,
+    5.0,
+    3.5,
+    9.0,
+    1.0,
+    15.0,
+    5.0
+   ],
+   "seeds": 10,
+   "episodes": 3000
+  }
+ }
+}

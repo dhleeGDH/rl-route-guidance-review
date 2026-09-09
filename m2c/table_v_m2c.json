@@ -1,0 +1,92 @@
+{
+ "Travel time alone|published": [
+  0.0,
+  0.0,
+  0.0,
+  0.0
+ ],
+ "Travel time alone|m2": [
+  0.0,
+  0.0,
+  0.0,
+  0.0
+ ],
+ "Travel time alone|c": [
+  0.0,
+  0.0,
+  0.0,
+  0.0
+ ],
+ "Potential shaping alone|published": [
+  4.0,
+  4.0,
+  4.0,
+  4.0
+ ],
+ "Potential shaping alone|m2": [
+  0.0,
+  0.0,
+  0.0,
+  0.0
+ ],
+ "Potential shaping alone|c": [
+  4.0,
+  4.0,
+  4.0,
+  4.0
+ ],
+ "Exit penalty alone|published": [
+  62.5,
+  62.5,
+  62.5,
+  81.0
+ ],
+ "Exit penalty alone|m2": [
+  62.5,
+  62.5,
+  62.5,
+  81.0
+ ],
+ "Exit penalty alone|c": [
+  62.5,
+  62.5,
+  62.5,
+  81.0
+ ],
+ "Arrival term alone|published": [
+  100.0,
+  100.0,
+  100.0,
+  99.5
+ ],
+ "Arrival term alone|m2": [
+  100.0,
+  100.0,
+  100.0,
+  99.5
+ ],
+ "Arrival term alone|c": [
+  100.0,
+  100.0,
+  100.0,
+  99.5
+ ],
+ "All three terms|published": [
+  100.0,
+  100.0,
+  100.0,
+  100.0
+ ],
+ "All three terms|m2": [
+  100.0,
+  100.0,
+  100.0,
+  100.0
+ ],
+ "All three terms|c": [
+  100.0,
+  100.0,
+  100.0,
+  100.0
+ ]
+}

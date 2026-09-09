@@ -1,0 +1,30 @@
+{
+ "seed": 11,
+ "od_mode": "dest_interior",
+ "episodes": 8000,
+ "max_steps": 60,
+ "eval_draws": 200,
+ "eval_distinct_pairs": 113,
+ "cells": {
+  "closed_time_min": {
+   "completion_pct": 78.0,
+   "travel_time": 6.240232833018639,
+   "completing_trips": 156
+  },
+  "closed_aligned": {
+   "completion_pct": 100.0,
+   "travel_time": 4.427507108052381,
+   "completing_trips": 200
+  },
+  "open_time_min": {
+   "completion_pct": 0.0,
+   "travel_time": null,
+   "completing_trips": 0
+  },
+  "open_aligned": {
+   "completion_pct": 25.0,
+   "travel_time": 4.78104787853643,
+   "completing_trips": 50
+  }
+ }
+}

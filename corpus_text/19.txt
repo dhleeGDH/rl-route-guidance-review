@@ -1,0 +1,2442 @@
+Transactions on Emerging Telecommunications Technologies
+
+RESEARCH ARTICLE
+
+Deep Reinforcement Learning for Vehicle Swarm
+Navigation and Urban Traffic Optimization
+Rubo Zhang1 | Peiqun Lin2, 3 | Chuhao Zhou2, 3
+
+| Lixin Miao1
+
+1
+
+Tsinghua Shenzhen International Graduate School, Shenzhen, Guangdong, China | 2 School of Civil Engineering and Transportation, South China University
+of Technology, Guangzhou, Guangdong, China | 3 China-Singapore International Joint Research Institute, Guangzhou, Guangdong, China
+Correspondence: Chuhao Zhou (zchuomi1017@scut.edu.cn)
+Received: 18 June 2025 | Revised: 23 July 2025 | Accepted: 8 August 2025
+Funding: This work was supported by National Natural Science Foundation of China (52072130), Natural Science Foundation of Guangdong Province
+(2025A1515010046).
+Keywords: deep reinforcement learning | graph neural network | stochastic traffic demand | vehicle navigation
+
+ABSTRACT
+Traffic congestion has become a prevalent phenomenon on urban roads, leading to significant challenges, including economic
+losses due to travel delays, increased fuel consumption, and air pollution from vehicle emissions. As it is impractical to extensively
+improve city road networks, vehicle routing optimization has emerged as a viable solution for alleviating congestion. However,
+traditional algorithms cannot effectively process information for complex and changeable traffic environments. By contrast, deep
+reinforcement learning (DRL) is a powerful approach for solving navigation problems. Rather than creating smart vehicles, we
+propose a navigation model to guide all vehicles. The model employs a graph neural network to effectively capture dynamic traffic
+flow patterns. We utilize the simulation of urban mobility to generate a large quantity of traffic data for use as reinforcement
+learning samples. We propose a parallel simulation training strategy to accelerate DRL convergence. We verify the effectiveness of
+our model by performing simulations on a simplified road network and a real-life road network under multiple traffic scenarios
+and compare the results to those obtained using traditional methods and dynamic user equilibrium (DUE). The experimental
+results demonstrate that the proposed model reduces average travel time by up to 7.54% and the number of halting vehicles by up
+to 14.35% compared to traditional methods in high-congestion scenarios, maintaining stability across various traffic conditions.
+The overall performance of the proposed method is comparable to that of DUE, indicating that traffic flow patterns mined through
+the deep network can be used to effectively deduce the optimal vehicle route without performing the iterations required for DUE.
+In general, the proposed approach has the capability to accommodate dynamic and complex traffic information, considerably
+mitigating traffic congestion.
+
+1 |
+
+Introduction
+
+In recent years, the continuous growth of car ownership has gradually produced an imbalance between traffic supply and demand,
+resulting in increasingly severe traffic congestion. This congestion has produced an array of problems that cannot be ignored,
+
+including economic losses incurred by individuals and increased
+environmental pollution from vehicular emissions. Traffic congestion has been classified into recurring congestion (RC) and
+nonrecurring congestion (NRC) [1]. Recurring congestion is typically attributed to a sudden surge in traffic volume and a shortage
+of road capacity, such as during morning and evening peak hours,
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------© 2025 John Wiley & Sons Ltd.
+
+Transactions on Emerging Telecommunications Technologies, 2025; 36:e70227
+https://doi.org/10.1002/ett.70227
+
+1 of 17
+
+At present, urban road networks are quite dense, making it challenging to implement large-scale network improvements. There
+are two viable solutions for both RC and NRC: (1) predicting
+future traffic volumes or the likelihood of accidents and implementing advance traffic control measures [2] and (2) implementing optimal path planning for vehicles, which would fully utilize
+road network resources and mitigate the impact of traffic flow
+on road sections [3]. Vehicle navigation software has a high market penetration rate; thus, utilizing this software to determine
+the states of road networks would enable information acquisition
+of the minutest arteries of urban road networks, providing data
+support for route optimization. From a policy perspective, optimizing vehicle routing can reduce urban congestion, lower emissions, and enhance economic efficiency. This approach supports
+smart city initiatives by leveraging existing navigation software to
+implement centralized traffic management, potentially reducing
+the need for costly infrastructure expansions. Therefore, optimal
+path planning is a highly feasible solution to traffic congestion
+and has been the subject of a growing number of studies in recent
+years [4, 5].
+The objective of vehicle navigation or path planning problems
+is to minimize some type of loss, such as the travel time or
+vehicle emissions. It is feasible to solve this problem by using
+iterative optimization algorithms, such as genetic algorithms [6]
+and ant-colony algorithms [7]. These algorithms can determine
+a route assignment strategy with a low loss but cannot quickly
+adapt to a dynamic traffic environment. An alternative solution
+method involves the use of shortest path algorithms, such as Dijkstra [8] and A* [9], which are commonly employed in navigation
+software. These algorithms have a high calculation speed and can
+efficiently search for the optimal path within the current state of a
+road network. However, these algorithms have a limited ability to
+comprehend traffic flow patterns and may not always achieve an
+optimal outcome in terms of the final loss. For navigation problems, it is necessary to develop an algorithm that can dynamically adapt to traffic changes and provide optimal paths for vehicles in real time. However, both iterative optimization algorithms
+and traditional shortest path algorithms have clear limitations.
+Some state-of-the-art algorithms [10, 11] only partially fulfill the
+requirements for navigation while facing challenges in terms of
+computational efficiency and optimality.
+Deep reinforcement learning (DRL) has emerged as a powerful
+approach for addressing the limitations of traditional algorithms
+in solving navigation problems. Unlike traditional algorithms,
+DRL leverages deep neural networks to process complex traffic data and learn optimal routing strategies through continuous
+exploration, making it suitable for dynamic urban environments.
+From the perspective of reinforcement learning, navigation problems can be seen as the selection of different paths by vehicles
+to achieve the overall optimum path, and the loss of each vehicle
+(e.g., the travel time) can be viewed as the reward. Deep networks
+can accommodate a vast quantity of inputs, capturing extensive traffic information and leveraging graphics processing units
+(GPUs) to enhance the computational speed to meet real-time
+requirements. Reinforcement learning (RL), as an evolutionary
+2 of 17
+
+learning method, enables continuous exploration of patterns in
+samples and traffic flow evolutionary mechanisms. However,
+existing reinforcement learning methods [12, 13] for vehicle navigation still face certain challenges, such as the case of heavy
+traffic demand that traditional methods cannot meet. Moreover,
+the training strategies proposed for deep networks have difficulty
+tackling stochastic traffic demand.
+To address the aforementioned challenges, we employ a navigation model based on Deep Q-Networks (DQN) [14] to manage
+vehicle navigation, enabling it to adapt effectively to large-scale
+road networks. Two kinds of inputs are considered in the model to
+capture the dynamics of traffic flow. One input is the current state
+of a road network, such as the average travel time for each road
+section and the number of vehicles. The other input is the assignment of vehicles that have entered the road network; that is, the
+number of vehicles assigned to each road segment is recorded
+and accordingly deducted when a vehicle exits the road network.
+As a traffic network has a graph-like structure, a graph neural
+network is employed as the core architecture for capturing the
+state of the road network using the aforementioned inputs. A
+large number of samples are required to train a deep reinforcement learning network, and sufficient data are often not obtained
+through real-world data collection. To address this issue, the simulation of urban mobility (SUMO) [15, 16] is used in this study
+to generate a large volume of traffic data as training samples for
+the proposed model. It is a common practice to use simulation
+data to train reinforcement learning models and then transfer the
+trained models to an actual environment, such as in the case of
+autonomous vehicles [17] and intelligent robots [18]. The contributions of this study are summarized below.
+• A deep learning network structure is designed to efficiently
+extract comprehensive traffic information from large-scale
+road networks for use in reinforcement learning.
+• To accommodate the dynamic characteristics of traffic flow, a
+parallel simulation strategy is proposed in which simulation
+software is used to generate a large quantity of data, effectively harnessing the capacity of the deep network.
+• Extensive experiments are performed to validate the feasibility and reliability of deep reinforcement learning in addressing navigation problems; demonstrating the generalization
+ability of the proposed method.
+The remainder of this paper is organized as follows. In Section 2,
+relevant research studies are presented and the study objective
+is defined. In Section 3, we define the navigation problem from
+the perspective of reinforcement learning and introduce a suitable model and training strategy. In Section 4, experiments are
+described for simulating a simplified road network and a real-life
+road network to test the proposed method under different traffic
+flow conditions; the results are compared against those obtained
+using other methods to validate the proposed method. Finally, the
+key findings of this study are summarized and future research
+directions are proposed.
+
+2 |
+
+Related Studies
+
+Early approaches to vehicle navigation problems typically
+involved the use of shortest path algorithms, which determine the
+Transactions on Emerging Telecommunications Technologies, 2025
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+holidays, and similar periods. Nonrecurring congestion is typically caused by unpredictable events, such as traffic accidents and
+extreme weather conditions.
+
+The development of big data technology has enabled the collection of a large quantity of data from detectors and cellular signaling information. These data can be effectively utilized to overcome certain limitations of traditional algorithms. For instance,
+Cai et al. [25] designed a system for analyzing trajectory data and
+providing route inquiry recommendations for users. Similarly,
+Kyriakou et al. [26] developed an intelligent system to accurately
+predict traffic conditions for use in vehicle navigation. However,
+traffic-flow prediction and path planning are treated as separate tasks in these studies, disregarding the inherent interaction
+between these tasks. For example, these methods predict future
+traffic states based on historical traffic data, which may not align
+with the path planning process. That is, the traffic patterns predicted by performing these two tasks separately may not always
+be suitable for path planning. This mismatch can potentially lead
+to navigation failures during heavy traffic flow.
+Reinforcement learning is a methodology for determining a
+response based on the environment and maximizing the expected
+returns. This methodology has many applications in the fields
+of intelligent control [27] and robotics [18]. Navigation problems
+involve formulating the decision-making process of a vehicle for
+choosing a path within the interactive context of the traffic environment and the vehicle itself. Consequently, RL is a suitable
+research approach. In the field of RL, Q-learning [28] and Sarsa
+[29] are widely recognized algorithms with many applications.
+Gong et al. [30] introduced a method for local path planning
+
+for ships based on Q-learning. Wang et al. [28] investigated the
+application of problem-feature-based meta-heuristic algorithms
+combined with Q-learning in urban traffic light scheduling, aiming to minimize the total network delay time by optimizing traffic signal scheduling. These algorithms constitute advances in
+the field but encounter challenges in practical real-world navigation. For instance, similar to other traditional navigation algorithms, traditional RL methods have limitations in complex traffic environments.
+In recent years, the rapid development of deep learning technology has led to important breakthroughs in various fields, such
+as object detection [31] and natural language processing [32].
+The integration of deep learning with RL has also resulted in
+remarkable achievements, such as DQN surpassing human performance in gaming [14], AlphaGo Zero defeating human beings
+[33], and protein structure prediction [34]. In the field of transportation, deep reinforcement learning has been applied to tackle
+challenges in autonomous driving and vehicle lane changing.
+For instance, Wu et al. [35] designed a mechanism for transferring control between drivers and autonomous driving agents
+to correct unreasonable actions of an agent during the training process. Wang et al. [36] proposed a model to enhance the
+safety and efficiency of lane-changing maneuvers in a mixed-flow
+environment. Tigga et al. [37] proposed an adaptive traffic light
+control system based on DQN, aimed at optimizing urban traffic signals using real-time traffic data to reduce vehicle waiting
+time and queue length. However, effective vehicle navigation differs from autonomous driving in harnessing group intelligence.
+That is, vehicle paths are selected to achieve maximum overall
+returns based on global information. To the best of our knowledge, few studies have incorporated DRL into vehicle navigation to prevent traffic congestion. Koh et al. [13] developed a
+method by which a vehicle selects actions (turning left or right
+or moving straight) at every intersection based on the destination to minimize the travel time. Shou et al. [38] proposed a
+new modeling paradigm for dynamic traffic assignment based
+on Markov games and multi-agent reinforcement learning, used
+to simulate the learning behavior of agents in route selection
+and the system equilibrium process. Although the effectiveness
+of using DRL for navigation problems was demonstrated, the
+potential of the method to handle complex and dynamic traffic environments or large-scale road networks was not fully
+exploited.
+To overcome the limitations of traditional navigation methods
+and address the shortcomings of DRL in navigation problems,
+a deep network architecture is introduced in this study that can
+capture complex traffic flow patterns and generate optimal routes
+for vehicles. Extensive experiments are conducted to demonstrate
+the advantages of the DRL model, which effectively overcomes
+the limitations of previous models.
+
+3 |
+3.1 |
+
+Methodology
+Modeling the Navigation Problem
+
+The following problem is solved in this study: a vehicle in a
+given road network state selects a specific path to maximize the
+3 of 17
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+path between two nodes with the least loss. For instance, Michael
+[19] proposed a method based on A* for vehicle navigation, considering possible road link delays. It is a good practice for drivers
+to avoid road sections on a selected path that may become congested. Noto et al. [20] proposed an extended Dijkstra algorithm
+to address limitations in vehicle navigation, but it struggles
+with scalability on large road networks. The main limitation of
+this kind of algorithm is that it can only consider the current
+state of road networks and cannot understand the association
+between different states. Consequently, the algorithm’s adaptability diminishes in complex and dynamic traffic environments.
+Another traditional solution is the use of bionic algorithms,
+such as the genetic algorithm and the ant-colony algorithm. For
+instance, Wen et al. [21] utilized a particle swarm optimization
+algorithm for routing planning for delivery vehicles. Su et al. [22]
+developed an approach based on genetic algorithms to circumvent solving the overlapping path problem in vehicle navigation.
+However, these methods require a large number of iterations and
+are usually used to find the optimal traffic assignment rather than
+for real-time navigation. Some improved algorithms have been
+developed. Cong et al. [23] proposed a novel ant-colony algorithm
+for solving the routing problem. In this algorithm, unnecessary
+links and routes are eliminated to enable ants to search the road
+network more efficiently, striking a balance between the calculation speed and performance. Pasandi et al. [24] introduced a
+method considering numerous factors with different weights to
+calculate the optimal path for a pedestrian tourist. The method
+can also be utilized to determine suitable paths for vehicles. However, the calculation speed and the number of required parameters make it difficult for this algorithm to process dynamic traffic
+information. Consequently, the calculation speed and accuracy of
+the algorithm may be considerably compromised for a medium to
+large-scale road network with a large traffic flow.
+
+(
+)
+𝑎∗𝑖 = arg max𝑎𝑗 𝐸 𝑠𝑡 , 𝑎𝑗𝑖
+𝑖
+
+(1)
+
+where 𝑠𝑡 represents the state of the road network at time t; 𝑎𝑗𝑖
+denotes
+(
+)the selection of the jth feasible path by the ith vehicle;
+𝐸 𝑠𝑡 , 𝑎𝑗𝑖 represents the expectation associated with this selection; and 𝑎∗𝑖 indicates the optimal choice.
+Traditional navigation algorithms, such as Dijkstra, navigate a
+vehicle with the lowest cost based on the current conditions.
+However, the actual cost of traveling along the chosen path may
+be higher than the initially estimated cost, leading to the selection
+of a suboptimal path. Thus, this study develops a more effective
+method to determine the optimal path based on road network
+states.
+Given the dynamic nature of traffic environments, it is challenging to employ a simple algorithm to determine the optimal
+path under various scenarios. Therefore, it is crucial to accurately
+characterize the states of road networks by capturing traffic flow
+patterns to calculate the optimal path. To meet this objective,
+the powerful ability of DRL to capture and model the complex
+dynamics of road network states is leveraged for vehicle navigation in this study.
+DRL consists of four primary elements: an agent, observation,
+action, and reward. In this study, these four elements are defined
+as follows.
+The agent is a deep network model that generates action values, which can be seen as expectations based on observations. Typically, a traffic road network consists of multiple
+origin–destination (OD) pairs, each with multiple feasible paths.
+In this study, the agent calculates action values for all OD pairs
+rather than individual vehicles. That is, the agent takes the current observation as the input and outputs action values for different paths associated with each OD pair. Therefore, a vehicle
+entering the road network can select a path according to its OD
+and the corresponding action values. This process is represented
+by the following equation:
+(
+)
+(
+)
+𝑄𝑡 = 𝒒 1𝑡 , 𝒒 2𝑡 , · · · , 𝒒 𝑖𝑡 , · · · , 𝒒 𝑛𝑡 = 𝑀 𝑆𝑡 ; 𝜃
+
+(2)
+
+where 𝑄𝑡 represents the action value matrix at the time t; 𝒒 𝑖𝑡
+denotes the action value vector of all feasible paths for the ith OD
+pair at the time t; n represents the size of the set of OD pairs; 𝑀
+represents the deep network model; 𝜃 is the model’s parameter;
+and 𝑆𝑡 denotes the observation.
+The observation represents the states of a traffic road network. In
+this study, the observation has two components. The first component is the current state of the road network, which includes
+factors such as the traffic density, estimated travel time, and other
+metrics. This component allows the agent to determine the travel
+cost associated with the current state of the network. The second component is the assignment of vehicles. When a vehicle
+selects a path, the assigned traffic volume for all road sections
+along that path is increased by one. Conversely, when the vehicle
+exits the road network, the assigned traffic volume is decreased
+4 of 17
+
+by one. This assignment is performed considering that congestion
+on certain road sections may dissipate during the vehicle’s trip,
+enabling the agent to determine the expected future cost through
+the assigned traffic volume. The observation is expressed mathematically below.
+(
+)
+𝑆𝑡 = 𝒔𝑐𝑡 , 𝒔𝑎𝑡
+(3)
+𝒔𝑐𝑡 =
+
+{(
+
+)
+}
+𝑛𝑒𝑡 , 𝑣𝑒𝑡 , ℎ𝑒𝑡 , 𝑜𝑒𝑡 , 𝑙𝑒 |𝑒 ∈ 𝐸
+{
+
+𝒔𝑎𝑡 = 𝑚𝑒𝑡 |𝑒 ∈ 𝐸
+
+}
+
+(4)
+(5)
+
+The variables in Equations (3–5) are defined as follows: 𝒔𝑐𝑡 represents the current state of the road network at the time t; 𝒔𝑎𝑡 denotes
+the assigned traffic state; 𝑛𝑒𝑡 represents the number of vehicles
+on the road section e at the time t; 𝑣𝑒𝑡 corresponds to the average
+speed; ℎ𝑒𝑡 represents the number of halting vehicles (vehicles with
+speeds less than 1 m/s); 𝑜𝑒𝑡 represents the occupancy; 𝑙𝑒 denotes
+the length of the road section; 𝑚𝑒𝑡 represents the number of vehicles already assigned to the road section e; and E denotes the set
+of road sections.
+The action in this context refers to the selection of a path. When
+there are multiple paths between an OD pair, paths with long
+travel distances may have a low probability of being selected,
+especially in large road networks. Thus, the feasible path set is
+adopted in the path selection process. That is, only paths within
+a certain travel distance range are included in the set of selectable
+paths. The size of the feasible path set varies across different OD
+pairs. For consistency, the range of path selection is defined as
+the size of the maximum feasible path set. The range is adjusted
+accordingly for OD pairs with smaller feasible path sets. The
+action selection is expressed as follows:
+𝜋 ∶ 𝒒 𝑖𝑡 → 𝑎𝑗𝑖
+
+(6)
+
+where 𝜋 denotes the action selection strategy. During the initial stage of training, action selection is generally performed randomly to promote exploration. As the training progresses and the
+model converges, the weights of the optimal action values are
+increased, making the action selection process more deterministic. In Equation (6), 𝑎𝑗𝑖 denotes the jth feasible path between the
+members of the ith OD pair.
+The reward represents the actual revenue generated by the vehicle by traveling on a specific path. In the field of RL, the reward
+plays a crucial role in determining whether the agent can converge to the optimum result. In this study, the reward has two
+components: the time reward and the distance reward. The time
+reward encourages vehicles to select paths that allow for free
+speed. The distance reward discourages vehicles from taking
+unnecessarily long detours. The reward is expressed as follows:
+( 𝑖,𝑗
+( 𝑖,𝑗
+) 𝑖
+𝑖,𝑗 )
+𝑖,𝑗
+𝑖
+(7)
+𝑟𝑖,𝑗
+𝑡 = − 𝑇𝑡 − 𝑇min ∕𝑇min − 𝐷𝑡 − 𝐷min ∕𝐷min
+where 𝑇𝑡𝑖,𝑗 denotes the average travel time of the jth feasible path
+𝑖,𝑗
+between the members of the ith OD pair at time step t; 𝑇min
+𝑖,𝑗
+denotes the minimal travel time. 𝐷𝑡 denotes the driving distance
+𝑖
+of the jth path and 𝐷min
+represents the minimal distance of the
+ith OD pair.
+The relationship among the aforementioned four elements is
+shown in the figure below (Figure 1).
+Transactions on Emerging Telecommunications Technologies, 2025
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+expectation associated with this path. This problem is mathematically represented by the following equation:
+
+3.2 |
+
+|
+
+Schematic representation of the relationship among the agent, action, observation, and reward.
+
+Mechanism of DQN
+
+In this study, a vehicle navigation model is constructed based
+on DQN [14]. The model is off-policy to effectively leverage past
+experiences. The objective of this method is to maximize the
+action-value function, which is defined below.
+[
+]
+𝑄(𝑠, 𝑎) = 𝔼 𝐺𝑡 |𝑠𝑡 = 𝑠, 𝑎𝑡 = 𝑎
+
+(8)
+
+The formula presented above represents the expectation of the
+return when the model performs action 𝑎𝑡 in the state st . During
+an episode, the return is calculated as the sum of the rewards,
+where each reward is multiplied by an increasing power of the
+discount factor 𝛾. The formula for 𝐺𝑡 is 𝑟𝑡 + 𝛾𝑟𝑡+1 + 𝛾 2 𝑟𝑡+2 + · · ·,
+where 𝑟𝑡 , 𝑟𝑡+1 , and 𝑟𝑡+2 represent the rewards obtained at different time steps during the episode. However, the model can only
+be updated upon completion of the entire episode, which is inefficient. Therefore, the core formulation of DQN is as follows:
+(
+]
+[
+)
+𝑄(𝑠, 𝑎) = 𝔼 𝑟𝑡 + 𝛾 max𝑎∗ 𝑄 𝑠𝑡+1 , 𝑎∗ ∣ 𝑠𝑡 = 𝑠, 𝑎𝑡 = 𝑎
+
+(9)
+
+(
+)
+where max𝑎∗ 𝑄 𝑠𝑡+1 , 𝑎∗ is used to replace the return after the
+time t, and 𝑎∗ denotes the action at the state 𝑠𝑡+1 that maximizes
+the Q value. (If the model
+reaches its optimum
+)
+(
+) configuration,
+𝑟𝑡 + 𝛾max𝑎∗ 𝑄 𝑠𝑡+1 , 𝑎∗ tends to approach 𝑄 𝑠𝑡 , 𝑎𝑡 . Therefore, the
+loss function of DQN is defined as follows:
+[(
+
+(
+
+𝐿(𝜃) = 𝔼𝑈 (𝐷) 𝑟 + 𝛾 max𝑎∗ 𝑄 𝑠′ , 𝑎∗ ; 𝜃
+
+)
+−
+
+− 𝑄(𝑠, 𝑎; 𝜃)
+
+)2 ]
+
+(10)
+
+During training,
+samples uniformly at random from
+( DQN draws
+)
+the experience 𝑠, 𝑎, 𝑟, 𝑠′ ̃𝑈 (𝐷), where D denotes a replay buffer
+(or memory) that serves as a dataset. The existence of two Q
+values can introduce a correlation into the training process if
+both values are calculated by the same network. This correlation
+can make it difficult for the model to converge. To address this
+problem, DQN employs two identical networks. The parameters
+
+of the target and evaluation networks are denoted as 𝜃 − and 𝜃,
+respectively. The parameter 𝜃 is only updated during training,
+and the value of 𝜃 is assigned to 𝜃 − every C steps. This approach
+effectively breaks the correlation and helps stabilize the training
+process.
+
+3.3 | Training Strategy for the Vehicle
+Navigation Model
+To enhance the adaptability of the model to dynamic traffic
+environments, it is crucial to generate a diverse range of traffic demands during the training process. A parallel simulation
+strategy is employed to promote exploration and reduce the sampling time. The strategy employs multiple independent simulation threads, each generating unique traffic scenarios with randomly initialized vehicle arrival rates and destination selection
+probabilities. These threads do not share information during simulation, ensuring diverse exploration of traffic states. The pseudocode adopted in this paper is outlined below.
+
+3.4 | The Architecture of the Proposed
+Navigation Model
+The goal of this study is to determine the optimal path under a
+given state (Figure 2). To achieve this goal, the deep network is
+configured with two components. The first component approximately represents all the states in the road network. The second
+component generates the action values. This component maps
+the road network state to the action value space to enable different actions to be evaluated for a given state. The two components
+are detailed below.
+• State: 𝒔𝑐𝑡 ∈ ∝𝑑𝑒 ×𝑑𝑐 denotes the current state, and 𝒔𝑎𝑡 ∈ ∝𝑑𝑒 ×𝑑𝑎
+denotes the assigned state. 𝑑𝑒 , 𝑑𝑐 and 𝑑𝑎 represent the
+5 of 17
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+FIGURE 1
+
+|
+
+DRL Navigation Model Adapted to Stochastic Demand.
+
+Initialize the replay memory D to the capacity V
+Initialize the evaluation network 𝑓𝑒 with the random weights 𝜃
+Initialize the target network with 𝑓𝑡 with the weights 𝜃 − = 𝜃
+Initialize the probability 𝜀 to select the path with the highest action value
+Initialize the increment Δ𝜀
+For the episode in 1, 𝑀𝑒 do
+Start m simulation programs
+For each simulation do
+Initialize the average arrival rate 𝜆𝑖 of the vehicles from entrance i at random
+Initialize the probability 𝑝𝑗𝑖 of each vehicle selecting the destination j at random
+For t = 1, T do
+For each vehicle do
+Record the state 𝑠𝑡 when the vehicle enters
+( the road
+) network
+With probability 𝜀 select 𝑎𝑡 = argmax𝑎 𝑓𝑒 𝑠𝑡 , 𝑎; 𝜃 , otherwise select a random action 𝑎𝑡
+Execute the action 𝑎𝑡 and record the next state 𝑠𝑡+1 (
+)
+Calculate the reward 𝑟𝑡 if the vehicle exits and store 𝑠𝑡 , 𝑎𝑡 , 𝑟𝑡 , 𝑠𝑡+1 in D
+End For
+End For
+End For
+For i = 1, 𝑀𝑡 do
+(
+)
+Sample random minibatch 𝑠𝑘 , 𝑎𝑘 , 𝑟𝑘 , 𝑠𝑘+1 from D
+{
+if 𝑘 is the last frame
+𝑟𝑘
+Set 𝑦𝑘 = 𝑟 + 𝛾max𝑓 (𝑠 , 𝑎∗ ; 𝜃 − ) otherwise
+𝑘
+𝑡
+𝑘+1
+𝑎∗
+(
+(
+))2
+Perform a gradient descent step on 𝑦𝑘 − 𝑓𝑒 𝑠𝑘 , 𝑎𝑘 ; 𝜃
+with respect to the network parameters 𝜃
+End For
+Every C episodes reset 𝜃 − = 𝜃
+Set 𝜀 = 𝜀 + Δ𝜀
+End For
+
+FIGURE 2
+
+6 of 17
+
+|
+
+Deep reinforcement learning network of the navigation model.
+
+Transactions on Emerging Telecommunications Technologies, 2025
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+ALGORITHM 1
+
+• Encoder: This module is designed to encode discrete states
+into a continuous state space. The module has four components. The first component involves embedding the state into
+the vector space of the module. The calculation formula for
+this step is
+
+• Decoder: this component is used to generate action values
+corresponding to the state of the road network, which is
+represented by the deep network. The component involves
+four steps. First, the road network features are embedded
+into the decoder space.
+𝒙emb
+= 𝒙state
+𝑊deemb + 𝑏emb
+𝑡
+𝑡,de
+de
+𝑎
+
+emb,𝑖
+𝒙emb,𝑖
+= 𝒔𝑖𝑡 𝑊en
++ 𝑏emb,𝑖
+𝑡
+en , 𝑖 = 𝑎, 𝑐
+
+(11)
+
+𝑐
+
+(16)
+
+𝑊deemb ∈ ∝𝑑𝑒 (𝑑state +𝑑state )×𝑑de is the weight matrix for the embedding
+process.
+emb
+
+hid,𝑖
+
+emb,𝑖
+where 𝑊en
+∈ ∝𝑑𝑖 ×𝑑en is the weight matrix for embedding the
+hid,𝑖
+state into the hidden layer and 𝑏emb,𝑖
+∈ ∝1×𝑑en is the bias, where
+en
+hid,𝑖
+𝑑en denotes the size of the hidden layer.
+
+The purpose of this module is to capture the interconnection
+between road sections. We regard the road sections as the nodes
+in the graph structure, and the connection relationships between
+the road sections as the edges. Thus, we can obtain its adjacency
+matrix. Then, a graph convolutional neural network is used to
+model the intricate traffic flow relationships. In this component,
+a deep model is constructed by stacking multiple layers. The formula for computing the graph convolution within each layer is as
+follows:
+(
+)
+gcn,𝑖
+̂ emb,𝑖 𝑊 𝑖
+𝒙𝑡
+= ReLU A𝒙
+(12)
+𝑡
+gcn
+̂ is calculated based on the study [39]. 𝑊 𝑖 ∈ ∝
+Here, A
+gcn
+
+hid,𝑖
+hid,𝑖
+𝑑en
+×𝑑gcn
+
+hid,𝑖
+is an input-to-hidden weight matrix with 𝑑gcn
+features. In
+hid,𝑖
+hid,𝑖
+this study, 𝑑gcn is equal to 𝑑en . ReLU(⋅) is an activation
+function and its expression is max(0, ⋅). As multilayer stacking is employed, a normalization technique [40] is used to
+ensure stability and prevent the gradient of the deep model
+from vanishing or exploding. Residual connections [41] are
+incorporated into this component to mitigate gradient-related
+issues. The normalized graph convolution is calculated
+as follows:
+)
+(
+gcn,𝑖
+𝒙norm,𝑖
+(13)
+= Layernorm 𝒙emb,𝑖
++ 𝒙𝑡
+𝑡
+𝑡
+
+is passed to the next layer, and Equations (12) and
+Then, 𝒙norm,𝑖
+𝑡
+(13) are cycled through N times. In this study, N = 3.
+After the graph convolutions are calculated, linear mapping is
+performed again.
+𝑖
+𝒙state,𝑖
+= 𝒙norm,𝑖
+𝑊state
++ 𝑏𝑖state
+𝑡
+𝑡
+𝑖
+𝑊state
+
+(14)
+
+Subsequently, the deep model is constructed by stacking multiple layers, where M denotes the number of layers (M = 3 in this
+study). A feedforward network is employed for decoding. Layer
+norm and residual connections are utilized here.
+(
+(
+)
+)
+emb
+ff
+ff
+emb
+=
+Layernorm
+ReLU
+𝒙
+𝑊
++
+𝑏
++
+𝒙
+(17)
+𝒙norm
+de
+de
+𝑡,de
+𝑡,de
+𝑡,de
+emb
+emb
+ff
+ff
+× 𝑑de
+, where 𝑑de
+is equal to 𝑑de
+in
+Here, the shape of 𝑊deff is 𝑑de
+this study.
+
+Finally, linear mapping is performed to obtain the action values.
+𝑨𝑡 = 𝒙norm
+𝑊deaction + 𝑏action
+𝑡,de
+de
+
+(18)
+
+In Equation (18), 𝑨𝑡 ∈ ∝1×𝑛od 𝑛path contains all the action values of
+the different OD pairs, where 𝑛od denotes the number of OD pairs
+and 𝑛path is the size of the maximum feasible path set.
+
+4 |
+
+Experiments
+
+In this study, we utilized SUMO to construct road networks
+to verify the feasibility of the proposed method. SUMO offers
+an application interface, TraCI, that enables Python to control
+various aspects of the simulation, including path selection and
+retrieval of simulation information, such as the travel time and
+the number of halting vehicles.
+Two experiments are described in this section: the first experiment was conducted on a simple road network; the second
+experiment was conducted on a real-world road network. The
+experiments were performed on a 64-bit Windows 10 machine
+with an Intel Xeon E5-2678 (2.5 GHz) processor, 64 GB of RAM,
+and an RTX 2080Ti graphics card.
+
+4.1 |
+
+Experiments of Simplified Road Network
+
+hid,𝑖
+𝑖
+𝑑en
+×𝑑state
+
+Here,
+∈∝
+is the weight matrix for converting the
+graph convolution features to appropriate dimensions.
+• Flatten & Concatenate: as the output of the graph convolution is in matrix form, this component involves transforming
+the output into a one-dimensional vector and concatenating
+the two states for subsequent calculations.
+(
+(
+)
+(
+))
+= concat flatten 𝒙state,𝑖
+, flatten 𝒙state,𝑖
+𝒙state
+𝑡
+𝑡
+𝑡
+( 𝑎
+)
+𝑐
+The shape of 𝒙state
+is 1 × 𝑑𝑒 𝑑state
++ 𝑑state
+.
+𝑡
+
+(15)
+
+In the simplified road network, Xi, i = 1, 2, 3, 4, serves both as
+an entrance and an exit point (Figure 3). All the roads in the
+network are six-lane and two-way, with three lanes in each direction designated for left turns, straight movement, and right turns.
+Each road section is 400 m long, such that the shortest distance
+between X1 and X3 is 1600 m. The intersections within the network are unsignalized, and all vehicles obey the priority rule.
+Hyperparameters were selected through a systematic grid search
+process. For instance, the decoder size was tested over a range
+of 128–1024, and batch sizes were evaluated from 64 to 1024,
+7 of 17
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+dimensions of the state. Specifically, 𝑑𝑐 is equal to 5, 𝑑𝑎 is
+equal to 1, and 𝑑𝑒 denotes the number of road sections.
+
+|
+
+TABLE 1 |
+
+The structure of the simplified road network.
+
+List of hyperparameters and their values used in the simulation of the simplified road network.
+
+Hyperparameter
+
+Value
+
+Description
+
+Edge count
+
+32
+
+Number of road sections in the road network (de )
+
+Action space size
+
+8
+
+The size of the maximum feasible path set (npath )
+
+4 × 3 = 12
+
+Number of OD pairs (nod )
+(
+)
+hid,𝑐
+Size of the hidden layer in the encoder of the current state 𝑑en
+
+OD pair count
+Current state encoder size
+
+24
+
+Assignment state encoder size
+
+12
+
+Road state feature size
+
+9
+
+Decoder size
+
+512
+
+hid,𝑎
+Size of the hidden layer in the encoder of the assignment state (𝑑en
+)
+)
+( 𝑎
+𝑐
+The size of the features used to represent the road network states 𝑑state , 𝑑state
+( emb )
+Size of the hidden layer in the decoder 𝑑de
+
+Episode count
+
+1200
+
+Number of episodes used to run the simulations (M e )
+
+Parallel count
+
+4
+
+Number of parallel simulations (m in Algorithm 1)
+
+Initial epsilon
+
+0.5
+
+Initial value of 𝜀 used to select the highest action value
+
+0.001
+
+The increment in 𝜀 for every episode (Δ𝜀)
+
+Epsilon increment
+Final epsilon
+Duration
+Memory size
+Gamma
+Target network update frequency
+
+1
+
+The final value of 𝜀
+
+1600
+
+The duration for inputting vehicles into the road network
+
+10 000
+
+The stochastic gradient descent (SGD) is sampled from this number of the
+most recent states (V)
+
+0.1
+
+The discount rate used in Equation (10)
+
+2
+
+The frequency with which the target network is updated (C in Algorithm 1)
+
+Batch size
+
+512
+
+The number of samples for updating the SGD
+
+Training time
+
+80
+
+The training time when an episode ends (M t )
+
+Minimum lambda
+
+0.1
+
+Minimum average vehicle arrival rate
+
+Maximum lambda
+
+0.4
+
+Maximum average vehicle arrival rate
+
+Initial learning rate
+
+0.05
+
+The initial learning rate used for the SGD
+
+Decay rate
+
+0.996
+
+The rate at which learning decays for every episode
+
+optimizing for convergence speed and policy performance. The
+hyperparameters are shown in Table 1.
+
+different exits based on their respective probabilities (𝑝𝑗𝑖 in
+Algorithm 1).
+
+For each simulation, the average arrival rate varied for different entrances. Consider an average arrival rate for the
+entrance i of 0.2. In this case, a total of 320 vehicles (calculated as 1600 × 0.2) are input into the road network from
+the entrance i. The arrival of the vehicles follows a Poisson
+distribution. Subsequently, these 320 vehicles are allocated to
+
+For comparison, A* [42], Dijkstra [42], and contraction hierarchies (CH) [43] were implemented using real-time traffic data
+from SUMO simulations, with edge weights based on estimated
+travel times updated every second to reflect current conditions. The results are presented in Table 2. To comprehensively
+
+8 of 17
+
+Transactions on Emerging Telecommunications Technologies, 2025
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+FIGURE 3
+
+|
+
+Comparison of the performances of different methods for the simplified road network under a variety of traffic conditions.
+
+Average travel
+time (s)
+Duration
+2000
+
+2400
+
+2800
+
+3200
+
+Average number of
+halting vehicles (veh)
+
+Lambda
+
+DRL
+
+A*
+
+Dijkstra
+
+CH
+
+Improva (%)
+
+DRL
+
+A*
+
+Dijkstra
+
+CH
+
+Improva (%)
+
+0.25
+
+159.3
+
+157.2
+
+149.4
+
+158.2
+
+−6.63
+
+15.9
+
+22.9
+
+17.2
+
+22.3
+
+7.56
+
+0.3
+
+191.0
+
+224.1
+
+220.4
+
+207.8
+
+8.08
+
+41.4
+
+84.7
+
+83.2
+
+73.2
+
+43.44
+
+0.35
+
+244.6
+
+306.1
+
+314.4
+
+287.5
+
+14.92
+
+95.5
+
+176.5
+
+182.0
+
+154.9
+
+38.35
+
+0.4
+
+313.8
+
+391.8
+
+383.0
+
+365.4
+
+14.12
+
+182.2
+
+284.0
+
+267.4
+
+257.5
+
+29.24
+
+0.45
+
+379.4
+
+453.9
+
+444.5
+
+445.8
+
+14.65
+
+265.0
+
+360.0
+
+348.2
+
+353.0
+
+23.89
+
+0.25
+
+160.1
+
+160.1
+
+151.3
+
+159.6
+
+−5.82
+
+15.8
+
+26.1
+
+19.1
+
+23.5
+
+17.28
+
+0.3
+
+196.7
+
+243.7
+
+238.7
+
+216.6
+
+9.19
+
+47.3
+
+101.5
+
+101.0
+
+79.2
+
+40.28
+
+0.35
+
+260.9
+
+331.5
+
+348.4
+
+308.0
+
+15.29
+
+117.3
+
+204.8
+
+223.3
+
+183.2
+
+35.97
+
+0.4
+
+329.0
+
+450.5
+
+446.5
+
+434.4
+
+24.26
+
+204.7
+
+340.7
+
+337.2
+
+330.2
+
+38.01
+
+0.45
+
+430.9
+
+524.8
+
+516.2
+
+508.2
+
+15.21
+
+320.5
+
+433.0
+
+425.7
+
+422.1
+
+24.07
+
+0.25
+
+162.2
+
+160.2
+
+151.4
+
+156.7
+
+−7.13
+
+16.2
+
+24.5
+
+18.5
+
+23.5
+
+12.43
+
+0.3
+
+193.3
+
+212.0
+
+225.5
+
+209.7
+
+7.82
+
+45.2
+
+76.0
+
+89.5
+
+73.5
+
+38.50
+
+0.35
+
+266.9
+
+366.4
+
+378.0
+
+352.0
+
+24.18
+
+125.3
+
+245.6
+
+250.8
+
+231.2
+
+45.80
+
+0.4
+
+355.7
+
+490.2
+
+495.2
+
+482.9
+
+26.34
+
+236.5
+
+389.1
+
+393.6
+
+376.1
+
+37.12
+
+0.45
+
+437.7
+
+578.0
+
+534.9
+
+553.0
+
+18.17
+
+338.4
+
+502.2
+
+451.4
+
+470.9
+
+25.03
+
+0.25
+
+160.6
+
+160.0
+
+157.2
+
+160.5
+
+−2.16
+
+16.1
+
+25.8
+
+22.4
+
+23.5
+
+28.13
+
+0.3
+
+202.8
+
+267.5
+
+268.2
+
+229.0
+
+11.44
+
+55.1
+
+127.9
+
+134.4
+
+94.7
+
+41.82
+
+0.35
+
+284.0
+
+395.7
+
+419.3
+
+370.0
+
+23.24
+
+144.3
+
+272.6
+
+296.1
+
+248.1
+
+41.84
+
+0.4
+
+381.9
+
+531.7
+
+516.9
+
+506.7
+
+24.63
+
+270.8
+
+434.6
+
+425.5
+
+415.4
+
+34.81
+
+0.45
+
+462.0
+
+622.3
+
+550.6
+
+602.6
+
+16.09
+
+359.9
+
+555.8
+
+475.7
+
+520.5
+
+24.34
+
+Note: The bolded values indicate the best performance among the four methods.
+a
+Imrov means the performance improvement of DRL compared to the best in three other methods.
+
+demonstrate the effectiveness of the proposed method, the
+duration in the comparison experiments was extended up to a
+maximum of twice the original value. As the arrival rate was not
+fixed during training, for ease of demonstration, the same arrival
+rate was adopted for all entrances and equal probabilities were
+assigned for selecting different exits. However, setting equal probabilities did not guarantee identical simulation results for each
+run. To mitigate the influence of chance, the results presented in
+Table 2 are the average values obtained from five simulations.
+The results in Table 2 clearly show that the proposed method
+outperforms the other methods in most scenarios, particularly under heavy traffic conditions. The other three methods
+exhibit advantages and disadvantages for different scenarios,
+indicating that these methods are not universally applicable
+and have clear limitations. However, for scenarios with a low
+traffic volume (lambda = 0.25), the proposed method is slightly
+inferior to the other methods. Further analysis revealed that
+the DRL method may guide vehicles to take detours in advance
+instead of selecting the shortest route to fully utilize the road
+network. This behavior persists even for scenarios with low
+traffic flow because the DRL method does not accurately determine whether heavy traffic flow will emerge in the future. This
+behavior increases the travel time but effectively reduces the
+number of halting vehicles, leading to an overall improved road
+network.
+
+To further validate the stability of the method, the selection probabilities of different exits were randomly assigned under a fixed
+arrival rate and duration, as in the previous experiments. For
+each combination, a total of 20 experiments were conducted.
+Figure 4 is a box plot showing the average travel time for all the
+simulations.
+The orange line in the figure represents the average travel time.
+The figure clearly shows that the proposed method exhibits high
+stability and outperforms the other methods for various scenarios. Even for scenarios with a low traffic volume (lambda = 0.25),
+the proposed method produces a lower average travel time than
+the other methods. This result indicates that the other methods
+may not perform effectively when there is uneven traffic between
+different OD pairs. That is, simply selecting the shortest path may
+not always be the optimal choice, and vehicles may need to be
+guided to take detours to ensure that the overall condition of the
+road network is good. The upper edges of the boxes highlight the
+clear limitations of the other methods. In certain extreme cases,
+these algorithms may not be sufficiently flexible to effectively
+respond to specific or exceptional situations.
+In addition to being compared against common pathfinding
+algorithms, the proposed method is compared with dynamic
+user equilibrium (DUE) [39]. As DUE performs multiple iterations to search for the optimal results, it would have been
+9 of 17
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+TABLE 2
+
+|
+
+Box plot comparing the travel times for the simplified road network.
+
+FIGURE 5 | Comparison between the results obtained using DRL and DUE for the simplified road network (ATT, average travel time; ANHV,
+average number of halting vehicles).
+
+time-consuming to conduct numerous experiments in this study.
+Therefore, we employed the DUE algorithm provided by SUMO
+for each scenario and conducted 100 iterations using the default
+parameters. The results are presented in Figure 5.
+The figure clearly shows the darker color representing DRL
+appears for most scenarios, indicating that the proposed
+method generally outperforms DUE for this network. DUE can
+10 of 17
+
+potentially achieve better path selection through additional iterations but is not well suited to real-time navigation because
+of time constraints. Therefore, the number of iterations was
+not increased further for comparison purposes. By contrast,
+DRL does not require multiple iterations to calculate optimal
+paths and is therefore more practical than DUE. Moreover,
+the performance of DRL is comparable to, or even surpasses,
+that of DUE.
+Transactions on Emerging Telecommunications Technologies, 2025
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+FIGURE 4
+
+TABLE 3
+
+|
+
+Structure of the real-world road network.
+
+List of hyperparameters and their values used in the simulation of the real-world road network.
+
+Hyperparameter
+
+Value
+
+Hyperparameter
+
+Edge count
+
+100
+
+Final epsilon
+
+1
+
+Action space size
+
+64
+
+Duration
+
+1200
+
+11 × 10 = 110
+
+Memory size
+
+15 000
+
+OD pair count
+
+Value
+
+Current state encoder size
+
+36
+
+Gamma
+
+0.1
+
+Assignment state encoder size
+
+18
+
+Target network update frequency
+
+2
+
+Road state feature size
+
+12
+
+Batch size
+
+512
+
+Decoder size
+
+1024
+
+Training time
+
+300
+
+Episode count
+
+1000
+
+Minimum lambda
+
+0.05
+
+Parallel count
+
+10
+
+Maximum lambda
+
+0.3
+
+Initial epsilon
+
+0.1
+
+Initial learning rate
+
+0.1
+
+0.0015
+
+Decay rate
+
+0.996
+
+Epsilon increment
+
+4.2 |
+
+Experiments of Real-World Road Network
+
+The road network in Figure 6 is situated in the vicinity of Zhujiang New Town in Guangzhou, Guangdong, China. Each of the
+elements X1–X11 serves both as an entrance and an exit for the
+network. For convenience, all the roads within the network are
+considered to be two-way and four-lane. Vehicles can turn left or
+go straight in the left lane and can make right turns or go straight
+in the right lane. As for the simplified road network, the intersections are unsignalized and all vehicles obey the priority rule.
+The hyperparameter settings are presented in Table 3. As the
+road network expands, the deep network structure is also
+scaled up, and the number of parallel simulations is increased
+accordingly.
+
+As in Section 4.1, the experiments were conducted using a fixed
+probability, and the results are presented in Table 4. Overall, the
+proposed method produces the optimal results. Even for a low
+traffic volume (lambda = 0.1), the selected paths may be slightly
+longer but have a minimal overall impact, such that the proposed method produces the optimal results. Increasing the traffic volume (to lambda = 0.3) results in a considerable increase
+in the average travel time. In particular, for durations exceeding 2000, the average travel time doubles compared to that for
+lambda = 0.25, despite an increase of only approximately 20% in
+the traffic volume. This observation suggests that the road network has reached its capacity limit.
+Similar to Figure 4, Figure 7 shows the comparison of the travel
+times across different scenarios. Comparing these results to those
+11 of 17
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+|
+
+FIGURE 6
+
+Comparison of the performances of different methods for the real-world road network under a variety of traffic conditions.
+
+Average travel
+time (s)
+
+Average number of
+halting vehicles (veh)
+
+Duration Lambda
+
+DRL
+
+A*
+
+Dijkstra
+
+CH
+
+Improv (%)
+
+DRL
+
+A*
+
+Dijkstra
+
+CH
+
+Improv (%)
+
+1200
+
+162.4
+
+158.8
+
+159.5
+
+158.4
+
+−2.53
+
+6.5
+
+7.4
+
+6.9
+
+7.1
+
+5.80
+
+1600
+
+2000
+
+2400
+
+0.1
+0.15
+
+187.0
+
+200.9
+
+192.9
+
+203.3
+
+3.06
+
+32.9
+
+52.6
+
+40.7
+
+56.4
+
+19.16
+
+0.2
+
+301.5
+
+361.9
+
+338.5
+
+354.2
+
+10.93
+
+186.8
+
+223.3
+
+202.0
+
+229.2
+
+7.52
+
+0.25
+
+500.5
+
+548.8
+
+611.3
+
+663.9
+
+8.80
+
+420.7
+
+411.4
+
+414.1
+
+419.2
+
+−2.26
+
+0.3
+
+613.3
+
+996.3
+
+1142.3
+
+746.1
+
+17.80
+
+640.9
+
+597.2
+
+713.9
+
+644.6
+
+−7.32
+
+0.1
+
+163.2
+
+159.5
+
+161.5
+
+161.1
+
+−2.32
+
+6.9
+
+7.9
+
+7.9
+
+8.9
+
+12.66
+
+0.15
+
+192.3
+
+210.0
+
+208.9
+
+211.0
+
+7.95
+
+39.6
+
+65.6
+
+58.4
+
+66.1
+
+32.19
+
+0.2
+
+356.3
+
+586.8
+
+394.3
+
+485.3
+
+9.64
+
+270.6
+
+339.6
+
+281.1
+
+333.0
+
+3.74
+
+0.25
+
+566.0
+
+801.5
+
+852.0
+
+737.2
+
+23.22
+
+579.0
+
+597.5
+
+625.6
+
+614.6
+
+3.10
+
+0.3
+
+886.1
+
+1413.9
+
+1719.5
+
+1186.9
+
+25.34
+
+651.6
+
+770.2
+
+1057.5
+
+896.3
+
+15.40
+
+0.1
+
+163.2
+
+159.9
+
+160.4
+
+160.2
+
+−2.06
+
+7.5
+
+8.8
+
+7.7
+
+8.8
+
+2.60
+
+0.15
+
+198.8
+
+230.1
+
+214.0
+
+223.9
+
+7.10
+
+49.4
+
+92.4
+
+67.7
+
+84.4
+
+27.03
+
+0.2
+
+418.9
+
+528.4
+
+428.4
+
+501.2
+
+2.22
+
+398.2
+
+424.8
+
+363.7
+
+428.9
+
+−9.49
+
+0.25
+
+674.9
+
+981.2
+
+789.9
+
+991.1
+
+14.56
+
+664.4
+
+723.2
+
+676.3
+
+704.1
+
+1.76
+
+0.3
+
+1467.6
+
+1543.5
+
+2126.4
+
+2687.6
+
+4.92
+
+1054.9
+
+1169.2
+
+1547.1
+
+1619.6
+
+9.78
+
+0.1
+
+161.7
+
+159.5
+
+160.1
+
+159.2
+
+−1.57
+
+7.2
+
+8.8
+
+8.1
+
+8.6
+
+11.11
+
+0.15
+
+199.5
+
+222.5
+
+214.1
+
+232.9
+
+6.82
+
+50.4
+
+85.8
+
+69.0
+
+97.2
+
+26.96
+
+0.2
+
+503.5
+
+647.8
+
+523.7
+
+832.6
+
+3.86
+
+408.7
+
+476.2
+
+428.7
+
+454.5
+
+4.67
+
+0.25
+
+947.3
+
+1084.0
+
+1166.5
+
+1024.6
+
+7.54
+
+732.3
+
+855.0
+
+927.0
+
+895.2
+
+14.35
+
+0.3
+
+1960.8
+
+2320.3
+
+2669.3
+
+2004.0
+
+2.16
+
+1272.4
+
+1430.1
+
+1617.0
+
+1542.1
+
+11.03
+
+Note: The bolded values indicate the best performance among the four methods.
+
+FIGURE 7
+
+12 of 17
+
+| Box plot comparing the travel times for the real-world road network.
+
+Transactions on Emerging Telecommunications Technologies, 2025
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+TABLE 4 |
+
+For details, the average travel time for different OD pairs is shown
+in Figure 8. It demonstrates that congestion occurs consistently
+for the same OD pairs regardless of the method used. However, it
+clearly shows that the proposed method can better balance traffic
+supply and demand, resulting in reduced congestion. Specifically,
+
+FIGURE 8
+
+|
+
+when 𝜆 = 0.25, the CH and A* methods nearly incapacitate the
+traffic flow between X5 and X1.
+To better demonstrate the performance of DRL in balancing the
+traffic demand and supply, Figure 9 depicts the variation in velocity over time for the road sections along the route from X10 to
+X4. Compared to other methods, DRL effectively alleviates traffic
+congestion. It also demonstrates that congestion can spread along
+road sections when using shortest path algorithms due to delays
+in responding to changes in traffic conditions. This supports our
+point that the actual cost on the chosen path may exceed the initially estimated cost when utilizing a method like Dijkstra.
+Figure 10 illustrates the performance of vehicles traveling
+between X10 and X4, with each curve representing an individual
+vehicle. It shows that many vehicles experience long stops when
+
+Average travel time between different OD pairs under different average arrival rates (duration = 1600).
+
+13 of 17
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+obtained for the simplified road network shows that the proposed method offers more pronounced benefits when applied to
+real-world road networks. For instance, at a duration of 1200 and
+a lambda of 0.3, the other methods produce severe congestion,
+whereas the proposed method maintains overall stability. The
+proposed method may have a slightly lower performance than the
+other methods for 𝜆 = 0.1 but still ensures a short travel time, such
+that the difference in performance is inconsequential for practical
+applications.
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+Transactions on Emerging Telecommunications Technologies, 2025
+
+14 of 17
+
+Time–space diagram of vehicle trajectories between ×4 and ×10 (duration = 1600).
+
+|
+
+FIGURE 10
+
+Variation of velocity over time in different road sections (duration = 1600 and lambda = 0.25).
+|
+FIGURE 9
+
+|
+
+Comparison between the performances of DRL and DUE for the real-world road network.
+
+using other methods. In contrast, the proposed method navigates vehicles traveling along a route while avoiding exceeding
+its capacity, preventing later arrivals from causing additional congestion. In (a), the proposed method nearly equalizes the distance
+traveled by all vehicles, while the distances for vehicles using
+other methods are irregular. This observation confirms that DRL
+achieves a more balanced traffic flow and highlights that slight
+detours for some vehicles can enhance the efficiency of the traffic system. In summary, other methods typically prioritize routes
+with the shortest driving distance, whereas DRL only navigates a
+few vehicles along the shortest path. As a result of achieving the
+system optimal, it inevitably sacrifices individual benefit.
+In Figure 11, the proposed method is also compared with DUE.
+Unlike the simplified road network, the performance of the
+proposed method is slightly inferior to that of DUE, primarily in
+the case of heavy traffic. This result can be attributed to very high
+traffic flow rates (lambda) not being extensively incorporated
+into the training process. Instead, lambda values were randomly
+generated in the range of [0.05, 0.3]. A large road network makes
+it challenging for a model to converge. However, the experiment
+required a high traffic flow rate to be maintained (lambda = 0.3
+for all entrances), which may have surpassed the capability of
+the trained DRL model. Nevertheless, the difference between the
+performances of DRL and DUE is not substantial, and the performance of the DRL algorithm can be enhanced by increasing
+the number of sample data specifically for scenarios with heavy
+traffic.
+
+5 |
+
+Conclusion
+
+In this study, a deep reinforcement learning model is introduced for real-time vehicle navigation that effectively mitigates
+
+congestion and minimizes travel time. Instead of focusing on
+making vehicles smarter, we implement a navigation model to
+manage all vehicles. To efficiently extract traffic features, we use
+graph neural networks as the foundational model. Furthermore,
+by incorporating traffic assignment data as input, we empower
+the neural network to anticipate future traffic variations, ultimately enabling the model to devise superior navigation choices
+for alleviating traffic congestion in a more effective manner.
+To demonstrate the effectiveness of our model, we conducted
+extensive experiments with diverse traffic demands. Experimental results show that the proposed method outperforms common
+pathfinding algorithms and can be applied effectively to various traffic scenarios. Compared to DUE, the proposed method
+achieves comparable results without performing iterations; it
+is therefore more practical for real-world navigation. In certain
+heavy-traffic scenarios investigated in the experiments, navigating vehicles to select detour paths in advance can alleviate overall
+road network congestion, which is challenging to implement in
+conventional algorithms.
+However, the proposed method requires knowledge of vehicle
+assignment, which may not be feasible to obtain in practice.
+Therefore, future work could focus on removing this input
+to enhance the practicality of the method. To better adapt to
+real-world road networks, signal timing of intersections will
+be incorporated in subsequent work to achieve collaborative
+optimization. We also plan to integrate the model with smart
+city policies, such as real-time traffic data sharing and public
+transit coordination, to enhance its impact on urban mobility
+and sustainability.
+Conflicts of Interest
+The authors declare no conflicts of interest.
+
+15 of 17
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+FIGURE 11
+
+The data that support the findings of this study are available from the
+corresponding author upon reasonable request.
+References
+1. K. S. Sang, B. Zhou, P. Yang, and Z. Yang, “A Survey on Urban Traffic
+Optimisation for Sustainable and Resilient Transportation Network,” in
+Proceedings of the 9th International Conference on Developments in eSystems Engineering (DeSE) (IEEE, 2016), 233–238, https://doi.org/10.1109/
+DeSE.2016.38.
+2. M. Xu, T. Z. Qiu, J. Fang, H. He, and H. Chen, “Signal-Control Refined
+Dynamic Traffic Graph Model for Movement-Based Arterial Network
+Traffic Volume Prediction,” Expert Systems With Applications 228 (2023):
+120393, https://doi.org/10.1016/j.eswa.2023.120393.
+3. W. Lu and M. Wu, “Optimization of Vehicle Automatic Navigation Path
+Based on Remote Sensing and GIS,” Optik 270 (2022): 169952, https://doi.
+org/10.1016/j.ijleo.2022.169952.
+4. X. H. Duan, J. X. Wu, and Y. L. Xiong, “Dynamic Emergency
+Vehicle Path Planning and Traffic Evacuation Based on Salp Swarm
+Algorithm,” Journal of Advanced Transportation 2022, no. 1 (2022):
+7862746, https://doi.org/10.1155/2022/7862746.
+5. Y. Regragui and N. Moussa, “Impact of Mobility Design on Network
+Connectivity Dynamics in Urban Environment,” Simulation Modelling
+Practice and Theory 119 (2022): 102577, https://doi.org/10.1016/j.simpat.
+2022.102577.
+6. Z. Yao, L. Nie, and Z. He, “A Genetic Algorithm for Heterogeneous High-Speed Railway Timetabling With Dense Traffic: The
+Train-Sequence Matrix Encoding Scheme,” Journal of Rail Transport
+Planning and Management 23 (2022): 100334, https://doi.org/10.1016/j.
+jrtpm.2022.100334.
+7. O. AlHousrya, A. Bennagi, P. A. Cotfas, and D. T. Cotfas, “A Novel
+Hybrid Ant Colony Algorithm for Solving the Shortest Path Problems
+With Mixed Fuzzy Arc Weights,” Alexandria Engineering Journal 109
+(2024): 841–855, https://doi.org/10.1016/j.aej.2024.09.089.
+8. M. Msk, “Hybrid Long Short-Term Memory Deep Learning Model
+and Dijkstra’s Algorithm for Fastest Travel Route Recommendation Considering Eco-Routing Factors,” Transportation Letters 15, no. 8 (2023):
+926–940, https://doi.org/10.1080/19427867.2022.2113273.
+
+15. S. Ravindran, G. B. Balachandran, and P. W. David, “Measurement and
+Analysis of Heterogeneous Road Transport Parameters Using Smart Traffic Analyzer and SUMO Simulator: An Experimental Approach,” Measurement 242 (2025): 116233, https://doi.org/10.1016/j.measurement.
+2024.116233.
+16. S. Nayak, L. Hota, B. P. Nayak, S. Patel, and A. Kumar, “Dynamic
+Lane Change Coordination and Platoon Management in Vehicular ad hoc
+Networks,” in Proceedings of the 3rd International Conference for Advancement in Technology (ICONAT) (IEEE, 2024), 1–7, https://doi.org/10.1109/
+ICONAT61936.2024.10775018.
+17. Y. Tian, X. Cao, K. Huang, C. Fei, Z. Zheng, and X. Ji, “Learning
+to Drive Like Human Beings: A Method Based on Deep Reinforcement
+Learning,” IEEE Transactions on Intelligent Transportation Systems 23,
+no. 7 (2021): 6357–6367, https://doi.org/10.1109/TITS.2021.3055899.
+18. L. Chen, Y. Wang, Z. Miao, et al., “Transformer-Based Imitative Reinforcement Learning for Multirobot Path Planning,” IEEE Transactions on
+Industrial Informatics 19, no. 10 (2023): 10233–10243, https://doi.org/10.
+1109/TII.2023.3240585.
+19. M. G. H. Bell, “Hyperstar: A Multi-Path Astar Algorithm for Risk
+Averse Vehicle Navigation,” Transportation Research Part B: Methodological 43, no. 1 (2009): 97–107, https://doi.org/10.1016/j.trb.2008.05.010.
+20. M. Noto and F. P. Labomtories, “A Method for Tlie Shortest Path
+Search by Extended Dijkstra Algorithm,” in Proceedings of the IEEE
+International Conference: Systems, Man, and Cybernetics (IEEE, 2000),
+2316–2320, https://doi.org/10.1109/ICSMC.2000.886462.
+21. W. Hui-Ying, L. Jun-Hui, and Z. Wei-Ming, “Improved Particle Swarm
+Optimization Algorithm for Vehicle Routing Planning,” Journal of South
+China University of Technology: Natural Science Edition 37, no. 7 (2009):
+1–5, https://doi.org/10.1016/j.asoc.2015.09.005.
+22. H. Su, W. Li, and Z. Hou, “Multiobjective Non Overlapping Path Guidance Algorithm Based on Genetic Algorithm,” Transactions of Beijing
+Institute of Technology, no. 4 (2007): 331–334.
+23. Z. Cong, B. De Schutter, and R. Babuška, “Ant Colony Routing Algorithm for Freeway Networks,” Transportation Research Part
+C: Emerging Technologies 37 (2013): 1–19, https://doi.org/10.1016/j.trc.
+2013.09.008.
+24. L. Pasandi, M. Hooshmand, and M. Rahbar, “Modified A*
+Algorithm Integrated With Ant Colony Optimization for Multi-Objective
+Route-Finding; Case Study,” Applied Soft Computing 113 (2021): 107877,
+https://doi.org/10.1016/j.asoc.2021.107877.
+
+9. T. Y. Yang, L. Zou, Z. X. Wu, and W.-M. Chen, “An Improved A-Star
+Algorithm Coupled With Graph Division and AIS Data for Ship Path
+Planning,” Ocean Engineering 330 (2025): 121234, https://doi.org/10.
+1016/j.oceaneng.2025.121234.
+
+25. L. Cai, Y. Zhou, Y. Liang, and J. He, “Research and Application of Gps
+Trajectory Data Visualization,” Annals of Data Science 5, no. 1 (2018):
+43–57, https://doi.org/10.1007/s40745-017-0132-1.
+
+10. N. Tong, M. Jin, and J. Hun, “Vehicle Group Path Planning Algorithm
+Considering Equilibrium,” in Proceedings of the International Conference
+on Intelligent Transportation, Big Data & Smart City (ICITBS) (IEEE,
+2022), 357–361, https://doi.org/10.1109/ICITBS55627.2022.00083.
+
+26. K. Kyriakou, K. Lakakis, P. Savvaidis, and S. Basbas, “Analysis of Spatiotemporal Data to Predict Traffic Conditions Aiming at a Smart Navigation System for Sustainable Urban Mobility,” Archives of Transport 52,
+no. 4 (2019): 27–46, https://doi.org/10.5604/01.3001.0014.0206.
+
+11. Y. Regragui and N. Moussa, “A Real-Time Path Planning for Reducing Vehicles Traveling Time in Cooperative-Intelligent Transportation
+Systems,” Simulation Modelling Practice and Theory 123 (2023): 102710,
+https://doi.org/10.1016/j.simpat.2022.102710.
+
+27. S. H. Kim, K. R. Song, I. Y. Kang, and C. I. Hyon, “On-Line
+Set-Point Optimization for Intelligent Supervisory Control and Improvement of Q-Learning Convergence,” Control Engineering Practice 114
+(2021): 104859, https://doi.org/10.1016/j.conengprac.2021.104859.
+
+12. C. Jiang, L. Zhou, J. H. Zheng, and Z. Shao, “Electric Vehicle Charging
+Navigation Strategy in Coupled Smart Grid and Transportation Network:
+A Hierarchical Reinforcement Learning Approach,” International Journal of Electrical Power & Energy Systems 157 (2024): 109823, https://doi.
+org/10.1016/j.ijepes.2024.109823.
+
+28. L. Wang, K. Gao, Z. Lin, W. Huang, and P. N. Suganthan, “Problem Feature Based Meta-Heuristics With Q-Learning for Solving Urban
+Traffic Light Scheduling Problems,” Applied Soft Computing 147 (2023):
+110714, https://doi.org/10.1016/j.asoc.2023.110714.
+
+13. S. Koh, B. Zhou, H. Fang, et al., “Real-Time Deep Reinforcement
+Learning Based Vehicle Navigation,” Applied Soft Computing 96 (2020):
+106694, https://doi.org/10.1016/j.asoc.2020.106694.
+
+29. Y. Garí, E. Pacini, L. Robino, C. Mateos, and D. A. Monge, “Online Rl-Based Cloud Autoscaling for Scientific Workflows: Evaluation of
+q-Learning and Sarsa,” Future Generation Computer Systems 157 (2024):
+573–586, https://doi.org/10.1016/j.future.2024.04.014.
+
+14. V. Mnih, K. Kavukcuoglu, D. Silver, et al., “Human-Level Control
+Through Deep Reinforcement Learning,” Nature 518, no. 7540 (2015):
+529–533, https://doi.org/10.1038/nature14236.
+
+30. M. Gong, H. Xu, H. Feng, Y. Wang, and X. H. Xue, “Ship Local Path
+Planning Based on Improved Q-Learning,” Journal of Ship Mechanics 26,
+no. 6 (2022): 824–833.
+
+16 of 17
+
+Transactions on Emerging Telecommunications Technologies, 2025
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+Data Availability Statement
+
+32. Á. Aldunate, S. Maldonado, C. Vairetti, and G. Armelini, “Understanding Customer Satisfaction via Deep Learning and Natural Language Processing,” Expert Systems With Applications 209 (2022): 118309,
+https://doi.org/10.1016/j.eswa.2022.118309.
+33. D. Silver, J. Schrittwieser, K. Simonyan, et al., “Mastering the Game of
+Go Without Human Knowledge,” Nature 550, no. 7676 (2017): 354–359,
+https://doi.org/10.1038/nature24270.
+34. J. Jumper, R. Evans, A. Pritzel, et al., “Highly Accurate Protein Structure Prediction With AlphaFold,” Nature 596, no. 7873 (2021): 583–589,
+https://doi.org/10.1038/s41586-021-03819-2.
+35. J. Wu, Z. Huang, Z. Hu, and C. Lv, “Toward Human-In-The-Loop AI:
+Enhancing Deep Reinforcement Learning via Real-Time Human Guidance for Autonomous Driving,” Engineering 9, no. 21 (2023): 75–91,
+https://doi.org/10.1016/j.eng.2022.05.017.
+36. Z. Wang, H. Huang, J. Tang, and L. Hu, “A Deep Reinforcement Learning-Based Approach for Autonomous Lane-Changing Velocity Control in Mixed Flow of Vehicle Group Level,” Expert Systems
+With Applications 238 (2024): 122158, https://doi.org/10.1016/j.eswa.
+2023.122158.
+37. A. Tigga, L. Hota, S. Patel, and A. Kumar, “A Deep Q-Learning-Based
+Adaptive Traffic Light Control System for Urban Safety,” in Proceedings of the 4th International Conference on Advances in Computing, Communication Control and Networking (ICAC3N) (IEEE, 2022), 2430–2435,
+https://doi.org/10.1109/ICAC3N56670.2022.10074123.
+38. Z. Shou, X. Chen, Y. Fu, and X. Di, “Multi-Agent Reinforcement
+Learning for Markov Routing Games: A New Modeling Paradigm for
+Dynamic Traffic Assignment,” Transportation Research Part C: Emerging Technologies 137 (2022): 103560, https://doi.org/10.1016/j.trc.2022.
+103560.
+39. X. Zong, F. Yu, Z. Chen, and X. Xia, “MSSTGCN: Multi-Head
+Self-Attention and Spatial-Temporal Graph Convolutional Network for
+Multi-Scale Traffic Flow Prediction,” Computers, Materials & Continua
+82, no. 2 (2025): 3517–3537, https://doi.org/10.32604/cmc.2024.057494.
+40. A. Sengupta, S. Mondal, A. Das, and S. I. Guler, “A Bayesian Approach
+to Quantifying Uncertainties and Improving Generalizability in Traffic
+Prediction Models,” Transportation Research Part C: Emerging Technologies 162 (2024): 104585, https://doi.org/10.1016/j.trc.2024.104585.
+41. Y. Yang, J. Zhang, L. Yang, X. Li, and Z. Gao, “Short-Term Passenger Flow Prediction for Multi-Traffic Modes: A Transformer and Residual
+Network Based Multi-Task Learning Method,” Information Sciences 642
+(2023): 119144, https://doi.org/10.1016/j.ins.2023.119144.
+42. M. E. Miyombo, Y. Liu, C. M. Mulenga, et al., “Optimal Path Planning
+in a Real-World Radioactive Environment: A Comparative Study of A-Star
+and Dijkstra Algorithms,” Nuclear Engineering and Design 420 (2024):
+113039, https://doi.org/10.1016/j.nucengdes.2024.113039.
+43. T. Babicheva, D. Gushchin, G. Simakov, Y. Bychkov, E. Olsen, and
+E. Lazarevich, “Customized Contraction Hierarchies With Flow-Based
+Natural Cut Heuristic,” Procedia Computer Science 257 (2025): 53–59,
+https://doi.org/10.1016/j.procs.2025.03.010.
+
+17 of 17
+
+21613915, 2025, 9, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ett.70227 by Sejong University, Wiley Online Library on [03/06/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+31. Z. Wu, J. Wen, Y. Xu, J. Yang, and D. Zhang, “Multiple Instance Detection Networks With Adaptive Instance Refinement,” IEEE Transactions
+on Multimedia 25 (2021): 267–279, https://doi.org/10.1109/TMM.2021.
+3125130.
+
+

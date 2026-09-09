@@ -1,0 +1,1488 @@
+©SHUTTERSTOCK.COM/DANIEL TADEVOSYAN
+
+An Adaptive Route Guidance
+Model Considering the Effect
+of Traffic Signals Based on
+Deep Reinforcement Learning
+
+Yunyang Shi , Ziyuan Gu *, Xun Yang , Yingdi Li, and Zixuan Chu
+Are with the Jiangsu Key Laboratory of Urban ITS, Jiangsu Province Collaborative Innovation
+Center of Modern Urban Traffic Technologies, School of Transportation, Southeast University,
+Nanjing 210096, China. E-mail: yunyang-shi@seu.edu.cn; ziyuangu@seu.edu.cn;
+yangxunseu@seu.edu.cn; yingdi.li@qq.com; psxzc5@nottingham.ac.uk
+Digital Object Identifier 10.1109/MITS.2023.3265596
+Date of publication 1 May 2023; date of current version 8 May 2024.
+
+*Corresponding author
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+
+1939-1390/23©2023IEEE
+
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+21
+
+• MAY/JUNE 2024
+
+Abstract—Navigation or route guidance systems are designed to provide drivers with real-time travel information
+and the associated recommended routes for their trips. Classical route choice models typically rely on utility theory
+to represent drivers’ route choice behavior. Such choices, however, may not be optimal from both the individual and
+the system perspectives. This is simply due to the fact that drivers usually have imperfect knowledge about the timevarying traffic conditions. In this article, we explore and propose a new model-free deep reinforcement learning
+(DRL) approach to solving the adaptive route guidance problem based on microsimulation. The proposed approach
+consists of three interconnected algorithms, including a network edge labeling algorithm, a routing plan identification algorithm, and an adaptive route guidance algorithm. Simulation experiments on both a toy network and a realworld network of Suzhou, China, are performed to demonstrate the effectiveness of the proposed approach in terms
+of guiding a single vehicle as well as multiple vehicles through complex traffic environments. Comparative results
+confirm that the DRL approach outperforms the traditional shortest path method by further reducing the average
+travel time in the network.
+
+T
+
+he Advanced Traveler Information System is a core
+component of intelligent transportation applications designed to smooth traffic operation for better
+urban mobility [1], [2]. Without the help of such a
+global guidance system, drivers’ routing strategies can
+be based only on experience or very limited information
+about the neighboring traffic. The consequence is that
+they are unable to actively and timely respond to traffic
+congestion or road incidents so as to avoid unnecessary
+travel delays [3].
+
+Introduction
+Due to the rapid development of data collection and communication technologies, we have witnessed the emergence of navigation devices or systems that are capable of
+collecting and digesting real-time traffic information and
+providing travelers with useful route guidance. However,
+most of such route guidance is reactive and thus suboptimal in the sense that the planner is designed to calculate the shortest path with the least instantaneous travel
+time upon request without considering how traffic might
+evolve in the near future. To obtain the shortest path with
+the least travel time experienced, adaptive routing plays a
+critical role.
+Studies on vehicle route choice (VRC) can be traced
+back to the surveys conducted by Dijkstra [4]. Algorithms
+such as the k-shortest path algorithm and the A* algorithm [5] are early solutions to the VRC problem. These
+algorithms, however, are effective only in static and deterministic network settings, whereas real-world traffic
+networks are inherently dynamic and stochastic. In such
+stochastic and time-dependent (STD) networks, the optimality of nonadaptive VRC solvers can no longer be guaranteed. In fact, adaptive routing in STD networks requires
+that the optimal route choice not be a single fixed path
+but a sequential decision-making process that adapts to
+the changing traffic conditions—an optimal successor
+node is chosen based on the arrival time of the current
+
+node, and further node choices are made only after they
+are visited [6]. To solve the adaptive VRC problem in STD
+networks, various methods were proposed over the last
+few decades, including (stochastic) dynamic programming, heuristic algorithms, and agent-based simulation.
+But these methods typically involve strong modeling assumptions and suffer from the curse of dimensionality and
+biased estimation of parameters [7].
+Recent years have witnessed an increasing application
+of reinforcement learning (RL) or deep RL (DRL) as a model-free approach to solving complicated decision-making
+problems [8], [9]. This tendency is arguably due to the
+modeling flexibility of DRL and its learning capability via
+interacting with complex environments. When applied to
+solve the adaptive VRC problem in STD networks, DRL can
+formulate this decision-making process as a well-defined
+Markov decision process (MDP). The objective is to learn a
+route planner (i.e., the policy network in DRL) so that it can
+navigate a vehicle via the optimal route toward its destination and make necessary en route adjustments as per the
+changing traffic conditions. To learn such a route planner,
+a tailored microscopic traffic simulation model or environment [10], [11], [12] is a prerequisite so that the interaction
+between the route choice and the spatial-temporal traffic
+flow can be captured [13], [14].
+In this article, we aim to explore the applicability of
+DRL in adaptive vehicle routing based on microscopic traffic simulation. The contribution is threefold.
+1) A network edge labeling algorithm and a routing plan
+identification algorithm are proposed to facilitate the
+implementation of DRL in a microsimulation.
+2) A new DRL model with computational efficiency consideration is proposed to solve the adaptive VRC problem
+in STD networks.
+3) Numerical experiments in both a toy network and a
+real-world network demonstrate the effectiveness of the
+proposed approach in guiding a single vehicle as well as
+multiple vehicles through complex traffic environments.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+22
+
+• MAY/JUNE 2024
+
+The remainder of this article is
+organized as follows. In the “Related Works” section, we provide a
+In this article, we aim to explore the applicability of DRL
+literature review of both classical
+and RL-based route choice models.
+in adaptive vehicle routing based on microscopic
+The “Methodology” section elabotraffic simulation.
+rates on the problem formulation
+and proposes the overall methodological framework based on DRL.
+ant colony algorithms an attractive representation of
+Numerical experiments in both a
+heuristic algorithms. The dynamic optimization routing
+toy network and a real-world network of Suzhou, China,
+method based on an ant adaptive algorithm was develare conducted in the “Simulation Experiments” section to
+demonstrate the effectiveness of the proposed approach. Fioped by Ding et al. and is based on a globally optimiznally, the “Conclusion” section draws conclusions and suging ant cycle of ant colony optimization and Max-Min ant
+system in [23]. In addition to the research on traditional
+gests future work.
+traffic flow states, a multi-ant colony system was proRelated Works
+posed to tackle evacuation routing problems with mixed
+traffic flow in [24]. However, although these ant colony
+methods have achieved promising results, they still
+Classical Route Choice Models
+suffer from a lack of adaptability and immediacy when
+In 1959, Dijkstra proposed the famous shortest-path algoapplied to a more realistic, complex, and dynamic transrithm, which triggered the upsurge of research on routing
+problems [4]. The single shortest path was extended to a set
+portation system.
+of alternative paths and the k-shortest-path algorithm deWith enhanced computational power and extended
+data
+acquisition, a group of researchers is motivated to
+veloped by Eppstein [15]. Another remarkable application
+model microscopic and dynamic vehicle route behaviors.
+was the goal-directed search algorithm, also known as the
+Through the integration of an adaptive routing agent and
+A* algorithm, proposed by Hart [16]. With the advent of the
+traffic simulation, the proposed model can produce timeA* algorithm over the past decades, researchers have prospace trajectories for each simulated agent and further
+gressively explored and proposed many variations, reprequantify the impact on the transportation network. Nusented by geometric, heuristic [17], and landmark-based [18]
+A* searches. However, real-world transportation networks
+merous scholars have conducted extensive research in
+are STD networks, in which the standard shortest-path almodeling drivers’ adaptive route behavior, thus explorgorithms mentioned previously couldn’t locate the optimal
+ing the classical theory of random utility maximization.
+path. Hall [6] first introduced dynamic programming to STD
+Logit models [25] were applied to evaluate the effect of
+networks for finding the least expected travel time path. The
+real-time traffic information on en route behavior. Other
+best route from any given node to the destination depends
+extensions, like mixed logit [26] and cumulative prospect
+on the arrival time at that node.
+theory [27], have been broadly employed in modeling diSince then, large numbers of researchers have applied
+version behavior. However, random utility maximization
+stochastic dynamic programming to find the optimal path
+suffers from the limitation of perfect rationality, while
+in STD networks. Moreover, a stochastic dynamic programen route behaviors are generally uncertain. Conseming formulation was proposed for the dynamic routing
+quently, rule-based computational process models were
+of vehicles in nonstationary stochastic networks subject
+explored to handle the limitation. Among numerous beto both recurrent and nonrecurrent congestion [19]. Adhavioral rules, Bayes’ rule is believed to be important
+for representing decision making under uncertainty in
+ditionally, to export an adaptive routing policy, dynamic
+[28]. To model agents’ en route diversion behavior unprogramming with prospect theory was combined with
+stochastic dominance [20]. On the other hand, dynamic
+der information provision, the estimation based on naïve
+programming was also utilized to derive and approximate
+Bayes rules and recalibrated using a Bayesian approach
+the analytical solution of the optimal routing policy for
+was performed in [29].
+each time interval [21].
+In the past few years, heuristic algorithms have also
+RL-Based Route Choice Models
+been widely applied in adaptive route guidance. In a
+The classic methods are all parametric adaptive routing
+pioneering study, the heuristic algorithm was combined
+models that are constrained by strong assumptions [30],
+with the k-shortest-path algorithm to solve the dynamic
+[31]. With the rapid development and outstanding achieveand stochastic shortest path problem by [22]. The high
+ment of machine learning technologies, many researchcompatibility with adaptive routing problems has made
+ers introduced RL into adaptive routing to overcome the
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+23
+
+• MAY/JUNE 2024
+
+DRL. DL is adept at excavating the
+internal patterns of data and always integrated with RL to achieve
+Here, we consider and calculate three alternative routes at
+a joint benefit. Since computation
+power is becoming more affordthe departure time of each agent via a routing plan
+able, the potential of using DRL to
+identification algorithm.
+solve transportation problems has
+expanded even further. As the most
+representative method of DRL, the
+deep Q-learning network (DQN)
+shortcomings of classical models in terms of applica[35]
+has
+gained
+significant
+achievements in transportation.
+tion. RL is a kind of machine learning method for solvIn
+[36],
+a
+DRL
+routing
+algorithm
+that considers comprehening timing optimization decision problems that is utilized
+to describe and resolve the problem that agents maxisive network information for state representation was develmize returns or achieve specific goals through learning
+oped, and one-to-many network configuration for routing
+strategies in their interactions with the environment. A
+choices was also used. In [37], DQN was utilized to build a
+behavioral selection strategy is revised to maximize the
+real-time intelligent vehicle routing and navigation system
+expected reward as the learning goal using environmenby formulating the task as a sequence of decisions.
+In [38], a novel approach for adaptive intelligent cruise
+tal reward and reinforcement signals. When the agent
+guidance and vehicle resource management was presentmakes a decision, it has knowledge about the current condition of the environment and uses prior experiences to
+ed. Specifically, this study proposed the utilization of a DRL
+choose the best course of action. This transitions the enalgorithm to facilitate the selection of orders by guiding
+vehicles to hotspots. It is noteworthy that DRL algorithmvironment to a new state. A reward or punishment signal
+based navigation applications have found widespread use
+is given to the agent to indicate whether the action taken
+in various fields, such as aerial and ground robotics and
+was good or bad.
+unmanned surface vehicle technology [39], [40]. However,
+The reward guidance behavior of the RL agent can be
+it is observed that the utilization of such algorithms in road
+viewed as “trial and error” learning toward the maximum
+vehicles remains limited, thereby indicating a potential avreward. The common model of RL is the standard MDP,
+where the agent interacts with the environment, progressenue for future research.
+The DRL framework provides an innovative solution
+ing through state transitions. Model-free RL approaches
+for vehicle routing and navigation since the learning
+have been popular in recent years as a solution to the
+process is fully automated and does not require any laproblem of agents not knowing the model environment.
+As the most classical and representative RL algorithm,
+beling or guiding. Also, the agents can be automatically
+Q-learning has received a number of research efforts. An
+readapted to the global environment by analyzing the
+RL framework was developed by Mao and Shen [7] for the
+global context and saving travel time. However, most of
+adaptive routing problem in an STD network. Both the onthe existing studies on DRL and route choice disregard
+the elaborative modeling of simulation and the optimizaline Q-learning method for discrete state space and the offline fitted Q iteration algorithm for continuous state space
+tion design of relevant algorithms for route choice. This
+are considered.
+article intends to optimize and improve the traffic simIn [32], the Bush–Mosteller RL scheme was introduced to
+ulation system and propose a real-time en route choice
+model the route choice behaviors of travelers who aim to seek
+framework by integrating the route choice algorithms of
+optimal travel routes that minimize their travel time. In [33],
+different targets.
+the effects that adaptive driver agents cause on the overall
+network were analyzed when those agents share their agMethodology
+gregated experience about route choice in an RL setup. In
+Consider a general traffic network denoted by G = (N, E )
+[34], multiagent RL was combined with car-to-infrastructure
+in which N is the finite set of nodes and E 3 N # N is
+communication. While vehicles communicate the travel
+the set of edges. When a vehicle or agent is ready to travel
+times they have experienced in nearby links, they can also
+through this network with a predetermined origin-desreceive the expected travel times regarding their next postination (OD) pair (n o, n d), the alternative routes for the
+trip can be identified following some rules and put into a
+sible link choices.
+choice set. One example of such rules is the k-shortest-path
+However, a tabular format for Q-learning is inefficient
+algorithm, as previously discussed. The number of alterand infeasible for many real-world problems that involve a
+wide state space and action space. To mitigate the “curse of
+native routes included in the choice set certainly affects
+dimensionality,” deep learning (DL) is utilized as a ­function
+the computational complexity of the model, especially for
+approximator and integrated with RL, which contributes to
+a large-scale network. Thus, the usual practice is to limit
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+24
+
+• MAY/JUNE 2024
+
+prerequisite. Thus, the overall methodological framework
+this number to a small value [41]. Once the choice set is
+consists of three major components that will be respectiveformed, the goal is then to find the best routing option by
+possibly combining the alternative routes within the set so
+ly described in the following.
+that the travel time is minimized.
+Specifically, at each time step t, the agent obtains the
+Network Edge Labeling Algorithm
+current traffic state s t through interactions with the drivAs previously mentioned, a prerequisite to designing and
+evaluating a DRL-based route guidance algorithm is to
+ing environment. Whenever the agent travels onto the next
+have a compatible microscopic traffic simulation environedge belonging to the current route, after which two or
+more alternative routes diverge, it reevaluates all the route
+ment as the testbed. Simulation of Urban Mobility (SUMO)
+candidates based on s t and enacts a new route choice a t
+is a widely used open source microscopic traffic simulafrom the action space A (i.e., the choice set). The edge that
+tor that features a “remote control” interface called T
+­ raCI
+triggers new decision making on route choice is located
+(short for Traffic Control Interface) to permit dynamic modright before the intersecting node of alternative routes so
+ifications to the states of vehicles and road infrastructure
+that the agent is left with enough time and space to pursue
+during the simulation [43]. In recent years, numerous studroute changes if necessary. To properly guide the action
+ies on vehicle routing have been conducted using SUMO as
+taken by the agent, a reward rt (s t, a t) is collected from the
+the simulation engine [44], [45], [46]. In light of these facts,
+we choose to use SUMO in this article for establishing the
+driving environment, based on which the expected cumuinteractive simulation environment.
+lative reward (i.e., the least travel time for the trip in the
+In the SUMO simulation setting, a traffic network is abcontext of route choice) is to be maximized via the interaction with the environment. Through such a trial-and-error
+stracted and decomposed into nodes, edges (with lanes),
+process, adaptive route guidance can be learned that is able
+and connections. Nodes are the starting or ending points
+to navigate vehicles through complex traffic environments
+of edges that build connections among multiple roads (see
+with time-varying congestion dynamics and occasional
+Figure 1). It turns out that the nodes and edges defined
+events.
+in SUMO have their respective naming rules built upon
+It is clear that a critical component of the previously derandomly generated numbers. Such naming rules clearly
+cannot reflect the spatial relationships between different
+scribed route guidance is the formation of the choice set
+given the OD pair of the trip and the
+departure time of the agent. Here, we
+consider and calculate three alternative routes at the departure time of
+Shortest-Path Algorithm Calculation Process in Typology Network
+each agent via a routing plan identification algorithm. These routes
+Node
+form the choice set that remains unchanged throughout the trip. In parOrigin
+Destination
+ticular, they consist of the route with
+the shortest travel distance, the route
+Vehicle Route Definition in Simulation Network
+with the least instantaneous travel
+time, and the route with the lowest
+Node
+impact of traffic signals. The inclusion of the former two can be quite
+Origin
+Destination
+easily comprehended. The reason to
+Network in SUMO
+include the latter is that travel delays
+incurred at signalized intersections
+can sometimes be a huge addition to
+the travel time of the trip itself [42].
+Node
+To navigate the agent toward its
+destination as soon as possible, a
+Edge
+DRL-based adaptive route guidance
+algorithm is proposed, taking into account the results given by the routing
+plan identification. For this approach
+to work in a microscopic traffic simulation environment, a network edge FIG 1 The gap between the classic shortest-path algorithm in the topology network and the vehicle
+labeling algorithm is customized as a route definition in the simulation network.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+25
+
+• MAY/JUNE 2024
+
+IDs are put before and after the
+character @, correspond to the two
+end nodes of any edge in the netIn the SUMO simulation setting, a traffic network is
+work, including the one where the
+starting or ending point of a vehiabstracted and decomposed into nodes, edges (with lanes),
+cle is located. By doing so, one can
+and connections.
+readily access the spatial relationships between nodes and edges to
+identify routes from shortest-path
+algorithms or route choice models.
+The
+complete
+network
+edge
+labeling algorithm is provided
+nodes and edges. On the other hand, Dijkstra’s algorithm
+in Algorithm 1.
+and other variants are designed to calculate the shortest
+path from node to node, but the starting and ending positions of vehicles in SUMO are defined by edges. Thus, withRouting Plan Identification Algorithm
+out proper naming rules, the spatial relationships between
+Once the simulation network is all set up as per the previnodes and edges in the simulation network can hardly be
+ous section, we are then ready to acquire various types of
+understood, which creates unnecessary difficulty for the
+shortest paths from the traffic environment. The shortestapplication of route choice models in the simulation.
+path problem is a typical and critical problem in combiTo customize the simulation environment so that it can
+natorial optimization, which, by definition, is to find the
+facilitate the implementation of the DRL-based route choice
+path with the least travel distance, time, or cost from an
+model, a network edge labeling algorithm is first proposed
+origin to a destination in the network [47]. While most drivto explicitly characterize the spatial relationships between
+ers are believed to choose the shortest path with the least
+nodes and edges in the simulation network. Given that the
+travel time for the trip, some may prefer a different route
+network information is stored in the XML format in SUMO,
+that is somewhat longer than the shortest one but bears the
+the following naming rule is proposed: junction ID @ junclowest impact of traffic signals (e.g., a route that is mainly
+composed of expressways or highways) [48], [49]. This is
+tion ID #occurrence time. The two junctions, for which the
+to avoid the possibly excessive waiting time at signalized
+intersections. Knowing that the shortest path determined
+at the time of departure does not necessarily remain the
+Algorithm 1. Network edge labeling algorithm.
+shortest one later in time due to congestion dynamics, we
+provide each vehicle with an individual-specific choice set
+Net ! Parse the network file
+consisting of three alternative routes, namely the route
+H ! Hash Table
+with the shortest travel distance, the route with the least
+R ! Hash Table
+instantaneous travel time, and the route with the lowest
+for edge in net.edges do
+if edge is noninternal then
+impact of traffic signals.
+   raw edge ID ! edge.ID
+Of the three alternative routes, the former two can now
+   temp new edge ID ! edge.from@edge.to
+be easily found based on the correctly labeled simulation
+  if H.containsKey(temp new edge ID) then
+network and any shortest-path algorithms, such as Dijk    H.set(temp new edge ID,
+stra’s algorithm with distance and time being the edge
+    H.get(temp new edge ID)+ 1)
+weight, respectively. However, identifying the path with
+  else
+the lowest impact of traffic signals remains a challeng    H.insert(temp new edge D, 0)
+ing task. Some studies have formulated this problem as a
+  end if
+special type of the shortest-path problem with time con  Occurrence ! H.get(temp new edge ID)
+straints, which comprises a series of time windows used
+   new edge ID ! edge.from@ edge.to#occurrence
+to factor in the presence of traffic signals [50], [51]. Some
+   R.set(raw edge ID, new edge ID)
+end if
+other studies took a different approach by introducing an
+end for
+edge-specific indicator and setting it to zero or one defor component in network.children do
+pending on whether or not traffic signals exist [52]. This
+for element in component.children do
+approach certainly has limitations, one of which is that
+  if element.attributes.contains(raw edge ID) then
+vehicles turning right need not wait for the green light (for
+   raw edge ID ! R.get(raw edge ID)
+right-driving countries such as China).
+  end if
+Here, we propose a simple but rational probabilistic apend for
+proach to identifying the route with the lowest impact of
+end for
+traffic signals. Whenever a vehicle reaches a signalized
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+26
+
+• MAY/JUNE 2024
+
+intersection, the next edge to be traveled upon and the
+current signal phase jointly determine the effect of the
+traffic light on the vehicle. Due to the complex congestion
+dynamics, such an effect in the form of travel delays cannot be exactly calculated, especially considering multiple
+signalized intersections along the route. Thus, we resort
+to a computationally feasible approach relying on the ratio
+of the intergreen time and the cycle length associated with
+each movement at signalized intersections (see Figure 2).
+Such a ratio quantifies the probability of a vehicle being
+interrupted by the traffic light if it arrives at the intersection in a time-random manner. Although in practice the arrival time of a vehicle at an intersection is not necessarily
+independent of that at another intersection, using this ratio
+largely facilitates the identification of the route with the
+lowest impact of traffic signals, which is particularly the
+case in a large-scale network.
+The ratio of the intergreen time in one signal-controlled
+node is determined by the real-time traffic signal plans,
+which means it is applicable for both fixed-timing and actuated traffic signal phases. The detailed steps for identifying the route with the lowest impact of traffic signals are
+provided in Algorithm 2.
+
+Adaptive Route Guidance Algorithm
+Given the route choice set, we are now ready to describe how
+DRL can be applied to effectively guide vehicles through complex traffic environments so that they can reach their destinations as soon as possible. To accomplish this task, we employ
+a DQN as the core of the adaptive route guidance algorithm.
+As previously discussed, traditional parametric route choice
+models are no longer competent at this job due to their inability to interact with and learn from the complex traffic environment, not to mention the assumptions they make that may not
+necessarily hold in practice. DRL, such as the DQN, excels in
+this regard as one usually need not make prior assumptions
+
+about the model but mainly rely on the data. It is true that the
+architecture of the neural network must be predefined, but
+this does not limit the capability of the model in constructing a
+very complex nonlinear relationship between the state space
+and the action space if necessary.
+To build and train the DQN, we first need to define the
+state space, the action space, and the reward function for
+each vehicle. The action space is straightforward and has
+been defined already in the previous section as the set of
+three alternative routes, A = " p 1, p 2, p 3 , . When a vehicle
+travels onto the edge that requires new decision making on
+the route choice, it takes an action by choosing from the
+choice set (i.e., one of the three alternative routes) such that
+the sequence of actions taken leads to the maximum cumulative reward considering the changing traffic conditions.
+The state space defines the information, based on which the
+action is made, and thus must effectively capture the factors
+contributing to a better route choice. Here, we design the
+state space as a combination of the estimated travel time,
+the total number of vehicles, and the total length of vehicles
+for the remaining part of the three alternative routes. The
+latter two variables can be directly extracted from the simulation network and compensate for the former, especially
+in scenarios where the travel time of a route is sensitive to
+the number and types of vehicles it holds. To obtain the estimated travel time, we use the following equation:
+Z le
+]] , n e 2 0
+ve
+xe = [
+(1)
+] le , ne = 0
+f
+e
+\
+where v e is the average traveling speed on the edge, l e is
+the length of the edge, f e is the free-flow speed (i.e., the
+speed limit) of the edge, and n e is the number of vehicles on
+the edge. The complete state space can then be characterized as a vector s t = ( n t1, n t2, n t3, h t1, h t2, h t3, x 1t , x 2t , x 3t ), where
+
+w11 ...
+wn1 ...
+Node
+
+Node With TL
+
+Shortest-Path
+Algorithm
+
+wnn
+
+Temp Node
+
+Right Turn Edge (TL)
+
+w=0
+
+Left Turn/Straight Edge (TL)
+
+w = tp /C
+
+Simple Edge
+
+...
+
+...
+
+...
+
+w=
+
+w1n
+
+O
+
+D
+
+O
+
+D
+
+w=0
+
+Node Path
+
+FIG 2 Identifying the route with the lowest impact of traffic signals. TL: traffic light.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+27
+
+• MAY/JUNE 2024
+
+Algorithm 2. Get the route with the lowest impact of traffic signals.
+
+Algorithm 2. Get the route with the lowest impact of traffic signals.
+(Continued )
+
+O
+
+D
+Input: Depart edge O and end edge D
+Output: Edge path O " E 1 " g " D with least expected traffic light
+1. Initialization:
+1)	Road network G = (V, E ), where V refers to the set of vertices (nodes)
+and E refers to the set of edges. Mark " a " b , refers to the edge from
+node a to node b
+2)	Vertices controlled by a traffic light V tl ! V and the green-time-rate m i
+for node i ! V tl
+3)	Geographical location (x i , y i ) for node i ! V
+4)	Turn direction function Dir (x " y " z ) to judge the turn direction from
+node x to z through node y based on the geographical location, the
+result contains s (straight), r (right), and l (left)
+5)	Map P (i ) and Q (i ), return the start node and end node of edge i .
+P (" a " b ,) = a and Q (" a " b ,) = b
+6)	Turn edge set M = Q
+
+		
+4. Assignment: Set the weight of the traffic light for each edge
+1)	Initialization: W k #k | w = 0, k is the size of edge set E , w ij is the traffic
+light weight for edge " i " j ,
+2)	For each E i ! M :
+Set traffic light weight
+ij
+
+w P (E ) Q (E ) = )
+
+		
+
+i
+
+i
+
+1 - m y D (E i ) = l, s
+0
+D (E i ) = r
+
+P(O)
+
+Q(D)
+		
+5.	Optimization: Get the shortest node path from the end node of the
+origin edge to the start node of the destination edge
+1)	Get the shortest node path L from node Q (O ) to node P (D ) with weight
+matrix W and Dijkstra algorithm
+P(O)
+
+		
+2.	Segmentation: Divide all the edges in the network into two connected
+sub-edges
+1)	For each " u " v , ! E :
+separate " u " v , into two edges with temp-node t uv
+		
+
+Q(D)
+
+" u " v , " "" u " t uv ,, " t uv " v ,,
+
+O
+
+V ! V + Tuv and E ! " P (E i ) " t P (E ) Q (E ) , , " t P (E ) Q (E ) " Q (E i ) ,, Tuv is
+2)	
+the set of temp-node
+i
+
+i
+
+i
+
+i
+
+D
+
+		
+
+		
+3.	Reconstitution: Link the subnodes connected to the node controlled by
+a traffic light, delete the nodes controlled and the connecting nodes
+1)	For each E i ! E :
+	 If Q (E i ) ! V tl:
+
+	   E ! E , " P (E i ) " TQ (E ) j ,, j ! P (E i ) (no U-turn)
+	   M ! M , " P (E i ) " Q (E i ) " TQ (E ) j ,
+i
+
+i
+
+V ! V \V tl
+2)	
+3)	For each E i ! E :
+	 If P (E i ) ! V tl or Q (E i ) ! V tl:
+	   E ! E \ E i
+(Continued )
+
+6.	Output: Reconstruct the node path with subnodes, then convert it into
+edge path
+1)	Replace sequences ^t _X , t X_ h in L as X, e.g., 6A, t AB , t BC, C@ " 6A, B, C @
+2)	Turn node path L into edge path O " E 1 " g " D
+
+n it, h it, and x it represent the total number of vehicles, the
+total length of vehicles, and the estimated travel time associated with the remaining part of alternative route i, respectively. Finally, we have to carefully design the reward
+function, which is basically the driving force behind the
+action. Since the objective has always been to navigate vehicles toward the destination within the shortest time possible, the reward function is defined as rt = -t plus some
+penalty to prevent frequent switching between alternative
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+28
+
+• MAY/JUNE 2024
+
+routes. The overall decision-making framework for adaptive route guidance is illustrated in Figure 3.
+With a well-defined state space, action space, and reward function, the DQN as the policy network can then be
+trained iteratively by interacting with the simulation until
+convergence. The rule to iteratively update the approximate Q-value is shown next.
+Q(s t, a t) ! Q(s t, a t) + a[rt + c max Q(s t +1, a) - Q(s t, a t)]. (2)
+Two key ingredients of the DQN algorithm are the target
+network and the experience reply [53]. The target network
+requires that two neural networks be prepared, one being
+the online network and the other being the target network.
+These two networks are initialized with the same weights,
+but the target network copies only the updated parameters
+of the online network every fixed number of steps. By doing so, the DQN algorithm becomes more stable compared
+with the standard online Q-learning. Thus, the loss function to update parameters is defined as
+L(w) = E[(rt + c max Q (s t +1, a t +1; wl ) - Q (s t, a t; w))2 ]. (3)
+The experience replay is another important feature
+of the DQN algorithm in that it eliminates the undesir-
+
+States
+[Estimated Traveltime
+Number of Vehicles,
+and Length of
+Vehicles for the
+Remaining Sections
+of Plans A, B, and C]
+
+able correlation between successive samples. This is
+achieved by putting the collected samples into a replay
+memory from which a sample is then randomly selected
+for training and updating the DQN. The overall DQN
+algorithm for adaptive route guidance is summarized
+in Algorithm 3.
+Another critical aspect of RL that may pose problems for
+the route choice task is its exploration characteristic. In the
+early stages of training, the agent is prone to taking random
+actions to explore the prospect of different routes. However,
+this random action selection may lead to situations where
+the selected action is actually infeasible. For example, a
+vehicle cannot perform an action that teleports itself to an
+edge that is not connected to the current one. To overcome
+this limitation, we further combine an action masking technique with the previously mentioned DQN algorithm. The
+main idea is to conceal part of the output values of the DQN
+before the execution of the maximum value operation. In
+other words, given the current edge where the vehicle is
+located and a new decision that must be made on the route
+choice, we mask those infeasible actions that the agent need
+not explore and perform. The immediate effect is that only
+the output values associated with the rest of the actions are
+
+Action
+Overlapping
+Segments
+
+Plan C
+
+[Plans A, B, and C]
+
+Reward
+
+Plan A
+
+Plan B
+
+Give a Penalty
+Every Seconds and
+Penalize Frequent
+Path Switching
+
+Decision Segments
+
+FIG 3 The proposed decision-making framework for adaptive route guidance.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+29
+
+• MAY/JUNE 2024
+
+considered, from which the best one is taken as per the
+Q-value maximization rule.
+
+Simulation Experiments
+To demonstrate the effectiveness of the proposed approach
+to adaptive route choice and its better performance than
+some other approaches, simulation experiments on both a
+toy network and a real-world network of Suzhou, China,
+are performed.
+
+Toy Network
+To construct the basic simulation environment in SUMO,
+one is required to first configure the road network and
+then generate the background traffic. Road network
+configuration can be done by either using the road network editing tool (as for the toy network) or resorting to
+the built-in function NETCONVERT for converting open
+source OpenStreetMap (OSM) to the SUMO-required format (as for the real-word network). Background traffic can
+be easily inserted into the simulation by defining it as the
+demand in the input file. Parameters in relation to various aspects of the simulation, such as signal timing and
+bus operation, can certainly be set and adjusted if needed.
+The overall workflow of the simulation experiments is illustrated in Figure 4.
+
+Algorithm 3. Adaptive route guidance based on DQN.
+initialize: Replay buffer R, action-value function Q, batch number n s
+for i ! " 1, 2, f, n episode , do
+initialize: action space A = " p 1, p 2, p 3 ,,
+     state s 0 = ( n 1, n 2, n 3, h 1, h 2, h 3, x 1, x 2, x 3)
+for t ! " 1, 2, f, T , do
+  if vehicle in decision segments then
+   select route a t ! A
+   perform action a t , obtain the next state s t +1
+   and reward rt
+   if terminal then
+     y t = rt
+   else
+     y t = rt + c max a Q (s t + 1, a ; ~)
+   end if
+   store experience (s t , a t , rt , s t +1, y t ) into R
+   if R $ n s then
+    sample random minibatch of memories
+    (s j , a j , rj , s j +1) from R
+   else
+     use all the memories in R
+   end if
+   calculate dL (~) = E s, a [( y - Q (s, a ; ~)) d ~ Q (s, a ; ~)]
+   update ~ ! ~ - adL (~)
+  end if
+end for
+end for
+
+The toy network consists of 14 nodes and 19 edges (see
+Figure 5). Some of the nodes are controlled by fixed-time
+signals. The upper left corner and the lower right corner of the network correspond to the starting and ending
+points of the trip. Two types of vehicles, namely private
+cars and public buses, are considered in the simulation
+with different vehicular attributes, such as length and
+speed. Background traffic is randomly generated during
+the simulation.
+Table 1 summarizes the hyperparameters used during
+the training process. Ten thousand episodes are executed
+for training with a learning rate of 0.003. The exploration
+rate for actions is 0.015, and the discount factor for the reward function is 0.99. The size of the replay memory for
+storing training samples is 10,000, while the size of the
+minibatch for parameter updates is 32.
+As shown in Figure 6, in the early stages of the training process, the agent tends to perform more exploration, resulting in notable fluctuations in the convergence
+curve, as expected. But gradually, the curve flattens out
+and stabilizes at a moderate level, meaning that the
+agent has successfully learned its optimal policy through
+extensive interactions with the environment. To be precise, the convergence pattern assures us that we have
+obtained a route planner that is able to adaptively navigate vehicles through the network with the least travel
+time possible.
+The trained agent is now fed into the simulation to
+examine the actual performance of the route choice.
+The same background traffic and departure time are
+considered in the comparison of different routing plans.
+As shown in Figure 5, the actual route chosen by the
+agent is a combination of two alternative routes from
+the choice set, possibly due to the changing traffic conditions during the simulation. At the departure time,
+the agent chooses Plan 3 with the least travel time. But
+it switches to Plan 1 en route with the shortest travel
+distance. The advantage of this routing option can be
+clearly verified in Table 2, showing the travel time experienced for different plans.
+Figure 7 shows the variations of the total number of vehicles in the remaining part of the three alternative routes
+over the course of the simulation. At the very beginning, Plan
+3 has the lowest number of vehicles traveling on the route,
+which is consistent with the fact that it also has the least
+estimated travel time. As the simulation proceeds, Plan 1
+starts to have the lowest number of vehicles instead due to
+the changing traffic conditions. This observation triggers a
+new decision from the agent on the route choice to switch
+the plan. The results obtained from the toy network experiment reveal the effectiveness of the DRL-based approach to
+adaptive route guidance in relatively simple traffic environments. In the following, we will examine its performance in
+a more complex real-world network.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+30
+
+• MAY/JUNE 2024
+
+Real-World Network
+The core area of Suzhou, China, is selected as the realworld network for further case study. The same simulation workflow as per Figure 4 is followed to construct the
+road network as well as the background traffic. Figure 8
+shows the network layout of the selected area in the OSM
+format and its corresponding simulation environment
+in SUMO. The network consists of 2,423 nodes and 4,970
+edges. Information on public transportation operations is
+extracted from reality and incorporated into the simulation, which includes 18 bus routes and 43 bus stops. Random background traffic consisting of 80% private cars
+and 20% public buses is generated, and the total volume
+is 10,000 vehicles/h. And again, they have different attributes, such as length and speed.
+Table 3 compares the travel time experienced in the
+real-world network associated with different routes, considering one trip with a relatively short travel distance
+and the other with a longer distance. The actual route
+
+that is chosen by the agent is also indicated in the table
+and turns out to be one of the three alternative routes
+without any combinations. For the trip with a relatively
+short travel distance, the agent departs in the simulation
+at 249 s by choosing Plan 2. Although it never switches
+the plan en route, the travel time experienced turns out
+to be the lowest among all the alternative routes. Similar results can be observed for the longer trip, showing
+that the agent sticks to Plan 2 following its departure at
+150 s in the simulation without the need to switch to the
+other alternatives.
+We now examine the performance of the DRL model
+in controlling multiple vehicles rather than just a single
+one. The results are shown in Figure 9, where the horizontal and vertical axes represent the travel time obtained by the DRL model and the default shortest-path
+algorithm in SUMO. First, we let the trained agent control 10 vehicles in the simulation. It is evident that the
+scattered data points are primarily lying in the upper
+
+Table 1. Hyperparameters used during the training process.
+OSM
+NETCONVERT
+
+Network Edge
+Labeling
+Algorithm
+
+Random Trips
+Generation
+Origin Net
+
+Background
+Traffic Flow
+
+Modified Net
+
+Agent Vehicle
+
+Adaptive Route Guidance
+Algorithm
+
+DRL Algorithm
+
+Hyperparameter
+
+Value
+
+Number of episodes
+
+10,000
+
+Learning rate
+
+0.003
+
+Exploration rate
+
+0.015
+
+Discount factor
+
+0.99
+
+Replay memory size
+
+10,000
+
+Minibatch size
+
+32
+
+FIG 4 The overall workflow of the simulation experiments.
+
+Return
+
+RL Model Training
+
+–240
+–260
+–280
+–300
+–320
+–340
+–360
+0
+
+(a)
+
+(b)
+
+Episode Return
+Smoothed Episode Return
+
+2,000
+
+4,000
+6,000
+Episode
+
+8,000
+
+10,000
+
+FIG 6 The convergence pattern of the return during the training process.
+
+Table 2. A comparison of the travel time experienced from the
+different plans in the toy network.
+(c)
+
+(d)
+
+FIG 5 Different route choice plans in the toy network. (a) The route with
+the shortest travel distance. (b) The route with the lowest impact of traffic
+signals. (c) The route with the least instantaneous travel time. (d) The
+route chosen by the RL agent.
+
+Route
+
+Departure Time (s)
+
+Arrival Time (s)
+
+Plan 1
+
+431
+
+699
+
+Plan 2
+
+431
+
+708
+
+Plan 3
+
+431
+
+731
+
+Plan chosen by the agent
+
+431
+
+643
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+31
+
+• MAY/JUNE 2024
+
+a significant difference between the two route choice
+models. With a higher number of vehicles controlled by
+the trained agent (namely 50), the performance advantage of the DRL approach remains as the majority of the
+points are still located in the upper half. The results obtained from the real-world network
+experiment further demonstrate
+the capability of the DR L-based
+The Plan Chosen by the RL Model
+adaptive route guidance to effectively navigate vehicles in complex
+traffic environments.
+
+40
+30
+
+50
+
+20
+
+Depart
+
+10
+
+450
+
+500
+
+550
+600
+Simu
+latio
+n Tim
+e (s)
+
+650
+
+700
+
+FIG 7 A 3D representation of different route choice plans in the toy network.
+
+(a)
+
+(b)
+
+FIG 8 The network layout of Suzhou, China. (a) An OSM map.
+(b) A simulation network.
+
+Table 3. A comparison of the travel time experienced in the
+real-world network.
+No.
+
+Route
+
+Departure
+Time (s)
+
+Arrival
+Time (s)
+
+Length
+(m)
+
+1
+
+Plan 1
+
+249
+
+776
+
+1,316
+
+Plan 2 (chosen by the agent)
+
+249
+
+743
+
+1,361
+
+Plan 3
+
+249
+
+871
+
+1,392
+
+Plan 1
+
+150
+
+601
+
+4,382
+
+Plan 2 (chosen by the agent)
+
+150
+
+597
+
+4,490
+
+Plan 3
+
+150
+
+721
+
+5,555
+
+2
+
+Conclusion
+
+In this article, to find the optimal
+route for vehicles in stochastic and
+dy namic traffic networks, a new
+30
+DR L -based adaptive route guid20
+ance model is proposed and tested.
+10
+The model aims to navigate vehicles
+0
+through complex traffic environ1
+ments toward the destination within
+2
+3
+the least amount of time possible. The
+Plan
+overall modeling framework consists
+of three interconnected algorithms,
+namely a network edge labeling algorithm, a routing plan identification algorithm, and an
+adaptive route guidance algorithm. Some techniques, such
+as limiting the choice set and masking infeasible actions,
+are incorporated into the framework so that its computational efficiency can be improved, especially for largescale networks. Simulation experiments are performed
+on both a toy network and a real-world network to demonstrate the effectiveness of the proposed approach in terms
+of guiding a single vehicle as well as multiple vehicles. The
+results consistently indicate the performance advantage of
+the DRL model in route choice over the other alternatives.
+The proposed DRL model for route choice can be part
+of an online map service or mobility-as-a-service (MaaS)
+systems. In MaaS, there is certainly the need to deploy a
+route choice model whereby vehicles can efficiently travel through complex traffic environments and adapt to the
+ongoing congestion dynamics. To achieve this ambitious
+goal, further research is required in various aspects. For
+example, one direction is to find ways to consider and
+model the interactions among multiple vehicles for cooperative route guidance. The associated challenge is probably the large number of vehicles to be simultaneously
+included in this cooperative game. Clustering could be
+one possible solution to this problem. Another direction
+is to jointly consider various types of travel choices, including the mode choice, the departure time choice, and
+the route choice, and propose an integrated travel choice
+model since these choices are inherently correlated with
+one another.
+40
+
+Arrive
+
+Total Number of Vehicles
+Remaining in the Plan (veh)
+
+half of the plane, indicating that vehicles controlled by
+the DRL model generally experience less travel time
+given the same traffic conditions. The strip area in
+light blue corresponds to the 1% variations of the travel
+time. Points that lie within this area may not indicate
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+32
+
+• MAY/JUNE 2024
+
+Ziyuan Gu (ziyuangu@seu.edu.cn)
+earned his Ph.D. degree from the University of New South Wales, Sydney,
+Australia. He is currently an associate
+professor with the School of Transportation at Southeast University, Nanjing
+210096, China. His research interests
+include transport pricing, traffic simulation, and simulation-based optimization.
+
+Vehicle Travel Time Controlled by
+Default Model in SUMO(s)
+
+400
+380
+360
+340
+320
+300
+
+Xun Yang (yangxunseu@seu.edu.cn) is
+currently pursuing his M.S. degree in
+traffic and transportation engineering
+at Southeast University, Nanjing 210096,
+China. His research interests include
+reinforcement learning, microscopic
+traffic modeling, and transportation
+
+280
+280
+360
+380
+400
+300
+320
+340
+Vehicle Travel Time Controlled by RL Model (s)
+(a)
+
+Vehicle Travel Time Controlled by
+Default Model in SUMO(s)
+
+600
+550
+
+big data analysis.
+
+500
+450
+400
+350
+300
+
+300
+350
+400
+450
+500
+550
+600
+Vehicle Travel Time Controlled by RL Model (s)
+(b)
+
+FIG 9 (a) and (b) A travel time comparison between the DRL model and the
+default shortest-path algorithm in SUMO in controlling multiple vehicles.
+
+Acknowledgment
+This study is supported by the Key Project (Grant 52131203)
+and the Youth Program (Grant 52102375) of the National
+Natural Science Foundation of China, and the Youth Program
+(Grant BK20210247) of the Natural Science Foundation of
+Jiangsu Province, China. Ziyuan Gu acknowledges support
+from the High-Level Personnel Project of Jiangsu Province,
+China. Ziyuan Gu acknowledges support from the HighLevel Personnel Project of Jiangsu Province, China (Grant
+JSSCBS20220099).
+
+About the Authors
+Yunyang Shi (yunyang-shi@seu.edu.
+cn) earned his M.S. degree in traffic
+and transportation engineering from
+Southeast University, Jiangsu, China,
+in 2018. He is currently pursuing his
+Ph.D. degree in traffic and transportation engineering at Southeast University, Nanjing 210096, China. His research interests include
+traffic and autonomous vehicle simulation.
+
+Yingdi Li (yingdi.li@qq.com) earned
+his B.E. degree in traffic and transportation engineering from Southeast University, Nanjing, China, in 2022. He is
+currently pursuing his M.S. degree in
+traffic and transportation engineering
+at Southeast University, Nanjing 210096,
+China. His research interests include transportation big
+data analysis.
+Zixuan Chu (psxzc5@nottingham.
+ac.uk) earned his M.S. degree in computer science from the University of
+Nottingham in 2022. He is currently a
+visiting scholar at Southeast University, Nanjing 210096, China. His research
+interests include deep learning and
+transportation big data analysis.
+
+References
+
+[1] D. Huang, J. Xing, Z. Liu, and Q. An, “A multi-stage stochastic optimization approach to the stop-skipping and bus lane reservation
+schemes,” Transportmetrica A, Transp. Sci., vol. 17, no. 4, pp. 1272–
+1304, Dec. 2021, doi: 10.1080/23249935.2020.1858206.
+[2] X. Qin, J. Ke, X. Wang, Y. Tang, and H. Yang, “Demand management for
+smart transportation: A review,” Multimodal Transp., vol. 1, no. 4, Dec.
+2022, Art. no. 100038, doi: 10.1016/j.multra.2022.100038.
+[3] H. Chai, H. M. Zhang, D. Ghosal, and C.-N. Chuah, “Dynamic traffic routing in a network with adaptive signal control,” Transp. Res. C, Emerg.
+Technol., vol. 85, pp. 64–85, Dec. 2017, doi: 10.1016/j.trc.2017.08.017.
+[4] E. W. Dijkstra, “A note on two problems in connexion with graphs,” Numer. Math., vol. 1, no. 1, pp. 269–271, Dec. 1959, doi: 10.1007/BF01386390.
+[5] G. Nannicini, D. Delling, L. Liberti, and D. Schultes, “Bidirectional
+A* search for time-dependent fast paths,” in Proc. Int. Workshop Exp.
+Algorithms, Berlin, Heidelberg, 2008, pp. 334–346.
+[6] R. W. Hall, “The fastest path through a network with random timedependent travel times,” Transp. Sci., vol. 20, no. 3, pp. 182–188, Aug.
+1986, doi: 10.1287/trsc.20.3.182.
+[7] C. Mao and Z. Shen, “A reinforcement learning framework for the
+adaptive routing problem in stochastic time-dependent network,”
+Transp. Res. C, Emerg. Technol., vol. 93, pp. 179–197, Aug. 2018, doi:
+10.1016/j.trc.2018.06.001.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+33
+
+• MAY/JUNE 2024
+
+[8] J. Wu and X. Qu, “Intersection control with connected and automated
+vehicles: A review,” J. Intell. Connected Veh., vol. 5, no. 3, pp. 260–269,
+Dec. 2022, doi: 10.1108/JICV-06-2022-0023.
+[9] B. Peng, M. F. Keskin, B. Kulcsár, and H. Wymeersch, “Connected
+autonomous vehicles for improving mixed traffic efficiency in unsignalized intersections with deep reinforcement learning,” Commun.
+Transp. Res., vol. 1, Dec. 2021, Art. no. 100017, doi: 10.1016/j.commtr.2021.100017.
+[10] M. Schiller, M. Dupius, D. Krajzewicz, A. Kern, and A. Knoll, “Multiresolution traffic simulation for large-scale high-fidelity evaluation of
+VANET applications,” in Proc. Simul. Urban Traffic Scenarios, Cham,
+Switzerland, 2019, pp. 17–36.
+[11] A. Navarro et al., “Using reinforcement learning and simulation to develop autonomous vehicle control strategies,” presented at the WCX
+SAE World Congr. Experience, Apr. 2020, Paper 2020-01-0737.
+[12] Z. Gu, Z. Wang, Z. Liu, and M. Saberi, “Network traffic instability with automated driving and cooperative merging,” Transp. Res.
+C, Emerg. Technol., vol. 138, May 2022, Art. no. 103626, doi: 10.1016/
+j.trc.2022.103626.
+[13] Q. Cheng et al., “Estimating key traffic state parameters through parsimonious spatial queue models,” Transp. Res. C, Emerg. Technol.,
+vol. 137, Apr. 2022, Art. no. 103596, doi: 10.1016/j.trc.2022.103596.
+[14] J. Huo, Z. Liu, J. Chen, Q. Cheng, and Q. Meng, “Bayesian optimization
+for congestion pricing problems: A general framework and its instability,” Transp. Res. B, Methodological, vol. 169, pp. 1–28, Mar. 2023, doi:
+10.1016/j.trb.2023.01.003.
+[15] D. Eppstein, “Finding the k shortest paths,” SIAM J. Comput., vol. 28,
+no. 2, pp. 652–673, 1998, doi: 10.1137/S0097539795290477.
+[16] P. E. Hart, N. J. Nilsson, and B. Raphael, “A formal basis for the heuristic
+determination of minimum cost paths,” IEEE Trans. Syst. Sci. Cybern.,
+vol. 4, no. 2, pp. 100–107, Jul. 1968, doi: 10.1109/TSSC.1968.300136.
+[17] G. R. Jagadeesh, T. Srikanthan, and K. Quek, “Heuristic techniques
+for accelerating hierarchical routing on road networks,” IEEE Trans.
+Intell. Transp. Syst., vol. 3, no. 4, pp. 301–309, Dec. 2002, doi: 10.1109/
+TITS.2002.806806.
+[18] A. V. Goldberg and C. Harrelson, “Computing the shortest path: A
+search meets graph theory,” in Proc. 16th Annu. ACM-SIAM Symp. Discrete Algorithms (SODA), 2005, vol. 5, pp. 156–165.
+[19] A. R. Güner, A. Murat, and R. B. Chinnam, “Dynamic routing under
+recurrent and non-recurrent congestion using real-time ITS information,” Comput. Oper. Res., vol. 39, no. 2, pp. 358–373, Feb. 2012, doi:
+10.1016/j.cor.2011.04.012.
+[20] L. Xiao and H. K. Lo, “Adaptive vehicle routing for risk-averse travelers,” Proc.-Social Behav. Sci., vol. 80, pp. 633–657, Jun. 2013, doi:
+10.1016/j.sbspro.2013.05.034.
+[21] X. Pi and Z. S. Qian, “A stochastic optimal control approach for realtime traffic routing considering demand uncertainties and travelers’ choice heterogeneity,” Transp. Res. B, Methodological, vol. 104,
+pp. 710–732, Oct. 2017, doi: 10.1016/j.trb.2017.06.002.
+[22] L. Fu and L. R. Rilett, “Expected shortest paths in dynamic and stochastic traffic networks,” Transp. Res. B, Methodological, vol. 32, no. 7,
+pp. 499–516, Sep. 1998, doi: 10.1016/S0191-2615(98)00016-2.
+[23] J. Ding, Z. Chen, and Z. Yuan, “Dynamic optimization routing method
+based on ant adaptive algorithm,” Control Decis., vol. 18, no. 6, pp. 751–
+753, 2003.
+[24] X. Zong, S. Xiong, Z. Fang, and Q. Li, “Multi-ant colony system for
+evacuation routing problem with mixed traffic flow,” in Proc. IEEE
+Congr. Evol. Comput., 2010, pp. 1–6.
+[25] M. A. Abdel-Aty, R. Kitamura, and P. P. Jovanis, “Using stated preference data for studying the effect of advanced traffic information on
+drivers’ route choice,” Transp. Res. C, Emerg. Technol., vol. 5, no. 1,
+pp. 39–50, Feb. 1997, doi: 10.1016/S0968-090X(96)00023-X.
+[26] H. Gan and X. Ye, “Leave the expressway or not? Impact of dynamic
+information,” J. Modern Transp., vol. 22, no. 2, pp. 96–103, Jun. 2014,
+doi: 10.1007/s40534-014-0043-1.
+[27] S. Gao, E. Frejinger, and M. Ben-Akiva, “Adaptive route choices in
+risky traffic networks: A prospect theory approach,” Transp. Res. C,
+Emerg. Technol., vol. 18, no. 5, pp. 727–740, Oct. 2010, doi: 10.1016/
+j.trc.2009.08.001.
+[28] M. A. El-Gamal and D. M. Grether, “Are people Bayesian? Uncovering behavioral strategies,” J. Amer. Statistical Assoc., vol. 90, no. 432,
+pp. 1137–1145, Dec. 1995, doi: 10.1080/01621459.1995.10476620.
+[29] C. Xiong, X. Chen, X. He, X. Lin, and L. Zhang, “Agent-based en-route
+diversion: Dynamic behavioral responses and network performance represented by macroscopic fundamental diagrams,” Transp. Res. C, Emerg.
+Technol., vol. 64, pp. 148–163, Mar. 2016, doi: 10.1016/j.trc.2015.04.008.
+[30] X. Simon Zhou et al., “A meso-to-macro cross-resolution performance approach for connecting polynomial arrival queue model to volume-delay
+function with inflow demand-to-capacity ratio,” Multimodal Transp., vol.
+1, no. 2, Jun. 2022, Art. no. 100017, doi: 10.1016/j.multra.2022.100017.
+
+[31] R. Yan and S. Wang, “Integrating prediction with optimization: Models and applications in transportation management,” Multimodal
+Transp., vol. 1, no. 3, Sep. 2022, Art. no. 100018, doi: 10.1016/j.multra.
+2022.100018.
+[32] B. Zhou, Q. Song, Z. Zhao, and T. Liu, “A reinforcement learning
+scheme for the equilibrium of the in-vehicle route choice problem
+based on congestion game,” Appl. Math. Comput., vol. 371, Apr. 2020,
+Art. no. 124895, doi: 10.1016/j.amc.2019.124895.
+[33] F. Klügl and A. L. C. Bazzan, “Accelerating route choice learning
+with experience sharing in a commuting scenario: An agent-based
+approach,” AI Commun., vol. 34, no. 1, pp. 105–119, Jan. 2021, doi:
+10.3233/AIC-201582.
+[34] G. D. Dos Santos and A. L. Bazzan, “Sharing diverse information gets driver agents to learn faster: An application in en route trip building,” PeerJ
+Comput. Sci., vol. 7, Mar. 2021, Art. no. e428, doi: 10.7717/peerj-cs.428.
+[35] V. Mnih et al., “Playing atari with deep reinforcement learning,” 2013,
+arXiv:1312.5602.
+[36] Y.-R. Chen, A. Rezapour, W.-G. Tzeng, and S.-C. Tsai, “RL-routing: An
+SDN routing algorithm based on deep reinforcement learning,” IEEE
+Trans. Netw. Sci. Eng., vol. 7, no. 4, pp. 3185–3199, Oct./Dec. 2020, doi:
+10.1109/TNSE.2020.3017751.
+[37] S. Koh et al., “Real-time deep reinforcement learning based vehicle
+navigation,” Appl. Soft Comput., vol. 96, Nov. 2020, Art. no. 106694, doi:
+10.1016/j.asoc.2020.106694.
+[38] N. Wang, Y. Wang, Y. Zhao, Y. Wang, and Z. Li, “Sim-to-real: Mapless
+navigation for USVs using deep reinforcement learning,” J. Mar. Sci.
+Eng., vol. 10, no. 7, Jun. 2022, Art. no. 895, doi: 10.3390/jmse10070895.
+[39] G. Sun, K. Liu, G. O. Boateng, G. Liu, and W. Jiang, “Intelligent cruise
+guidance and vehicle resource management with deep reinforcement
+learning,” IEEE Internet Things J., vol. 9, no. 5, pp. 3574–3585, Mar.
+2022, doi: 10.1109/JIOT.2021.3098779.
+[40] R. Cimurs, I. H. Suh, and J. H. Lee, “Goal-driven autonomous exploration through deep reinforcement learning,” IEEE Robot. Autom. Lett.,
+vol. 7, no. 2, pp. 730–737, Apr. 2022, doi: 10.1109/LRA.2021.3133591.
+[41] S. Shafiei, Z. Gu, and M. Saberi, “Calibration and validation of a simulation-based dynamic traffic assignment model for a large-scale
+congested network,” Simul. Model. Pract. Theory, vol. 86, pp. 169–186,
+Aug. 2018, doi: 10.1016/j.simpat.2018.04.006.
+[42] H. Qi and Z. He, “Road intersection optimization considering spatialtemporal interactions among turning movement spillovers,” IEEE
+Trans. Intell. Transp. Syst., vol. 23, no. 5, pp. 4291–4304, May 2022, doi:
+10.1109/TITS.2020.3043274.
+[43] P. A. Lopez, M. Behrisch, L. Bieker-Walz, J. Erdmann, and E. Wiener, “Microscopic traffic simulation using SUMO,” in Proc. 21st IEEE
+Int. Conf. Intell. Transp. Syst., 2018, pp. 2575–2582, doi: 10.1109/
+ITSC.2018.8569938.
+[44] L. Luo, L. Sheng, H. Yu, and G. Sun, “Intersection-based V2X routing via reinforcement learning in vehicular ad hoc networks,” IEEE
+Trans. Intell. Transp. Syst., vol. 23, no. 6, pp. 5446–5459, Jun. 2022, doi:
+10.1109/TITS.2021.3053958.
+[45] S. Koh, B. Zhou, P. Yang, Z. Yang, H. Fang, and J. Feng, “Reinforcement
+learning for vehicle route optimization in SUMO,” in Proc. IEEE 4th
+Int. Conf. Data Sci. Syst. (HPCC/SmartCity/DSS), 2018, pp. 1468–1473.
+[46] W. M. Griggs, R. H. Ordóñez-Hurtado, E. Crisostomi, F. Häusler, K.
+Massow, and R. N. Shorten, “A large-scale SUMO-based emulation
+platform,” IEEE Trans. Intell. Transp. Syst., vol. 16, no. 6, pp. 3050–
+3059, Dec. 2015, doi: 10.1109/TITS.2015.2426056.
+[47] M. Zamirian, M. H. Farahi, and A. Nazemi, “An applicable method for
+solving the shortest path problems,” Appl. Math. Comput., vol. 190, no.
+2, pp. 1479–1486, Jul. 2007, doi: 10.1016/j.amc.2007.02.057.
+[48] Z. Gu, F. Safarighouzhdi, M. Saberi, and T. H. Rashidi, “A macro-micro
+approach to modeling parking,” Transp. Res. B, Methodological, vol.
+147, pp. 220–244, May 2021, doi: 10.1016/j.trb.2021.03.012.
+[49] Z. Gu, A. Najmi, M. Saberi, W. Liu, and T. H. Rashidi, “Macroscopic
+parking dynamics modeling and optimal real-time pricing considering cruising-for-parking,” Transp. Res. C, Emerg. Technol., vol. 118,
+Sep. 2020, Art. no. 102714, doi: 10.1016/j.trc.2020.102714.
+[50] Y.-L. Chen and H.-H. Yang, “Shortest paths in traffic-light networks,”
+Transp. Res. B, Methodological, vol. 34, no. 4, pp. 241–253, May 2000,
+doi: 10.1016/S0191-2615(99)00023-5.
+[51] M. Khanjary, K. Faez, M. R. Meybodi, and M. Sabaei, “Shortest paths
+in synchronized traffic-light networks,” in Proc. 24th Can. Conf. Elect.
+Comput. Eng. (CCECE), 2011, pp. 882–886.
+[52] Y.-L. Chen and H.-H. Yang, “Minimization of travel time and weighted
+number of stops in a traffic-light network,” Eur. J. Oper. Res., vol. 144,
+no. 3, pp. 565–580, Feb. 2003, doi: 10.1016/S0377-2217(02)00148-0.
+[53] V. Mnih et al., “Human-level control through deep reinforcement
+learning,” Nature, vol. 518, no. 7540, pp. 529–533, Feb. 2015, doi:
+10.1038/nature14236.
+
+
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:09:21 UTC from IEEE Xplore. Restrictions apply.
+IEEE INTELLIGENT TRANSPORTATION SYSTEMS MAGAZINE •
+
+34
+
+• MAY/JUNE 2024
+
+

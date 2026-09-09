@@ -1,0 +1,106 @@
+{
+ "('dest_boundary', 'closed_aligned')": {
+  "n_seeds": 30,
+  "completion": [
+   99.85,
+   99.55,
+   100.0
+  ],
+  "travel_time": [
+   4.963611662424731,
+   4.935644610172057,
+   4.997195720781445
+  ]
+ },
+ "('dest_boundary', 'closed_time_min')": {
+  "n_seeds": 30,
+  "completion": [
+   95.65,
+   92.96666666666667,
+   97.93333333333334
+  ],
+  "travel_time": [
+   6.281224781282183,
+   5.911852935557076,
+   6.691646897107813
+  ]
+ },
+ "('dest_boundary', 'open_aligned')": {
+  "n_seeds": 30,
+  "completion": [
+   85.91666666666667,
+   79.15,
+   91.61666666666666
+  ],
+  "travel_time": [
+   5.4887149810915385,
+   5.335154139347881,
+   5.657477636372373
+  ]
+ },
+ "('dest_boundary', 'open_time_min')": {
+  "n_seeds": 30,
+  "completion": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "travel_time": [
+   NaN,
+   NaN,
+   NaN
+  ]
+ },
+ "('dest_interior', 'closed_aligned')": {
+  "n_seeds": 30,
+  "completion": [
+   99.98333333333333,
+   99.95,
+   100.0
+  ],
+  "travel_time": [
+   4.55335034919827,
+   4.512986579697003,
+   4.5992075101651855
+  ]
+ },
+ "('dest_interior', 'closed_time_min')": {
+  "n_seeds": 30,
+  "completion": [
+   91.03333333333333,
+   87.98291666666667,
+   93.95
+  ],
+  "travel_time": [
+   6.755458456648225,
+   6.281677413702063,
+   7.289153666433649
+  ]
+ },
+ "('dest_interior', 'open_aligned')": {
+  "n_seeds": 30,
+  "completion": [
+   29.133333333333333,
+   24.01625,
+   34.60041666666666
+  ],
+  "travel_time": [
+   4.979378565812547,
+   4.731153675760698,
+   5.263207206948902
+  ]
+ },
+ "('dest_interior', 'open_time_min')": {
+  "n_seeds": 30,
+  "completion": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "travel_time": [
+   NaN,
+   NaN,
+   NaN
+  ]
+ }
+}

@@ -1,0 +1,1275 @@
+A Multiagent Reinforcement Learning Approach to
+En-Route Trip Building
+Ana L. C. Bazzan and Ricardo Grunitzki
+PPGC / Instituto de Informatica, UFRGS
+Caixa Postal 15064, CEP 91501-970, Porto Alegre, RS, Brazil
+Email: {bazzan.rgrunitzki}@inf.ufrgs.br
+
+Abstract-An important stage in traffic planning is traffic
+assignment, which seeks to reproduce the way drivers select their
+routes. It assumes that each driver is aware of a number of
+routes to travel from an origin to a destination, that it performs
+some experimentation, and that it selects rationally the route
+with the highest utility. This is the basis for many approaches
+that, in an iterative way, vary the combination of route choices
+in order to find one that maximizes the utility. This perspective is
+therefore a centralized, aggregate one. In reality, though, drivers
+may perform en-route experimentation, i.e., they deviate from
+the originally planned route. Thus, in this paper, individual
+drivers are considered as active and autonomous agents, which,
+instead of having a central entity assigning complete trips to each
+agent, build these trips by experimentation during the actual
+trip. Agents learn their routes by deciding, at each node, how
+to continue their trips to each one's destination, in a way to
+minimize their travel times. Because the choice of one agent
+does impact several others, this is a non-cooperative multiagent
+learning problem (thus stochastic), which is known for being
+much more challenging than single agent reinforcement learning.
+To illustrate this approach, results from two non-trivial networks
+are presented, which have thousands of learning agents, clearly
+configuring a hard learning problem. Results are compared to
+iterative, centralized methods. It is concluded that an agent-based
+perspective yields choices that are more aligned with the real­
+world situation because (i) trips are computed by the agent itself
+(and not provided to the agent by any central entity), and (ii)
+it is not based on pre-computed paths (rather, it is built during
+the trip itself).
+
+I.
+
+INTRODUCTION
+
+Traffic assignment is an important stage in the task of
+modeling and simulating a transportation system. It connects
+the physical infrastructure and the demand that is going to use
+it, i.e., it assign trips to each edge of the road network. Thus
+it appears as fourth of the stages in the so-called "four-stage
+models" of traffic modeling [17].
+Classical methods for traffic modeling - including trip
+assignment - normally adopt an aggregate perspective, i.e.,
+zone-based instead of individual-based. Further, these meth­
+ods normally assume that agents are aware of a number of
+paths or routes to go from their origins to their destinations.
+Finally, these kind of modeling assumes a centralized entity
+that controls those four stages. Hence, trips are generated,
+distributed, split, and assigned. In contrast, in an agent-based
+perspective, one talks about trip choice, destination choice,
+mode choice, and route choice, in opposition to generation,
+distribution, split, and assignment respectively.
+
+978-1-5090-0620-5/16/$31.00 ©2016 IEEE
+
+In the agent-based approach followed here, agents do their
+actual choice (instead of being told which route to take, which
+destination to go, etc.). Specifically, for the assignment stage,
+this means that each agent chooses its route based on local,
+partial knowledge. This may look trivial but makes a difference
+in terms of which knowledge must be available when one
+decides to employ one of the aforementioned approaches.
+In the agent-based perspective for trip assignment used here,
+routes are learned by each agent, as these agents travel from
+node to node, from their origins to their destinations. For this
+purpose, a reinforcement learning (RL) method is used. The
+problem is not trivial due to the fact that each agent is trying
+to learn simultaneously. This is a multiagent learning problem,
+for which we know there is no guarantee of convergence to the
+optimum choice of the users. Moreover, multiagent learning
+problems are known to be inherently stochastic.
+It is also known that the user equilibrium be analytically
+computed, except for very simple networks, as discussed in
+Section II. Furthermore, classical methods are centralized and
+do not handle en-route replanning, i.e., changes in the initially
+planned route during the actual trip.
+In short, in this paper it is argued that a RL-based method at
+individual agent level, though not guaranteed find the optimum
+solution for the trip assignment, has advantages over some
+classical methods. In particular, the approach proposed here
+can handle en-route replanning, and no central authority or
+global knowledge is assumed, as it is the case with some
+classical trip assignment methods. To illustrate the proposed
+approach, the present paper uses non-trivial scenarios, in which
+some edges are initially attractive to all agents, but produce
+severe congestion if many agents use them.
+It is unclear what happens when drivers can adapt to traffic
+patterns in complex traffic networks. From the point of view of
+the whole system, the goal is to ensure reasonable travel times
+for all users, which can be conflicting with some individual
+utilities.
+Apart from background concepts, methods, and related
+work on trip assignment, which are discussed in the next
+two sections, Section IV describes the proposed approach,
+while Section V describes the scenarios used to illustrate the
+approach. Results are shown and analyzed in Section VI, while
+Section VII presents the concluding remarks and points to
+future research.
+
+5288
+
+II. TRAFFIC
+
+ASSIGNMENT MET HODS
+
+In this section, basic concepts about traffic (or trip) assign­
+ment methods are given. Note that these concepts are all based
+on the computation of a set of routes, one for each driver. Thus,
+they do not address en-route route selection. For an extensive
+explanation, please refer to Chapter 10 in [17] or to Chapter
+4 in [6].
+A road network can be represented as a graph G
+(V, E),
+where V is the set of vertices that represent the intersections
+of the network, and E is a set of directed edges, describing the
+existing road segments as directed connections between pairs
+of vertices. Each edge e E E has a cost ee, which is given
+by a function that takes as input attributes such as length, toll,
+free-flow speed (and hence, free-flow travel time), capacity,
+current volume, etc. A route r is defined by a set of connected,
+adjacent nodes (no, nl, n2, ...). The cost of each r is the sum
+of the costs of all edges that connect these nodes.
+This road network is used by a demand of a given size
+(number of trips, vehicles or agents) that is divided in several
+pairs of origin-destination (OD pairs), where origins and
+destinations belong to the set V.
+Another relevant concept that needs to be introduced is the
+one of volume-delay functions (VDFs) or cost-flow functions.
+These are used in macroscopic modeling and aim at accounting
+for congestion effects, i.e., how over-capacity of a given vol­
+ume or flow in a edge affects the speed and travel times (costs
+of delays). These functions account for the flows in the whole
+network, i.e., they consider the interactions between flows that
+use the network at the same time, and the corresponding delays
+that may occur. As a simple example of a VDF, one can
+consider the following: te
+t� + 0.02 x qe. Here, te is the
+travel time on edge e, t� is the edge's travel time per unit of
+time under free flow conditions, and qe is the flow using edge
+e. This means that the travel time in each edge increases by
+0.02 of a minute for each vehicle/hour of flow.
+Given a demand Tij for trips between origin i and destina­
+tion j, there are several schemes to assign these trips to the
+edges of a road network. Such schemes can be classified over
+two main dimensions: (1) are capacity constraints included?
+and (2) are stochastic effects included? The classical scheme
+for situations in which there are no congestion effects and
+no stochasticity in route choices is the all-or-nothing scheme
+(discussed later). Assignment under congestion is of course a
+hot research topic and many approaches exist in this category.
+If one ignores the stochastic effects and focus on capacity
+constraints, the aforementioned concept of VDFs play a major
+role. For example, given VDFs for each edge in the network,
+a goal of these approaches is to approximate the equilibrium
+conditions as stated by Wardrop [24]: "under equilibrium
+conditions traffic arranges itself in congested networks such
+that all used routes between an OD pair have equal and
+minimum costs while all those routes that were not used have
+greater or equal costs". This is Wardrop's first principle, also
+known as Wardrop's equilibrium or user equilibrium.
+Thus, given a traffic network, the assignment from the point
+=
+
+=
+
+2016 International Joint
+
+of view of the user equilibrium can be analytically stated as
+an optimization problem: find all flows from each OD pair s.t.
+only paths with minimal costs have a nonzero flow assigned
+to them, which corresponds to Wardrop's first principle. For
+a mathematical formulation of this problem, the reader is
+referred to Chapter 2 in [11], as well as to [19].
+One problem with this scheme is that it is not possible
+to solve the equilibrium flows algebraically, except for very
+simple cases (e.g., two or three edges connecting a single OD
+pair). Thus, approximate solutions to the Wardrop's equilib­
+rium were proposed. To evaluate their quality, relevant issues
+are solution stability and convergence, as well as computa­
+tional requirements.
+Such approximate solutions are discussed later in this
+section. Before, it is important to introduce a general pro­
+cedure that underlies all assignment schemes. Indeed, each
+assignment scheme discussed before has several steps that
+must be treated in turn: (i) to identify a set of routes that
+might be considered attractive to drivers; (ii) to assign suitable
+proportions of the trip matrix to these routes; this results
+in flows on the edges of the network; (iii) to search for
+convergence: many techniques follow an iterative pattern of
+successive approximations to an ideal solution (e.g., Wardrop's
+equilibrium).
+The first step can be accomplished with any variant of
+the Dijkstra algorithm for shortest paths. This step is also
+known as tree-building step. However, normally these paths are
+generated based on a first-approximation or an estimated cost
+function (e.g., one that considers no congestion, i.e., only free­
+flow travel times are considered) because the real cost is not
+known, given that it depends on the route choices of all users.
+Therefore, in a non-free-flow regime (i.e., under congestion),
+the second aforementioned step must be performed iteratively,
+until some sort of convergence is reached.
+Next, some classical trip assignment approaches are dis­
+cussed. The typical approach to trip assignment under no
+congestion is to assign all trips to the route with minimum
+cost, on the basis that these are the routes travelers would
+rationally select. That is as in Eq. 1, where Tij is the given
+demand between origin i and destination j. This procedure is
+referred as "all-or-nothing" assignment. It is possible to see
+that this scheme assigns all trips between nodes i and j to the
+same edges (because, as mentioned, this scheme assumes no
+congestion).
+TiJ"r*
+
+Tijr
+
+=
+
+=
+
+Tij
+
+0
+
+for the minimum cost route
+for all other routes
+
+r
+
+*
+
+}
+
+Vi,j
+
+(1)
+
+For route assignment under congestion (i.e., the capacity of
+an edge e can be surpassed and, as such, a VDF is necessary
+to account for the effects of the over-capacity), mainly two
+iterative methods can be used. The first is to load the network
+incrementally in n stages, e.g., assigning a given fraction Pn
+(e.g., 10%, 20%, etc.) of the total demand (for each OD pair)
+at each stage. Further fractions are then assigned based on the
+newly computed edge costs. This procedure continues until
+100% of the demand is assigned. Typical values for fractions
+
+Conference on Neural Networks (/JCNN)
+
+5289
+
+are 0.4, 0.3, 0.2, and 0.1. An algorithm for this can be
+found in [17]). It must be remarked that there is no guarantee
+that this algorithm converges to the Wardrop's equilibrium, no
+matter how small each Pn is. This procedure has the drawback
+that once a flow has been assigned to a edge, due to the
+accumulated nature (see step 3), it is never removed. Thus, in
+case an arbitrarily low over-capacity is assigned to a edge, then
+it prevents the convergence to the optimum solution. However,
+it is very easy to program.
+The other approach is to start from some initial values for
+the edge costs and find the minimum cost routes. Trips are
+then assigned to these routes. New costs are computed and this
+cycle is repeated until there is no significant change in edge
+or route volumes. For instance, in the method of successive
+averages, the flow at the n-th iteration is calculated as a linear
+combination of the flow on the previous iteration and an
+auxiliary flow resulting from an all-or-nothing assignment in
+the n-th iteration. An algorithm for this can be found in [17]).
+The last step of the method admits several ways to fix the
+value of ¢. A useful one is to make ¢
+lin. There is a
+proof that this produces solutions convergent to the Wardrop's
+equilibrium but this may be very inefficient.
+Note that both iterative methods to approximate Wardrop's
+equilibrium are based on the all-or-nothing scheme (applied
+in each iteration). Thus, even for fine discretization levels, a
+number of trips is assigned to the same edges.
+
+Pn
+
+=
+
+III.
+
+RELATED
+
+WORK
+
+A number of works from transportation planning and eco­
+nomics, as well as from operations research, and computer
+science deal with the trip assignment problem. Works that
+are most relevant and close to the approach proposed here
+are discussed next. Note that there are works that compute
+the system optimum for the trip assignment problem (i.e.,
+they compute the assignment that minimizes the overall travel
+time), instead of minimum travel time (the user equilibrium).
+The present paper deals with the computation of the user
+equilibrium thus the reader interested in the system optimum
+is referred to [3] (a genetic algorithm to compute the system
+optimum); [4] (a hybrid between system optimum and user
+equilibrium); and [8] (a multi-objective approach to the system
+optimum, where the worst travel times are also minimized,
+together with the overall average travel time).
+In [16], the author makes the point that trip assignment
+schemes that are based on steady-state flow conditions of
+the road network are adequate only for analysis of long­
+term strategic planning horizons, but not for tactical measures
+that are of interest in applications related to intelligent trans­
+portation systems. However, the author also recognizes the
+challenges of finding an analytic representation that satisfies
+the laws of physics and traffic sciences, while also being
+mathematically tractable. Therefore they propose a simulation­
+based approach for the dynamical traffic assignment (DTA)
+problem. In DTA one goal is to describe how flows develop not
+only spatially but also temporally in the network. This means
+that DTA considers road users that depart from an origin to a
+
+5290
+
+2016 International Joint
+
+destination at different times. Hence, they experience different
+travel times and, as such, the user equilibrium condition
+applies only to travelers who are assumed to depart at the same
+time between the same OD pair. In the present work, departure
+at different times is not considered, but the approach is not
+purely simulation-based given that the agents learn by inter­
+acting with the environment. DTA is also the focus of [21] in
+which the authors propose a predictive DTA model, also based
+on simulation and combined with the method of successive
+averages. Henn ([12]) proposes a fuzzy-based method to take
+the imprecisions and the uncertainties of the road users into
+account. These predict costs for each path based on a fuzzy
+subset that can represent imprecision on network knowledge,
+as well as uncertainty on traffic conditions.
+As mentioned, a natural way to represent the problem of
+route choice (in opposition to trip assignment) is to model
+it using an agent-based modeling and simulation approach.
+Hence, there has been some works in this direction. An
+example is MATSim [1], [2], which deals with activity-based
+simulation of route choice. Although the present work does not
+consider activities performed during the commuting, extending
+it to tackle this is straightforward, given that agents build their
+routes during the commuting trip.
+Route choice under various levels of information is turning
+a hot research topic due to the increasing use of navigation
+devices. Agent-based route choice simulation has been applied
+to research concerning the effects of intelligent traveler infor­
+mation systems. Main questions here are what happens to the
+overall demand, if a certain share of drivers is informed and
+adapt. What kind of information is the best one to be provided?
+Examples for such research line can be found in [13] for a
+two-route scenario, or in [9], [10] where a neural net-based
+agent model for route choice is presented regarding a three
+route scenario. In [18], a simple network for fuzzy-rule based
+routing (including qualitative decisions) is used.
+One problem with these approaches is that their application
+in networks with more than a couple of routes between a
+few locations is not trivial. The first problem is that a set of
+reasonable route alternatives has to be generated. A k-shortest
+path algorithm can be used but it may output routes that
+differ only marginally. Additionally, all approaches, including
+agent-based ones, consider one route as one complete option
+to choose. On-the-fly re-routing has hardly been a topic for
+research. Even more sophisticated agent architectures such as
+the one proposed by [20] do not include the possibility of
+re-routing during the trip.
+To address this issue, re-routing in a scenario with multiple
+origins and destinations was studied in [5]. Besides route
+choice by the driver agents, the authors also consider traffic
+lights as adaptive agents in order to test whether such a form of
+co-adaptation may result in interferences or positive cumula­
+tive effects. This was one of the first works in the agent-based
+community that has dealt with agents computing new routes
+on the fly. This is important because en-route modifications
+cannot be ignored in a realistic simulation of decision making
+in traffic. An abstract route choice scenario was used, having
+
+Conference on Neural Networks (/JCNN)
+
+some features of real world networks. However, in this work
+no comparison is made to methods that approximate the user
+equilibrium thus, it is not possible to fully assess the efficiency
+of the assignment reported there.
+Degradation in performance caused by the selfish behavior
+of individual road users remains an important research topic.
+Koutsoupias and Papadimitriou [14] have proposed the so­
+called price of anarchy to measure this degradation. They show
+results for small networks such as the one used to illustrate
+the Braess paradox.
+A learning-based approach was used by Tumer and Agogino
+[22] where agents learn to select full routes that are pre­
+computed; thus there is no en-route changes in the routes.
+The size and topology of the network is not mentioned but it
+seems that all the demand starts in a single origin and ends in
+a single destination.
+IV.
+
+ApPROACH
+
+As mentioned, there are two main problems related to
+the methods discussed in Section II. First, they are based
+on a pre-computation of the full route (from an origin to
+a destination), which leaves no room for en-route changes.
+Second, the assignment is computed by a central authority;
+agents have no autonomy as they do not plan their paths.
+The approach proposed here is not only decentralized, but
+also allows en-route changes in the trip. In fact this is the very
+essence of the approach. This means that the resulting set of
+routes that are computed by the agents themselves is very
+diverse. This way the society of agents is able to find a set
+of possible routes that can be combined (one for each agent),
+contrarily to schemes discussed in Section II, which is based
+only on a shortest path for each OD pair (even if these are re­
+computed at each iteration in the case of iterative approaches).
+For example, the all-or-nothing approach is the extreme case
+where the whole volume for each OD pair is assigned to
+the same route. However, even less coarse methods as for
+instance the incremental method, still assigns the same route
+to a given fraction of road users. Of course these fractions
+can be small but the efficiency of this method decreases with
+the discretization (number of incremental steps). Similarly, in
+the successive averages method, the computational cost of the
+method depends on a good choice of the parameter 4;. If it is a
+function of the parameter n (see Section II), then the efficiency
+may be compromised.
+In the iterative methods it is not possible to actually assign
+a different route to each road user at each iteration, as the
+method proposed here does. For this, our method pays a cost
+(more learning episodes are necessary as agents are learning
+while visiting different nodes) but it is still a tractable method
+given that each episode typically run in the order of seconds.
+In the RL approach proposed here, agents learn the value
+of their actions by interacting with an environment that gives
+a feedback signal to each agent, based on which state each
+agent is in, and on the action each agent has performed. Note
+the difference towards a single agent RL process, in which the
+signal does not depend on other agents states and actions.
+
+2016 International Joint
+
+RL problems can be modeled as Markov decision processes
+(MDPs). An experience tuple (s, a, s', r ) denotes the fact that
+the agent was in state s, performed action a and ended up
+in s' with reward r. Here, a popular model-free algorithm for
+RL is used, namely Q-learning (QL). The update rule for each
+experience tuple (s, a, s', r ) is given in Equation 2, where a
+is the learning rate and 'Y is the discount for future rewards.
+
+Q(s, a)
+
+f---
+
+'
+
+Q(s, a) + a ( r + 'Y maxa, Q(s', a ) - Q(s, a))
+
+(2)
+Multiagent RL is formalized in a similar way, adding the
+a set D of driver agents. In our formulation, each agent in
+D is represented by an independent MDP. As mentioned,
+considering a high number of agents in multi-agent RL turns
+the problem inherently more complex. This complexity has
+many causes and consequences, one being that mathematical
+convergence guarantees no longer hold.
+In the case studies conducted here, the environment is a
+road network G (Section 11), where nodes are the set of states
+an agent may be in, and the edges departing from each node
+are the set of actions an agent may take. Each agent has an
+origin and a destination. Of course there are many ways in
+which a destination node can be reached. Because edges have
+travel times that depends on the number of agents using them,
+learning is difficult. Mostly, the desirable, shortest path under
+free-flow, may end up producing a high travel time if too many
+agents want to use it. Agents then need to learn how to go
+from their origins to their destinations by finding routes that
+allows them to distribute themselves in a way that an optimal
+number of agents use each edge, minimizing their travel times.
+
+V.
+
+CASE STUDIE S
+
+We use two road networks. The first is the one suggested
+in [l7] (Exercise 10.1, depicted in Figure 1). Henceforth this
+network is referred as OW. The second is an abstraction of the
+road network of the city of Sioux Falls, USA. This network is
+frequently used as testbed for trip assignment approaches (http:
+Ilwww.bgu.ac.il/�bargeraJtntp/). It can be seen in Figure 2.
+Henceforth this network is referred as SF.
+These scenarios go far beyond simple two-route (binary)
+choice scenario that is frequently reported in the litera­
+ture regarding agent-based approaches. They capture prop­
+erties of real-world scenarios, like interdependence of routes
+with shared edges and heterogeneous capacities and demand
+throughout the complete network. Moreover, the number of
+possible routes between two locations is high and/or it may
+involve loops as edges are two-way, and it has more than a
+single OD pair. Hence, it is hardly possible to compute the
+user equilibrium algebraically.
+A. OW Network
+
+The OW network represents two residential areas (nodes
+A and B) and two major shopping areas (nodes L and M).
+The numbers in the edges are their travel times under free
+flow (in both ways). For the sake of getting a sense of best
+travel times (under free-flow), for each OD pair, these are
+shown in Table I. We note however that these times cannot
+
+Conference on Neural Networks (/JCNN)
+
+5291
+
+6
+
+Fig. 1: OW Road Network (as proposed by Ortuzar and
+Willurnsen)
+TABLE I: Shortest Paths and Free-Flow Travel Times (FFTT)
+for the Four OD Pairs of the OW Network.
+OD pair
+AL
+AM
+BL
+BM
+
+shortest path
+ACGJll..
+ACDHKM
+BDGJIL
+BEHKM
+
+FFIT
+28
+26
+32
+23
+
+Fig. 2: Sioux Falls Road Network
+be achieved because the free-flow condition is not realistic,
+and when each agent tries to use its route with the lowest
+travel time, jams occur and the times increase. This, plus the
+number of agents learning simultaneously, is what makes the
+reinforcement learning difficult.
+In the experiments, the set D of learning agents contains
+1700 road users, as this is the proposed demand for the OW
+network during a Saturday morning peak (see exercise 10.1
+in [17]) and an estimated demand from A and B to L and
+M as depicted in the second column of Table II. Further, a
+VDF is proposed, which relates cost c( q,,) at edge e to its
+flow q". Specifically, it is proposed that the travel time in each
+edge is increased by 0.02 for each vehicle/hour of flow (tc
+tt + 0.02 x qc, as discussed in Section II).
+=
+
+B. Sioux
+
+Falls Network
+
+The SF network (Figure 2), though an abstraction, is more
+realistic than the OW network and depicts a situation that
+is closer to the real-world. It has 24 vertices and 76 edges.
+However, the most challenging issue is the number of learning
+agents, which is 360,600, and the number of OD pairs: 528.
+We follow the original description of [15], and use the well­
+known BPR function [7] as VDF, shown in Eq. 3, where Ie
+is the total flow of edge e, tt is the free-flow travel time of
+e, and Ce is its nominal capacity. We use a
+0.15 and b 4
+as suggested in [15].
+=
+
+=
+
+(3)
+Due to the high number of OD pairs, and also because trips
+are distributed along the whole network, there is a lot of
+competition for a high number of edges (this was not the case
+in the OW network, in which the most trips compete for the
+D
+G .J arterial).
+-
+
+-
+
+Experiments were conducted using both the iterative meth­
+ods discussed in Section II, and the RL-based approach
+
+2016 International Joint
+
+=
+
+=
+
+A. Results Using Classical Methods: Network OW
+
+VI. EXPERIMENTS AND RESULTS
+
+5292
+
+proposed here. As mentioned, the main aim is to show that a
+decentralized, agent-based approach in which agents learn by
+interacting with the environment, is able to find solutions that
+have travel times comparable to those obtained by iterative
+methods, but are obtained relaxing the assumption of drivers
+knowing a pre-determined number of routes. Moreover, it is
+possible to show that the routes selected using the proposed
+approach are sometimes different from those found by the
+centralized, iterative approaches used as comparison.
+Results for incremental and successive averages methods
+were implemented in Java (JDK 1.8) following the pseudo­
+code given in Section il. A PC with processor i7-2600
+(3.40GHz), 32GB RAM was used, under Ubuntu 14.04.
+For the RL-based approach, simulations results reported
+here are averaged over at least 10 repetitions (for each condi­
+tion). Due to lack of space and to render some tables cleaner,
+standard deviations are not shown but they are of the order of
+less than 2%.
+For the RL-based approach, running times greatly depend
+on the number of learning episodes and on the value of the
+discount rate I (because the lower the I the more loops agents
+tend to make). For example, in the case of the OW network,
+for a
+0.9 and I
+0.9, a simulation takes 20 seconds
+to converge to the corresponding value shown in Table ill.
+This time can be reduced since, as discussed later, the number
+of 1000 episodes is not necessary. Experiments were run in
+a standard PC (16 GB RAM), running Linux. For evaluation,
+the performance measure is the same used in [17]: travel times
+averaged over all agents and also for each OD pair. Also, the
+number of agents using some key edge is shown, highlighting
+some differences found among the methods.
+
+Results for the classical methods discussed before are shown
+in Tables il (travel times per OD pair and overall) and IV
+
+Conference on Neural Networks (/JCNN)
+
+TABLE II: Average Travel Time (OW): classical methods
+00
+Pair
+AL
+AM
+BL
+BM
+
+Trips
+
+All-or
+nothing
+
+Incremental
+
+Succ.
+Avgs.
+
+'Y
+0.5
+0.6
+0.7
+0.8
+0.9
+0.99
+
+600
+400
+300
+400
+
+114
+94
+98
+71
+
+75.92
+70.18
+77.96
+62.48
+
+71.0
+64.94
+68.78
+62.3
+
+1700
+
+96.35
+
+71.77
+
+67.13
+
+(flow in selected edges); these were obtained using Pn
+0.4,0.3,0.2,0.1 for the incremental method, and ¢
+lin
+and 100 iterations as stop criterion.
+In Table IV, it is possible to see that both iterative methods
+(last two columns) yield very different values for some edges.
+Take edges DG and CD as examples. Thus, it is interesting
+to investigate how the QL-based approach behaves regarding
+this issue as well, which is done in the Section VI-C, where
+these methods are compared.
+=
+
+B.
+
+Results Using Classical Methods: Network SF
+
+Similarly to the OW, classical methods were run for the SF
+network, also with Pn
+0.4,0.3,0.2,0.1 for the incremental
+method, and ¢
+lin and 100 iterations as stop criterion.
+Results are as follows: while the all-or-nothing method yields
+an average (over 360,600 drivers) travel time of 187.26, the
+incremental assignment and the method of successive averages
+yield 27.60 and 20.93 respectively.
+=
+
+=
+
+C. Results Using the Q-learning based Approach: OW
+
+The approach presented in Section IV has some parameters
+that refer basically to the QL. These are the learning rate a,
+the discount rate 'Y, and the exploration rate E. In the present
+paper, E starts at EO
+1 and is multiplied by a decay factor d
+at each learning episode in order to allow agents to explore the
+environment for a certain time. The value of this multiplicative
+factor must be set to fit the simulation horizon. As a general
+rule, 1000 episodes were run, so that that after these, E "" 10-2
+when d
+0.995. Notice that not all combinations of values
+for a and 'Y require 1000 learning episodes. In some cases
+convergence to a given route choice pattern is reached much
+earlier, but for uniformity, the same number of episodes (1000)
+was used in all cases.
+Next the results obtained when this approach was employed
+in the OW network are presented. Tables III and IV show
+different measures that are of interest.
+First, Table III shows the average travel time over all 1700
+trips (we recall that each trip is computed by an agent), at
+episode 1000, for different combinations of values for a and
+T Simulations were repeated 30 times for each combination.
+As mentioned, we do not show the standard deviations in
+each case, but note that it was less than 2%, and present
+two examples: for 'Y
+0.5 and a
+0.3 (highest travel time
+in Table III), the deviation is 2.03 (thus 1.6%), whereas for
+'Y
+0.99 and a
+0.5 (lowest travel time), the deviation is
+0.026. Also, a t-test with 95% of the confidence interval was
+=
+
+=
+
+=
+
+=
+
+=
+
+=
+
+2016
+
+TABLE III: Average Travel Time (over 1700 agents)
+a
+
+0.3
+123.649
+88.712
+76.270
+70.354
+67.319
+67.158
+
+0.5
+118.680
+86.985
+75.420
+69.987
+67.320
+67.143
+
+0.7
+116.212
+86.847
+75.229
+69.507
+67.360
+67.157
+
+0.9
+116.595
+87.139
+75.388
+69.449
+67.402
+67.147
+
+conducted, which shows that, when 'Y 0.99 (clearly the best
+value for 'Y), the average travel time regarding the values of
+a are equivalent. For each value of 'Y :::; 0.9, the conclusion
+of the t-test is that the average travel time when a
+0.3 is
+worse than when other values of a are considered; times are
+equivalent when a > 0.3, for each 'Y.
+=
+
+=
+
+This means that the discount factor 'Y plays a major role in
+the learning, while the learning rate a is less selective. This
+can be explained by the fact that actions (edges that depart
+from a given state) that can be taken at states (nodes) are
+very important in this problem since the agent is trying to
+make a series of decisions in order to minimize travel time
+in the whole route. Therefore the discount rate must be high.
+In the remaining of this paper, experiments regarding the OW
+network refer to a
+0.9 and 'Y
+0.99.
+=
+
+=
+
+If one takes travel times given in Table III, for different
+values of a and 'Y, it is possible to see that these values are
+close to 67.13 (see last line of Table II), for 'Y > 0.9.
+Apart from values averaged over all edges, it is interesting
+to check what happens in each edge. As remarked before, the
+number of trips using some edges differs in the incremental
+and in the successive averages methods. This can be seen in
+Table IV by comparing the last two columns. Thus, a direct
+comparison with the RL-based approach is interesting. The
+first column of Table IV shows the number of trips in selected
+edges for the RL-based approach, for a
+0.9 and 'Y
+0.99
+(average over 30 runs; we remark that the other two methods
+are deterministic). We do not show flows in all edges; the
+criterion for inclusion in this table was that either the result
+achieved by the RL-based approach was different from both
+iterative methods, or it is close to one of these while these
+differ among them. The general conclusion is that the RL­
+based approach yields flows per edge that are very close to
+those achieved by the method of successive averages.
+=
+
+=
+
+So far we have shown the results of the assignment after
+1000 learning episodes. Plots in Figure 3 depict how travel
+times change along the episodes. This is shown for edges
+involved in each of the four aD pairs, as well as for the whole
+set of edges. Note that flow in some aD pairs improve their
+travel time at expense of others (BL versus AL), and that
+the lowest travel time is always for the BM flow, possibly
+because there is less conflicts with flows in other aD pairs.
+We also remark that, as mentioned before, for a
+0.9 and
+'Y
+0.99, it would not be necessary to run 1000 episodes to
+reach convergence (at most 500 would be enough).
+=
+
+=
+
+International Joint Conference on Neural Networks (/JCNN)
+
+529 3
+
+TABLE IV: Travel Time Selected Edges of OW: iterative
+methods and QL.
+Link
+QL
+AC
+AD
+BA
+BE
+CA
+CD
+CF
+CG
+DG
+DH
+EH
+FG
+FI
+GC
+GJ
+GK
+HG
+HK
+IF
+IL
+JI
+JL
+JM
+KJ
+KM
+
+Method
+Incremental
+
+Succ. Avg.s
+
+710
+320
+30
+320
+0
+160
+270
+280
+550
+280
+320
+0
+270
+0
+790
+40
+0
+600
+0
+630
+360
+270
+160
+0
+640
+
+726.5
+271.4
+0.1
+343.2
+0.0
+0.0
+410.9
+316.3
+381.3
+249.3
+342.3
+0.0
+410.9
+0.0
+613.4
+84.5
+0. 3
+591.3
+0.0
+455.7
+44.8
+444.3
+128.2
+4.0
+671.8
+
+729
+274
+3
+347
+0
+4
+409
+316
+376
+252
+347
+0
+409
+0
+616
+76
+0
+599
+0
+453
+48
+447
+128
+3
+672
+
+TABLE V: Average Travel Time for SF (over 360,600 agents)
+'Y
+0.5
+0.6
+0.7
+0.8
+0.9
+0.99
+
+D.
+
+a
+
+0.3
+55.734
+47.013
+41.994
+39.003
+38.147
+35.189
+
+0.5
+49.475
+39.527
+32.861
+28.228
+24.850
+24.169
+
+0.7
+48.944
+38.454
+31.395
+26.282
+22.980
+22.439
+
+0.9
+49.345
+38.597
+31.305
+26.015
+22.637
+21.854
+
+Results Using the Q-Iearning based Approach: SF
+
+Similarly to results shown in Section VI-C, an investigation
+about the role of a and "( was conducted. Here too, 1000
+learning episodes were run in order to assess these roles.
+Average travel times over all 360,600 agents or trips appear
+in Table V (over 10 runs of each simulation). Again, standard
+deviation was lower than 2%. Here too, the lowest average
+travel times were found for "(
+0.99. The best configuration
+is when a
+0.9, and values differ slightly for various values
+of a (this is statistically significant at 95% confidence interval,
+t-test). As shown in the table, the lowest average travel time
+is 21.85, thus very close to the time of 20.93 delivered by the
+method of successive averages (see Section VI-B).
+Regarding the distribution of flows among the edges, for
+the SF network, we omit a table similar to Table IV, not
+only due to lack of space, but mainly because, as mentioned
+in Section V-B, the 528 OD pairs are more or less evenly
+distributed, and so are the trips over all edges. This is not
+the case in the OW network (trips basically flow from left to
+right). Thus, in the SF, almost all edges carry the same number
+of trips and there is nothing really noticeable to highlight.
+=
+
+=
+
+5294
+
+2016
+
+VII.
+
+CONCLUSIONS AND FUTURE WORK
+
+Traffic assignment is an important step in modeling a trans­
+portation system. Classical approaches assume centralization,
+in which trips are assigned to edges or routes. In this paper the
+perspective of the road user is taken: these users are modeled
+as agents that autonomously select their routes in an adaptive
+way. A similar perspective is taken in simulation-based works
+mentioned in Section III, but there are two main differences
+to the present paper.
+First, here, agents do not anticipate traffic states (e.g., using
+fuzzy sets) but rather learn these states while interacting with
+the environment. This is a hard multiagent learning problem
+given the number of agents trying to learn simultaneously
+in a competitive environment (edges are shared by many
+agents). The choice made by the agents is based purely on
+local knowledge, whereas the iterative methods discussed in
+Section II are centralized and assume knowledge about a
+number of routes.
+Second, agents form their routes while taking actions at
+nodes of the network, thus addressing the issue of en-route
+planning (as this task is known in traffic engineering, even if
+it is not a planning task from the AI point of view). In most
+previous works, route adaptation is only allowed before and
+after the actual driving.
+Results are twofold. First, the routes that are learned using
+the proposed approach are comparable to those delivered
+by the method of successive averages, a standard way to
+compute an approximation to the user equilibrium. Second,
+the learning-based approach is nearly as efficient as the
+iterative methods. This suggests that there is room for further
+improvements, especially in the direction of giving incentives
+to agents to select routes that are globally more efficient,
+i.e., closer to the system optimum, rather than to the user
+equilibrium. However, only few works reported in the literature
+show how far their results are from the system optimum (only
+those dealing with simple networks). This is our first future
+direction. A second one is to investigate the mathematical
+properties of the multiagent learning approach in order to
+provide insights about the bound to the optimum assignment.
+As this is a complex problem, one possibility is to use domain­
+dependent knowledge and/or properties of the domain. Also, a
+kind of reward shaping scheme as proposed in [23] may prove
+useful.
+ACKNOW LEDGMEN T S
+
+A. L. C. Bazzan is partially supported by CNPq (grant
+305062). R. Grunitzki is supported by CAPES.
+REFERENCES
+[1] M. Balmer, N. Cetin, K. Nagel, and B. Raney. Towards truly agent-based
+traffic and mobility simulations. In N. Jennings, C. Sierra, L. Sonenberg,
+and M. Tambe, editors, Proceedings of the 3rd International Joint
+Conference on Autonomous Agents and Multi Agent Systems, AAMAS,
+volume 1, pages 60--67, New York, USA, July 2004. New York, IEEE
+Computer Society.
+
+International Joint Conference on Neural Networks (/JCNN)
+
+200
+190
+
+overall
+AL
+AM
+BL
+BM
+
+180
+
+avg. travel time
+
+170
+160
+150
+140
+130
+120
+110
+100
+90
+80
+70
+60
+
+0
+
+200
+
+400
+
+600
+
+800
+
+1000
+
+episode
+Fig. 3: Performance
+
+x
+
+time: average travel time over all edges as well as per OD pair (for
+
+[2] M. Balmer, M. Rieser, K. Meister, D. Charypar, N. Lefebre, and
+K. Nagel. MATSim-T: Architecture and simulation times. In A. L.
+Bazzan and F. KHigl, editors, Multi·Agent Systems for Traffic and
+Transportation Engineering, pages 57-78. IGI Global, Hershey, US,
+2009.
+[3] A. L. C. Bazzan, D. Cagara, and B. Scheuermann. An evolutionary
+approach to traffic assignment. In 2014 IEEE Symposium on Compu­
+tational Intelligence in Vehicles and Transportation Systems (CIVTS),
+SSCl, pages 43-50. IEEE, December 2014.
+[4] A. L. C. Bazzan and C. Chira. Hybrid evolutionary and reinforcement
+learning approach to accelerate traffic assignment (extended abstract).
+In R. Bordini, E. Elkind, G. Weiss, and P. Yolum, editors, Proceed­
+ings of the 14th International Conference on Autonomous Agents and
+Multiagent Systems (AAMAS 2015), pages 1723-1724. IFAAMAS, May
+2015.
+[5] A. L. C. Bazzan and F. KHigl. Re-routing agents in an abstract traffic
+scenario. In G. Zaverucha and A. L. da Costa, editors, Advances
+in artificial intelligence, number 5249 in Lecture Notes in Artificial
+Intelligence, pages 63-72, Berlin, 2008. Springer-Verlag.
+[6] A. L. C. Bazzan and F. KHigl. Introduction to Intelligent Systems in
+Traffic and Transportation, volume 7 of Synthesis Lectures on Artijicial
+Intelligence and Machine Learning. Morgan and Claypool, 2013.
+[7] Bureau of Public Roads. Traffic assignment manual. US Department of
+Commerce, 1964.
+[8] C. Chira, A. L. C. Bazzan, and R. J. F. Rossetti. Multi-objective
+evolutionary traffic assignment. In Proceedings of the 18th IEEE Annual
+Conference on Intelligent Transport Systems (ITSC 2015), pages 11771182. IEEE, September 2015.
+[9] H. Dia and S. Panwai. Modelling drivers' compliance and route choice
+behaviour in response to travel information. Special issue on Modelling
+and Control of Intelligent Transportation Systems, lournal of Nonlinear
+Dynamics, 49(4):493-509, 2007.
+[10] H. Dia and S. Panwai. Intelligent Transport Systems: Neural Agent
+(Neugent) Models of Driver Behaviour.
+LAP Lambert Academic
+Publishing, 2014.
+[II] C. Gawron. Simulation·based traffic assignment. PhD thesis, University
+of Cologne, Cologne, Germany, 1998.
+[12] Y. Henn. Fuzzy route choice model for traffic assignment. Fuzzy Sets
+and Systems, 116(1):77-101, 2000.
+
+2016 International Joint
+
+a
+
+=
+
+0.9 and
+
+'Y
+
+=
+
+0.9).
+
+[13] F. KHigl and A. L. C. Bazzan. Route decision behaviour in a commuting
+scenario. lournal of Artificial Societies and Social Simulation, 7(I),
+2004.
+[14] E. Koutsoupias and C. Papadimitriou. Worst-case equilibria.
+In
+Proceedings of the 16th annual conference on Theoretical aspects of
+computer science (STACS), pages 404-413, Berlin, Heidelberg, 1999.
+Springer-Verlag.
+[15] L. J. LeBlanc, E. K. Morlok, and W. P. Pierskalla. An efficient approach
+to solving the road network equilibrium traffic assignment problem.
+Transportation Research, 9(5):309-318, 1975.
+[16] H. S. Mahmassani. Dynamic network traffic assignment and simulation
+methodology for advanced system management applications. Networks
+and Spatial Economics, 1(3-4):267-292, 2001.
+[17] J. Orllizar and L. G. Willumsen. Modelling Transport. John Wiley &
+Sons, 3rd edition, 200I.
+[18] S. Peeta and J. W. Yu. A hybrid model for driver route choice incor­
+porating en-route attributes and real-time information effects. Networks
+and Spatial Economics, 5:21-40, 2005.
+[19] B. Ran and D. E. Boyce. Modeling dynamic transportation networks:
+an intelligent transportation system oriented approach. Springer, 1996.
+[20] R. Rossetti and R. Liu. A dynamic network simulation model based on
+multi-agent systems. In F. KHigl, A. L. C. Bazzan, and S. Ossowski,
+editors, Applications of Agent Technology in Traffic and Transportation,
+pages 88-93. Birkhaser, 2005.
+[21] c. Tong and S. Wong. A predictive dynamic traffic assignment model in
+congested capacity-constrained road networks. Transportation Research
+Part B: Methodological, 34(8):625 - 644, 2000.
+[22] K. Turner and A. Agogino. Agent reward shaping for alleviating traffic
+congestion. In Workshop on Agents in Traffic and Transportation,
+Hakodate, Japan, 2006.
+[23] K. Turner, Z. T. Welch, and A. Agogino. Aligning social welfare
+and agent preferences to alleviate traffic congestion. In L. Padgham,
+D. Parkes, J. Muller, and S. Parsons, editors, Proceedings of the 7th
+Int. Conference on Autonomous Agents and Multiagent Systems, pages
+655-662, Estoril, May 2008. IFAAMAS.
+[24] J. G. Wardrop. Some theoretical aspects of road traffic research. In
+Proceedings of the Institution of Civil Engineers, volume 1, pages 325362, 1952.
+
+Conference on Neural Networks (/JCNN)
+
+5295
+
+

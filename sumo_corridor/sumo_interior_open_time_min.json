@@ -1,0 +1,27 @@
+{
+ "network": "SUMO 5x5 replication, interior destination",
+ "interior_cells": 9,
+ "eval_pairs": 200,
+ "episodes": 3000,
+ "seeds": 10,
+ "cells": {
+  "open_time_min": {
+   "mean": 0.0,
+   "sd": 0.0,
+   "per_seed": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "seeds": 10,
+   "episodes": 3000
+  }
+ }
+}

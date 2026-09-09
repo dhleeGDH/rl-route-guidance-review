@@ -1,0 +1,66 @@
+{
+ "nodes": 416,
+ "links": 914,
+ "zones": 38,
+ "border_nodes": 95,
+ "origins": 321,
+ "destinations": 38,
+ "border_rule": "convex hull of published coordinates plus a 0.1-of-bounding-box band",
+ "band": 0.1,
+ "results": {
+  "closed_time_min": {
+   "total": {
+    "arrive": 12183,
+    "exit": 0,
+    "stuck": 0
+   },
+   "pairs": 12183,
+   "arrive_rate": 100.0,
+   "exit_rate": 0.0
+  },
+  "closed_aligned": {
+   "total": {
+    "arrive": 12183,
+    "exit": 0,
+    "stuck": 0
+   },
+   "pairs": 12183,
+   "arrive_rate": 100.0,
+   "exit_rate": 0.0
+  },
+  "open_time_min": {
+   "total": {
+    "arrive": 1063,
+    "exit": 11120,
+    "stuck": 0
+   },
+   "pairs": 12183,
+   "arrive_rate": 8.7,
+   "exit_rate": 91.3
+  },
+  "open_aligned": {
+   "total": {
+    "arrive": 11521,
+    "exit": 662,
+    "stuck": 0
+   },
+   "pairs": 12183,
+   "arrive_rate": 94.6,
+   "exit_rate": 5.4
+  },
+  "open_aligned_2.5x": {
+   "total": {
+    "arrive": 12183,
+    "exit": 0,
+    "stuck": 0
+   },
+   "pairs": 12183,
+   "arrive_rate": 100.0
+  },
+  "per_zone_exit_rate": {
+   "min": 62.6,
+   "median": 99.7,
+   "max": 100.0
+  }
+ }
+}

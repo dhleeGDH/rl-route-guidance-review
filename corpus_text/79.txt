@@ -1,0 +1,849 @@
+2026 International Conference on Innovative Computing, Intelligent Communication and Smart Electrical Systems (ICSES) | 979-8-3195-4321-9/26/$31.00 ©2026 IEEE | DOI: 10.1109/ICSES66558.2026.11478874
+
+Dynamic Route Optimization using D* Lite and
+DQN Algorithm
+RNS Aneesh, Shyam Ganesh T, Vasanthi R
+Computer Science and Engineering St. Joseph’s Institute of Technology Chennai, Tamil Nadu, India
+Email id: rnsaneesh15@gmail.com, shyam.cse.2026@gmail.com, vasanthivinoth.me@gmail.com
+
+Intelligent models that can learn adaptive navigation
+patterns from experience have been introduced with
+recent advances in Deep Reinforcement Learning
+(DRL). Algorithms observed in the recent lectures
+that Deep Q-Networks (DQN) have completely
+revolutionized the world of autonomous navigation
+and vehicle planning. The models are capable of
+learning the best action value pairs and make
+decisions that are context sensitive particularly when
+the environment becomes a little crazy [3].
+
+Abstract- Optimal path-finding in changing urban
+environments is difficult due to variable traffic
+congestion and sudden road closures. This paper
+provides a hybrid intelligent reliable routing system
+using the D* Lite algorithm and a Deep Q- Network
+(DQN) for real-time adaptive path-finding. The D*
+Lite portion guarantees global optimal path-finding
+through incremental replanning, while the DQN agent
+learns locality decisions based on traffic aware
+congestion from past data. The proposed approach
+provides a dynamic balance between deterministic
+planning and learned adaptability for the purpose of
+minimizing travel cost and travel delay.
+
+The bad part though is that these algorithms do not
+typically offer certain deterministic path optimality
+and instead can actually break down in large networks
+or very dynamic networks. This is the reason to have
+this vexing disjunction between the solid,
+deterministic route planning to ensure efficiency and
+the adaptability learning-based approaches can
+provide when the conditions on the road vary
+dynamically.
+
+Keywords—Dynamic route optimization, D* Lite, Deep
+Q- Network, reinforcement learning, hybrid path
+planning, intelligent transportation systems.
+
+I.INTRODUCTION
+The accelerating urbanization and ongoing rise in
+vehicular population have resulted in extreme traffic
+congestion, road obstructions, and intermittent travel
+delay in contemporary cities. Effective and smart
+routing optimization has thus emerged as a major
+part in the development of intelligent transport
+systems (ITS). Classic routing methods like A*
+and Dijkstra’s algorithm are commonly used for
+finding the shortest path; however, the algorithms
+were designed to work under stationary conditions
+and cannot respond to real-time changes in the
+environment like congestion or accidents [1].
+
+Designed a Pygame simulation platform to visualize
+the routing process in real-time, and can simulate
+congestion and blocks. The hybrid model reduces
+travel time up to 20% and replanning time to 25, and
+routes by the model are more stable than the methods
+used before. This paper advances intelligent, adaptive
+route optimization that trades between optimality,
+flexibility and real-time decision-making, to the
+future urban transportation system.
+Integrate D*Lite and the Deep Q-Networks, which
+provides a new approach to traffic-sensitive routing
+which is adaptive to turnover in traffic. The hybrid
+approach is a combination of deterministic and
+adaptive learning, which results in efficient and
+flexible paths. It is a step in the direction of
+systems that are capable of automatically adapting to
+real-world traffic changes and at the same time give
+the best route.
+
+To circumvent this drawback, incremental search
+methods like D* Lite have been introduced to
+quickly replan routes when the environment is
+changing, by rebasing only the affected nodes rather
+than recalculating the entire route [2]. Whereas D*
+Lite minimizes computation overhead, it is still
+reactive but not predictive because it does not take
+into account past traffic experience or predict
+dynamic patterns of congestion.
+
+1
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:07:43 UTC from IEEE Xplore. Restrictions apply.
+
+In this paper, the following sections have been
+presented: Section 2 – Related Works, Section 3 –
+Proposed Methodology, Section 4 – Results and
+Discussions, and Section 5 – Conclusion.
+
+fly route planning.
+Subba Rao, P.V.R., and co-authors [4] subdivided an
+adaptive DQN based city traffic control
+methodology. The algorithm optimized the
+intersection lights by continuously being informed
+about live traffic data and reduced congestion
+significantly. The research has shed light on the
+strength of reinforcement learning in live urban
+mobility that interested people in combining DQN
+tricks with pathfinding to achieve a full-fledged
+routing
+enhancement.
+To
+investigate
+the
+computational footprint of Bidirectional A* and D*
+Lite and their performance in changing worlds.
+
+II.RELATED WORK
+Recently, there have been numerous researches that
+have been exploring the concept of dynamic route
+optimization and intelligent navigation in relatively
+uncertain environments. Most of the works combines
+heuristic pathfinding with deep reinforcement
+learning since it can be modified dynamically
+without consuming excessive compute. This paper
+will discuss some of the interesting papers and
+demonstrate how the old- school algorithms are
+becoming hybrid and learning-friendly systems.
+
+Chadhurbala, R.V. et al. [5] conducted a comparison
+of these algorithms. Their findings indicated that D*
+lite provides the golden mean with regard to the
+accuracy of the path and the speed of updates. This
+assessment provides an additional analysis of the bidirectional search and supports the conceptualization
+that incremental algorithms are more scaled in larger
+networked systems.
+
+The team led by Sarbini, R. [1] developed a
+pathfinding model that combines A* and D* Lite in
+order to enhance pathfinding in video games. Their
+focus was to manage the moving obstacles and the
+fast re-planning to ensure you are on the most
+appropriate path to pursue as the things keep on
+changing. Their findings highlighted the fact that D*
+Lite executes repetitive calculations in a reduced way
+than the simple A*, as a result it gains certain initial
+experience of dynamic replanning that may be
+applied to the real traffic situation.
+
+In their research, Bhakti Yudho Suprapto et al. [6]
+aimed to optimize route planning for autonomous
+electric vehicles by applying the D* Lite algorithm.
+Their implementation included factors based not only
+on distance traveled, but also on energy
+consumption, which expanded the algorithm from
+just a pathfinding utility. The modification of multiobjective optimization contributed to other research
+that was deliberating the efficiency and sustainability
+of route planning as well.
+
+Bagad, P. and associates [2] measured A* and D*
+Lite in the environments where the routes are
+continuously changing their positions. The study
+discovered that A* provides with a good answer
+when the world is not moving, but D* Lite is the
+star when it uses its stored information when the
+world goes inverted. The lesson learned was that D*
+Lite updates are easier to perform and this prompted
+the authors to consider hybrid models as an extension
+to expedite decision-making by introducing an
+element of learning.
+
+Letian Xu et al. [7] introduced a reinforcement
+learning- based autonomous navigation model for
+unmanned vehicle systems. Their approach was to
+allow unmanned vehicles to forecast and respond to
+real-time changes in vehicle traffic patterns based on
+continuous interactions with the environment. Their
+application of sensor-based feedback reciprocity in
+regard to rewards based decision making showed
+substantial improvements in autonomous navigation
+by documenting the benefits of combining learningbased (ML) control and deterministic path planning.
+
+Koh, S. and team [3] concentrated on a real-time car
+navigation system with the use of deep reinforcement
+learning within the SUMO simulator. The agents
+considered navigation as a process of choices and got
+to know how to make traffic- aware calls. The study
+concluded that a DQN is better than traditional
+heuristics, particularly when the traffic patterns are
+chaotic. The latter discovery gave rise to a flurry of
+hybrid systems combining classical algorithms such
+as D* Lite with learning models to optimize on-the-
+
+Zixiang Wang et al. [8] investigated autonomous
+robot navigation in uncertain terrains using
+reinforcement learning models. Their model designed
+robots to explore the environment without predefined
+maps, allowing them to learn directly from the
+environmental stimuli. Results demonstrated the
+2
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:07:43 UTC from IEEE Xplore. Restrictions apply.
+
+flexibility and generalization power of reinforcement
+learning, which may be useful for hybrid route
+optimization architectures.
+
+mentioned the shortcomings of static routing
+techniques. The paper made the claim that the trend
+was increasingly toward the use of adaptive and
+hybrid routing systems for the real-time control of
+transportation systems.
+
+Mohamed Hussein Abo El-Ela et al. [9] presented a
+hybrid optimization method for urban pathfinding
+using deep learning and heuristic approaches. Their
+model was based on merging neural learning with
+heuristic approaches to help make adaptive path
+decisions under varying constraints. The contribution
+of their work is the successful coordination of
+exploration and exploitation policies, which sets the
+stage conceptually for combining DQN with the D*
+Lite in the next section.
+
+Das, Soumi, Kalava, Rajath Nandan, Kumar, Kolli
+Kiran, Kandregula, Akhil, Suhaas, Kalpam,
+Bhattacharya, Sourangshu, and Ganguly, Niloy [15]
+proposed a new method for predicting travel time by
+using a map-enhanced deep neural network model
+together with road network data.
+Collectively, these studies highlight a continuous
+progression from deterministic path finding to
+adaptive hybrid systems. Given what these studies
+show, this paper proposes a hybrid D* Lite - DQN
+model. This hybrid model will benefit from the
+efficiency of incremental planning, in terms of
+learning and efficiency, and the adaptive intelligence
+of reinforcement learning for real-time dynamic route
+optimization in complex urban networks.
+
+Zhijian Huang et al. [10] proposed a modified DQN
+algorithm for path planning of unmanned surface
+vehicle (USV) applications. Their modifications
+consisted of more refined reward functions, and
+prioritized experience replay in order to promote
+faster convergence and a higher accuracy route. The
+paper showed that tuning reinforcement learning
+parameters could increase stability and performance
+under uncertainty.
+
+III.PROPOSED METHODOLOGY
+
+Xie, Kaili, Qiang, Jie, and Yang, Haitao [11]
+presented an upgraded version of D* Lite algorithm
+that optimized the node expansion and heuristic
+evaluation in order to provide a safer path and faster
+replanning in dynamic environments. The research
+illustrated that one could always improve incremental
+planners to keep a good balance between obstacle
+clearance and computation time.
+
+Conventional routing algorithms like A* and
+Dijkstra’s algorithms mainly concentrate on finding
+the shortest path between a pair of nodes based on
+static network situation. Even though this works best
+when things are stable, these algorithms don’t adjust
+things when conditions change, e.g. congestion, road
+closures, and accidents. While more sophisticated
+methods like D* Lite can do incremental replanning,
+but are still somewhat reactive and don’t have a prior
+knowledge of traffic patterns. Hybrid D* Lite -DQN
+routing
+model
+combines
+the
+graph-based
+deterministic efficiency of planning with the adaptive
+learning to reinforcement to generate congestionconscious, real-time optimal route suggestions. The
+methodology guarantees:
+ Effective and gradual replanning: Cashing in
+on the D* Lite algorithm to update the only
+relevant nodes and consequently lessening the
+computational cost in case of dynamic changes
+in traffic.
+ Intelligent traffic learning: Deep Q -network
+(DQN) is entrenched in the procedure,
+holistically over epochs, and live congestion
+cues, to compute where bottlenecks could be
+found.
+ Improved routing stability: Stable behaviour
+may be assured through the choice of jointly
+
+The dynamic weighting of Dijkstra’s method, which
+integrates traffic prediction in the calculation of
+edge costs for adaptive routing, has been suggested
+by Udhan, Piyush, Ganeshkar, Akhilesh, Murugesan,
+Poobigan, Permani, Abhishek Raj, Sanjeeva,
+Sameep, and Deshpande, Parth [12].
+Saravana Kumar, B., and Suyampulingam, A. [13]
+made an evaluation of the reinforcement learning–
+based path planning in a disaster environment
+simulation with UAVs. The study found that in tests
+with the dynamic conditions and the obstacles in
+abundance, Q-learning was better than SARSA.
+Thus, the error resilience of learning-based
+navigation has been demonstrated once more.
+Pratap, Suyash [14] conducted an extensive
+investigation into dynamic rerouting methods in
+multimodal transport networks and had also
+3
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:07:43 UTC from IEEE Xplore. Restrictions apply.
+
+optimising policies local responsiveness and
+global productivity.
+
+movements and persistently learned from the rewards
+via policy making. If the situation remains relatively
+constant, the Output Layer will drive the route along
+the path generated by D* Lite, However if congestion
+or blockages are encountered, the DQN policy will
+choose a better alternative path. The arrangement of
+decisions from both modules allows the system to
+adapt in real-time providing the shortest congestion
+free route in changing environments.
+
+Fig. 1 illustrates the suggested methodology, which
+is segregated into four primary steps —
+Environment, D*lite module, DQN Training Module,
+and Output Layer .
+The hybrid system is implemented in the Fig. 1
+proposed for dynamic route optimization Hybrid D*
+Lite–DQN. The D* Lite Module acts as a global
+planner, computing an initial shortest path based on
+geometric distances and constant edge weights. The
+system is started with part being the Environment
+Module where the street network is represented in
+the form of a weighted graph and reads synthetic
+traffic data via JSON inputs. These inputs define
+edge costs based on congestion intensity and road
+blockages.
+
+Model Preparation
+In order to replicate dynamic urban traffic conditions
+like congestion, roadblocks, and fluctuating travel
+costs, the model was created and trained in a
+specially
+created
+Pygame-based
+simulation
+environment. Both local and global path planning
+modules can be tested in real time and visualized
+under controlled conditions in this environment.
+ Model Input: Network Graph and traffic data
+ Model Output: Shortest Uncongested path
+3.1
+
+The model is trained with D* lite and DQN Hybrid
+framework to intelligently decide the fastest and
+uncongested route to reach destination with high
+accuracy and lower faults with its policy decision
+maker.
+D* Lite Module
+To perform the global path planning, D* Lite
+algorithm is used. The main feature of this algorithm
+is the ability to practically and rapidly regenerate
+routes in rapidly shifting settings by modificating
+just the appropriate nodes rather than recalculating
+the whole path. In reality, simulation of D*
+adjusts the cost values instead of executing an
+increment totally resets search like A* does within
+response to design variabilities. As a result, it would
+result in noticeably quicker computations with less
+computational burden, making this arrangement
+potential because it could achieve real-time adaptive
+3.2
+
+routing.
+Algorithm 1 D* Lite Global Path Planning
+1: Input: Graph G(V, E), Start node sstart, Goal
+node sgoal
+
+Fig. 1. Architecture Diagram for Dynamic Route
+Optimization
+
+2: Initialize: g(s) ← ∞ and rhs(s) ← ∞ for all s ∈
+V
+3: rhs(sgoal) ← 0
+4: Insert sgoal into priority queue U with key
+k(sgoal) = [h(sstart, sgoal), 0]
+5: while U.topKey() < k(sstart) or rhs(sstart)
+!= g(sstart) do
+
+Helper for the DQN Training Module functions as
+the local planner, where DQN agent learns to predict
+less congested alternative routes using both traffic
+patterns and feedbacks from the environment. The
+agent is afforded with state inputs, recommends
+4
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:07:43 UTC from IEEE Xplore. Restrictions apply.
+
+6: u ← U.popTop()
+7: if g(u) > rhs(u) then
+8: g(u) ← rhs(u)
+9: for all predecessors s of u do
+10: rhs(s) ← mins′∈succ(s)(c(s, s′) + g(s′))
+11:
+Update U with new key if inconsistent
+12: end for
+13: else
+14: g(u) ← ∞
+15: for all predecessors s of u and u itself do
+16:
+Update rhs(s) and U as before
+17: end for
+18: end if
+19: end while
+20: Output: Optimal path P from sstart to sgoal
+
+Furthermore, it combines global deterministic
+planning and local learning-based adaptability
+performance in optimal routes, enhancing not only
+the reliability and real time and stability of the route
+systems but also the performance of intelligent
+systems. Therefore, model three is a reliable and
+stable system for optimal planning within dynamic
+environments.
+Algorithm 2 Deep Q-Network (DQN) Local Path
+Optimization
+1: Initialize: Replay memory D, Q-network with
+weights θ, target network θ− = θ
+2: for episode = 1 to N do
+3:
+Initialize state s0
+4:
+for each step t do
+
+,
+t
+
+DQN Module
+An adaptive, local path optimization can be achieved
+by using the Deep Q-Network (DQN) algorithm.
+DQN learns optimal actions through experience
+and reward feedback. It predicts and avoids
+congested paths based on historical data, improving
+travel times and informing real-time decisionmaking. DQN is well suited for dynamic and
+unpredictable traffic situations with continuous
+adaptation required.
+3.3
+
+5:
+
+at =
+
+6:
+Execute at, observe reward rt and next state
+st+1
+7:
+Store transition (st, at, rt, st+1) in D
+8:
+Sample random mini-batch from D
+9:
+Compute target yt = rt + γ maxa′ Q(st+1,
+a′; θ−)
+10: Perform gradient descent on loss:
+11: L(θ) = E[ (yt − Q(st, at; θ))2 ]
+12: Every C steps, update θ− ← θ
+13: end for
+14:end for
+15:Output: Trained DQN policy π(s) = arg
+maxa Q(s, a; θ)
+
+Hybrid Module
+This project’s Hybrid D* Lite + DQN Routing
+Framework incorporates continuously global and
+local path planning with perfect cooperation to attain
+adaptive and productive route planning in dynamic
+environments. While D* Lite constructs the ideal
+initial route, DQN adjusts it, taking into account
+local high traffic density or abrupt new obstacles.
+This combination of the two approach types enables
+integration with low recalculation and results in
+quicker, non-congested paths with maximum global
+path coherence and less additional computational
+costs.
+3.4
+
+Algorithm 3 Hybrid D* Lite + DQN Routing
+Framework
+1: Input: Road network graph G, traffic data T ,
+start sstart, goal sgoal
+2: Initialize D* Lite planner and pre-trained DQN
+agent
+3: Compute global path Pg using D* Lite
+4: for each segment (si, si+1) in Pg do
+5: Observe local environment state St from traffic
+data T
+6: if obstacle or congestion detected near si then
+7:
+Use DQN to select optimal local action at
+8:
+Move to next node according to at
+9:
+Receive reward rt and update local state St+1
+10: if global map change detected then
+11:
+Replan global path using D* Lite
+
+Expected Outcome
+The expected result of the hybrid D* Lite + DQN
+framework should be an intelligent, adaptive routing
+model for dynamic urban environments. The
+anticipated model should generate typical optimal
+routes at time(< 20%) and less congestion, while it
+should re-route faster than the standard D* Lite
+when′′it comes to re-planning. The integrated D* Lite
++ DQN framework ensures stability during a sudden
+blockage or when traffic consistency changes,
+enabling
+stable
+and
+accurate
+navigation.
+3.5
+
+5
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:07:43 UTC from IEEE Xplore. Restrictions apply.
+
+ A* Algorithm (Traditional Shortest Path)
+ D* Lite Algorithm (Incremental Replanning)
+ Deep Q-Network (Learning Based
+Approach)
+
+incremental update
+12: end if
+13: else
+14: Follow D* Lite’s planned segment to si+1
+15: end if
+16: end for
+17: Output: Optimized route with dynamic
+adaptation to environment
+
+IV.RESULTS
+
+AND
+
+Table II presents the results in comparison to the key
+performance measures.
+TABLE II COMPARATIVE PERFORMANCE RESULTS
+Success
+Path
+Replanning
+Algorithm
+Rate
+Optimality
+Time (s)
+(%)
+A*
+0.85
+40
+2.8
+D* Lite
+0.90
+60
+1.9
+DQN
+0.80
+55
+2.1
+Hybrid D*
+0.95
+85
+1.4
+Lite + DQN
+
+DISCUSSIONS
+
+In an effort to achieve optimized real-time path
+planning in a dynamic traffic setting, this study
+developed the Hybrid D* Lite + DQN Routing
+Framework. The aim was to obtain adaptive routing
+with lesser computation time and enhanced routing
+efficiency than those of the traditional A*, D* Lite,
+and standalone DQN strategies. This section offers an
+analysis of the routing framework’s quantitative and
+qualitative performance, flexibility, and resilience to
+different traffic patterns.
+
+These findings, therefore, affirm that the suggested
+hybrid model does:
+ 30% convergence and 25% reduced
+replanning time over conventional methods,
+hence essentially it is significantly faster.
+ 10–15% better path optimality compared to A*
+and D* Lite algorithms, which is such a small
+but definite jump in efficiency.
+ 0-85% success rate in dynamic environments
+where there are multiple impediments, simply
+indicates that it can deal with messiness in the
+real world.
+ Better adaptability and real-time stability
+with combined learning and incremental
+planning - so it becomes rock-solid as it is
+changing.
+
+Quantitative Results
+The quantitative analysis primarily considers the
+effectiveness, flexibility, and dependability of the
+proposed hybrid routing model. Table I displays
+the metrics that models are benchmarking on, which
+are Convergence Speed, Path Optimality, Success
+Rate and Replanning Time.
+TABLE I KEY EVALUATION METRICS FOR
+BENCHMARKING THE HYBRID ROUTING
+FRAMEWORK
+Metric
+Convergence
+Speed
+Path
+Optimality
+Success Rate
+Replanning
+Time
+
+Description
+Number of episodes
+required for stable policy
+learning.
+Ratio of obtained path
+cost to optimal path cost.
+Percentage of successful
+path completions under
+dynamic obstacles.
+Average time to update
+route after environment
+change.
+
+Observed
+Outcome
+
+Qualitative Results
+The qualitative test measures the stability, scalability,
+and ease of maintenance of the framework in realworld scenarios.
+
+30% faster
+0.95
+achieved
+
+Learning Curve: Fig. 2 The hybrid framework exhibits faster convergence (30% improvement) and
+achieves 20−25% higher cumulative rewards after
+100 episodes. This simply demonstrates how greater
+policy stability, effective exploration, and the
+increased adaptability in dynamic traffic situations
+are achieved through a combination of the global
+planning offered by D* Lite with the local decisionmaking offered by DQN.
+
+85%
+maintained
+25%
+reduced
+
+Comparative Analysis
+There is just one generic analysis kick-in within this
+analysis, to ascertain how the suggested hybrid
+routing structure actually works against the three base
+algorithms that have been selected:
+
+6
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:07:43 UTC from IEEE Xplore. Restrictions apply.
+
+Fig. 2. Learning Curve: Cumulative Reward vs.
+Episodes
+
+Fig. 3. Path Optimality Comparison.
+
+Path Optimality Ratio : In this part examining the
+Path Optimality Ratio. In Fig. 3, the comparison of
+A*, D* lite and DQN with the proposed Hybrid
+model is broken down. The hybrid achieves a high
+score of 0.95, exceeding A (0.85), D* lite (0.90) and
+DQN (0.80). Essentially, it generates routes that are
+approximately 10-15 percent near the optimal base
+demonstrating improved exploration/exploitation
+balance to select an efficient route in real-time.
+Success Rate with Increasing Obstacles: Fig. 4
+displays the success rate change with the addition of
+increasing dynamic obstacles. The Hybrid D* Lite +
+DQN model proposed remains about 100 % with
+none of the obstacles and falls to 85 % with five
+obstacles- performing much better than D* Lite (60
+%), DQN (55 %) and A* (40 %). This proves that
+the hybrid one is stronger and more flexible in the
+conditions of dynamic traffic.
+Discussion
+The results struck a chord with us, our hybrid
+framework is sound, it is hyper adaptive, and it is
+extraordinarily efficient with regard to route
+optimisation in circumstances of dynamic change.
+Main take aways are:
+ Improved Learning Efficiency: Achieved a
+30% lower convergence rate and dragged
+approximately a quarter to half as much
+cumulative rewards as the vanilla DQN.
+ Enhanced Path Optimality: Achieved a 0.95
+optimality ratio, and beat A* (0.85), D* Lite
+(0.90), and DQN (0.80) as indicated in Fig. 3
+ Higher Success Rate:The model had a 85%
+route completion rate despite 5 constantlychanging obstacles far more successful than the
+peers as shown in Fig. 4.
+ Reduced Replanning Overhead: Computation
+time on a dynamic update was cut by 25%.
+
+Fig. 4. Success Rates V/s Dynamic Obstacles
+These findings demonstrate the brilliance of
+combining D* Lite with DQN-traffic is smarter,
+routes are quicker and more intelligent and avoids the
+re-planning every time.
+
+V.CONCLUSION
+This study proposed a hybrid routing system a
+combination of D* Lite and reinforcement learning
+through Deep Q - networks so that the pathfinding
+can adjust to the varying traffic in the city. The
+fundamental concept contains that the hybrid
+approach is capable of managing congestion and road
+blockages during the course of permanently
+replanning, as it gains knowledge of the most suitable
+traffic-aware routes. The system also transcended to
+higher success in the simulations it ran, converged
+more quickly, and was more efficient than the older
+algorithms. The entire process is successful as it
+combines deterministic planning with learning-based
+decision making to use in real-time optimization.
+Future scopes includes scaling the model to larger
+city networks, introduce multi-agent coordination of
+vehicles distributed, and develop predictive traffic
+analytics to make it more responsive and bring
+
+7
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:07:43 UTC from IEEE Xplore. Restrictions apply.
+
+[8].
+
+overall higher performance.
+
+REFERENCES
+[1].
+
+[2].
+
+[3].
+
+[4].
+
+[5].
+
+[6].
+
+[7].
+
+[9].
+
+Riska Nurtantyo Sarbini, Irdam Ahmad, Romie Oktovianus
+Bura, and Luhut Simbolon, ”Development of Pathfinding using
+A-Star and D-Star Lite Algorithms in Video Game”, Journal of
+Theoretical and Applied Information Technology, 2024.
+Prathamesh Bagad, Prachi Dahatonde, Rushikesh Gagare and
+Ishwari Athare, ”Optimizing Pathfinding in Dynamic Environments: A Comparative Study of A* and D-Lite Algorithms”
+2024 IEEE Pune Section International Conference (PuneCon),
+2024.
+Songsang Koh, Bo Zhou, Hui Fang, Po Yang, Zaili Yang, Qiang
+Yang, Lin Guan, and Zhigang Ji, ”Real-time deep reinforcement
+learning based vehicle navigation”Applied Soft Computing,
+Volume 96, 2020, 106694, ISSN 1568-4946, 2020.
+P V RSubba Rao, Venkata Ramana Murthy Polisetty, K Krishna
+Jayanth, N V Sai Manoj, Vankadari Mohith, R Prasanna Kumar
+”Deep Adaptive Algorithms for Local Urban Traffic Control:
+Deep Reinforcement Learning with DQN”, 2nd International
+Conference on Intelligent Data Communication Technologies
+and Internet of Things (IDCIoT-2024) 2024.
+Chadhurbala R V, Naveen US, Nipun B V, Supriya.P , and
+Suyampulingam A ”Comparative study of Bidirectional A*, D*
+and D* Lite for Path Planning”, IEEE International Conference
+on Electronics, Computing and Communication Technologies
+(CONECCT) 2024.
+Bhakti Yudho Suprapto, Suci Dwijayanti, Desi Windisari, and
+Gatot Aria Pratama, ”Optimizing Route Planning for Autonomous Electric Vehicles Using the D-Star Lite Algorithm,”
+(IJACSA) International Journal of Advanced Computer Science
+and Applications, Vol. 16, No. 1, 2025.
+Letian Xu, Jiabei Liu, Haopeng Zhao, Tianyao Zheng,
+Tongzhou Jiang, and Lipeng Liu, ”Autonomous Navigation of
+Unmanned Vehicle Through Deep Reinforcement Learning,”
+arXiv:2407.18962, 2024.
+
+[10].
+
+[11].
+[12].
+
+[13].
+
+[14].
+[15].
+
+Zixiang Wang, Hao Yan, Yining Wang, Zhengjia Xu, Zhuoyue
+Wang, and Zhizhong Wu ”Research on Autonomous Robots
+Navigation
+based
+on
+Reinforcement
+Learning,”
+arXiv:2407.02539, 2024.
+Mohamed Hussein Abo El-Ela, Ali Hamdi, ”Adaptive Urban
+Pathfinding Using Deep Learning and Heuristic Optimization, ”
+Intelligent Methods, Systems, and Applications (IMSA), 2025.
+Zhijian Huang, Huiqun Lin, and Guichen Zhang, ”The USV
+Path Planning Based on an Improved DQN Algorithm, ” International Conference on Networking, Communications and
+Information Technology (NetCIT), 2021.
+Kaili Xie, Jie Qiang, and Haitao Yang, ”Research and Optimization of D-Start Lite Algorithm in Track Planning” IEEE Access,
+vol. 8, pp. 161920-161928, 2020.
+Piyush Udhan, Akhilesh Ganeshkar, Poobigan Murugesan, Abhishek Raj Permani, Sameep Sanjeeva, and Parth Deshpande,
+”Vehicle Route Planning using Dynamically Weighted
+Dijkstra’s
+Algorithm
+with
+Traffic
+Prediction,”
+arXiv:2205.15190, 2022.
+Saravana Kumar B, and Suyampulingam A, ”Comparative
+evaluation of path planning algorithms in a simulated disaster
+environment,” 2022 IEEE 2nd Mysore Sub Section International
+Conference (MysuruCon), 2022.
+Suyash Pratap, ”Transportation Transformed: A Comprehensive Review of Dynamic Rerouting in Multimodal Networks,”
+arXiv:2312.14953, 2023.
+Soumi Das, Rajath Nandan Kalava, Kolli Kiran Kumar, Akhil
+Kandregula, Kalpam Suhaas, Sourangshu Bhattacharya, and
+Niloy Ganguly, ”Map Enhanced Route Travel Time Prediction
+using Deep Neural Networks,” arXiv:1911.02623, 2019.
+
+8
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 01:07:43 UTC from IEEE Xplore. Restrictions apply.
+
+

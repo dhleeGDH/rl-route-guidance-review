@@ -1,0 +1,1247 @@
+39626
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 24, 15 DECEMBER 2024
+
+Congestion-Aware Path Planning With
+Vehicle–Road Cooperation in AIoV
+Guoqiang Liu , Muhammad Bilal , Senior Member, IEEE, Qingyang Wang,
+and Xiaolong Xu , Senior Member, IEEE
+
+Abstract—With the gradually integration of Internet of
+Vehicles (IoV) and artificial intelligence (AI), artificial intelligence
+of vehicles (AIoV) is emerging as a novel paradigm with
+advanced capability for information gathering and decisionmaking. Leveraging massive traffic information facilitated by
+vehicle–road coordination in AIoV, path planning has the potential to effectively mitigate existing traffic problems, such as
+road congestion, improving traffic performance. However, the
+dynamic nature of traffic flow and the complexity of road
+networks increase the difficulty of path planning, posing a
+serious threat to road safety. In response to this challenge, a
+reinforcement learning based path planning scheme with traffic
+flow prediction, named RPFP, is proposed. RPFP consists of
+two fundamental components: 1) precise traffic flow prediction
+and 2) intelligent path planning. Specifically, the temporal
+convolutional network (TCN) is innovatively integrated into
+the spatiotemporal graph neural network (STGNN), providing
+accurate traffic flow prediction by comprehensively capturing
+spatial and temporal patterns. Informed by predicted traffic
+congestion, a path planning method utilizing dueling double deep
+q-network (D3QN) algorithm is employed to navigate within
+complex road networks. Eventually, RPFP was evaluated for
+its effectiveness through comprehensive experiments conducted
+on real traffic data sets. The superiority of RPFP was further
+substantiated via comparisons with multiple baseline schemes.
+Index Terms—Artificial intelligence of vehicles (AIoV), path
+planning, reinforcement learning (RL), traffic flow prediction,
+vehicle–road cooperation.
+
+I. I NTRODUCTION
+
+T
+
+HE LEARNING, perception, and decision-making capabilities in artificial intelligence (AI) systems and
+
+Manuscript received 19 May 2024; revised 28 July 2024; accepted 13
+August 2024. Date of publication 28 August 2024; date of current version
+6 December 2024. This work was supported in part by the National Natural
+Science Foundation of China under Grant 62372242 and Grant 92267104;
+in part by the Natural Science Foundation of Jiangsu Province of China
+under Grant BK20211284; and in part by the Postgraduate Research and
+Practice Innovation Program of Jiangsu Province under Grant KYCX24_1532.
+(Corresponding author: Muhammad Bilal.)
+Guoqiang Liu is with the School of Software, Nanjing University
+of Information Science and Technology, Nanjing 210044, China (e-mail:
+bwq0709@gmail.com).
+Muhammad Bilal is with the School of Computing and Communications,
+Lancaster University, LA1 4WA Lancaster, U.K. (e-mail: m.bilal@ieee.org).
+Qingyang Wang is with the School of Reading, Nanjing University
+of Information Science and Technology, Nanjing 210044, China (e-mail:
+wqy3098684229@gmail.com).
+Xiaolong Xu is with the School of Software, Jiangsu Province Engineering
+Research Center of Advanced Computing and Intelligent Services and Jiangsu
+Collaborative Innovation Center of Atmospheric Environment and Equipment
+Technology, Nanjing University of Information Science and Technology,
+Nanjing 210044, China (e-mail: xlxu@ieee.org).
+Digital Object Identifier 10.1109/JIOT.2024.3446699
+
+involvement of human cognitive abilities, endowing AI with
+the ability to execute complex thought processes with high
+accuracy [1], [2]. As an AI-integrated system designed to
+provide intelligent traffic management, intelligent transportation systems (ITSs) benefit from AI in information gathering
+and smart traffic decision-making. The Internet of Vehicles
+(IoV), as a significant component of ITS, undergoes further
+development propelled by advanced technologies, such as
+edge computing, wireless communication, and sensor technologies [3], [4], [5]. Due to AI’s capability to significantly
+enhance the efficiency of massive data collection and decisionmaking intelligence, it is gradually converging with IoV to
+create a new paradigm known as artificial intelligence of
+vehicles (AIoV) [6]. In AIoV, data originating from diverse
+sensors with varying sources and types can undergo efficient
+and unified processing, thereby fostering enhanced collaboration between vehicles and the road infrastructure. Relying on
+broader vehicular-road coordination, AIoV plays an increasingly significant role in ITS, providing intelligent services for
+vehicles, such as advanced detection of road congestion and
+intelligent path planning [7].
+Traffic congestion is becoming an increasingly severe global
+issue, primarily due to the continuous growth of vehicles
+worldwide and significant increase in travel frequency [8].
+Mega-cities like Beijing, New York, Tokyo, London, and
+others experience particularly severe congestion, significantly
+impacting residents’ satisfaction. Statistical data indicates that
+the annual global economic losses attributable to traffic congestion amount to several hundred billion dollars. In pursuit
+of congestion alleviation, improved traffic performance, and
+enhanced traffic safety, various smart traffic control methods undergo extensive research. These encompass intelligent
+traffic signal optimization (ITSO), intelligent parking systems
+(IPSs), and intelligent lane management (ILM) [9], [10]. Path
+planning, incorporating real-time traffic conditions, empowers
+vehicles to proactively evade congested segments, thereby
+averting congestion escalation. This approach is recognized as
+a viable solution to effectively address traffic congestion issues
+and enhance driving efficiency [11].
+Relying on vehicle–road cooperation, vehicles can obtain
+road conditions, such as traffic flow, from roadside units
+(RSUs) during path planning, employing this information as
+the theoretical foundation for planning decision. However,
+only depending exclusively on real-time traffic flow for
+planned paths, to be traversed in the future, may pose challenges in achieving comprehensive and efficacious avoidance
+
+c 2024 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+2327-4662 
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+LIU et al.: CONGESTION-AWARE PATH PLANNING WITH VEHICLE–ROAD COOPERATION
+
+of traffic congestion. Therefore, accurate prediction of future
+traffic flow becomes imperative [12]. n consideration of the
+attributes of road networks, the prediction of traffic flow can be
+conducted along two dimensions: 1) temporal and 2) spatial.
+Deep learning (DL) prediction models, such as recurrent neural
+networks (RNNs), long short-term memory (LSTM), and gated
+recurrent unit (GRU), demonstrate proficiency in time-series
+modeling of traffic flow [13]. Leveraging historical traffic flow
+data as training data, these models effectively capture timeseries features inherent in traffic flow. Concurrently, graph
+neural networks (GNNs) model the topological structure of
+intricate road networks, accounting for the mutual influence
+between roads. Through iterative information aggregation
+between adjacent nodes, GNNs can adeptly capture spatial
+features integral to understanding traffic flow [14].
+Following the prediction of future traffic flow, congestionaware path planning within complex road networks can be
+executed based on the prediction results [11]. Dependent
+solely on manual path planning by drivers for departure and
+destination points or centralized path planning by dispatchers, however, entails substantial resource consumption and
+encounters challenges in efficiently avoiding congested segments. Intelligent path planning methods grounded in machine
+learning (ML) and DL find extensive application in addressing
+this issue. Algorithms, including A-star search algorithm (A*),
+ant colony optimization (ACO), simulated annealing, genetic
+algorithms, and particle swarm optimization, among others,
+have been employed in intelligent path planning endeavors and
+have demonstrated effectiveness [15], [16], [17].
+While numerous traffic flow prediction schemes exist, it
+remains crucial to account for both spatial and temporal
+features to ensure accurate predictions in complex road
+networks. Furthermore, the dynamic and intricate nature
+of traffic conditions presents challenges for conventional
+path planning algorithms, including the imperative need for
+real-time responsiveness and environmental adaptability. So,
+a congestion-aware intelligent path planning scheme with
+vehicle–road Cooperation in AIoV is proposed in this article.
+The main contributions of our work are as follows: 1) the
+path planning model, facilitated by vehicle–road cooperation,
+is constructed under AIoV environment; 2) by innovatively
+incorporating temporal convolutional networks (TCNs) into
+spatiotemporal graph neural networks (STGNNs), accurate
+prediction of complex traffic flow in road networks is
+achieved; 3) by employing dueling double deep q-network
+(D3QN) algorithm, congestion-aware intelligent path planning which superiors in adapting to dynamic environments
+is accomplished; and 4) Conducting comprehensive experiments on real traffic data sets and comparative analysis
+to prove the efficiency and superiority of the proposed
+scheme.
+The remainder of this article is organized as follows. In
+Section II, the related researches is elaborated and summarized. Then, system framework and travel consumption model
+are formulated, followed by the definition of the problem
+to be addressed. The path planning scheme in AIoV is
+elaborated, including traffic flow prediction and D3QN based
+path planning, in Section IV. In Section V, experimental
+
+39627
+
+results are presented and analyzed. Finally, the conclusions are
+presented in Section VI.
+II. R ELATED W ORK
+In this section, the existing researches related to our work
+are reviewed from the aspect of artificial intelligence for
+vehicle–road collaboration, traffic flow prediction, and route
+planning.
+Development of artificial intelligence technologies,
+including DL and reinforcement learning (RL), promotes
+popularization of intelligent services. Also, vehicle–road
+collaboration connects vehicles with intelligent RSUs,
+improving insufficiency of on-board computing power and
+providing extra environmental information for vehicles. To this
+end, combination of artificial intelligence and vehicle–road
+collaboration has attracted great attention to provide delaysensitive IoV services. To help emergency vehicles arrive
+faster, Ding et al. [18] proposed a learning-based cooperative
+vehicle–road scheduling framework named LEVID. In
+LEVID, a real-time route planning module was designed based
+on the artificial potential field method and a traffic signal
+control module was designed using graph attention RL. The
+two modules interacted with each other and made decisions
+iteratively. Chen et al. [19] proposed vehicle-infrastructure
+cooperation based approach to detect road hazards. They
+generalized vital features from few road hazard data through
+a meta-learning paradigm, designed a lightweight detection
+model to adapt to vehicles’ low-computing power, and
+used knowledge distillation to reduce complexity of model
+and data. The proposed approach remarkably improves the
+accuracy and traffic flow prediction. Cui et al. [20] presented
+a data-driven Cloud-Fog-Edge Collaborative Driver–Vehicle–
+Road framework to provide high-quality ITS services while
+protecting customers’ privacy. Cao et al. [21] reduced delay
+of IoV services by accurately determining vehicle network
+conditions based on the fuzzy theory and effectively offloading
+service requests based on RL.
+As a key part of intelligent transport system, accurate
+traffic flow prediction makes great contributions on mitigating congestion and making safer and cost-efficient travel.
+Ma et al. [22] developed a novel traffic flow prediction model
+to further improve the accuracy of short-term traffic flow
+prediction. They obtained a stable time series as input of
+model by conducting time series analysis as well as smoothing
+and standardization processing on traffic flow data, and established an improved LSTM network model based on LSTM
+and bidirectional LSTM. Li et al. [23] developed a novel
+multisensor data correlation graph convolution network model,
+called MDCGCN, to improve traffic flow prediction accuracy.
+Compared with existing work, MDCGCN enables to conduct
+medium and long-term traffic prediction through analyzing the
+complex and changeable spatial–temporal correlation among
+roads. Different from former studies mainly focused on
+flow forecasting in a regular grid region, Ali et al. [24]
+designed a deep hybrid spatio-temporal dynamic networks,
+called DHSTNet, to forecast both the inflow and outflow of
+irregular grid regions at the same time. They also developed
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+39628
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 24, 15 DECEMBER 2024
+
+and integrated graph convolutional network with DHSTNet
+model to concurrently capture all dependencies in the irregular
+grid regions. Wang et al. [25] proposed an accurate localitysensitive hashing-based traffic flow prediction approach to
+ensure high-accuracy and time-efficient traffic flow prediction
+while protecting customers’ privacy.
+As another significant part of intelligent transport system,
+reasonable route planning can help minimize logistics and
+tour costs. Teng et al. [26] provided a detailed overview
+and discussion of the latest motion planning methods for
+autonomous vehicles. These methods contribute to enhancing
+the convenience of autonomous vehicles and further promoting
+their global proliferation. In [27], the problems caused by
+traffic congestion are thoroughly analyzed, highlighting the
+effectiveness of traffic control, including path planning, in
+addressing these issues. Additionally, Li et al. [27] introduced
+path planning in mixed traffic environments. Lin et al. [28]
+proposed a distributed-learning-based vehicle routing decision algorithm using multiagent RL to alleviate the traffic
+congestion. The proposed algorithm not only greatly shorten
+decision delay but also effectively reduces waiting time of
+vehicles on the road. Liang et al. [29] designed a preservingprivacy route planning scheme in vehicular ad-hoc network
+based on oblivious transfer. In the scheme, vehicles deduce
+information of RSUs with the help of the certification authority
+who does not know the source of deduced information. After
+fast authentication is achieved between vehicles and RSUs,
+communication between adjacent vehicles is established. The
+scheme provides fast route planning for vehicles while well
+preserving customers’ privacy. In order to optimize route
+planning in the air-ground integrated network, Cai et al. [30]
+proposed an optimization strategy of accompanying graph
+navigation for unmanned devices. The proposed strategy helps
+reduce the power consumption and CO2 gas emissions of
+unmanned devices. Aiming at minimizing the earliness and
+tardiness of a specified delivery time while minimizing the
+total completion time, Nishida and Nishi [31] developed a
+heuristic solution procedure to derive a conflict-free routing
+problem through which earliness and tardiness penalties are
+minimized while the total completion time of each task is also
+minimized under dynamic task arrivals.
+Although extensive research has been conducted on path
+planning within IoV, only a limited number of studies have
+considered harnessing the powerful vehicle–road collaboration. Furthermore, most path planning schemes rely solely on
+real-time road conditions, making it challenging to adapt to
+future traffic congestion. Therefore, to further enhance path
+planning effectiveness and improve driver satisfaction, it is
+necessary to conduct future traffic flow predictions based path
+planning with vehicle–road collaboration.
+III. S YSTEM M ODEL AND P ROBLEM D EFINITION
+A. System Framework
+The vehicle–road cooperative system (VRCS) utilizes
+advanced wireless communication and IoV technologies to
+achieve dynamic real-time bidirectional interaction between
+vehicles and roads. Base stations (BSs) and RSUs utilize
+
+Fig. 1.
+
+Framework of vehicle road cooperation system in AIoV.
+TABLE I
+S UMMARY OF N OTATIONS
+
+collected road information and employ artificial intelligence to
+provide intelligent services, such as route planning to vehicles.
+Fig. 1 illustrates the framework of VRCS. Table I enumerates
+the primary notations utilized in this article.
+In VRCS, intelligent vehicles equipped with wireless communication capabilities to communicate with infrastructure at
+the roadside. The RSUs are distributed along the sides of the
+road and communicate with vehicles within their coverage
+area through wireless links. BS is situated in an open area
+and is connected to multiple RSUs through wired links,
+facilitating real-time data exchange between them. Due to the
+specific geographical characteristics, the road network can be
+modeled as G = {V, E}. V is the set of road nodes, V =
+{v1 , . . . , vi , . . . , vN }, vi represents the ith node in G and N is
+the number of nodes. E = {e1 , . . . , ej , . . . , eM } is the set of
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+LIU et al.: CONGESTION-AWARE PATH PLANNING WITH VEHICLE–ROAD COOPERATION
+
+edges between nodes in G and M is the number of edges.
+Taking into account practical factors, i.e., the nodes within
+G are not necessarily interconnected, the introduction of the
+adjacency matrix A is necessary. A ∈ RN×N and the value of
+Ai,j is based on the following equation that:
+
+1, vi connects to vj
+Ai,j =
+(1)
+0,
+otherwise.
+The matrix A contains only 0s and 1s, making A an
+N-dimensional Boolean matrix. Due to the noncomplete connectivity of nodes in G, it is evident that M ≤ N 2 .
+B. Travel Consumption Model
+Vehicles traveling on the road have information, such as the
+origin, destination, and current location. Therefore, the travel
+information of a vehicle can be represented using a triplet
+<o, p, d>, where o is the origin point, p and d are the current
+location and destination, respectively. As shown in Fig. 1, during the process of traveling from the origin to the destination,
+there may be multiple routes. W = {w1 , . . . , wk , . . . , wK } is
+adopted to represent the set of all possible routes, where wk is
+a list containing the roads traversed on the kth possible route.
+The objective of this scheme is to identify the most suitable
+route from numerous possibilities, taking into account factors,
+such as total travel time and total travel distance.
+Traffic speed is chosen as the traffic information for roads,
+as traffic congestion levels and other information related to
+traffic flow can be inferred from traffic speed. The speed
+information of roads is recorded using the matrix S ∈ RN×T ,
+where N is the number of nodes and T is the time span of
+the recorded data. So, si is the speed of vi during the current
+time period. 1 Since the planned routes will be executed
+in future time intervals, accurate prediction of future traffic
+speeds can be achieved by utilizing historical traffic speed data.
+This approach aims to enhance road planning effectiveness by
+relying on future traffic speed. The prediction process can be
+represented by the following equation that:
+
+
+(2)
+si = f siT−t , . . . , sTi
+where f is the prediction function and will be detailed in
+Section IV. The length of the roads is recorded in the set
+L = {l1 , . . . , li , . . . , lN }, where li is the length of vi . Therefore,
+the time consumption for traveling through vi on route wk can
+be calculated using (3) that
+ci =
+
+li
+.
+si
+
+(3)
+
+Therefore, the total travel time for wk can be calculated using
+the following equation that:
+ρk =
+
+N
+
+
+ci × αik
+
+(4)
+
+i=1
+1 In this manuscript, according to the definition of the road network G,
+
+during time period t, “node speed” is equivalent to the traffic speed of the
+corresponding road segment, as well as “node length.”
+
+39629
+
+where
+αik
+
+
+1, vi ∈ wk
+=
+0, otherwise.
+
+(5)
+
+It is worth noting that unexpected events, such as traffic
+accidents, are not accounted for as additional waiting time for
+vehicles. Total distance of the route can be calculated using
+the following equation that:
+σk =
+
+N
+
+
+li × αik .
+
+(6)
+
+i=1
+
+Another equally important factor is the congestion level of
+the road, which often significantly influences the driving
+experience of the driver. The congestion level of the vi can be
+calculated based on the following equation that:
+ηi = 1 −
+
+si
+si
+
+(7)
+
+where si is the theoretical speed of vi . When there are no
+vehicles on the road, vi is the maximum speed at which a
+vehicle can travel on that road. This equation signifies that as
+the actual speed si of vi becomes smaller than the theoretical
+speed si , the congestion level ηi of vi increases. The overall
+congestion level of wk is determined by the following equation
+that:
+N
+k
+i=1 li × ηi × αi
+.
+(8)
+γk = 
+N
+k
+i=1 li × αi
+This not only takes into consideration the congestion level of
+the road but also includes the length of the road as a weight
+in the calculation. This aligns more with reality, as roads with
+higher congestion levels and greater lengths tend to have a
+more significant impact on reducing the driving experience for
+the driver.
+C. Problem Definition
+After accurately modeling the three most critical factors
+in the path planning process, namely, driving time, driving
+distance, and road congestion level, the objective of optimal
+path planning becomes evident. It is to select the path that
+minimizes the overall combination of these three factors from
+numerous possible routes. The comprehensive value of the
+three factors for route wk can be calculated through a weighted
+sum, as outlined in the following equation that:
+k = w1 ρk + w2 σk + w3 γk
+
+(9)
+
+where w1 , w2 , and w3 are adjustable parameters used to
+control the importance of different factors.
+Hence, the formalized problem is given as
+min k , k ∈ [1, K],
+s.t. |wk | ≤ N
+
+(10)
+(11)
+
+where |wk | represents the number of roads included in route
+wk and |wk | ≤ N restricts that the number of roads in route
+wk must be less than the total number of roads in G.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+39630
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 24, 15 DECEMBER 2024
+
+Algorithm 1: Traffic Flow Prediction Using STGNN
+Input: Historical traffic flow data S, road adjacency
+matrix A and the length of roads L.
+Output: Traffic flow prediction result
+ST = [s1 , . . . , st , . . . , sT ]
+1 Construct an undirected graph G = (V, E) based on A;
+for each episode do
+2
+for (i = 1; i< = N; i + +) do
+3
+for ej ∈ (i) do
+4
+Computing the influence of node ej on ei
+with respect to lj and li ;
+5
+end
+6
+Aggregating spatial information from neighboring
+nodes
+by equation (13) that
+Fig. 2. Traffic flow prediction using STGNN integrated with TCN.
+sti  = j∈(i) G(sti , e(i,j) , stj );
+7
+Leveraging the temporal dimension’s information
+aggregation,
+by equation (15) that
+IV. O PTIMAL PATH P LANNING S CHEME IN AI OV
+k−1 as delineated
+ =
+
+w
+∗
+S
+.
+S
+t
+i=0 i
+t−di
+This section provides a detailed presentation of the proposed
+end
+scheme RPFP to address the optimization problem modeled 8
+Obtain the prediction result St .
+in Section III. The section is divided into two parts. The first 9
+part focuses on precise prediction of traffic flow using spatio- 10 end
+temporal GNNs. And the second part involves optimal path 11 Return the traffic flow prediction results;
+planning with RL.
+A. Traffic Flow Prediction Using STGNN
+The efficacy of STGNN lies in its capacity to concurrently
+address interdependencies within spatial and temporal dimensions, rendering it well-suited for intricate traffic network
+configurations, thereby garnering considerable attention in
+the field of traffic flow prediction. The GNN integrated
+into STGNN adeptly captures the spatial intricacies of road
+networks by assimilating information from proximate nodes.
+Concurrently, the time series prediction module meticulously
+explores the temporal dynamics intrinsic to the model.
+It can be inferred from Section III that the traffic flow record
+embedding vectors of graph G is S ∈ RN×T , so the embedding
+vectors of graph G at time t is St = [st1 , . . . , sti , . . . , stN ], as
+illustrated on the left side of Fig. 2. Utilizing GNNs enables
+the aggregation of flow information between different nodes
+through the spatial connectivity of the graph G. The specific
+process is illustrated as follows:
+St = G(St )
+= G st1 , . . . , sti , . . . , stN
+
+(12)
+
+where G is the objective function and is depicted as the
+spatial prediction module in Fig. 2. The more detailed process
+of information updating between nodes is defined by the
+following equations:
+
+ 
+
+(13)
+sti =
+G sti , e(i,j) , stj
+j∈(i)
+
+where (i) is the set of all neighbor nodes of ei and e(i,j)
+is the importance of the features of node ej to ei , indicating
+the connectivity between roads in the proposed traffic flow
+prediction scenario. It is noteworthy that e(i,j) is usually =
+e(j,i) , which implies that the influence between node ej and
+
+node ei is asymmetrical, signifying a difference in their mutual
+impact on each other. This is due to certain roads being
+one-way streets, a real-world constraint that determines this
+characteristic.
+To mitigate challenges, such as gradient explosion or vanishing gradients, frequently encountered in the training process
+of traditional sequential prediction networks like RNNs and
+LSTMs, this scheme creatively employs TCN as the means
+for temporal prediction. TCN utilizes convolutional operations instead of recursive operations to process input data
+and employs dilated causal convolutional layers to expand
+the receptive field. The specific prediction function can be
+referenced from the temporal prediction module in Fig. 2. Its
+mathematical form is as follows:
+
++b
+St = F w ∗ St−d
+
+(14)
+
+where F is the activation function, w is the convolutional
+kernel, and b represents the bias term. To attain a comprehensive insight into the Dilated Causal Convolution operation,
+one is encouraged to consult the ensuing equation that
+St
+
+=
+
+k−1
+
+
+
+wi ∗ St−di
+.
+
+(15)
+
+i=0
+
+Here, k denotes the dimension of the convolutional kernel,
+while d signifies the dilation factor.
+Utilizing the STGNN, a method for predicting traffic flow
+that concurrently addresses both spatial and temporal dimensions has been developed. The integration of TCN as the
+temporal prediction model effectively mitigates the challenge
+of vanishing gradients. For comprehensive details regarding
+the proposed scheme, kindly refer to Algorithm 1.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+LIU et al.: CONGESTION-AWARE PATH PLANNING WITH VEHICLE–ROAD COOPERATION
+
+B. Congestion-Aware Path Planning in AIoV
+This section furnishes an elaborate introduction to the
+path planning scheme, segmented into distinct sections: the
+definition of Markov decision process (MDP) and the path
+planning scheme based on D3QN.
+1) Definition of MDP: The primary aim of RL algorithms
+is to iteratively train the agent through interactions with the
+environment, empowering it to autonomously make decisions
+that lead to the maximization of cumulative rewards. In the
+context of path planning, these algorithms engage in experiential learning by interacting with the environment, considering
+factors, such as the current road distance to the destination
+and the fundamental conditions of roads connected to the
+current road. The ultimate objective is to cultivate the agent’s
+capability to select paths characterized by shorter distances,
+reduced time requirements, and lower congestion levels as the
+planned route.
+The MDP serves as a fundamental model widely utilized in
+RL, with prevalent applications in disciplines like economics
+and operations research. Key components of an MDP consist
+of four essential elements: 1) state space (St); 2) action space
+(Ac); 3) state transition probabilities (Po); and 4) reward
+function (Re), succinctly represented as M = (St, Ac, Po, Re).
+Subsequently, detailed explanations for the aforementioned
+four elements in the context of path planning will be presented.
+1) State Space: Throughout the vehicle’s trajectory, the
+evolution of the state space is contingent upon alterations
+in the occupied road segment. Consequently, the definition of the state space is intricately linked to the current
+road segment. The precise delineation is articulated as
+follows:
+St(i) = {[ei ], [Cg(i)], [Ds(i)], [d]}
+
+(16)
+
+where ei signifies the present road. Cg(i) denotes the
+congestion level of the road linked to ei , while roads
+not connected to ei are regarded as having an infinite
+congestion level. Ds(i) represents the length of the
+road associated with ei , with roads not connected to ei
+considered to have an infinite length. The variable d
+signifies the destination of the ongoing journey.
+2) Action Space: In the domain of path planning, the
+agent’s actions align with the count of roads linked to
+the current road segment. Generating distinct numerical
+outputs signifies the road that the agent intends to
+navigate to in the subsequent step. Ac is used to represent
+the action space.
+3) State Transition Probabilities: The state transition probabilities pertains to the probability of transitioning from
+the current state St(i) to the next state St(i + 1), contingent on the actions output by the agent. The intricate
+computational process will be elucidated through the
+following equations:
+Pb = (St(i + 1)|St(i), ac(i))
+
+(17)
+
+where ac(i) is the action.
+4) Rewards Mechanism: As the agent iteratively refines its
+path planning strategy, the output action at each step
+
+39631
+
+plays a pivotal role in reward calculation. Opting for a
+road segment that is shorter in distance, exhibits lower
+congestion, and brings the agent closer to the destination
+results in a positive increase in the reward. The specific
+calculation process is outlined as follows:
+Re = ζ ∗ Ds(i) + τ ∗ Cg(i) + χ .
+
+(18)
+
+In the above equation, parameters ζ and τ are employed
+to modulate the reward and can be adjusted according to
+distinct scenarios. Additionally, χ symbolizes the reward
+penalty, exhibiting a positive value when the subsequent
+road is closer to the destination and a negative value
+when it is farther away from the destination.
+2) Path Planning Scheme Based on D3QN: DQN is a RL
+algorithm adept at effectively tackling problems characterized
+by discrete action spaces, utilizing deep neural networks to
+navigate high-dimensional spaces. Nevertheless, the application of DQN often encounters the challenge of “maximization
+bias.” In response to this, Double DQN was introduced,
+successfully alleviating the issue by modifying the calculation
+method for target values. Analogous to Double DQN, Dueling
+DQN represents an enhanced iteration of DQN. Through
+the introduction of the “dueling” architecture, Dueling DQN
+decomposes the Q-value function into two functions: 1) the
+state value of the given state and 2) the advantage values
+for each action. By enhancing the modeling of state values
+and action advantages, Dueling DQN notably enhances the
+performance and learning efficiency of DQN.
+The scheme implemented herein leverages the dueling
+double deep Q network (D3QN), amalgamating key principles
+from both the Double DQN and Dueling DQN algorithms.
+This amalgamation is designed to augment learning stability
+and mitigate the challenge of overestimation, rendering it
+particularly efficacious in RL tasks marked by heightened
+uncertainty and complexity. This rationale underscores the
+selection of D3QN for path planning in this scheme.
+1) Environment of Path Planning: As illustrated in Fig. 3,
+RSUs collect the environment data essential for RL
+from the trajectories of vehicles within their designated
+coverage areas. These RSUs furnish the requisite tuples
+to the agent during the training phase. Initially, the
+agent initializes network parameters and an experience
+replay memory. Subsequently, guided by the environment, the agent performs actions, calculates rewards,
+and observes state transitions. The acquired training
+experiences are stored in the memory. Upon reaching its
+capacity limit, training samples are randomly extracted
+from the memory to train the two networks.
+2) Training of Networks in D3QN: Within the framework of
+D3QN, the training objective for the Critic network is to
+acquire an approximation of the state-action value function, endeavoring to align its output Q-values closely
+with the actual optimal Q-values. The loss function of
+the primary critic network is calculated by
+N
+ 
+1
+Q Stk (i), Ack (i); θ c − yk
+L θC =
+N
+k=1
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+2
+
+39632
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 24, 15 DECEMBER 2024
+
+Algorithm 2: Path Planning Based on D3QN
+Input: Space of state St, Space of action Ac and the
+network of D3QN.
+Output: Strategies for path planning
+1 Initialize network parameters and the buffer memory;
+2 Size of buffer memory π = 0;
+3 for each episode do
+4
+Reset the reinforcement learning environment;
+5
+for t in episode do
+6
+The critic network outputs the action;
+7
+Compute the reward using equation (18);
+8
+if π reaches the preset value then
+9
+Sample from buffer memory for training;
+10
+Compute yk using
+yk = rk (i) + γ maxa Q(Stk+1 (i), a ; θ T );
+11
+Getting the loss as L(θ C ) =
+1 N
+2
+Q(Stk (i), Ack (i); θ c ) − yk ;
+N k=1
+Fig. 3. Path planning scheme based on D3QN.
+12
+Updating the network parameters with
+∗
+θ C ← θ C − α∇θ C L(θ C );
+13
+Updating θ T after several steps with
+1 
+Q(s, a; θ ) = V(s; θ ) + A(s, a; θ ) −
+A s, a ; θ
+θ T ← θ C.
+|A| 
+a
+14
+end
+(19) 15
+end
+16 end
+c
+where θ is the parameters of critic network and N is the
+T
+C
+size of the sample batch. Q(Stk (i), Ack (i); θ c ) denotes 17 Return θ , θ and the network of D3QN;
+the output of the Critic network, signifying the Q-value 18 Output the strategies for path planning.
+obtained by selecting action Ack (i) in state Stk (i). The
+target value is calculated by
+(20) approach are inferred through the analysis of experimental
+yk = rk (i) + γ max Q Stk+1 (i), a ; θ T
+a
+results.
+
+where a represents any action that can be taken in the
+next state Stk+1 (i). And rk (i) is the reward in the current A. Experimental Setup
+state, γ represents the discount factor.
+Two data sets are employed for the evaluation of traffic flow
+3) Network Parameters Updating: In D3QN, the Critic prediction. Without loss of generality, the data set utilized is
+network is updated using the gradient descent method. the traffic flow data set.
+Iteratively, the network parameters are adjusted based
+1) SZ-Taxi: This data set was collected from taxi trajecon the computed loss value, employing a predetermined
+tories in Shenzhen over a period of 31 days, from
+learning rate until the model converges.
+Jan.1 to Jan.31, 2015. The data comprises traffic flow
+ 
+∗
+information collected at fixed time intervals for roads
+(21)
+θ C ← θ C − α∇θ C L θ C .
+within the region. The included adjacency matrix delineates the connectivity between roads.
+Equation (21) elucidates the process of updating the
+2) Los-Loop: This data set is obtained from detection
+parameters of the critic network, with the parameters of
+sensors on Los Angeles highways, covering the period
+the target network being copied from the critic network
+from Mar.1 to Mar.7, 2012. Similar to the SZ-taxi data
+after several training steps.
+set, it also incorporates an adjacency matrix illustrating
+Algorithm 2 shows the details of the path planning scheme in
+the connectivity between roads.
+IoV.
+The complexity of Algorithm 2 is O(E × T × f (N)), where In the experiments, 70% of each data set is utilized as the
+E represents the number of episodes, T represents the number training data set, with the remaining 30% serving as the
+of time steps, and f (N) denotes the forward propagation validation data set. Experiments are implemented in python
+complexity of the neural network with N being the number 3.10, Pytorch 2.0 and conducted on the server with Intel i7of parameters. The above offers an intricate elucidation of the 8700 CPU (3.2 GHz, 6 cores), 32-GB DRAM, and NVIDIA
+RTX 3090 GPU.
+path planning scheme.
+V. E XPERIMENT AND A NALYSIS
+Experimental setup and comparative experiments are
+presented. The efficacy and superiority of the proposed
+
+B. Analysis of the Prediction Performance
+To precisely capture the spatial and temporal characteristics
+of road traffic flow, this approach employs STGNN-TCN.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+LIU et al.: CONGESTION-AWARE PATH PLANNING WITH VEHICLE–ROAD COOPERATION
+
+39633
+
+trends, but it deviates notably from the actual data, with only a
+few data points matching. Conversely, methods focusing solely
+on a single dimension face challenges in accurately capturing
+the evolving patterns in traffic flow.
+To further illustrate the performance of different schemes in
+traffic flow prediction tasks, we leverage more intuitive data
+and employ various evaluation metrics. The specific details are
+outlined below.
+1) Mean Absolute Error (MAE): MAE is the average of
+the absolute errors, providing a better reflection of the
+actual prediction value errors. MAE is calculated as
+1
+|ŷi − yi |.
+n
+n
+
+MAE =
+Fig. 4.
+
+Traffic flow prediction with different schemes.
+
+Furthermore, to assess the effectiveness and superiority of
+the proposed method in traffic flow prediction, four distinct
+schemes have been implemented. The particulars of each
+comparative approach are outlined as follows.
+1) Traffic Flow Prediction With TCN (TCN): The scheme
+utilizes TCN as the traffic flow prediction model,
+employing 1-D convolutional layers with dilated kernels
+to extract temporal features from time-series data [32].
+This configuration enables accurate prediction of traffic
+flow.
+2) Traffic Flow Prediction With GRU (GRU): GRU, as an
+enhanced iteration of RNN, adeptly tackles challenges,
+such as gradient explosion or vanishing gradients [33].
+Its proficiency in long-term time series prediction
+renders it suitable for applications like traffic flow
+prediction.
+3) Traffic Flow Prediction With GNN (GNN): GNN exhibits
+proficiency in handling data with a graph structure,
+enabling exploration of mutual influences between roads
+within complex road networks. This capability is particularly well-suited for scenarios involving traffic flow
+prediction.
+4) Traffic Flow Prediction With RNN Integrating TCN
+(RNN-TCN): RNN, a fundamental neural network
+architecture, is commonly employed for inferring and
+predicting time series data. Through integration with
+TCN, RNN can achieve enhanced training efficiency and
+improved performance in traffic flow prediction.
+5) Traffic Flow Prediction With STGNN Incorporating GRU
+(STGNN-GRU): STGNN excels at concurrently capturing features from both spatial and temporal dimensions,
+rendering it particularly suitable for intricate road scenarios with spatial distribution characteristics. In the
+STGNN employed in this scheme, GRU serves as the
+temporal prediction model.
+Fig. 4 portrays the predictive performance of various
+schemes over ten time intervals, with the red solid line
+denoting the original traffic flow data. The graph clearly
+indicates that STGNN-TCN demonstrates superior predictive
+performance, closely aligning with the trends and values of the
+original data. STGNN-GRU exhibits some adherence to the
+
+(22)
+
+i=1
+
+2) Mean Absolute Percentage Error (MAPE): MAPE represents an enhancement over MAE, as it computes the
+percentage error between actual and predicted values.
+This mitigates the influence of data range, providing a
+more robust evaluation metric. The calculation equation
+is shown as
+
+n 
+100%  ŷi − yi 
+(23)
+MAPE =
+ y .
+n
+i=1
+
+i
+
+3) Root Mean Square Error (RMSE): RMSE quantifies
+the average deviation between predicted and actual
+values, sharing the same unit as the target values. The
+calculation equation of RMSE is that
+
+ n
+1 
+2
+RMSE = 
+(24)
+ŷi − yi .
+n
+i=1
+
+The performance of the mentioned schemes under various
+evaluation metrics is presented in Table II. Observing Table II,
+it is evident that across various metrics, STGNN-TCN demonstrates the best performance, followed by STGNN-GRU. A
+preliminary analysis attributes this trend to the consideration
+of features in both temporal and spatial dimensions exclusively
+in these two schemes among the five experimental setups. The
+other three schemes, focusing solely on features in a single
+dimension, exhibit comparatively poorer performance, ranked
+from best to worst as TCN, RNN-TCN, GCN, and GRU.
+Furthermore, through joint validation on two data sets, the
+proposed traffic flow prediction scheme consistently attains
+optimal results.
+C. Analysis of the Path Planning Performance
+To attain superior path planning results, we propose a path
+planning strategy grounded in the RL algorithm D3QN. In
+an effort to identify the optimal RL algorithm for discrete
+action problems and to compare the effectiveness of the RLbased path planning strategy with other approaches, we further
+implement the following strategies.
+1) Path Planning Scheme Based on DQN (DQN): This
+scheme is rooted in the classical RL algorithm
+DQN, which amalgamates Q-learning with deep neural
+networks, rendering it effective for addressing discrete
+action problems in deep RL.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+39634
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 24, 15 DECEMBER 2024
+
+TABLE II
+D IFFERENT M ETRIC VALUES OF D IFFERENT S CHEMES
+
+Fig. 6.
+
+Fig. 5.
+
+Rewards and variances of D3QN with different network layers.
+
+2) Path Planning Scheme Based on DDQN (DDQN):
+Double DQN (DDQN) represents an improvement over
+DQN, employing two Q networks: one for action selection and the other for estimating the value of that
+action [34]. This architecture is designed to address the
+overestimation problem.
+3) Path Planning Scheme Based on Dijkstra (Dijkstra):
+Dijkstra is a greedy search algorithm that iteratively
+expands the most promising path at each step, ensuring
+optimality in finding the shortest path within a weighted
+graph.
+4) Path Planning Scheme Based on ACO (ACO): Swarm
+intelligence, inspired by the foraging behavior of
+ants, utilizes a probabilistic approach to simultaneously
+explore multiple paths. However, it does not guarantee
+the discovery of the absolute optimal path; instead, it
+can only find statistically good solutions.
+In RL, the intricacies of the environment present challenges
+for a single-layer network in the path planning scheme.
+Therefore, a critical initial step involves determining the
+appropriate number of network layers. Fig. 5 below illustrates
+the variations in rewards and variance for D3QN with different
+network layer configurations in a complex environment.
+From Fig. 5, it is evident that when the network has only
+two layers, D3QN obtains rewards with significant oscillations
+and high variance. As the number of layers increases to three,
+the oscillation amplitude of the rewards decreases, and the
+
+Reward of DQN, DDQN, D3QN under different routes.
+
+variance reduces, but the ideal performance is not yet achieved.
+D3QN with four and five layers shows better performance
+in terms of reward trends and variance, with little difference
+between them. Considering that a higher number of network
+layers would incur more time and resource consumption
+during training, after analysis, it is determined that D3QN
+requires a four-layer network for executing the path planning
+task.
+After determining the appropriate number of network layers,
+the subsequent step involves comparing RL algorithms. Three
+distinct RL algorithms are utilized with the same number
+of network layers and training rounds. From Fig. 6, it is
+evident that under three different routes (30, 60, 90), the
+average rewards achieved by D3QN are higher than those
+of DQN and DDQN. This suggests that D3QN is the most
+suitable for executing path planning tasks. As shown in Fig. 7,
+with an increase in the number of routes, the variance of all
+three strategies gradually decreases. Moreover, D3QN exhibits
+the smallest reward variance, indicating that its performance
+is more stable. D3QN demonstrates a reduction in variance
+by 36% compared to DQN and 8.4% compared to DDQN.
+Considering both Figs. 6 and 7, D3QN outperforms the other
+two RL algorithms across the three different routes.
+We conducted a comparison between Dijkstra and ACO
+with the path planning scheme proposed in this article,
+utilizing criteria, such as the distance of the path and the
+time taken, to traverse it. Five pairs of start and destination
+points were randomly selected as test paths. As depicted in
+Fig. 8, D3QN outperforms in terms of planning path distance,
+selecting the shortest path. ACO performs well, while Dijkstra
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+LIU et al.: CONGESTION-AWARE PATH PLANNING WITH VEHICLE–ROAD COOPERATION
+
+39635
+
+VI. C ONCLUSION
+
+Fig. 7.
+
+Variance of DQN, DDQN, D3QN under different routes.
+
+In addressing the challenges of achieving high-quality path
+planning in complex road networks and enhancing the driving
+experience, a vehicle–road cooperation framework is proposed
+in AIoV. Additionally, a congestion-aware path planning
+scheme, named RPFP, has been formulated. RPFP utilizes
+STGNN-TCN for efficient and accurate traffic flow prediction,
+serving as the decision foundation for path planning. The path
+planning algorithm based on D3QN can achieve targeted path
+planning in complex decision environments. In future work,
+we will focus on the collaborative control strategy of signal
+lights in traffic flow optimization in coordination with the
+present study.
+R EFERENCES
+
+Fig. 8.
+
+Distance of planned path under D3QN, Dijkstra, ACO.
+
+Fig. 9.
+
+Time consumption of planned path under D3QN, Dijkstra, ACO.
+
+shows the poorest performance. Concerning distance, D3QN
+demonstrates reductions of 12.6% and 4.63% in comparison
+to Dijkstra and ACO, respectively. The analysis concludes that
+the poor performance of Dijkstra is attributed to its tendency
+to reach local optimal solutions in large-scale maps or long
+path planning scenarios.
+Fig. 9 illustrates the time consumption for five test paths
+under three different path planning schemes. It can be observed
+that in most cases, D3QN performs well, ACO occasionally
+matches the time spent by D3QN, and Dijkstra remains the
+least efficient. Concerning travel time, D3QN demonstrates
+reductions of 16.9% and 21% in comparison to Dijkstra and
+ACO, respectively.
+
+[1] R. Mishra, H. P. Gupta, R. Kumar, and T. Dutta, “Leveraging augmented intelligence of things to enhance lifetime of UAV-enabled aerial
+networks,” IEEE Trans. Ind. Informat., vol. 19, no. 1, pp. 586–593,
+Jan. 2023.
+[2] D. Javeed, T. Gao, M. S. Saeed, and M. T. Khan, “FOG-empowered
+augmented-intelligence-based proactive defensive mechanism for IoTenabled smart industries,” IEEE Internet Things J., vol. 10, no. 21,
+pp. 18599–18608, Nov. 2023.
+[3] X. Zhou et al., “Edge computation offloading with content caching
+in 6G-enabled IoV,” IEEE Trans. Intell. Transp. Syst., vol. 25, no. 3,
+pp. 2733–2747, Mar. 2024.
+[4] P. Arthurs, L. Gillam, P. Krause, N. Wang, K. Halder, and A. Mouzakitis,
+“A taxonomy and survey of edge cloud computing for intelligent
+transportation systems and connected vehicles,” IEEE Trans. Intell.
+Transp. Syst., vol. 23, no. 7, pp. 6206–6221, Jul. 2022.
+[5] L. Xu, X. Zhou, M. A. Khan, X. Li, V. G. Menon, and X. Yu,
+“Communication quality prediction for Internet of Vehicle (IoV)
+networks: An Elman approach,” IEEE Trans. Intell. Transp. Syst.,
+vol. 23, no. 10, pp. 19644–19654, Oct. 2021.
+[6] J. Zhang et al., “HiVeGPT: Human-machine-augmented intelligent
+vehicles with generative pre-trained transformer,” IEEE Trans. Intell.
+Veh., vol. 8, no. 3, pp. 2027–2033, Mar. 2023.
+[7] S. Aggarwal and N. Kumar, “Path planning techniques for unmanned
+aerial vehicles: A review, solutions, and challenges,” Comput. Commun.,
+vol. 149, pp. 270–299, Jan. 2020.
+[8] C. Lin, G. Han, J. Du, T. Xu, L. Shu, and Z. Lv, “Spatiotemporal
+congestion-aware path planning toward intelligent transportation systems
+in software-defined smart city IoT,” IEEE Internet Things J., vol. 7,
+no. 9, pp. 8012–8024, Sep. 2020.
+[9] P. W. Shaikh, M. El-Abd, M. Khanafer, and K. Gao, “A review on
+swarm intelligence and evolutionary algorithms for solving the traffic
+signal control problem,” IEEE Trans. Intell. Transp. Syst., vol. 23, no. 1,
+pp. 48–63, Jan. 2022.
+[10] W. Wang, T. Qie, C. Yang, W. Liu, C. Xiang, and K. Huang, “An intelligent lane-changing behavior prediction and decision-making strategy
+for an autonomous vehicle,” IEEE Trans. Ind. Electron., vol. 69, no. 3,
+pp. 2927–2937, Mar. 2021.
+[11] V.-L. Nguyen, R.-H. Hwang, and P.-C. Lin, “Controllable path planning
+and traffic scheduling for emergency services in the Internet of Vehicles,”
+IEEE Trans. Intell. Transp. Syst., vol. 23, no. 8, pp. 12399–12413, 2021.
+[12] X. Wang et al., “Traffic flow prediction via spatial temporal graph neural
+network,” in Proc. Web Conf., 2020, pp. 1082–1092.
+[13] D. A. Tedjopurnomo, Z. Bao, B. Zheng, F. M. Choudhury, and A. K. Qin,
+“A survey on modern deep neural network for traffic prediction: Trends,
+methods and challenges,” IEEE Trans. Knowl. Data Eng., vol. 34, no. 4,
+pp. 1544–1561, Apr. 2022.
+[14] F. Li et al., “Dynamic graph convolutional recurrent network for traffic
+prediction: Benchmark and solution,” ACM Trans. Knowl. Disc. Data,
+vol. 17, no. 1, pp. 1–21, 2023.
+[15] C. Liu et al., “An improved heuristic mechanism ant colony optimization
+algorithm for solving path planning,” Knowl.-Based Syst., vol. 271,
+Jul. 2023, Art. no. 110540.
+[16] Y. V. Pehlivanoglu and P. Pehlivanoglu, “An enhanced genetic algorithm
+for path planning of autonomous UAV in target coverage problems,”
+Appl. Soft Comput., vol. 112, Nov. 2021, Art. no. 107796.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+39636
+
+IEEE INTERNET OF THINGS JOURNAL, VOL. 11, NO. 24, 15 DECEMBER 2024
+
+[17] Z. Yu, Z. Si, X. Li, D. Wang, and H. Song, “A novel hybrid particle
+swarm optimization algorithm for path planning of UAVs,” IEEE
+Internet Things J., vol. 9, no. 22, pp. 22547–22558, Nov. 2022.
+[18] L. Ding et al., “Learning to help emergency vehicles arrive faster:
+A cooperative vehicle–road scheduling approach,” IEEE Trans. Mobile
+Comput., vol. 22, no. 10, pp. 5949–5962, Oct. 2023.
+[19] C. Chen, G. Yao, L. Liu, Q. Pei, H. Song, and S. Dustdar, “A
+cooperative vehicle-infrastructure system for road hazards detection with
+edge intelligence,” IEEE Trans. Intell. Transp. Syst., vol. 24, no. 5,
+pp. 5186–5198, May 2023.
+[20] Z. Cui et al., “Privacy and accuracy for cloud-fog-edge collaborative
+driver–vehicle–road relation graphs,” IEEE Trans. Intell. Transp. Syst.,
+vol. 24, no. 8, pp. 8749–8761, Aug. 202.
+[21] S. Cao et al., “Reinforcement learning based tasks offloading in vehicular edge computing networks,” Comput. Netw., vol. 234, Oct. 2023,
+Art. no. 109894.
+[22] C. Ma, G. Dai, and J. Zhou, “Short-term traffic flow prediction for
+urban road sections based on time series analysis and LSTM_BILSTM
+method,” IEEE Trans. Intell. Transp. Syst., vol. 23, no. 6, pp. 5615–5624,
+Jun. 2022.
+[23] W. Li, X. Wang, Y. Zhang, and Q. Wu, “Traffic flow prediction
+over muti-sensor data correlation with graph convolution network,”
+Neurocomputing, vol. 427, pp. 50–63, Feb. 2021.
+[24] A. Ali, Y. Zhu, and M. Zakarya, “Exploiting dynamic spatiotemporal graph convolutional neural networks for citywide traffic flows
+prediction,” Neural Netw., vol. 145, pp. 233–247, Jan. 2022.
+[25] F. Wang et al., “Privacy-aware traffic flow prediction based on multiparty sensor data with zero trust in smart city,” ACM Trans. Internet
+Technol., vol. 23, no. 3, pp. 1–19, Aug. 2023.
+[26] S. Teng et al., “Motion planning for autonomous driving: The state of
+the art and future perspectives,” IEEE Trans. Intell. Veh., vol. 8, no. 6,
+pp. 3692–3711, Jun. 2023.
+[27] J. Li, C. Yu, Z. Shen, Z. Su, and W. Ma, “A survey on urban traffic
+control under mixed traffic environment with connected automated
+vehicles,” Transp. Res. Part C, Emerg. Technol., vol. 154, Sep. 2023,
+Art. no. 104258.
+[28] K. Lin, C. Li, Y. Li, C. Savaglio, and G. Fortino, “Distributed learning
+for vehicle routing decision in software defined Internet of Vehicles,”
+IEEE Trans. Intell. Transp. Syst., vol. 22, no. 6, pp. 3730–3741,
+Jun. 2020.
+[29] Y. Liang, Y. Liu, and B. B. Gupta, “PPRP: Preserving-privacy route
+planning scheme in VANETs,” ACM Trans. Internet Technol., vol. 22,
+no. 4, pp. 1–18, 2022.
+[30] K. Cai et al., “Route planning based on parallel optimization in the airground integrated network,” IEEE Trans. Intell. Transp. Syst., vol. 24,
+no. 12, pp. 15762–15772, Dec. 2023.
+[31] K. Nishida and T. Nishi, “Dynamic optimization of conflict-free routing
+of automated guided vehicles for just-in-time delivery,” IEEE Trans.
+Autom. Sci. Eng., vol. 20, no. 3, pp. 2099–2114, Jul. 2023.
+[32] Y. Ren, D. Zhao, D. Luo, H. Ma, and P. Duan, “Global-local temporal
+convolutional network for traffic flow prediction,” IEEE Trans. Intell.
+Transp. Syst., vol. 23, no. 2, pp. 1578–1584, Feb. 2022.
+[33] W. Shu, K. Cai, and N. N. Xiong, “A short-term traffic flow prediction
+model based on an improved gate recurrent unit neural network,” IEEE
+Trans. Intell. Transp. Syst., vol. 23, no. 9, pp. 16654–16665, Sep. 2021.
+[34] Z. Chu, F. Wang, T. Lei, and C. Luo, “Path planning based on deep
+reinforcement learning for autonomous underwater vehicles under ocean
+current disturbance,” IEEE Trans. Intell. Veh., vol. 8, no. 1, pp. 108–120,
+Jan. 2023.
+
+Guoqiang Liu received the B.S. degree in software
+engineering from Nanjing University of Information
+Science and Technology, Nanjing, China, in 2022,
+where he is currently pursuing the master’s degree
+in software engineering.
+His research interests include mobile edge computing, Internet of Things, and deep learning.
+
+Muhammad Bilal (Senior Member, IEEE) received
+the Ph.D. degree in information and communication
+network engineering from the School of Electronics
+and Telecommunications Research Institute, Korea
+University of Science and Technology, Daejeon,
+South Korea, in 2017.
+From 2018 to 2023, he was an Associate Professor
+with the Division of Computer and Electronic
+Systems Engineering, Hankuk University of Foreign
+Studies, Yongin, South Korea. In 2023, he joined
+Lancaster University, Lancaster, U.K., where he
+is currently a Senior Lecturer with the School of Computing and
+Communications. His research interests include network optimization, cyber
+security, the Internet of Things, vehicular networks, information-centric
+networking, digital twin, artificial intelligence, and cloud/fog computing.
+
+Qingyang Wang is currently pursuing the bachelor’s
+degree in data science and big data technology
+with the School of Reading, Nanjing University
+of Information Science and Technology, Nanjing,
+China.
+His research interests include deep learning and
+edge computing.
+
+Xiaolong Xu (Senior Member, IEEE) received the
+Ph.D. degree in computer science and technology
+from Nanjing University, Nanjing, China, in 2016.
+He is currently a Full Professor with the School of
+Software, Nanjing University of Information Science
+and Technology. He has published more than 100
+peer-review articles in international journals and
+conferences, including the IEEE T RANSACTIONS
+ON K NOWLEDGE AND DATA E NGINEERING , IEEE
+T RANSACTIONS ON PARALLEL AND D ISTRIBUTED
+S YSTEMS, IEEE J OURNAL ON S ELECTED A REAS
+IN C OMMUNICATIONS , IEEE T RANSACTIONS ON S ERVICES C OMPUTING ,
+IEEE T RANSACTIONS ON F UZZY S YSTEMS, IEEE T RANSACTIONS ON
+I NTELLIGENT T RANSPORTATION S YSTEMS, IJCAI, ICDM, ICWS, and
+ICSOC. His research interests include edge computing, the Internet of Things,
+cloud computing, and big data.
+Prof. Xu was selected as the Highly Cited Researcher of Clarivate
+(2021–2023). He received Best Paper Awards from Tsinghua Science and
+Technology at 2023, the Journal of Network and Computer Applications at
+2022, and several conferences, including IEEE HPCC 2023, IEEE ISPA 2022,
+IEEE CyberSciTech 2021, and IEEE CPSCom2020.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 01:13:02 UTC from IEEE Xplore. Restrictions apply.
+
+

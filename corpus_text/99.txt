@@ -1,0 +1,697 @@
+2021 Fifth International Conference On Intelligent Computing in Data Sciences (ICDS) | 978-1-6654-4238-1/21/$31.00 ©2021 IEEE | DOI: 10.1109/ICDS53782.2021.9626720
+
+Reinforcement Learning-based Unpredictable
+Emergency Events
+Omar Elfahim
+
+El Mehdi Ben Laoula
+
+Mohamed Youssfi
+
+2IACS Laboratory, ENSET
+University Hassan II of Casablanca.
+Mohammedia, Morocco
+elfahimomar95@gmail.com
+
+2IACS Laboratory, ENSET
+University Hassan II of Casablanca.
+Mohammedia, Morocco
+mehdi.benlaoula@gmail.com
+
+2IACS Laboratory, ENSET
+University Hassan II of Casablanca.
+Mohammedia, Morocco
+med@youssfi.net
+
+Oussama Barakat
+
+Mohammed Mestari
+
+Nanomedicine Lab
+University of Franche-Comté
+Besançon, France
+oussama.barakat@univ-fcomte.fr
+
+2IACS Laboratory, ENSET
+University Hassan II of Casablanca.
+Mohammedia, Morocco
+mestari@enset-media.ac.ma
+
+Abstract—The vehicle routing problems is one of the wildly
+known transportation problems. It used to minimize the total
+traveling time of vehicles by choosing the shortest path. Defining
+the routing of the vehicles in the real world is a complex task to
+perform because of the different constraints to handle. The aim
+of this paper is to develop a dynamic simulation environment
+using Java for testing Q-learning approach with consideration
+of overall and dynamic performance. We propose Q-learning
+based approach in order to improve the transportation facilities
+for emergency response activity. With the aim of minimizing the
+time from emergency call being waited for a relief or a service to
+the dispatch point. The results showed that optimisation scheme,
+developed by the RL agents based on Q-learning approach using
+simulated environment, has the potential to offer an accurate
+scheme to find the optimum route.
+Index Terms—Reinforcement Learning, Q-Learning, Transportation, Vehicle Routing Problems.
+
+I. I NTRODUCTION
+COVID-19 pandemic and the variety of unpredictable
+events, such as natural disasters and wildfire have impacted
+human security and safety, in particular, claim many human
+lives. To deal with them, the transportation networks play an
+important factor in having an efficient emergency response
+plan [30]. Human survival is dependent on travel time for
+emergency supplies to arrive where needed, where the travel
+time is dependent on the different constraints of the transportation networks.
+In recent years, artificial intelligence technologies which
+are based on creating and developing intelligent systems have
+brought further development to several fields such as healthcare transportation, manufacturing, energy, education, financial
+modelling and economy etc. to solve complex problems arising
+from different fields. Machine learning is a subcategory of
+AI which is one of the most important methods in artificial intelligence that allows a machine to develop intelligent
+systems and algorithms. Machine learning can be divided
+
+into three major classes of algorithms including supervised
+learning, unsupervised learning and reinforcement learning
+[18]. Supervised learning and unsupervised learning methods
+are the most widely used machine-learning method, based on
+training the models using pre-collected and historical data,
+where the aim was to produce a prediction. One high-impact
+area of progress in supervised learning is deep neural network
+(DNN) which was initiated by a multi-layer Artificial Neural
+Network (ANN) the one that was used in several scientific
+applications nowadays and has attracted more attention in
+recent years. Some of the mostly used in deep learning are
+Feedforward Deep Networks (FDN), Convolutional Neural
+Networks (CNN) [27] is widely used for dealing with spatial disruption data, Recurrent Neural Networks (RNN) is
+approriate for handling time series data, Long-short Term
+Memory (LSTM) is a special adaptation of RNN that is able
+of learning long-term dependencies. However, reinforcement
+learning differs from other machine learning algorithms does
+not rely on a dataset. The most important aspect of RL is how
+a learning agent can extract optimal operational knowledge
+from historical data through continuous interacting with its
+environment and take action to solve a real problem facing
+and trying to maximize rewards. The four major components
+in Reinforcement Learning are agent or self-learner, environment, reward and action. An agent who is characterized
+by autonomy, sociability and have the ability to perceive
+and observe the environment in order to act in way to
+maximize the rewards and minimize the penalties. Therefore,
+reinforcement learning is more convenient in the resolution of
+decision-making, optimization and control problems [16]. such
+as, robotic control[14] and a lots of problems in inventory,
+smart manufacturing, healthcare domains [22], and natural
+language processing. Reinforcement Learning is an emergent
+technology which has been able to solve the problem of
+the optimal task and resource scheduling dynamically. The
+dynamic scheduling problems [16] in healthcare services and
+
+978-1-6654-4238-1/21/$31.00 ©2021 IEEE
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:04:35 UTC from IEEE Xplore. Restrictions apply.
+
+are quite more complex than prediction and static problems
+because there are increasing complexities, uncertainties and
+many forms of disruption mainly related to emergencies and
+several ambiguous events possibly occurring randomly over
+time. Deep Reinforcement Learning is an enhancement of
+typical reinforcement learning which is able to combine reinforcement learning with deep neural network. Artificial neural
+networks are used to build the intelligent policy [10]. DRL
+performs better and is able to handle the high dimensional
+problems and continuous state space well [24]. As a result,
+DRL has won lots of success with video games like AlphaGo,
+a game developed by Google DeepMind [28]. Furthermore,
+DRL has become one of the most fascinating research areas
+in AI. It provides its values in many practical applications such
+as Google Brain is one program developped to train robots to
+open doors and gather objects by their own. DRL is also used
+by Uber in order to teach Grand Theft Auto to use real cars
+on real roads. The routing optimization in transportation has
+been spanning many types of problems from the more basic
+travelling salesman problems, to more complicated multivehicle routing problem. To the best knowledge of the authors,
+there are lot of research efforts dedicated to applying and using
+the RL and DRL algorithms to deal with these problems [14].
+In summary, the contribution of this research is a developed
+Q-learning algorithms to optimize time travel and the shortest
+paths of emergency supplies to arrive where needed. Modelling
+dynamic simulation environment for vehicle and its basic
+components which consist of the environment and its states,
+self-learning as well as possible actions and rewards.
+The rest of the paper is organized as follow. section II
+provides an application of Q-learning in transportation research studies. Then section III presents description of the
+reinforcement learning principles and its methods, especially,
+Q- learning one. Section IV describes agent-simulation environments and discuss its results. Finally, section V makes
+conclusions and perspectives for future research.
+
+passengers standing long a real-world metro line. Furthermore,
+several studies have been used successfully Q-learning in Train
+Timetable Rescheduling [15], Traffic flow optimization [19].
+In order to improve vehicle routing planning system, a Qvalue based dynamic programming method was used to find
+the optimal travel time from every dispatch point (intersection)
+to every destination point [23]. Recent studies [9], [21] have
+applied Q-learning methods on traffic light control problem by
+designing the raod as state and action defined the operation
+on light. To get a larger number of vehicles in the traffic
+management system, Q-learning [6], [8] and deep Q-learning
+[11] are proposed. In a fully described paper, Ammar Haydari
+[31] reviewed a recent deep reinforcement learning (RL)-based
+traffic control applications. His paper focuses on traffic signal
+control (TSC) applications based on (deep) RL, which have
+been extensively investigated in the literature and presented in
+control models and approriate algorithms.
+III. R EINFOCEMENT L EARNING METHODS
+Reinfocement Learning methodology oficially comes from a
+Markov Decision Process (MDP). It is a general mathematical
+framework for sequential decision making algorithms. MDP
+consists of 5 elements in a tuple:
+• A set of states of the environment S
+• A set of all possible actions that the agent can take A,
+• Transition function T (st+1 | st , at ) according to a stateaction pair for each time t to a distribution of next state
+st+1 ,
+• Reward function R (st , at , st+1 ) that gives the prize for
+taking action at from state st while transitioning to the
+next state st+1
+• Discount factor γ between 0 and 1 for future prizes.
+
+II. R ELATED WORKS
+Q-learning is one of the most known and widely used
+algorithm of the value based reinforcement Learning. With
+the recent advancement in RL methodology and applications
+Q-learning has already been successively used to solve several
+transportation issues, such as Route optimization from travelling salesman problems to route planning system and to more
+complicated multi-vehicle routing problem. To solve a route
+planning system paper [7] proposed a Q-learning approach for
+minimizing the total travel distance of vehicles and obtain the
+shortest time routes. In order to enable each agent completes
+its assigned tasks based on interacting with other agents and
+the environment to achieve the overall goal, a multi-agent reinforcement learning (MARL) algorithms based on Q-learning is
+proposed in which all agents negotiate and share the available
+information with other [26]. In paper [5] Q-learning method
+was developed to deal with the nonlinear optimization problem
+of passenger congestion and train operation on an urban rail
+transit line, with the aim of minimizing the penalty value of
+
+Fig. 1: Interactions between the agents and environment in
+reinforcement learning.
+The essential Markov property is that given the current state
+st , the next state st+1 of system do not take into consideration
+the previous states (s0 , s1 , . . . , st−1 ) . In control systems such
+as transportation ones, MDP models are mostly episodic. Wich
+means that MDP model system has a final point for each
+episode based on the end time T or the end state sT . The goal
+of an MDP agent is to find the best policy π ∗ that maximises
+the intended cumulative prise E [Rt | s, π] for each state s and
+cumulative discounted prise (i.e., return)
+Rt =
+
+T
+−1
+X
+
+γ i rt+i
+
+i=0
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:04:35 UTC from IEEE Xplore. Restrictions apply.
+
+(1)
+
+where the discount factor γ which gives a clear idea about the
+importance of future rewards or prises.
+In reinforcement learning, the environment can be modelled
+as a Markov Decision Process (MDP). Reinforcement Learning is an area of machine learning that develops approximate
+methods for solving dynamic optimisation problems the main
+concern of reinforcement learning is how software or robot
+agent ought to take actions in an environment in order to
+maximize the reward and minimizing the cost and penality.
+Reinforcement learning considers the setup where an agent
+interacts with the environment in discrete time steps with the
+goal of learning a reward-maximizing behavior policy and
+minimize the cost. At each time step t with a given state s the
+agent takes an action a according to its policy π(s) = a and
+receives the reward r moving to the next state s0 .
+In general, RL agent can behave as two different ways: the
+first one called model-based RL by knowing / learning the
+transition probability T from state st to st+1 , and rely on
+forward prediction for planning through the model and generating synthetic experience [13], [25]. Model-based methods
+learn from similar data efficiency [2]. The second one is called
+model-free RL by examining the environment without learning
+a transition model (no knowledge of transitions and rewards).
+The learner acts in the real environment in order to learn, the
+agent relies on trial and error. Model free RL approaches do
+not fucos on the static environment where the states are fully
+observed but tries to estimate the states, value function, and
+reward function. We simply divide model-free RL algorithms
+into two scenarios as value-based and policy-based.
+The most popular RL algorithms as shown in figure 6
+include Q-learning, Monte Carlo, Temporal Difference(TD)
+Learning, SARSA (State–Action–Reward–State–Action).
+More advanced and robust techniques, which integrates deep
+learning approach with RL are DQN (Deep Q), DDQN
+(double Q), NAF (Normalized Advantage Functions), Actor
+Critic, A3C (Asynchronous Advantage Actor-Critic) and
+DDPG (Deep Deterministic Policy Gradients) etc.
+
+Fig. 2: Reinforcement Learning Methods.
+Value-based methods Value function gives an idea about
+how good a state is for the agent by estimating the exact value
+(i.e., expected return) of being in a state s with respect to
+
+particular following policy π, we can define V π (s) formally
+by (2)
+V π (s) = E [Rt | s, π]
+(2)
+Similarly, the action-value function determines how good it
+is to be in state s and taking the action a (i.e., expected return
+in a state-action pair) (3)
+Qπ (s, a) = E [Rt | s, a, π]
+
+(3)
+
+the main objective of reinforcement Learning is to find a
+policy that achieves a lot of rewards over the following way.
+The optimum value function V ∗ (s) describes the optimized
+state value function over the policy for all states (4)
+V ∗ (s) = max V π (s), ∀s ∈ S.
+π
+
+(4)
+
+The same optimal action-value function calculated similarly
+to the optimal value function, denoted Q∗ (s, a), and defined
+as (5)
+Q∗ (s, a) = max Qπ (s, a), ∀s ∈ S.
+(5)
+a
+
+In Value based methods, policy can be derived by selecting
+greedy actions which maximizes the Q-value function (6)
+π ∗ (s, a) = argmaxa Q∗ (s, a), ∀s ∈ S.
+
+(6)
+
+Q-learning approach
+Value-iteration methods are often executed on-policy if
+value function of the policy estimated using data that are
+generated by following this policy. the value of generating
+policy such as SARSA, while off-policy which is estimate the
+value of another policy that is different from the one being
+followed. This approach have demonstrated sample-efficient
+performance in lot of domains [12], [29]. Popular Algorithms
+are:Q-Learning [20], which is an off-policy Temporal Difference and SARSA [18]. This both algorithms are an off-policy
+and on-policy Temporal Difference respectively, where used
+the action-value function as an important part of reinforcement learning Q(s, a) instead of the value function V (s).
+The Q-value function is utilized to evaluate the performance
+and effectiveness of the particular actions and state. The Qvalue function is stored in Q-table. The agent updates their
+action by maximizing Q-values over the action. Its one-step
+updating rule based on iterating the Bellman equation, which
+is described by Eq. 7
+h
+i
+0 0
+Qt+1 (s, a) = Qt (s, a)+αt R(s, a) + γ max
+Q
+(s
+,
+a
+)
+−
+Q
+(s,
+a)
+t
+t
+a0
+(7)
+where α ∈ [0, 1] is learning rate showed the level of
+dependence between the past knowledge and the current
+knowledge, determines the step size of the movement in the
+optimal direction in each training iteration. and R(s, a) +
+γ maxa0 Qt (s0 , a0 ).
+Fig.3 reflects the interaction between agents and their environment in Q-learning. The agents interact with the environment by performing some actions then the environment
+responds to these actions by modifying it state. While, the
+environment also interacts with the agents to determine how
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:04:35 UTC from IEEE Xplore. Restrictions apply.
+
+much reward and penality are obtain by performing these
+actions. The principal purpose of the agents is to act efficiently
+by learning a good action that maximize the sum of the
+cumulative rewards.
+Algorithm 1 Q-Learning Algorithm
+Require:
+. Initialisation
+States X = {1, . . . , nx }
+Actions A = {1, . . . , na },
+A:X ⇒A
+Reward function R : X × A → R
+Black-box (probabilistic) transition function T : X × A →
+X
+Learning rate α ∈ [0, 1], typically α = 0.1
+Discounting factor γ ∈ [0, 1]
+procedure QL EARNING(X , A, R, T , α, γ)
+Initialize Q : X × A → R arbitrarily
+while Q is not converged do
+Start in state s ∈ X
+while s is not terminal do
+Calculate π according to Q and exploration strategy (e.g. π(x) ← argmaxa Q(x, a))
+a ← π(s)
+r ← R(s, a)
+. Receive the reward
+s0 ← T (s, a)
+. Receive the new state
+Q(s0 , a) ← (1 − α) · Q(s, a) + α · (r + γ ·
+0
+maxa0 Q(s , a0 ))
+s ← s0
+end while
+end while
+return Q
+end procedure
+
+Exploration and Exploitation The most fundamental theoretical issues in RL are exploration-exploitation trade-off
+dilemma, since exploring the environment enables the agent
+to learn more about the environment in order to improve the
+estimation of the value of the non greedy action exploiting
+the environment. One straightforward method is -greedy
+strategies, where the probability  of taking a random action,
+otherwise the agent exploits current information saved in the
+Q-values and takes an optimal action. The -greedy methods
+can be given by Equation
+
+π (a0 ) =
+
+
+
+1−ε
+ε
+
+a = arg maxa0 Q(s, a)
+otherwise
+
+where  is random exploration rate between 0 and 1. There are
+other simple strategies of balancing exploration and exploitation, such as upper confidence bound (UCB) and Bayesian
+reasoning methods [3]. In the beginning, agents ignore the
+environment where they progress. That is why the learner has
+to intial the  close to 1 to enssure that agents could explore the
+external environment. After, once information recieved from
+the environment the agent can exploit the environment.
+
+Fig. 3: Q-learning agents/environment interaction.
+
+IV. E XPERIMENTS
+To use reinforcement learning and Q-learning in order to
+solve a problem, in particular, the following five fundamental
+components must be defined: environment and its states,
+agent and its possible behaviors, and the prizes (rewards).
+The agent investigates the surroundings and understands the
+reinforcement signals it receives, then chooses actions that
+maximize the award based on previous experience. Table I
+summarizes the RL components of the study. To implement Qlearning algorithm a customized simulation Environment tool
+based on world coordinate system, possible dispatch locations
+and creating incidents was developed using JAVA. A special
+serie of small (30 × 30) maps is constructed with random
+obstacles define by red color. The color represents different
+penalties which the agent gets being in the obstacles position.
+RL components
+Agent
+Environment
+Policy
+Reward
+Q-value
+State (St )
+α
+γ
+
+Component usage
+Installed in nodes
+Dynamic transportation web
+Routing policy from present to destination node
+Gain given to a position after executing action in state
+Total prizes cumulates from present node to destination node
+The node that the vehicle passes through the network,
+this is followed by geographical position of the vehicle.
+Learning rate for the Q-values
+Discount rate for the reward value
+
+TABLE I: RL components of the study.
+A. State
+The state space is defined in fig.5 as S = (s1 , s2 , s3 ...sn ),
+which determined the number of positions in the environment
+roads, as st which shows how the current positions is in the
+environment at the time step t. Therefore, 2D-grid with d
+dimension has d ∗ d states. For example a 2D-grid with 30
+in its dimension has 900 states as shown in Fig 5.
+B. Action
+Action is defined as the directions that the emergency
+response vehicle can take, the job of the agent is to minimise
+the time and distance from dispatch point to the accident
+location. There are four possible action (move east, move west,
+move south, and move nourth), moreover, moving diagonally
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:04:35 UTC from IEEE Xplore. Restrictions apply.
+
+also includes the diagonal direction (move South-East, SouthWest, North-East and North-West). When one of the actions
+sets available is chosen, the vehicle must take only that
+direction.
+Direction
+Nourth ↑
+South ↓
+East →
+West ←
+Nourth-East %
+Nourth-West South-East &
+South-West .
+
+Action
+a1
+a2
+a3
+a4
+a5
+a6
+a7
+a8
+
+Row vectors
+[−1, 0]
+[1, 0]
+[0, 1]
+[0, −1]
+[−1, 1]
+[−1, −1]
+[1, 1]
+[1, −1]
+
+TABLE II: The action sets
+
+(a) Initial Environment
+
+Fig. 4: Possible direction sets.
+
+(b) Test Run Environment
+
+C. Reward
+The reward (or prize) is what the agent may receive after
+doing an action. While the agent operating and relocating in
+the simulation environment, aims at gaining as many overall
+rewards as possible. On the one hand, minimise the the punishment receives from obstacles. On the other hand, additionally
+if the agent reaches the destination, it gains the essential part
+of the rewards. Finally, the agent finished the learning phase
+and becomes forced to reach the incident position with the
+shortest path.
+(c) Diagonal Directions
+
+
+Fig. 5: Simulation Environment
+if position =goal
+ 100,
+−10, if position = punishment red & orange color
+R(s, a) =
+
+0,
+if otherwise
+patient and the vehicle are also shown on the maze given in
+D. Environment
+figure 5. when test run of the environment and the vehicle
+Through the environment state, these basic environment allocated to a random location (each run will re-allocate to a
+items can be used to train and test the Q-learning algorithm. different dispatch point), Q-learning agent start at that point
+The simulation environment is started for the agent’s training takes an action at each simulation step based on the Qtable,
+and testing using the Q-learning algorithm. The simulation states of the block (penality, wall or free). The vehicle takes
+environment starts with the following objects: dispatch point, the shortest route to reach the final position.
+The simulated environment and RL agent were developed
+which is where the vehicle is assigned, destination point,
+using
+programming language Java with random acting agent.
+which is where the accident occurs. The x and y coordinates
+In
+our
+experiments we train the agent over the 3000 episodes,
+are used to indicate the location of the emergency response
+Another
+parameters of the implementation was tested as folvehicle, while all penalties, walls, and uncertainty are set to
+lows:
+red blocks. The vehicle can be dispatched to any dispatch
+location in its initial form. The location of the incident or the
+• the acrion space is defined and is shown in Table II
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:04:35 UTC from IEEE Xplore. Restrictions apply.
+
+•
+•
+•
+•
+•
+
+α = 0.1 -The learning rate.
+γ = 0.9 -The discount factor.
+decay rate = 0.005 -Exponential decay rate for exploration probability.
+Initial Q-values equal to zero
+Exploration Method based on Exponential decay rate(greedy), the agent learns and acts randomly by increasing
+the value of . After that allows the agent selects by
+referencing Q-table with highest value by increasing
+the degree of exploration behaviour which depends on
+increasing the value of  as shown in Figure 6
+
+(a) Average total rewards
+
+Fig. 6: Exploration-exploitation trade-off.
+The result shows in figure 5, at each random allocation
+points the agent starts in takes the shortest path to the goal
+position. The agent performs accurately using Q-learning
+algorithms.
+Fig. 7 depicts two learning curves for the average total
+delay and reward scenario: As we can observe, the learning
+curve shows in Figure 7.(a) that average total rewards value
+for the agent being stranded improves with the increase of
+the number of training episodes, since the exploration rate
+decreases with exploitation learning to achieve the goal.7.(b)
+When the exploration rate is decreasing the learning agent
+learns takes the actions that maximize the Q-value function,
+which leads to a shorter total delay. the penalty value of the
+vehicle converges at the 1000th iteration.
+V. C ONCLUSION
+In this research, a Q-learning algorithm for transportation
+of dangerous materials and Emergency response activities
+is presented. In particular, relevant Q-learning components
+was highlighted, the sets of environment states and agent
+actions and reward, with the objective of finding the optimal
+path to lower total travel time of the vehicle. The results of
+experiments showed that the Q-learning algorithm gave an
+accurate and reasonable path.
+This pilot study is the key to several important future directions to make this method applicable in several applications in
+real world, including public transportation, network Routing,
+
+(b) Total penalty
+
+Fig. 7: Learning curves obtained with Q-learning
+scheduling healthcare services, especially, home healthcare
+system to minimize the travel time. Furthermore, emergency
+healthcare systems will be integrated to deal with emergencies
+and disasters that have an impact on the health of the population, such as COVID-19 pandemic situations. Additionally, we
+will add more constraints and conditions using a dynamic and
+complex environment. This study will allow us to test other
+Deep reinforcement learning and RL methods based on multiagents system and compare performance of reinforcement
+learning techniques with classical methods.
+ACKNOWLEDGMENT
+This project is a part of a project supported by cofinancing from the CNRST (Centre National pour la Recherche
+Scientifique et Technique) and the Hassan II University of
+Casablanca, Morocco. The project is selected in the context
+of a call for projects entitled ”Scientific and Technological
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:04:35 UTC from IEEE Xplore. Restrictions apply.
+
+Research Support Program related to the theme of COVID19”.
+R EFERENCES
+[1] R. Bellman. Dynamic programming. Science, 153(3731):34-37, 1966.
+[2] C. Finn and S. Levine. Deep visual foresight for planning robot motion.
+In 2017 IEEE International Conference on Robotics and Automation
+(ICRA), pages 2786-2793. IEEE, 2017.
+[3] M. Ghavamzadeh, S. Mannor, J. Pineau, and A. Tamar. Bayesian
+reinforcement learning: A survey. arXiv preprint arXiv:1609.04436,
+2016.
+[4] E. Ipek, O. Mutlu, J. F. Martinez, and R. Caruana. Self-optimizing memory con- trollers: A reinforcement learning approach. ACM SIGARCH
+Computer Architecture News, 36(3):39-50, 2008.
+[5] Z. Jiang, J. Gu, W. Fan, W. Liu, and B. Zhu. Q-learning approach to
+coordinated optimization of passenger in ow control with train skipstopping on a urban rail transit line. Computers & Industrial Engineering,
+127:1131-1142, 2019.
+[6] H. Joo, S. H. Ahmed, and Y. Lim. Traffic signal control for smart cities
+using reinforce- ment learning. Computer Communications, 154:324330, 2020.
+[7] J. K. Lim, J. M. Lim, K. Yoshimoto, K. H. Kim, and T. Takahashi.
+Designing guide- path networks for automated guided vehicle system
+by using the q-learning technique. Computers & industrial engineering,
+44(1):1-17, 2003.
+[8] W. Liu, G. Qin, Y. He, and F. Jiang. Distributed cooperative reinforcement learning- based traffic signal control that integrates v2x networks’ dynamic clustering. IEEE transactions on vehicular technology,
+66(10):8667-8681, 2017.
+[9] P. Mannion, J. Duggan, and E. Howley. An experimental review of
+reinforcement learn- ing algorithms for adaptive traffic signal control.
+Autonomic road transport support systems, pages 47-66, 2016.
+[10] V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G.
+Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski,
+et al. Human-level control through deep reinforcement learning. nature,
+518(7540):529-533, 2015.
+[11] S. S. Mousavi, M. Schukat, and E. Howley. Traffic light control using
+deep policy- gradient and value-function-based reinforcement learning.
+IET Intelligent Transport Systems, 11(7):417-423, 2017.
+[12] R. Munos, T. Stepleton, A. Harutyunyan, and M. G. Bellemare.
+Safe and efficient off-policy reinforcement learning. arXiv preprint
+arXiv:1606.02647, 2016.
+[13] A. Nagabandi, G. Kahn, R. S. Fearing, and S. Levine. Neural network
+dynamics for model-based deep reinforcement learning with model-free
+ne-tuning. In 2018 IEEE International Conference on Robotics and
+Automation (ICRA), pages 7559-7566. IEEE, 2018.
+[14] N. Parvez Farazi, T. Ahamed, L. Barua, and B. Zou. Deep reinforcement
+learning and transportation research: A comprehensive review. arXiv eprints, pages arXiv-2010, 2020.
+[15] D. Šemrov, R. Marsetič,M. Žura, L. Todorovski, & M. Srdic . Reinforcement learning approach for train rescheduling on a single-track railway.
+Transportation Research Part B: Methodological, 86, 250-267, 2016.
+[16] C. Shyalika, T. Silva, and A. Karunananda. Reinforcement learning in
+dynamic task scheduling: A review. SN Computer Science, 1(6):1-17,
+2020.
+[17] R. S. Sutton and A. G. Barto. Reinforcement learning: An introduction.
+MIT press, 2018.
+[18] T. L. Thorpe and C. W. Anderson. Tra c light control using sarsa with
+three state representations. Technical report, Citeseer, 1996.
+[19] E. Walraven, M. T. Spaan, and B. Bakker. Traffic ow optimization: A
+reinforcement learning approach. Engineering Applications of Arti
+cial Intelligence, 52:203-212, 2016.
+[20] C. J. Watkins and P. Dayan. Q-learning. Machine learning, 8(3-4):279292, 1992.
+[21] H. Wei, G. Zheng, H. Yao, and Z. Li. Intellilight: A reinforcement
+learning approach for intelligent traffic light control. In Proceedings
+of the 24th ACM SIGKDD International Conference on Knowledge
+Discovery & Data Mining, pages 2496-2505, 2018.
+[22] C. Yu, J. Liu, and S. Nemati. Reinforcement learning in healthcare: A
+survey. arXiv preprint arXiv:1908.08796, 2019. 496-2505, 2018.
+
+[23] S. Yu, J. Zhou, B. Li, S. Mabu, and K. Hirasawa. Q value-based dynamic
+programming with sarsa learning for real time route guidance in large
+scale road networks. In The 2012 International Joint Conference on
+Neural Networks (IJCNN), pages 1-7. IEEE,2012.
+[24] D. Zhang, X. Han, and C. Deng. Review on the research and practice of
+deep learning and reinforcement learning in smart grids. CSEE Journal
+of Power and Energy Systems, 4(3):362-370, 2018.
+[25] M. Zhang, S. Vikram, L. Smith, P. Abbeel, M. Johnson, and S. Levine.
+Solar: Deep structured representations for model-based reinforcement
+learning. In International Con- ference on Machine Learning, pages
+7444-7453. PMLR, 2019.
+[26] M. Zolfpour-Arokhlo, A. Selamat, S. Z. M. Hashim, and H. Afkhami.
+Modeling of route planning system based on q value-based dynamic
+programming with multi-agent reinforcement learning algorithms. Engineering Applications of Arti
+cial Intelligence, 29:163-177, 2014.
+[27] A. Krizhevsky, I. Sutskever, & G. E Hinton. Imagenet classification with
+deep convolutional neural networks. Advances in neural information
+processing systems, 25, 1097-1105, 2012.
+[28] D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre et al., “Mastering
+the game of Go with deep neural networks and tree search,” Nature, vol.
+529, no. 7587, pp. 484–489, Jan. 2016.
+[29] Gaskett, C., Wettergreen, D., & Zelinsky, A. (1999, December). Qlearning in continuous state and action spaces. In Australasian joint
+conference on artificial intelligence (pp. 417-428). Springer, Berlin,
+Heidelberg.
+[30] Edrissi, A., Nourinejad, M., & Roorda, M. J. (2015). Transportation
+network reliability in emergency response. Transportation research part
+E: logistics and transportation review, 80, 56-73.
+[31] Ammar Haydari, Yasin Yilmaz. ”Deep Reinforcement Learning for
+Intelligent Transportation Systems: A Survey”, IEEE Transactions on
+Intelligent Transportation Systems, 2020
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:04:35 UTC from IEEE Xplore. Restrictions apply.
+
+

@@ -1,0 +1,313 @@
+[
+  {
+    "network": "Sioux Falls",
+    "zones": 24,
+    "nodes": 24,
+    "links": 76,
+    "destinations_solved": 24,
+    "gamma": 0.95,
+    "mean_traversal_cost": 4.131578947368421,
+    "beta": 4.131578947368421,
+    "r_goal": 41.31578947368421,
+    "nodes_with_identical_optimal_action_set": 496,
+    "nodes_differing": 56,
+    "share_identical": 89.85507246376811,
+    "examples_of_divergence": [
+      {
+        "dest": 1,
+        "node": 10,
+        "travel_time": [
+          9
+        ],
+        "aligned": [
+          11
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 15,
+        "travel_time": [
+          22
+        ],
+        "aligned": [
+          14
+        ]
+      },
+      {
+        "dest": 2,
+        "node": 22,
+        "travel_time": [
+          15
+        ],
+        "aligned": [
+          20
+        ]
+      },
+      {
+        "dest": 3,
+        "node": 10,
+        "travel_time": [
+          9
+        ],
+        "aligned": [
+          11
+        ]
+      },
+      {
+        "dest": 3,
+        "node": 15,
+        "travel_time": [
+          22
+        ],
+        "aligned": [
+          14
+        ]
+      },
+      {
+        "dest": 3,
+        "node": 16,
+        "travel_time": [
+          8
+        ],
+        "aligned": [
+          10
+        ]
+      },
+      {
+        "dest": 3,
+        "node": 19,
+        "travel_time": [
+          17
+        ],
+        "aligned": [
+          15
+        ]
+      },
+      {
+        "dest": 3,
+        "node": 20,
+        "travel_time": [
+          18
+        ],
+        "aligned": [
+          21
+        ]
+      },
+      {
+        "dest": 4,
+        "node": 10,
+        "travel_time": [
+          9
+        ],
+        "aligned": [
+          11
+        ]
+      },
+      {
+        "dest": 4,
+        "node": 16,
+        "travel_time": [
+          8
+        ],
+        "aligned": [
+          10
+        ]
+      },
+      {
+        "dest": 4,
+        "node": 19,
+        "travel_time": [
+          17
+        ],
+        "aligned": [
+          15
+        ]
+      },
+      {
+        "dest": 5,
+        "node": 19,
+        "travel_time": [
+          17
+        ],
+        "aligned": [
+          15
+        ]
+      }
+    ],
+    "delta_smallest_positive_action_gap": 1.0,
+    "K_longest_hop": 6,
+    "k_min_shortest_hop": 1,
+    "phi_max": 6,
+    "eq7_threshold": 0.9969745222929937,
+    "eq7_threshold_printed": 0.996975,
+    "delta_printed": 1.0,
+    "eq7_satisfied_at_0.99": false,
+    "od_pairs_completing_under_both": 552,
+    "od_pairs_not_completing": 0,
+    "pairs_with_a_different_travel_time": 71,
+    "share_pairs_with_a_different_travel_time": 12.86231884057971,
+    "max_absolute_travel_time_difference": 4.0,
+    "max_relative_travel_time_difference": 0.3333333333333333,
+    "mean_relative_travel_time_difference_over_differing_pairs": 0.12182722992691157
+  },
+  {
+    "network": "Anaheim",
+    "zones": 38,
+    "nodes": 416,
+    "links": 914,
+    "destinations_solved": 38,
+    "gamma": 0.95,
+    "mean_traversal_cost": 0.882353374601751,
+    "beta": 0.882353374601751,
+    "r_goal": 8.82353374601751,
+    "nodes_with_identical_optimal_action_set": 11361,
+    "nodes_differing": 4409,
+    "share_identical": 72.0418516169943,
+    "examples_of_divergence": [
+      {
+        "dest": 1,
+        "node": 9,
+        "travel_time": [
+          395
+        ],
+        "aligned": [
+          379
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 10,
+        "travel_time": [
+          338,
+          362
+        ],
+        "aligned": [
+          338
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 19,
+        "travel_time": [
+          380
+        ],
+        "aligned": [
+          364
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 21,
+        "travel_time": [
+          412
+        ],
+        "aligned": [
+          413
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 24,
+        "travel_time": [
+          266,
+          267
+        ],
+        "aligned": [
+          267
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 25,
+        "travel_time": [
+          268,
+          269
+        ],
+        "aligned": [
+          269
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 26,
+        "travel_time": [
+          273,
+          274
+        ],
+        "aligned": [
+          274
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 27,
+        "travel_time": [
+          302,
+          303
+        ],
+        "aligned": [
+          303
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 28,
+        "travel_time": [
+          303,
+          304
+        ],
+        "aligned": [
+          304
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 29,
+        "travel_time": [
+          308,
+          337
+        ],
+        "aligned": [
+          308
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 30,
+        "travel_time": [
+          340,
+          341
+        ],
+        "aligned": [
+          341
+        ]
+      },
+      {
+        "dest": 1,
+        "node": 31,
+        "travel_time": [
+          329,
+          330
+        ],
+        "aligned": [
+          330
+        ]
+      }
+    ],
+    "delta_smallest_positive_action_gap": 1.000000082740371e-09,
+    "K_longest_hop": 29,
+    "k_min_shortest_hop": 1,
+    "phi_max": 29,
+    "eq7_threshold": 0.9999999999989622,
+    "eq7_threshold_printed": 1.0,
+    "delta_printed": 0.0,
+    "eq7_satisfied_at_0.99": false,
+    "od_pairs_completing_under_both": 2710,
+    "od_pairs_not_completing": 13060,
+    "pairs_with_a_different_travel_time": 535,
+    "share_pairs_with_a_different_travel_time": 19.74169741697417,
+    "max_absolute_travel_time_difference": 3.0029368959999996,
+    "max_relative_travel_time_difference": 0.5471328143419694,
+    "mean_relative_travel_time_difference_over_differing_pairs": 0.09463896824011106
+  }
+]

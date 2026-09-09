@@ -1,0 +1,102 @@
+{
+ "Sioux Falls|published|1.0": {
+  "same": 552,
+  "diff": 0,
+  "share": 100.0
+ },
+ "Sioux Falls|published|0.9999": {
+  "same": 542,
+  "diff": 10,
+  "share": 98.19
+ },
+ "Sioux Falls|published|0.999": {
+  "same": 542,
+  "diff": 10,
+  "share": 98.19
+ },
+ "Sioux Falls|published|0.99": {
+  "same": 542,
+  "diff": 10,
+  "share": 98.19
+ },
+ "Sioux Falls|published|0.95": {
+  "same": 496,
+  "diff": 56,
+  "share": 89.86
+ },
+ "Sioux Falls|c|1.0": {
+  "same": 552,
+  "diff": 0,
+  "share": 100.0
+ },
+ "Sioux Falls|c|0.9999": {
+  "same": 542,
+  "diff": 10,
+  "share": 98.19
+ },
+ "Sioux Falls|c|0.999": {
+  "same": 542,
+  "diff": 10,
+  "share": 98.19
+ },
+ "Sioux Falls|c|0.99": {
+  "same": 542,
+  "diff": 10,
+  "share": 98.19
+ },
+ "Sioux Falls|c|0.95": {
+  "same": 513,
+  "diff": 39,
+  "share": 92.93
+ },
+ "Anaheim|published|1.0": {
+  "same": 15770,
+  "diff": 0,
+  "share": 100.0
+ },
+ "Anaheim|published|0.9999": {
+  "same": 15664,
+  "diff": 106,
+  "share": 99.33
+ },
+ "Anaheim|published|0.999": {
+  "same": 15608,
+  "diff": 162,
+  "share": 98.97
+ },
+ "Anaheim|published|0.99": {
+  "same": 14796,
+  "diff": 974,
+  "share": 93.82
+ },
+ "Anaheim|published|0.95": {
+  "same": 11361,
+  "diff": 4409,
+  "share": 72.04
+ },
+ "Anaheim|c|1.0": {
+  "same": 15770,
+  "diff": 0,
+  "share": 100.0
+ },
+ "Anaheim|c|0.9999": {
+  "same": 15755,
+  "diff": 15,
+  "share": 99.9
+ },
+ "Anaheim|c|0.999": {
+  "same": 15731,
+  "diff": 39,
+  "share": 99.75
+ },
+ "Anaheim|c|0.99": {
+  "same": 15293,
+  "diff": 477,
+  "share": 96.98
+ },
+ "Anaheim|c|0.95": {
+  "same": 12876,
+  "diff": 2894,
+  "share": 81.65
+ }
+}

@@ -1,0 +1,59 @@
+{
+ "study": "[25] DRL-Router, released implementation, unmodified",
+ "network": "its own shipped Anaheim, 416 nodes",
+ "border_nodes": 95,
+ "destination": 15,
+ "origins": 30,
+ "iterations": 3000,
+ "seeds": 10,
+ "results": {
+  "closed": {
+   "per_seed": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    40.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+   ],
+   "mean": 94.0,
+   "sd": 18.973665961010276,
+   "counts_total": {
+    "arrive": 282,
+    "exit": 0,
+    "stuck": 18
+   },
+   "trips": 300,
+   "exit_rate": 0.0,
+   "stuck_rate": 6.0
+  },
+  "open": {
+   "per_seed": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "mean": 0.0,
+   "sd": 0.0,
+   "counts_total": {
+    "arrive": 0,
+    "exit": 300,
+    "stuck": 0
+   },
+   "trips": 300,
+   "exit_rate": 100.0,
+   "stuck_rate": 0.0
+  }
+ }
+}

@@ -1,0 +1,691 @@
+Meta-Deep Q-Learning for Eco-Routing
+Xin Ma
+Department of Electrical and Computer
+Engineering
+University of Massachusetts Lowell
+Lowell, MA, USA
+Xin_Ma@student.uml.edu
+
+Yuanchang Xie
+Department of Civil and Environmental
+Engineering
+University of Massachusetts Lowell
+Lowell, MA, USA
+Yuanchang_Xie@uml.edu
+
+Abstract—In this paper, a multi-objective deep Q-learning
+(MOM-DQL) method is developed for solving eco-routing
+problem in a signalized traffic network. The problem is
+formulated as dynamic multi-objective Markov decision
+processes (MOMDPs). MOM-DQL can explore the optimal ecoroutes with respect to drivers’ different preferences on saving
+travel time and fuel. The MOM-DQL agent is trained under a
+series of learning environments that are based on historical
+vehicle trajectories, fuel consumption, and traffic signal status
+in the remote data center. The model that represents the action
+value function of the historical dynamic driving conditions can
+be downloaded to the vehicle requesting eco-routing service. The
+model can quickly adapt to the most recent driving condition
+through online one-shot learning and predict the optimal ecoroutes for the subsequent unseen driving condition of the
+signalized traffic network. Simulation shows that the MOMDQL method can discover the optimal eco-routes, and saves
+52% travel time and 33% fuel, compared to the shortest-path
+strategy that is widely used in navigation systems.
+Keywords—eco-routing, signalized traffic network, metalearning, reinforcement learning, deep Q-learning
+
+I. INTRODUCTION
+In the US, on-road vehicles consume about 24% of the
+nation’s petroleum [1]. Research shows that route selection
+can greatly affect vehicle fuel consumption and emissions [2,
+3]. Finding the most fuel-efficient route can be formulated as
+the eco-routing problem. The emergence of autonomous and
+connected vehicles presents a timely opportunity to benefit
+from eco-routing.
+The previous eco-routing studies mostly rely on the
+estimation of vehicle trajectories. Based on the estimated
+trajectories, the costs in terms of fuel consumption/emissions
+for all the links in the concerned traffic network are predicted
+using microscopic fuel consumption models [4-7]. Then, the
+shortest-path [4-6], or dynamic programming [7] methods are
+used to find the eco-routes by minimizing the total cost or
+expected cost respectively. However, these methods do not
+consider the traffic signal information. The frequent stopand-go patterns caused by traffic signals essentially affect
+vehicle trajectories and fuel consumption in a signalized
+traffic network, especially in urban areas. Stochastic ecorouting [8] tackles the eco-routing problem by taking traffic
+signals into consideration. The eco-routing is modeled as a
+Markov decision process (MDP) with traffic signal status
+included in the state definition. The estimated vehicle
+trajectories are then used to predict the state transition
+probabilities of the MDP.
+There are two major concerns about these existing ecorouting studies, which may degrade their performances in
+real-world scenarios. First, searching for eco-routes relies on
+the estimated costs for all links of the entire traffic network.
+This material is based on work partially supported by the National
+Science Foundation under Grant No. CNS-0644056 and UML internal seed
+grant.
+
+Chunxiao Chigan
+Department of Electrical and Computer
+Engineering
+University of Massachusetts Lowell
+Lowell, MA, USA
+Tricia_Chigan@uml.edu
+
+Since the actual link based costs may vary over time, the
+currently estimated link costs may not reflect the future
+unseen dynamic driving conditions/environments. Second,
+since a fuel consumption model is required to estimate the
+cost, choosing an appropriate fuel consumption model that
+can accurately estimate the fuel consumption cost is still an
+open problem.
+In this work we exploit advanced machine learning
+techniques to effectively solve the eco-routing problem from
+the following new perspectives. i) Rather than focusing on
+accurately estimating vehicle trajectories, the historical realworld trajectories sampled from the dynamic traffic
+environments are utilized to train a model that represents the
+action value function through reinforcement learning (RL)
+[9]. Therefore, the model has the capability of being
+generalized during the training process and thus can
+accurately predict eco-routes even in unseen states/traffic
+conditions; ii) The estimated fuel consumption may not
+always reflect the ground truth. We observe that the actual
+measured instantaneous fuel consumption data of modern
+vehicles can be easily accessed via on-board diagnostics
+(OBD) ports and be collected through connected vehicles or
+a mobile App; and iii) Rather than estimating the transition
+probabilities of MDP with predicted vehicle trajectories, the
+transition probabilities can be implicitly captured during the
+training process with real-world vehicle trajectory data. This
+will enable the model to better capture real-world traffic
+conditions.
+To develop such a RL method for eco-routing, there exists
+two major technical challenges. First, in order to capture
+dynamic traffic environments, training the RL agent with a
+series of dynamic environments in sequential manner may
+induce catastrophic forgetting on knowledge learned through
+previous environments [10]. Second, to quickly adapt the
+model to a new traffic condition/environment, the agent
+needs to have fast online learning capability. However, for
+the signalized traffic network that is very complex and has a
+large state space, the RL usually demands long training time.
+One promising realization of such a RL algorithm is
+through meta-learning [11, 12]. Meta-learning is about
+learning to learn. It can capture the distribution of a variety of
+learning tasks. Thus it can solve a new learning task with only
+a small number of training data, which is called few-shot
+learning [11, 12]. Meta-learning can help the model adapt to
+a new traffic environment quickly. In addition, since the
+model has captured the entire distribution of training data
+sampled from the dynamic environments, the catastrophic
+forgetting can be addressed. On the other hand, it is
+advantageous to formulate eco-routing as a dynamic multiobjective MDP (MOMDP) problem. Because different
+drivers may have different budgets on travel time and fuel
+consumption, they may have different preferences on the
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:36 UTC from IEEE Xplore. Restrictions apply.
+
+978-1-7281-3616-5/19/$31.00 ©2019 IEEE
+
+routing objectives. Therefore, it is desirable to consider and
+explore the optimal paths with respect to drivers’ different
+preferences on travel time and fuel consumption. Fortunately,
+the optimal linear support (OLS) [13] is a potential
+framework to address multi-objective deep reinforcement
+learning based on deep Q-learning (DQL) [14]. Additionally,
+there is no DQL based meta-RL developed. Therefore, we
+propose to develop the multi-objective meta-deep Q-learning
+(MOM-DQL), as our eco-routing solution.
+The contributions of this paper, to the best of our
+knowledge, are as follows: 1) this is the first work that applies
+reinforcement learning to a practical signalized traffic
+network for solving vehicle eco-routing problem. The model
+of action value function can be generalized to effectively
+predict optimal eco-routes for future unseen traffic
+conditions; and 2) this is the first DQL based metareinforcement learning algorithm. It provides fast one-shot
+learning in a new environment and solves the catastrophic
+forgetting problem while learning in dynamic environments.
+It is not only suitable for the multi-objective problems as in
+this paper, but also can be easily generalized to universal
+meta-learning applications that require DQL.
+The paper is organized as follows: Section II briefly
+reviews the related work; Section III discusses the details of
+MOM-DQL; The simulation results are discussed in Section
+IV; and Section V concludes the paper with the discussion of
+future work.
+II. RELATED WORK
+To estimate the vehicle trajectories on each road link, the
+eco-routing navigation system [5] incorporates multiple
+sources of traffic information through a data fusion algorithm.
+Based on that, the link-based energy/emission factors can be
+computed as the navigation input [5]. In [6], the eco-routing is
+considered as a constrained shortest-path problem. The
+objective is to minimize the total travel time and fuel
+consumption under the emission constraint. The emissions are
+returned by their emission model that emphasizes vehicle
+turning and idling impact, with estimated link travel velocities
+as the input. With real-world vehicle trajectories, [7] develop
+their fuel consumption model through Gaussian mixture
+regression. The eco-routing is modeled as a travel time
+constrained fuel consumption minimization problem. It also
+concludes that the fastest-path, shortest-path and eco-route of
+a given traffic network might be different. However, traffic
+signal impact is not considered in those studies. The stochastic
+eco-routing methods [8] estimates the vehicle trajectories with
+link length and traffic signal status through a method
+developed using traffic data. The estimation accuracy in
+reality may be limited by the historical traffic data.
+Recently, recurrent neural network (RNN) based deep
+reinforcement learning has been applied to solve the vehicle
+routing problem (VRP), which is the generalized travelling
+salesman problem (TSP) [15]. The goal is to tackle the classic
+NP-hard combinatorial math problem on a graph. It sheds light
+on applying RL to routing problem. Imagination-augmented
+agents (I2As) can learn to predict trajectories from a learned
+environment model [16]. I2As are constructed with RNN and
+convolutional encoder that processes trajectories. Therefore,
+they are more applicable for video based applications.
+Currently, there is no benchmark framework for multiobjective deep reinforcement learning . OLS [13] embeds the
+DQL algorithm into an outer loop method. It addresses the
+multi-policy task by finding the convex coverage set, which
+
+contains complete optimal policies for the feasible weight
+vectors. The decision values method [17] is proposed to
+nonlinearly select actions. The priority parameters introduce
+extra complexities to the algorithm.
+From meta-learning aspect, the memory augmentation
+method based on RNN is applied to learn the fast
+reinforcement learning with recurrent policies [18, 19].
+However, training RNN itself is usually time consuming.
+Model-agnostic meta-learning is found to outperform the
+recurrent approach regardless of the type of neural networks
+[11], which is confirmed by a follow-up study [12] based on
+[11]. Most of the existing meta-reinforcement learning
+methods are based on policy gradient, which are more suitable
+for continuous action space [11, 12, 18, 19].
+III. MULTI-OBJECTIVE META-DEEP Q-LEARNING
+To solve the eco-routing problem with reinforcement
+learning, we propose to develop the MOM-DQL method. Data
+communications are assumed available between vehicles and
+a remote data center through connected vehicles or mobile
+networks. The MOM-DQL is facilitated through the
+interaction between the agent and a series of learning
+environments that reflect the dynamics of the concerned
+signalized traffic network. Each learning environment
+consists of a graph with the link-based costs and traffic signal
+data. Each link-based cost is obtained by averaging the costs
+of all the vehicles that drive through the link over a short
+period of time. The corresponding time-series traffic signal
+status is logged as traffic signal data. 1) In the remote data
+center, MOM-DQL trains the deep neural network model of
+action value function offline through the agent interacting
+with historical learning environments. 2) The vehicle that
+requests eco-routing service downloads the model from the
+remote data center. With the most updated learning
+environment generated from the last short period of time, it
+quickly adapts the model to the latest driving condition online,
+which realizes the one-shot learning. 3) The resulting model
+is applied to the concerned vehicle for its eco-routing for the
+subsequent new real-world driving conditions.
+A. Definition of Markov Decision Process Parameters
+The eco-routing problem is formulated as dynamic multiobjective Markov decision processes (MOMDPs). The state
+space, action set, and reward are key components that
+describe the MOMDPs and characterize routing trajectories.
+The state should contain enough useful information about
+eco-routing. The state space is defined [8] as
+ܵ ൌ ሼሺ‫ݑ‬ǡ ‫ݒ‬ǡ ‫ݎ‬௩ ǡ ‫ݐ‬௩ ሻሽ .
+
+(1)
+
+‫ ݒ‬represents the current intersection, ‫ ݑ‬is the upstream
+intersection of ‫ ݒ‬. ‫ ݑ‬and ‫ ݒ‬together describe the driving
+direction. ‫ݎ‬௩ ‫ א‬ሼͲǡ ͳሽ is the traffic signal status flag. ‫ݐ‬௩ is the
+arrival time when the vehicle arrives at interection ‫ݒ‬. ‫ݎ‬௩ ൌ ͳ
+if the traffic signal at intersection ‫ ݒ‬is red, and ‫ݎ‬௩ ൌ Ͳ
+otherwise.
+An action is the decision of which downstream road link to
+be selected at intersection ‫ ݒ‬. For a typical four-approach
+intersection, the actions can be going straight, turning left or
+turning right. Therefore, the action set is defined as
+‫ ܣ‬ൌ ሼstraight, left, rightሽ .
+
+(2)
+
+The reward ࢘ is a vector defined as the negative values of
+the costs. It contains two objectives, i.e., travel time (TT) and
+fuel consumption (FC).
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:36 UTC from IEEE Xplore. Restrictions apply.
+
+࢘ ൌ ሾെܶܶǡ െ‫ܥܨ‬ሿ்
+
+(3)
+
+B. Data Collection and Pre-processing of Link based Cost
+and Traffic Signals
+In order for an agent to learn dynamic environments, i.e.,
+dynamic traffic/driving conditions of the concerned
+signalized traffic networks in the eco-routing problem, a
+series of graphs are generated from the real-world vehicle
+routing trajectories ( ሼ‫ݏ‬ଵ ǡ ܽଵ ǡ ࢘ଵ ǡ ‫ݏ‬ଶ ǡ ܽଶ ǡ ࢘ଶ ǡ ǥ ሽ ). Each graph
+has intersections as vertices and averaged costs of links as
+edges. The cost information for each graph contains the
+average travel time and average fuel consumption for every
+link. They are averaged over all the vehicles that have
+traveled through the links in a short period of time (e.g., 5min). The link-based costs retain the cost variations over time
+that exist in raw vehicle trajectories, which is more important
+information than the actual costs to the agent. Also, using the
+average link-based data instead of raw trajectories helps
+model reduce overfitting during training. The traffic signal
+status ‫ݎ‬௩ and intersection arrival time ‫ݐ‬௩ are directly logged in
+time series for each graph.
+The link based costs and corresponding traffic signal data
+can be easily obtained through data collection enabled by
+connected vehicles and/or drivers’ mobile devices. Such data
+is eventually collected by the data center.
+The value of each link-based cost on a graph is static. In
+order to reflect the cost variations affected by traffic signal
+status ‫ݎ‬௩ , we split each road link into a free-flow segment and
+a delay segment, and obtain the average costs for each
+segment. In this work, without considering the heavily
+congested traffic scenarios, the free-flow segment mainly
+reflects the average free-flow cost, and its value dominates
+the link-based cost when the green light is on. The delay
+segment mainly reflects the average delay cost at intersection
+when the red light is on. In our design, we define the delay
+segment as the last 25 meters of a road link (ends at the center
+of the intersection as shown in Fig. 1). The rest of the road
+link is the free-flow segment. Data collection is conducted for
+both segments of each road link. Accordingly, the cost for
+each link is described as
+ܿ‫ ݐݏ݋‬ൌ ܿ‫ݐݏ݋‬௟௜௡௞ ൅ ܿ‫ݐݏ݋‬ௗ௘௟௔௬ ή ‫݋݅ݐܽݎ‬ௗ௘௟௔௬ ,
+‫݋݅ݐܽݎ‬ௗ௘௟௔௬ ൌ ൝
+
+
+
+intersection 
+total red light duration
+
+for‫ݎ‬௩ ൌ ͳ
+
+Ͳfor‫ݎ‬௩ ൌ Ͳ
+
+(4)
+,
+
+(5)
+
+where ܿ‫ ݐݏ݋‬can be either TT or FC. ‫݋݅ݐܽݎ‬ௗ௘௟௔௬ is used to map
+ܿ‫ݐݏ݋‬ௗ௘௟௔௬ to different delay segment costs caused by various
+intersection arrival time ‫ݐ‬௩ . In (5), the intersection waiting
+time = next time signal turns into green - ‫ݐ‬௩ .
+
+Free-flow segment
+
+Delay
+segment
+
+Fig. 1. Road Link Segments
+
+C. Meta-deep Q-learning with Historical Data
+Since there are two objectives in the eco-driving problem,
+there can be multiple optimal policies due to different
+preferences which are parameterized by weight vector w. The
+corresponding optimal value vectors ࡽሺ‫ݏ‬௧ ǡ ܽ‫ כ‬Ǣ ߠሻ form a
+
+convex coverage set. OLS [13] is adopted as the outer loop
+of our algorithms (cf., Algorithms 2 and 3) to optimally select
+preferences w, and incrementally find the optimal policies to
+a MOMDP in terms of different preferences. The scalarized
+Q-learning method is set inside the loop. Our major focus is
+to develop meta-learning based on DQL algorithms.
+Algorithm 1 Meta-deep Q-learning
+1: function Meta-DQL(envs, w, ߠ)
+2: Initialize target network parameter vector ߠ ି ൌ ߠ
+3: Initialize thread-specific parameter vector ߠ ᇱ ൌ ߠ
+4: Initialize counters for environments ሼܶ௜ ሽȁୣ୬୴ୱȁ ൌ ሼͲሽ
+௜ୀଵ
+5: Initialize gradient ݀ߠ ൌ Ͳ
+6: while all ሼܶ௜ ሽ ൑ ‫݊݋݅ݐܽݎ݁ݐܫ‬௠௔௫ do
+7:
+for all ௜ ‫ א‬envs do
+8:
+for ݇ ൑ ‫ ܭ‬do // Sample K trajectories with
+߳-greedy
+9:
+‫ݐ‬ൌͲ
+10:
+repeat
+11:
+ܽ௧ ǡ ࢘௧ ǡ ‫ݏ‬௧ାଵ ՚ ߳-greedy policy based on
+ܳ ‫ כ‬ሺ‫ݏ‬௧ ǡ ܽǢ ߠ ି ሻ ൌ ‫ࡽ ࢀ ܟ‬ሺ‫ݏ‬௧ ǡ ܽǢ ߠ ᇱ ሻ
+12:
+Save {‫ݏ‬௧ ǡ ܽ௧ ǡ ࢘௧ } into replay memory
+13:
+‫ ݐ‬՚‫ݐ‬൅ͳ
+14:
+ܶ௜ ՚ ܶ௜ ൅ ͳ
+15:
+until ‫ݏ‬௧ reaches terminal or ‫ ݐ‬ൌൌ ‫ݐ‬௠௔௫
+16:
+end for
+17:
+Choose K trajectories ሼ‫ݏ‬௝ ǡ ܽ௝ ǡ ࢘௝ ሽ௡௝ୀଵ from
+replay memory
+18:
+Synchronize ߠ ᇱ ՚ ߠ
+19:
+Clear gradient ݀ߠ ՚ Ͳ
+20:
+for ݆ ‫ א‬ሾͳǡ ݊ሿ do // compute accumulated
+gradients
+21:
+ܴୣ୬୴೔ ൌ
+‫࢘ ࢀ ܟ‬௝ ǡ
+൝‫ ࢘ ࢀ ܟ‬൅ ߛ  ܳ‫ כ‬൫‫ ݏ‬ǡ ܽ Ǣ ߠ ି ൯ǡ Ȁ
+௝
+
+22:
+23:
+24:
+25:
+26:
+27:
+28:
+29:
+30:
+31:
+
+௔ೕశభ
+
+௝ାଵ
+
+௝ାଵ
+
+Accumulated gradients:
+݀ߠ ՚ ݀ߠ ൅ ‫׏‬ఏᇲ ቀܴୣ୬୴೔ െ ܳ ‫ כ‬൫‫ݏ‬௝ ǡ ܽ௝ Ǣ ߠ ᇱ ൯ቁ
+end for
+Update ߠ ՚ ߠ െ ߙ݀ߠ
+if ܶ௜ mod ‫ܫ‬௧௔௥௚௘௧ ൌൌ Ͳ then
+Update target network ߠ ି ൌ ߠ
+end if
+end for
+episode ՚ episode + 1
+end while
+return ߠ
+
+ଶ
+
+The dynamic environments (envs) can be considered as a
+set of MOMDPs over time, denoted by ‫ܯ‬, and they follow a
+distribution ߩெ . The target of the meta-learning agent is to
+efficiently capture the entire MOMDPs’ distribution with
+limited samples of trajectories. Therefore, the agent learns
+from all the environments within each iteration (Algorithm 1,
+line 6 – line 28), which prevents catastrophic forgetting [10]
+in sequential learning. Under the category of the policy
+gradient-based reinforcement learning, it has been proven
+that updating the model parameters every trial or K
+trajectories encourages the reinforcement learning agent to
+learn a fast reinforcement learning algorithm [11, 18], thus
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:36 UTC from IEEE Xplore. Restrictions apply.
+
+facilitates meta-learning. We apply the same technique to our
+DQL-based meta-learning. Furthermore, compared to policy
+gradient-based methods, experience replay memory is used
+in DQL-based meta-learning to enhance the data usage
+efficiency. Finally, to further improve the training efficiency,
+Algorithm 1 is designed to support multi-thread
+implementation as used in asynchronous n-step Q-learning
+[20].
+The meta-deep Q-learning is mainly executed at the data
+center offline with large amount of historical learning
+environments, as shown in Algorithm 2.
+
+learning rate = 10-3, discount factor ߛ = 0.99 (refer to
+Algorithm 1). The deep neural network is implemented with
+two hidden layers and ReLU nonlinearities. For the scale of
+the signalized traffic network in Fig. 2, we configure 20
+neurons in the first hidden layer and 5 neurons in the second
+hidden layer. The agent considers the intersection at the
+bottom-left corner as the origin, and the intersection at the
+top-right corner as the destination. The training performance
+of MOM-DQL is shown in Fig.3.
+
+Algorithm 2 Multi-objective Meta-Deep Q-Learning
+(offline in data center)
+1: while (True)
+2:
+Receive envs from designated area
+3:
+DQN_models = ‫׎‬
+4:
+DQN_models = DOL(envs, ߬, DQN_models,
+Meta-DQL)
+5: end while
+D. Online One-shot Learning
+The vehicle that needs eco-routing service downloads the
+model from the data center and quickly adapts it online with
+the latest environment data. Thus, the one-shot learning needs
+to be implemented online. As shown in Algorithm 3 below,
+to accelerate the model adaptation speed, a regular DQL
+algorithm with adaptive exploration rate ߳ [21] is adopted.
+One of the resulting DQNs whose w is the closest to the user’s
+preference vector ‫ܟ‬௨௦௘௥ is applied to the vehicle for ecorouting with the model parameters unchanged.
+Algorithm 3 Multi-objective Meta-adaptation (online in
+vehicle)
+1: Download DQN_models from data center
+2: DQN_models_new = DOL(௡௘௪ , ߬,
+DQN_models, Adaptive-DQL)
+3: Apply DQN_models_new for eco routing
+
+Fig. 2. Signalized Traffic Network from Pasadena, CA
+
+Another set of link-based costs and traffic signal data
+collected at later time, e.g., 5-min later in this paper, is used
+for meta-adaptation. The output DQN models of MOM-DQL
+can adapt to the latest driving condition with only about 500
+episodes, as shown in Fig. 4. With a single thread, CPU only
+implementation, the actual adaptation time is around 10
+seconds, which makes the online one-shot learning possible.
+The meta-learning saves 60% training time compared to
+learning from the scratch, which requires about 3,000
+episodes.
+
+IV. EXPERIMENTS AND RESULTS
+To evaluate the performance of our MOM-DQL method,
+simulation experiments are conducted. The algorithms for
+MOM-DQL are implemented using Python and the deep
+learning framework PyTorch. The environment module is
+simulated with a widely-used traffic simulator called
+Simulation of Urban Mobility (SUMO) [22].
+The chosen signalized traffic network (Fig. 2) is from the
+City of Pasadena, CA, USA, which is obtained from
+OpenStreetMap [23]. It consists of 16 signalized
+intersections, 18 two-way links, and 6 one-way links.
+1,000 vehicles are simulated to travel on this network in 30
+minutes. The trips of all simulated vehicles are randomly
+generated with SUMO. For simulating the instantaneous fuel
+consumption of each vehicle, the microscopic fuel
+consumption model HBEFA [24] is used, which is also
+available in SUMO. The costs of each link-based graph are
+generated by moving average with a 5-minute window size
+1-minute sliding step. In this paper, 5 contiguous link-based
+graphs and their traffic signal data are used as learning
+environments for offline MOM-DQL in the data center. The
+number of sampled trajectories K = 5, minibatch size = 5,
+
+Fig. 3. MOM-DQL Training Performance (left: w = [1, 0], right: w = [0, 1])
+
+Fig. 4. One-shot Learning Performance (top left: w = [1, 0], top right: w =
+[0, 1], bottom left: w = [0.32, 0.68] )
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:36 UTC from IEEE Xplore. Restrictions apply.
+
+For testing, the final model is applied to a simulated
+vehicle that travels between the same origin and destination
+in a new dynamic driving condition (e.g., using a different 5minute interval). In this simulation setting, no matter what
+preferences w is chosen, our MOM-DQL method suggests
+the same eco-route (Fig. 5). For comparison, we also
+implement two other popular methods: 1) shortest-path (i.e.,
+Dijkstra method); and 2) driver’s random exploration. The
+routes generated by both methods are also tested under the
+same traffic condition as MOM-DQL. The fastest route and
+fuel-efficient route by the Dijkstra method are calculated
+based on the graph with link-based costs collected in the
+previous 5-minute interval, reflecting historical travel cost
+data used by travelers in practice. The random exploration
+method randomly explores all the possible routes from the
+origin to destination that consists of no more than 6 road links
+(i.e., avoiding going backward) in the new testing
+environment. As shown in Fig. 5, the MOM-DQL finds the
+optimal solution in terms of both travel time and fuel
+consumption. Compared to the Dijkstra method it saves about
+52% in travel time and 33% in fuel consumption. The
+Dijkstra method does not perform well overall. This is
+because the optimal route in terms of the past travel costs is
+likely to generate suboptimal solutions in a new driving
+condition.
+
+[1]
+
+[2]
+
+[3]
+
+[4]
+
+[5]
+
+[6]
+
+[7]
+[8]
+
+[9]
+[10]
+
+[11]
+
+[12]
+
+[13]
+
+[14]
+[15]
+
+Fig. 5. Vehicle-level Eco-Routing Testing Results
+
+[16]
+
+V. CONCLUSION
+In summary, we developed the MOM-DQL approach to
+capture the dynamic traffic environments of a signalized
+traffic network and explore the optimal eco-routes with
+respect to different drivers’ preferences on travel time and
+fuel consumption. With the downloaded model that
+represents the action value function, the model can quickly
+adapt to the latest traffic condition and perform online oneshot learning. The optimal eco-routes can be predicted under
+future unseen driving conditions. Based on microscopic
+simulation, our MOM-DQL can save 52% in travel time and
+33% in fuel consumption compared to the Dijkstra method.
+In the future, we will further test our method considering
+additional realistic settings, e.g., complicated traffic
+networks, diverse vehicle trip distributions, traffic jams, more
+advanced fuel consumption models. We will also study if raw
+vehicle trajectories can be directly used to fine-tune the
+MOM-DQL model and further improve generalization. From
+meta-learning aspect, it is expected to further generalize the
+model on meta-level learner.
+
+[17]
+
+[18]
+
+[19]
+[20]
+
+[21]
+
+[22]
+
+[23]
+[24]
+
+(2019). Energy Use for Transportation - Energy Explained, Your
+Guide To Understanding Energy - Energy Information
+Available:
+Administration.
+https://www.eia.gov/energyexplained/?page=us_energy_transpo
+rtation#tab1
+K. Brundell-Freij and E. Ericsson, "Influence of street
+characteristics, driver category and car performance on urban
+driving patterns," Transportation Research Part D: Transport
+and Environment, vol. 10, no. 3, pp. 213-229, 2005.
+M. Sivak and B. Schoettle, "Eco-driving: Strategic, tactical, and
+operational decisions of the driver that influence vehicle fuel
+economy," Transport Policy, vol. 22, pp. 96-99, 2012.
+M. Barth, K. Boriboonsomsin, and A. Vu, "Environmentallyfriendly navigation," in 2007 IEEE Intelligent Transportation
+Systems Conference, 2007, pp. 684-689: IEEE.
+K. Boriboonsomsin, M. J. Barth, W. Zhu, and A. Vu, "Ecorouting navigation system based on multisource historical and
+real-time traffic information," IEEE Transactions on Intelligent
+Transportation Systems, vol. 13, no. 4, pp. 1694-1704, 2012.
+Y. M. Nie and Q. Li, "An eco-routing model considering
+microscopic vehicle operating conditions," Transportation
+research part B: Methodological, vol. 55, pp. 154-170, 2013.
+X. Huang and H. Peng, "Eco-routing based on a data driven fuel
+consumption model," arXiv preprint arXiv:1801.08602, 2018.
+J. Sun and H. X. Liu, "Stochastic eco-routing in a signalized
+traffic network," Transportation Research Part C: Emerging
+Technologies, vol. 59, pp. 32-47, 2015.
+R. S. Sutton and A. G. Barto, Reinforcement learning: An
+introduction (no. 1). MIT press Cambridge, 1998.
+D. Isele, A. Cosgun, and K. Fujimura, "Analyzing Knowledge
+Transfer in Deep Q-Networks for Autonomously Handling
+Multiple Intersections," arXiv preprint arXiv:1705.01197, 2017.
+C. Finn, P. Abbeel, and S. Levine, "Model-agnostic metalearning for fast adaptation of deep networks," presented at the
+International Conference on Machine Learning (ICML), 2017.
+Z. Li, F. Zhou, F. Chen, and H. Li, "Meta-sgd: Learning to learn
+quickly for few shot learning," arXiv preprint arXiv:1707.09835,
+2017.
+H. Mossalam, Y. M. Assael, D. M. Roijers, and S. Whiteson,
+"Multi-objective deep reinforcement learning," arXiv preprint
+arXiv:1610.02707, 2016.
+V. Mnih et al., "Human-level control through deep reinforcement
+learning," Nature, vol. 518, no. 7540, pp. 529-533, 2015.
+M. Nazari, A. Oroojlooy, L. Snyder, and M. Takác,
+"Reinforcement learning for solving the vehicle routing
+problem," in Advances in Neural Information Processing
+Systems, 2018, pp. 9839-9849.
+S. Racanière et al., "Imagination-augmented agents for deep
+reinforcement learning," in Advances in neural information
+processing systems, 2017, pp. 5690-5701.
+T. Tajmajer, "Modular Multi-Objective Deep Reinforcement
+Learning with Decision Values," in 2018 Federated Conference
+on Computer Science and Information Systems (FedCSIS), 2018,
+pp. 85-93: IEEE.
+Y. Duan, J. Schulman, X. Chen, P. L. Bartlett, I. Sutskever, and
+P. Abbeel, "RL2: Fast Reinforcement Learning via Slow
+Reinforcement Learning," arXiv preprint arXiv:1611.02779,
+2016.
+J. X. Wang et al., "Learning to reinforcement learn," arXiv
+preprint arXiv:1611.05763, 2016.
+V. Mnih et al., "Asynchronous methods for deep reinforcement
+learning," in International conference on machine learning,
+2016, pp. 1928-1937.
+M. Tokic, "Adaptive -greedy exploration in reinforcement
+learning based on value differences," in Annual Conference on
+Artificial Intelligence, 2010, pp. 203-210: Springer.
+B. Pattberg. (2018). DLR - Institute of Transportation Systems SUMO – Simulation of Urban MObility. Available:
+http://www.dlr.de/ts/en/desktopdefault.aspx/tabid9883/16931_read-41000/
+(2019). OpenStreetMap. Available: www.openstreetmap.org
+(2017).
+Welcome
+to
+HBEFA.
+Available:
+http://www.hbefa.net/e/index.html
+
+REFERENCES
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:36 UTC from IEEE Xplore. Restrictions apply.
+
+

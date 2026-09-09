@@ -1,0 +1,535 @@
+2019 IEEE Real-Time Systems Symposium (RTSS)
+
+Work-In-Progress: Leveraging the Selﬂess Driving
+Model to Reduce Vehicular Network Congestion
+Guangli Dai∗ , Pavan Kumar Paluri∗ , Thomas Carmichael∗ , Albert M. K. Cheng∗ , Risto Miikkulainen†
+∗ Department
+
+† Department
+
+of Computer Science, University of Houston, Houston, TX 77004, USA
+of Computer Science, The University of Texas at Austin, Austin, TX 78712, USA
+
+Abstract—With increasing trafﬁc in urban areas, it is crucial to
+examine strategies to reduce trafﬁc network congestion. Popular
+navigation policies currently tend to select the fastest path
+available for each vehicle. However, a top-down approach to
+navigation, which considers the trafﬁc network as a whole, offers
+several speedup possibilities. Minimizing the average travel time
+of all vehicles in the network with respect to their separate travel
+deadlines improves trafﬁc throughput. Because such a strategy
+does not guarantee an optimal navigation route for individual
+vehicles, we refer to it as a “selﬂess” policy and based on
+this observation we propose the Selﬂess Trafﬁc Routing (STR)
+model. Hence, we propose a test bed based on Simulation of
+Urban MObility (SUMO) that can evaluate the performance of
+a trafﬁc routing policy based on the average travel time of all
+vehicle agents in a given trafﬁc grid. Continuously calculating
+optimal actions for multiple agents in real-time is computationally
+complex. We therefore introduce a value-based reinforcement
+learning strategy to achieve the beneﬁts offered by a selﬂess trafﬁc
+routing model. We explore how this approach can potentially
+achieve an optimal balance between action quality and the realtime performance of each decision.
+
+SDN is logically centralized and all ﬂows of packets are under
+the control of the SDN controller(s). However, in the STR
+policy, independent vehicles only share limited information
+with the network, and some vehicles may not be applying the
+policy at all.
+Based on the STR model, we propose a test bed based on
+Simulation of Urban MObility (SUMO) that can evaluate the
+performance of a trafﬁc routing policy based on the average
+travel time of all controlled vehicles.
+Considering a realistic map is much more complicated
+than grids with thousands of nodes and edges involved, the
+conventional way in calculating the optimal routing policy
+for dynamic trafﬁc becomes impractical due to the high
+time complexity. Fortunately, the state of the trafﬁc is a
+consequence of the previous state and the decisions made by
+vehicles at the previous state. Using this relation, the problem
+can be formulated as a typical Markov Decision Process
+(MDP). Hence, reinforcement learning is an ideal candidate
+to train autonomous agents for a heuristic online policy for
+the STR model [9]. We introduce a pilot study that shows
+deep Q-learning [10] is a promising approach to solve the
+STR problem, and examine the trade off between quality and
+real-time performance demands of a decision.
+The contributions of this paper are:
+• Presenting the STR model that aims to minimize the
+average travel time of vehicles while guaranteeing their
+individual travel deadlines.
+• Proposing a test bed based on SUMO. The test bed
+offers a uniform method to evaluate the performance of
+both heuristic routing policies and reinforcement learning
+applications in the STR model.
+• Applying deep Q-learning to trafﬁc routing decisions.
+Preliminary results show that a deep Q-network agent can
+solve the trafﬁc routing problem in a small-scale map.
+
+I. I NTRODUCTION
+In recent years, trafﬁc congestion has become an increasing
+concern in urban areas [1]. The introduction of autonomous
+vehicles and widely used navigation apps present an opportunity to coordinate trafﬁc routing, reduce travel time of vehicles,
+and attenuate trafﬁc in urban areas.
+Calculating the fastest way to travel from one point to
+another in a trafﬁc network with a given trafﬁc situation has
+been well studied. [2] offers an ofﬂine optimal algorithm
+while [3] proposes a more practical solution with lower time
+complexity. However, such approaches may not be globally
+optimal if we consider the travel times of all vehicles in
+the network. Numerous vehicles selecting heavily congested
+routes creates avoidable bottlenecks. Once the degree of trafﬁc
+congestion of a certain road reaches a critical threshold, there
+is a drastic slow down for all vehicles on the road and a higher
+risk of accidents [4]. Hence, [5] proposes a solution which
+reduces the overall congestion degree within the network. [5]
+simpliﬁes the trafﬁc network into a grid, which is not suitable
+for realistic trafﬁc maps.
+In this paper, we propose a “selﬂess” model that minimizes
+the average travel time of vehicles, while preserving individual
+vehicle travel deadlines under a realistic graph-based map. We
+refer to this model as the Selﬂess Trafﬁc Routing (STR) model.
+This selﬂess model shares a lot of similarities with trafﬁc
+routing in Software Deﬁned Networks (SDN) [6] [7] [8]. The
+
+2576-3172/19/$31.00 ©2019 IEEE
+DOI 10.1109/RTSS46320.2019.00061
+
+II. T HE SELFLESS POLICY
+First, we illustrate that a “selﬂess” policy does exist and
+we give a detailed comparison between the selﬁsh and the
+selﬂess policies with an example. Then we propose speciﬁc
+assumptions and the goal for the STR model.
+As shown in the map in Fig. 1(a), there are two routes from
+point A to point B. Route 1, displayed in blue line, is shorter
+while route 2, displayed in red line, is longer in distance.
+Here we assume the vehicle set Γ starting from A heading to
+B sequentially contains 230 vehicles. This simulates the rush
+
+548
+
+Authorized licensed use limited to: UNIVERSITY OF BIRMINGHAM. Downloaded on July 26,2020 at 11:58:12 UTC from IEEE Xplore. Restrictions apply.
+
+ 
+
+ &
+
+
+
+
+
+ '
+
+    !
+
++%%
+
+  
+
+*%%
+)%%
+(%%
+'%%
+&%%
+%
+%
+
+(%
+
++%
+
+-%
+
+ 
+!       
+
+!    
+
+&'%
+
+&*%
+
+&,%
+
+'&%
+
+   
+   
+
+      '(%
+   " !
+
+
+
+&)%
+&(*
+&(%
+&'*
+&'%
+&&*
+&&%
+
+ 
+  
+ 
+ 
+!         
+   
+
+Fig. 1. An example showing the difference between a selﬁsh policy and a selﬂess policy.
+
+hour of the urban trafﬁc. All vehicles in Γ employ the same
+policy in each experiment. We conduct two experiments. One
+applies the selﬁsh policy while the other applies the selﬂess
+policy.
+Under the selﬁsh policy, each vehicle tends to choose the
+fastest route for itself. Under the selﬂess policy, each vehicle
+chooses its route not only to satisfy its own travel deadline
+but also to reduce the average travel time of all vehicles.
+In Fig. 1(b), the index of each vehicle is given based on
+the order of its arrival. Vehicles with smaller indices arrive
+earlier than the ones with higher indices. Under the selﬁsh
+policy, vehicles tend to choose route 1 ﬁrst because route 1 is
+faster then. When more vehicles choose route 1, the following
+vehicles start taking route 2, which is faster now and this later
+causes similar congestion on route 2 as well. This is why
+two spikes can be observed on the travel time curve for the
+selﬁsh policy. It is worth mentioning that since route 1 yields
+to route 2, vehicles that ﬁrst choose route 1 have to wait longer
+at junction C in Fig. 1(a) than they used to estimate due to
+the unexpected heavy trafﬁc on route 2.
+The condition under the selﬂess policy is completely different. Vehicles controlled by the selﬂess policy split themselves
+on routes 1 and 2 even before the congestion happens. Though
+some vehicles have to spend more travel time compared to
+other vehicles that set off at a similar time, potential trafﬁc
+bottlenecks are averted. Considering each vehicle has its own
+deadline, vehicles with relatively larger deadlines can afford
+spending more time on the road without any compromise
+to their respective deadlines. Such diversions reduce both
+congestion and average travel time.
+As shown in Fig. 1(c), the average travel time of all vehicles
+in Γ reduces by 11% under the selﬂess policy compared
+to that under the selﬁsh policy. This example shows how a
+selﬂess policy can reduce the average travel time and relieve
+urban congestion. Since only a few choices can be made in
+a small map such as 1(a), the decrease in the average travel
+time of up to 10% is signiﬁcant. In a larger map with more
+alternative routes, the selﬂess policy may have additional ways
+to manage trafﬁc ﬂow. Vehicles with later deadlines can make
+slight diversions to lower the average travel time of all vehicles
+in the network. With more routing choices available on a larger
+map, the worst-case diversion time can be further reduced.
+With the introduction of a selﬂess routing policy, we next
+
+examine the assumptions and the goal of the STR model. The
+constraints are as follows: 1) Each agent applying the policy
+can control only one vehicle while such agent can only have
+limited access to other agents’ locations. For instance, certain
+agent can only know where another agent-controlled vehicle
+is. However, it does not know where it will be heading to or
+any other sensitive information about that vehicle whatsoever.
+2) While routing the vehicles, an agent must guarantee the
+travel deadline of its own vehicle and consider this as its topmost priority. The goal to be achieved under these constraints
+is to minimize the average travel time of all agent-controlled
+vehicles in the trafﬁc network.
+III. A SUMO- BASED TEST BED
+There are numerous potential solutions towards the STR
+problem introduced above. To validate their performances, we
+need a test bed to compare different policies. In this section,
+we introduce a test bed built based on platform Simulation of
+Urban MObility (SUMO) [11]. We also show the details on
+how agents control the vehicle in the testing environment.
+A. Simulation platform
+In Simulation of Urban MObility (SUMO) [11], all sorts of
+vehicle behaviors are taken into consideration. For instance,
+vehicles yielding, merging and trafﬁc lights are all considered
+in this simulation. These characteristics make the simulation
+more realistic and the results look more convincing. In the map
+exported from [12], there are directional lanes and different
+types of junctions speciﬁed. The type of vehicles that can
+access a given road is also speciﬁed in the map. Hence, the
+vehicles’ type can affect the ﬁnal outcome as well.
+During tests, vehicles have a start point, a travel start time,
+a destination, a vehicle type, and a travel deadline speciﬁed
+by the user. For testing purposes, the travel deadlines can be
+set as inﬁnite. Disregarding deadlines allows for computing
+the travel time of each vehicle independent of its deadline.
+This approach is analogous to examining the tardiness of a
+soft real-time task in a real-time system.
+B. The control of vehicles in the system
+During one simulation in the test bed, there can be more
+than one agent each controlling a separate vehicle. The agent
+only controls the direction the vehicle is heading to at each
+
+549
+
+Authorized licensed use limited to: UNIVERSITY OF BIRMINGHAM. Downloaded on July 26,2020 at 11:58:12 UTC from IEEE Xplore. Restrictions apply.
+
+
+
+
+
+
+
+sequence. Each agent controls one vehicle which we refer to
+as the target vehicle. The target vehicle will strictly follow the
+instructions given by the agent to travel in the system.
+For this pilot research, we simplify the problem with two
+assumptions. First, the travel deadline of the vehicle controlled
+is inﬁnite. Second, the start and destination points are ﬁxed
+within the given map. The trafﬁc ﬂow of vehicles not controlled by the agent and the start time of all vehicles are
+randomly generated.
+In our training process, we used 1000 episodes. In each
+episode, the agent makes decisions, which we refer to as
+“action”, based on the “state” offered. As a feedback, the
+environment built on SUMO returns a “reward” corresponding
+to the action made under the state. State refers to a vector
+that contains information such as the vehicles’ location and
+the congestion ratio (CR) of each edge. Reward refers to
+some integer value. The action is an integer between 0 and
+5, representing the choice at a junction correspondingly.
+We now introduce the process of the training of the Qnetwork agent, which is shown in Fig. 3. At the beginning,
+SUMO is initialized and the agent makes a decision on the
+action based on the initial state. If the action is invalid, a
+negative reward, which is a penalty, is given. Otherwise, we
+simulate the action in SUMO. A huge positive reward is given
+if the vehicle controlled by the agent reaches the destination.
+If the agent does not reach the destination, the reward becomes
+a −1 penalty for each second the vehicle spent since the last
+decision. Negative penalties for sub-optimal route selection
+inspire the agent to reduce the travel time. The rewards are
+used to update the Q-network and the agent makes the next
+decision according to the given state. Yet if the action is
+invalid, the target reaches the destination, or the episode
+exceeds the time limits, the Q-network will be updated and
+the episode ends. Such episode repeats itself for 1000 times
+before the training ends.
+
+
+
+Fig. 2. An example of decision making.
+
+junction while the speed control, lane switching and trafﬁc
+light recognition are not discussed and all handled by the
+test bed in a conventional way. It is worth mentioning that
+agents can communicate limited information (like each other’s
+location) between each other assuming they lie on the same
+centralized system.
+Once the vehicle sets off, the agent that controls the vehicle
+will make a decision on which way the vehicle should head
+to at the next junction. For instance, in Fig. 2, for a vehicle
+moving from left to right, when the vehicle reaches point
+A, it has to make a decision for the upcoming junction at
+point B. Suppose it chooses to go straight. Once it reaches
+point C, which is the beginning of the next edge, it has
+to make a decision for next junction at point D. At each
+junction, the agent has at most six options: straight, slightly
+left, left, turnaround, right, slightly right. Some options may
+be unavailable at certain junctions. For instance, turning left
+is unavailable at point B as shown in Fig. 2.
+Our test bed can evaluate the performance of a trafﬁc routing
+policy with the following parameters:
+• The number of vehicles controlled by the agent together
+with their vehicle types, start points, the travel start time,
+destinations and the travel deadlines.
+• The trafﬁc ﬂow that is not controlled by agents will be
+randomly generated; the parameter of how heavy this
+random trafﬁc ﬂow is, should be provided as an input.
+• The map selected for testing.
+• The policy each agent adopts. In the test, we assume all
+agents adopt the same policy.
+IV. A PPLYING Q- LEARNING TO THE S ELFLESS T RAFFIC
+ROUTING (STR) PROBLEM
+
+B. The training result
+During the training, the Q-network agent’s performance
+converges. As shown in Fig. 4, the rewards that the agent receives starts with a low value, e.g., −10000, because the initial
+actions of untrained agents exploring often select unavailable
+turns. After around 200 episodes, the Q-network agent learns
+the map well and begins to gain high rewards. The convergence
+indicates a deep Q-network agent can learn a small-scale map
+without much prior information.
+Next we change the architecture of the Deep Neural Network (DNN) in the deep Q-network and discuss the inﬂuence
+of the NN architecture on the performance under the SUMObased test bed introduced in Section III. As shown in Fig. 5,
+the average travel time reduces when the DNN becomes more
+complicated while the processing time to obtain each decision
+increases. This suggests that a dynamic trade-off between the
+quality of the decision and the calculation time needed can be
+made under different scenarios.
+
+We now discuss the application of deep Q-learning to the
+STR model. Unlike the selﬁsh trafﬁc routing problem, which
+has been well studied [2], [3], the optimal solution to the STR
+problem requires the collaboration of multiple agents. This
+greatly increases the time complexity in the application of
+conventional trafﬁc routing algorithms. On the other hand, the
+problem itself is a Markov Decision Progress (MDP). This
+makes reinforcement learning a potentially useful tool [13].
+In this section, we introduce our strategy to apply Q-Learning
+to the STR model and establish preliminary results.
+A. Deep Q-network agent training
+Q learning [9], which is proved to be good at playing various
+interactive games [10], [14], also ﬁnds its application in the
+STR model. We introduce the training of a deep Q-network
+agent based on the interaction of vehicles with SUMO as
+stated above. During the training phase agents are trained in
+
+550
+
+Authorized licensed use limited to: UNIVERSITY OF BIRMINGHAM. Downloaded on July 26,2020 at 11:58:12 UTC from IEEE Xplore. Restrictions apply.
+
+
+
+Fig. 3. The ﬂow chart of the training of Q-network agent
+
+for realistic emulation of trafﬁc routing use cases. We have
+just begun exploring the possible ways to shape the quality
+of an agent’s action in the STR model. There are numerous
+ways to design the reward function and we are testing various
+approaches to evaluate the quality of an agent’s action in real
+time. One exciting idea is the inclusion of congestion based
+thresholds for rewards. Real-world trafﬁc ﬂow has critical
+thresholds [4], and discrete rewards for staying under these
+thresholds can help reduce travel times.
+
+
+
+
+
+
+
+
+
+
+
+  
+
+ 
+
+
+
+ 
+
+
+Fig. 4. The rewards the Q-network agent gains under different episodes of
+the training..
+     
++##
+
+#)%
+
+*##
+
+#)
+
+)##
+
+#(+
+
+(##
+
+#()
+
+'##
+
+#('
+
+&##
+
+#(%
+
+%##
+
+#(
+
+$##
+#
+
+#'+
+
+     
+ 
+  
+
+R EFERENCES
+
+        $''    
+  
+      
+
+       
+ 
+
+ 
+#)'
+
+[1] G. Duczynski, “Investigating trafﬁc congestion: Targeting technological
+and social interdependencies through general morphological analysis,”
+2018.
+[2] Y. Singh, S. Sharma, R. Sutton, and D. Hatton, “Optimal path planning
+of an unmanned surface vehicle in a real-time marine environment using
+a dijkstra algorithm,” in Marine Navigation. CRC Press, 2017, pp. 399–
+402.
+[3] J. Fawcett and P. Robinson, “Adaptive routing for road trafﬁc,” IEEE
+Computer Graphics and Applications, vol. 20, no. 3, pp. 46–53, 2000.
+[4] D. Xu, B. Mao, Y. Rong, and W. Wei, “Theory and simulation for trafﬁc
+characteristics on the highway with a slowdown section,” Computational
+intelligence and neuroscience, vol. 2015, p. 53, 2015.
+[5] I. Lamouik, A. Yahyaouy, and M. A. Sabri, “Deep neural network
+dynamic trafﬁc routing system for vehicles,” in 2018 International
+Conference on Intelligent Systems and Computer Vision (ISCV), Apr
+2018, p. 14.
+[6] M. N. M. R. Kannan Anusha, Sumathi Vijayan, “Adaptive routing
+mechanism in sdn to limit congestion,” in Information Systems Design
+and Intelligent Applications. Springer, 2018, pp. 245–253.
+[7] L. Davoli, L. Veltri, P. L. Ventre, G. Siracusano, and S. Salsano, “Trafﬁc
+engineering with segment routing: Sdn-based architectural design and
+open source implementation,” in 2015 Fourth European Workshop on
+Software Deﬁned Networks. IEEE, 2015, pp. 111–112.
+[8] C. Filsﬁls, N. K. Nainar, C. Pignataro, J. C. Cardona, and P. Francois,
+“The segment routing architecture,” in 2015 IEEE Global Communications Conference (GLOBECOM). IEEE, 2015, pp. 1–6.
+[9] C. J. Watkins and P. Dayan, “Q-learning,” Machine learning, vol. 8, no.
+3-4, pp. 279–292, 1992.
+[10] V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou, D. Wierstra, and M. Riedmiller, “Playing atari with deep reinforcement learning,” arXiv preprint arXiv:1312.5602, 2013.
+[11] D. Krajzewicz, J. Erdmann, M. Behrisch, and L. Bieker, “Recent development and applications of SUMO - Simulation of Urban MObility,”
+International Journal On Advances in Systems and Measurements,
+vol. 5, no. 3&4, pp. 128–138, December 2012.
+[12] M. Haklay and P. Weber, “Openstreetmap: User-generated street maps,”
+IEEE Pervasive Computing, vol. 7, no. 4, pp. 12–18, 2008.
+[13] V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G.
+Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski,
+and et al., “Human-level control through deep reinforcement learning,”
+Nature, vol. 518, no. 7540, p. 529533, Feb 2015.
+[14] J. DeNero and D. Klein, “Teaching introductory artiﬁcial intelligence
+with pac-man,” in First AAAI Symposium on Educational Advances in
+Artiﬁcial Intelligence, 2010.
+
+Fig. 5. The comparison of execution time and average travel time between
+agents with the simpliﬁed and complicated DNN.
+
+V. C ONCLUSION AND F UTURE W ORKS
+In this paper, we propose the STR model and explain how a
+selﬂess policy can reduce the average travel time compared to
+the selﬁsh policy. With the STR model speciﬁed, we propose
+a SUMO-based test bed that can evaluate the performance of
+various policies based on the criterion of average travel time.
+Considering the challenges involved in the STR model, we
+propose the idea of applying deep Q-learning technique to
+the STR model. Our pilot study shows that a deep Q-network
+agent can solve the STR problem in a graph-based map.
+In future works, the speciﬁc interface of the SUMO-based
+testing environment should be provided to ensure the results
+are reproducible. Additional criteria such as the real-time performance of each decision should be measured in the testing
+environment as well. The development of heuristic algorithms
+on the STR model requires further exploration. Regarding
+the Q-network agent training, the training currently involves
+one vehicle without their individual deadlines considered. In
+future works, multi-agent models should be explored with the
+deadline of each vehicle as a part of the input. Furthermore,
+randomly-generated start and destination points are necessary
+
+551
+
+Authorized licensed use limited to: UNIVERSITY OF BIRMINGHAM. Downloaded on July 26,2020 at 11:58:12 UTC from IEEE Xplore. Restrictions apply.
+
+

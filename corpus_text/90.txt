@@ -1,0 +1,865 @@
+2025 Innovations in Intelligent Systems and Applications Conference (ASYU) | 979-8-3315-9727-6/25/$31.00 ©2025 IEEE | DOI: 10.1109/ASYU67174.2025.11208423
+
+Elektrikli Araçlar İçin Gerçek Yol Ağlarında Şarj
+Kısıtlı, Enerji Farkındalıklı Q-Öğrenme Tabanlı Rota
+Planlama
+Q-Learning-Based Energy-Aware Route Planning for
+Electric Vehicles on Real Road Networks with
+Charging Constraints
+Ahmet Metin1,∗ , Sena Dikici1
+1
+
+Bilgisayar Mühendisliği Bölümü, Bursa Teknik Üniversitesi, Bursa, Türkiye
+ahmet.metin@btu.edu.tr, sena.dikici@btu.edu.tr
+∗
+Corresponding author: ahmet.metin@btu.edu.tr
+
+Özetçe —Elektrikli araç (EV) rotalama problemi, yalnızca
+seyahat mesafesini en aza indirmeyi değil, aynı zamanda enerji
+kısıtlarını ve şarj istasyonlarının konumsal dağılımını da dikkate
+almayı gerektirir. Bu çalışmada, gerçek yol ağı üzerinde enerji
+farkındalığına sahip rotalar oluşturmak amacıyla eğitilmiş Qlearning ve hiyerarşik Q-learning (HRL) tabanlı ajanlar önerilmektedir. Ortam, OpenStreetMap verileri kullanılarak Berlin,
+İstanbul ve Ankara şehirlerinden elde edilen grafik yapıları
+olarak modellenmiştir. Her durum, hedefe uzaklık, batarya
+seviyesi, komşu sayısı, yakın şarj istasyonları ve son ödül dinamiklerini içeren 16 boyutlu bir vektörle temsil edilmektedir.
+Ödül fonksiyonu; hedefe yaklaşımı teşvik eden, gereksiz döngü
+ve geri dönüşleri cezalandıran ve akıllı şarj kararlarını ödüllendiren çok bileşenli bir yapıdır. Deneysel sonuçlar, HRL’nin
+kompakt şehirlerde (Berlin) %25’e varan üstünlük gösterirken,
+Q-learning’in geniş alanlarda ve kaynak kısıtlı ortamlarda daha
+başarılı olduğunu göstermektedir. Her iki yaklaşım da yalnızca
+enerji kısıtları nedeniyle gerektiğinde en kısa yoldan sapmakta
+ve toplam ödül, rota uzunluğu ve şarj sayısı gibi metriklerle
+performansları değerlendirilmiştir.
+Anahtar Kelimeler—Elektrikli Araç Rotalama; Enerji Farkındalıklı Rota Planlama; Pekiştirmeli Öğrenme; Q-Öğrenme.
+Abstract—Abstract — The electric vehicle (EV) routing problem requires not only minimizing the travel distance but also
+considering energy constraints and the spatial distribution of
+charging stations. In this work, we propose Q-learning and
+hierarchical Q-learning (HRL) based agents trained to generate
+energy-aware routes on real road networks. The environment is
+modeled as graph structures obtained from Berlin, Istanbul, and
+Ankara cities using OpenStreetMap data. Each state is represented by a 16-dimensional vector that includes distance to the
+destination, battery level, number of neighbors, nearby charging
+stations, and final reward dynamics. The reward function is
+a multi-component structure that incentivizes approaching the
+destination, penalizes unnecessary loops and backtracking, and
+rewards smart charging decisions. Experimental results show
+that HRL demonstrates superiority up to 25% in compact
+cities (Berlin), while Q-learning performs better in large areas
+and resource-constrained environments. Both approaches deviate
+
+from the shortest path only when necessary due to energy
+constraints and their performance is evaluated by metrics such
+as total reward, route length and number of charges.
+Keywords—Electric Vehicle Routing; Energy-Aware Path Planning; Reinforcement Learning; Q-Learning.
+
+I.
+
+G İR İ Ş
+
+Elektrikli araçların (EV) yaygınlaşması, geleneksel rotalama algoritmalarının enerji odaklı yeniden tasarımını gerektirmektedir. Klasik yaklaşımlar mesafe/süre optimizasyonuna
+odaklanırken, EV’ler batarya kapasitesi ve şarj istasyonu
+kısıtları nedeniyle daha karmaşık çözümler gerektirir. Gerçek
+dünyada şarj zamanı ve yeri önceden belirlenemediğinden,
+araçlar enerji optimizasyonu için optimal rotadan sapabilir.
+Dinamik ortamlarda pekiştirmeli öğrenme (RL) klasik algoritmalara göre daha esnek çözümler sunar. Q-learning, keşifsömürü dengesini sağlayarak enerji kısıtlı rotalama için uygundur. Bu çalışmada Q-learning ajanı epsilon-greedy stratejisi ile
+eğitilerek enerjiye duyarlı rotalar öğrenir.
+Çalışmamızın temel katkısı, OpenStreetMap verileri kullanılarak elde edilen gerçek bir yol ağı üzerinde eğitilen
+bir Q-learning ajanının, enerji verimliliği gözetilerek hedefe
+ulaşan rotaları öğrenmesini sağlamaktır. Ortam, her biri batarya
+seviyesi, hedefe uzaklık, komşu düğüm sayısı ve şarj istasyonlarına yakınlık gibi bilgiler içeren 16 boyutlu bir durum
+vektörü ile modellenmiştir. Ödül fonksiyonu, yalnızca hedefe
+yaklaşımı değil, aynı zamanda gereksiz döngülerden kaçınmayı, mantıklı şarj kararlarını ve en kısa yoldaki ilerlemeyi
+teşvik eden çok bileşenli bir yapıdadır.
+Ayrıca, Dijkstra algoritması ile önceden hesaplanan en kısa
+yol referans alınarak, Q-learning ajanına ödül şekillendirme
+(reward shaping) yoluyla yönlendirme sağlanmıştır. Böylece
+ajan, yalnızca enerji gereksinimi doğduğunda bu rotadan sapmakta, aksi halde hedefe doğru optimal şekilde ilerlemektedir.
+
+979-8-3315-9727-6/25/$31.00 © 2025 IEEE
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:02:55 UTC from IEEE Xplore. Restrictions apply.
+
+Döngü tespiti, batarya yönetimi ve şarj stratejilerinin de dahil
+edilmesiyle, önerilen yaklaşım EV’ler için pratik ve akıllı bir
+rotalama sistemi sunmaktadır.
+II.
+
+bir ortamda ödül şekillendirme yöntemi ile eğitilmiş ve
+araçların yalnızca gerektiği durumlarda kısa yoldan sapmalar
+yapmasını sağlayacak şekilde tasarlanmıştır.
+III.
+
+İ LGILI Ç ALI ŞMALAR
+
+Q-öğrenme (Q-learning), pekiştirmeli öğrenmenin modelden bağımsız bir yöntemi olarak son yıllarda özellikle yol
+planlama problemlerinde yaygın biçimde kullanılmaktadır. Literatürde yapılan çeşitli çalışmalar, bu algoritmanın farklı ortam
+ve uygulamalara adapte edilerek verimlilik, yakınsama süresi
+ve çevresel farkındalık açısından nasıl geliştirilebileceğini
+göstermektedir.
+Puente-Castro ve arkadaşları [1] engelli ortamlarda İHA
+sürülerinin otonom kontrolünü sağlamak için yapay sinir ağı
+destekli bir Q-öğrenme sistemi geliştirmiştir. Çalışmada, farklı
+harita boyutları ve İHA sayıları için yapılan deneylerde sistemin hareket sayısını azalttığı gösterilmiştir. Qi ve çalışma
+arkadaşları [2] atık elektronik ürünlerin geri dönüşümünde
+kullanılmak üzere çok kısıtlı ve çok hedefli güzergâh planlama
+problemini ele almış ve bu amaçla çift yönlü Q-öğrenme
+temelli bir algoritma önermiştir. Katmanlı görev ayrımı ve
+ödül yönlendirmesi ile algoritmanın yakınsama süresi ve
+yol kalitesinde iyileşmeler sağladığı gösterilmiştir. Wang ve
+arkadaşları [3] dinamik engellerin bulunduğu ortamlar için
+geliştirilmiş Q-öğrenme algoritması sunmuştur. Bu algoritmada, öncelikli ağırlıklandırma sistemi ile değer tahmini iyileştirilmiş ve algoritmanın hem yakınsama hızı hem de yol
+doğruluğu artırılmıştır.
+Low ve ekibi [4] klasik Q-öğrenmenin yavaş yakınsama
+problemini çiçek tozlaşma algoritması ile aşmaya çalışmıştır.
+Bu algoritma ile Q-tablosunun başlangıç değerleri daha etkin
+şekilde belirlendiğinden, rota planlama süreci hızlandırılmıştır.
+Maoudj ve Hentout [5] klasik Q-öğrenmenin eylem seçim
+sürecini iyileştirerek mobil robotlar için çarpışmasız ve kısa
+sürede elde edilebilen yollar üretmeyi başarmıştır. Xiang ve
+arkadaşları [6] havaalanı yüzeyinde hareket eden uçaklar için
+taksi yolu planlamasında kullanılmak üzere üçlü geliştirme
+içeren bir Q-öğrenme algoritması tasarlamışlardır. Yapılan iyileştirmeler; Q-tablosunun yeniden başlatılması, dinamik keşif
+katsayısı kullanımı ve çakışma önleme stratejileri ile algoritmanın doğruluk ve güvenlik açısından başarımını artırmıştır.
+Literatürde, elektrikli araçların rota planlaması ve şarj
+stratejileri de farklı yaklaşımlarla ele alınmıştır. Zhang ve
+Stern [7], elektrikli araçlar için şarj istasyonu seçimi ve rota
+kararını iki aşamalı bir derin pekiştirmeli öğrenme mimarisi
+ile bütünleştirirken; Aslan Yıldız ve arkadaşları [8], batarya
+ve taşıma kapasitesi kısıtlarını gözeten bir Q-öğrenme modeli
+ile kapasiteli elektrikli araç rotalama problemi çözümlemiştir.
+Baum ve ekibi [9], batarya kapasitelerini ve şarj süresinin
+doğrusal olmayan etkilerini dikkate alan CHArge algoritmasını
+önermiş ve bu algoritmanın geçerli ve enerji açısından güvenli
+rotalar ürettiğini göstermiştir. Çok amaçlı optimizasyon yaklaşımıyla çalışan Cuchý [10], seyahat süresi, enerji maliyeti ve
+kalan batarya gibi hedefleri NSGA-II ile dengelemiş, Paretooptimal çözümler elde etmiştir.
+Bu bildiride sunulan yöntem ise elektrikli araçlar için
+gerçek şehir yollarında batarya kısıtlarını dikkate alan enerji
+farkındalıklı bir yol planlama çözümüdür. Q-öğrenme algoritması, OpenStreetMap verilerine dayalı olarak yapılandırılmış
+
+M ETODOLOJI
+
+Geliştirilen sistem, elektrikli araçların rota planlamasında
+mesafe, batarya seviyesi, şarj altyapısı ve ödül fonksiyonunu
+eş zamanlı optimize eder.
+A. Ortam ve Grafik Yapısı
+Bu çalışmanın temelini, gerçek dünyadaki yol ağı verisine dayalı bir simülasyon ortamı oluşturmaktadır. Şehir içi
+ulaşım altyapısının gerçekçi şekilde modellenmesi amacıyla
+Berlin, İstanbul ve Ankara kentlerinin yol ağı, OpenStreetMap
+(OSM) üzerinden edinilmiş ve OSMnx Python kütüphanesi
+aracılığıyla analiz edilebilir bir yapıya dönüştürülmüştür.
+Bu işlem sonucunda, yollar ve kavşaklar bir grafik yapısı
+içerisinde düğümler ve kenarlar olarak modellenmiştir.
+Grafik yapısı NetworkX kütüphanesi ile yönlü (directed)
+bir grafa çevrilmiştir. Her düğüm coğrafi koordinatları
+içerirken, kenarlar metre cinsinden uzunluk bilgisiyle ağırlıklandırılmıştır. Şehir ağına farklı senaryolar için şarj istasyonları
+eklenmiştir. Bu yapı, gerçek dünya topolojisi üzerinde enerji
+tabanlı karar verme süreçlerini mümkün kılar.Ajanın çevresiyle
+etkileşimi, bu grafik yapısı üzerindeki hareketler ve batarya
+seviyesi ile doğrudan ilişkilidir.
+B. Ajanın Çevresel Girdileri ve Durum Özellikleri
+Pekiştirmeli öğrenmede, ajan tarafından çevrenin nasıl algılandığı, öğrenme başarısını doğrudan etkileyen temel bir faktördür. Bu çalışmada geliştirilen Q-learning ajanı, her zaman
+adımında içinde bulunduğu durumu 16 boyutlu bir sürekli
+durum vektörü ile temsil etmektedir. Bu durum vektörü,
+aracın çevresel koşulları, enerji durumu ve geçmiş deneyimlerine ilişkin bilgileri bir arada içerecek şekilde özenle
+yapılandırılmıştır.
+Durum vektöründe yer alan bileşenler, aşağıdaki tematik
+başlıklar altında gruplanabilir:
+•
+
+Ulaşım Dinamikleri: Hedefe olan normalize mesafe,
+mevcut düğümün komşu sayısı ve o ana kadar yapılan
+toplam adım sayısı gibi faktörler, aracın harita üzerindeki konumunu ve hareket özgürlüğünü tanımlar.
+
+•
+
+Enerji Durumu: Mevcut batarya seviyesi, önceki
+adımdaki batarya oranı ve yakınlardaki şarj istasyonlarının sayısı gibi parametreler, enerji farkındalıklı
+karar verme sürecine yön verir.
+
+•
+
+Ödül Geçmişi ve Davranışsal İpuçları: Son adımlarda alınan ortalama ödül, toplam birikimli ödül
+ve döngü tespiti (aynı düğümde art arda kalma
+sayısı gibi) bileşenler, ajan davranışlarının daha
+sürdürülebilir ve hedef odaklı hale gelmesine katkı
+sağlar.
+
+•
+
+Yol Rehberliği ve Şekillendirme: Dijkstra algoritması ile elde edilen en kısa yol üzerindeki ilerlemeye
+bağlı bonuslar, enerji verimliliği ödülleri ve hedefe
+yaklaşma/uzaklaşma geri bildirimleri gibi öğeler,
+öğrenmeyi yönlendiren şekillendirici sinyallerdir.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:02:55 UTC from IEEE Xplore. Restrictions apply.
+
+Bu bileşenlerin çoğu normalize edilmiştir ve belirli aralıklarla standartlaştırılarak Q-tablosuna aktarılabilecek şekilde
+ayrıklaştırılmıştır. Bu sayede, sürekli değerler taşıyan özellikler, tabanlı Q-learning algoritmasının indeksleme yapısına
+uygun hale getirilmiştir.
+Durum vektörünün bu çok bileşenli yapısı, aracın yalnızca
+konumsal değil, aynı zamanda enerji, çevresel ve davranışsal
+sinyalleri de dikkate alarak karar verebilmesini mümkün kılmaktadır. Böylece, ajan yalnızca mesafeyi değil, aynı zamanda enerji verimliliğini ve uzun vadeli ödül potansiyelini
+de gözeten bir politika öğrenmektedir.
+Tüm durum bileşenleri ve bunların hesaplama yöntemleri
+Tablo I’de ayrıntılı olarak sunulmuştur.
+C. Ajan Davranışını Yönlendiren Ödül Stratejisi
+Bu çalışmada, Q-learning ajanının öğrenme sürecini yönlendirmek amacıyla çok bileşenli ve bağlamsal bir ödül
+fonksiyonu geliştirilmiştir. Ödül yapısı, yalnızca hedefe
+ulaşımı değil, aynı zamanda enerji verimliliğini ve karar doğruluğunu da optimize etmeyi amaçlamaktadır. Aşağıda, her bir
+ödül bileşeni detaylı şekilde açıklanmıştır.
+•
+
+•
+
+Hedefe Yaklaşma / Uzaklaşma: Ajan, hedef düğüme
+bir önceki adıma göre daha fazla yaklaştıysa pozitif
+ödül alır; aksi durumda ceza verilir:
+
++1, yaklaşıyorsa
+rdistance =
+−1, uzaklaşıyorsa
+
+Bu çok bileşenli ödül fonksiyonu, ajanın sadece kısa sürede
+hedefe ulaşmasını değil, aynı zamanda batarya yönetimi, rota
+verimliliği ve öğrenme istikrarı açısından da dengeli kararlar
+almasını sağlar.
+D. Q-Learning Mimarisi
+Önerilen sistemde, tabular Q-learning algoritması temel
+alınarak ajan eğitilmiştir. Ajan, her durumda geçerli aksiyonlar arasından seçim yaparken epsilon-greedy stratejisi
+uygulamaktadır. Bu strateji sayesinde, öğrenmenin ilk aşamalarında yüksek keşif (exploration) oranı sağlanmakta, ancak
+zamanla epsilon değeri kademeli olarak azaltılarak sömürü
+(exploitation) davranışı ön plana çıkmaktadır. Bu sayede ajan,
+başlangıçta yeni yolları deneme eğilimindeyken, ilerleyen
+süreçte öğrendiği optimum rotaları daha fazla kullanmaya
+yönelmektedir.
+Durum vektörü sürekli özellikler içerdiğinden, Q-tablosu
+oluşturulurken bu özellikler belirli aralıklarla discretize
+edilmiştir. Her bir discretize edilmiş durum bileşeni, tablodaki
+indeksleme işlemi için kullanılmıştır. Aksiyon sonrası elde
+edilen ödül, klasik Q-learning güncelleme formülü olan:
+h
+i
+′ ′
+Q(s, a) ← Q(s, a) + α r + γ max
+Q(s
+,
+a
+)
+−
+Q(s,
+a)
+′
+a
+
+ifadesiyle hesaplanarak tabloya yansıtılmıştır. Burada α
+öğrenme oranını, γ ise gelecekteki ödüllerin ne derece dikkate
+alındığını belirleyen iskonto (discount) faktörünü temsil etmektedir.
+
+Döngü ve Salınım (Oscillation): Ajanın aynı düğümler arasında tekrar tekrar geçiş yapması, döngü/salınım
+olarak değerlendirilir ve cezalandırılır:
+rloop = −2
+
+•
+
+Geriye Gitme (Backtracking): Önceki adımdaki
+düğüme geri dönülmesi verimsiz bir hamle olarak
+değerlendirilir:
+rbacktrack = −2
+
+•
+
+Şarj Kararları: Ajanın şarj istasyonlarına ne zaman
+gittiği, batarya seviyesiyle birlikte değerlendirilir:
+
++3, düşük batarya ile mantıklı şarj
+rcharge =
+−1, yüksek batarya ile gereksiz şarj
+
+•
+
+En Kısa Yol Üzerinde İlerleme (Reward Shaping):
+Ajanın Dijkstra ile önceden hesaplanmış en kısa yol
+üzerinde kalması durumunda bonus ödül verilir:
+rsp_bonus = +0.5
+
+•
+
+Hedefe Ulaşma: Ajan, hedef düğüme başarıyla
+ulaştığında sabit ve yüksek bir final ödül kazanır:
+
+Şekil 1: Q-learning (kırmızı) ve HRL (mor) rotalarının
+karşılaştırması. Yeşil noktalar şarj istasyonlarını gösterir.
+
+rgoal = +10
+Her adımda toplam ödül rt , yukarıdaki bileşenlerin
+doğrusal toplamı ile hesaplanır:
+
+rt = rdistance + rloop + rbacktrack + rcharge + rsp_bonus
+
+Şekil 1, Berlin yol ağı üzerinde DQN (mor çizgi) ve HRL
+(kırmızı çizgi) ajanlarının oluşturduğu rotaların karşılaştırmasını göstermektedir. Yeşil noktalar genel şarj istasyonlarını,
+açık yeşil noktalar yalnızca HRL tarafından ziyaret edilen
+istasyonları göstermektedir. Koyu mavi noktalar başlangıç ve
+bitiş düğümleridir.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:02:55 UTC from IEEE Xplore. Restrictions apply.
+
+Tablo I: Durum Vektörü Bileşenleri
+No
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+
+Özellik Adı
+Normalize Hedef Uzaklığı
+Normalize Batarya Seviyesi
+Komşu Sayısı
+Adım Oranı
+Yakın Şarj İstasyonu Sayısı
+Son Ödül Ortalaması
+Önceki Batarya Oranı
+Adım Sayısı
+Toplam Ödül
+Mesafe Ödülü
+En Kısa Yol Ödülü
+Batarya Ödülü
+Şarj Ödülü
+Döngü Cezası
+Art Arda Aynı Düğüm Sayısı
+Keşif Oranı
+
+Açıklama
+Güncel düğüm ile hedef düğüm arasındaki mesafe
+Mevcut batarya doluluk oranı
+Mevcut düğümün komşu sayısı
+Harcanan adım sayısının optimum yola oranı
+Komşu düğümler içinde şarj istasyonu bulunanların sayısı
+Son 10 adımda elde edilen ortalama ödül
+Önceki adımda kalan batarya oranı
+O ana kadar geçen toplam adım sayısı
+Başlangıçtan itibaren biriken toplam ödül
+Hedefe yaklaşıldıkça alınan ödül miktarı
+Dijkstra algoritmasına uygun ilerleme ödülü
+Enerji verimliliği ve şarj stratejilerine dayalı ödül
+Şarj kararlarından doğan ödül veya ceza
+Aynı düğümde dönme veya salınım tespiti sonrası ceza
+Ajanın aynı düğümde kaç kez üst üste kaldığı
+Ziyaret edilen düğüm oranı
+
+HRL, enerji güvenliğini sağlamak için daha fazla şarj
+istasyonuna uğramış, DQN ise daha kısa fakat enerji açısından
+riskli bir yol izlemiştir. Bu strateji farkı, Deney 5’te HRL’nin
+%25 daha yüksek ödül elde etmesini sağlamıştır .
+E. Hiyerarşik Q Öğrenme Yaklaşımı
+Geleneksel Q-learning’e ek olarak, hiyerarşik pekiştirmeli
+öğrenme (HRL) yaklaşımı da test edilmiştir. HRL, karmaşık
+rota planlaması problemini iki seviyeli bir yapıya bölerek
+çözer: üst seviye (makro) aracın hangi şehir bölgelerine gideceğini belirlerken, alt seviye (mikro) her bölge içindeki detaylı
+navigasyonu yönetir.
+Makro seviyede ajan, şehir haritasını büyük bölgelere
+ayırarak uzun vadeli stratejik kararlar alır. Bu seviyede eylemler şarj istasyonlarına gitme, ana arterlerden geçme gibi yüksek
+seviye aksiyonlardır. Mikro seviyede ise, makro ajanın belirlediği hedef bölgeye ulaşmak için sokak seviyesinde detaylı
+rota planlaması yapılır. Bu hiyerarşik yapı, özellikle büyük
+şehir ağlarında öğrenme süresini kısaltmakta ve daha kararlı
+politikalar üretmektedir.
+Her iki seviyedeki Q-tabloları bağımsız olarak güncellenir,
+ancak makro seviyenin aldığı kararlar mikro seviyenin hedeflerini belirler.
+F. Eğitim Süreci
+Ajan farklı şehir ağlarında binlerce epizot boyunca eğitilmiştir ve her epizotta rastgele başlangıç-hedef düğüm çiftleri
+ve batarya seviyeleri kullanılarak politikanın genelleyici olması
+sağlanmıştır. Böylece ajan hedefe ulaşmanın yanı sıra enerji
+farkındalıklı kararlar almayı öğrenmektedir.
+
+•
+
+Normalizasyon / Hesaplama Yöntemi
+Gerçek mesafe / Başlangıçtaki toplam mesafe
+Batarya seviyesi / Maksimum kapasite
+Komşu sayısı / 10 (sabit)
+Adım sayısı / En kısa yol uzunluğu
+Şarj istasyonu olan komşular / 5 (sabit)
+Ortalama hesaplanır, ondalıklı değer
+Önceki batarya seviyesi / Kapasite
+Float değer olarak doğrudan eklenir
+Float değer olarak doğrudan eklenir
+Ortam içi ödül fonksiyonundan alınır
+Ortam içi pozitif bonus
+Ortam içi ödül değeri
+Ortam içi bonus veya ceza
+Ortam içi ceza değeri
+Float olarak doğrudan eklenir
+Ziyaret edilen düğüm / Toplam düğüm sayısı
+
+Epizot; ajanın hedefe ulaşması, bataryasının tükenmesi
+veya maksimum adım sayısına ulaşması ile sona erer.
+
+Eğitim boyunca epsilon değeri her epizotta kademeli olarak
+azaltılmıştır. Bu sayede ajan, eğitim başlarında daha fazla keşif
+yaparken, zamanla sömürüye (exploitation) yönelmiştir. Bu
+geçiş, öğrenilen politikanın kararlılığını artırmıştır.
+Her epizot sonunda aşağıdaki metrikler kayıt altına alınmıştır:
+•
+
+Toplam elde edilen ödül değeri
+
+•
+
+Harcanan toplam adım sayısı
+
+•
+
+Şarj istasyonu ziyaret sayısı
+
+•
+
+Güncel ϵ değeri
+
+•
+
+Rota uzunluğu (düğüm sayısı)
+
+•
+
+Dijkstra algoritması ile elde edilen en kısa yol ile kıyas
+
+Bu metrikler, ajan davranışlarının detaylı analiz edilmesini
+ve klasik yöntemlerle karşılaştırılmasını sağlamıştır.
+IV.
+
+S ONUÇLAR VE TARTI ŞMA
+
+Eğitim süreci boyunca ajan, farklı başlangıç ve bitiş
+düğümleri, rastgele yerleştirilmiş şarj istasyonları ve değişken
+batarya seviyeleriyle eğitilmiştir. Bu süreçte, her epizod sonunda kaydedilen çeşitli metrikler görselleştirilmiş
+ve Q-learning algoritmasının performansı değerlendirilmiştir.
+Şekil 2, 3, 4 ve 5 numaralı grafiklerde sırasıyla toplam ödül,
+epsilon değişimi, yol uzunluğu ve şarj sayısının epizotlara göre
+değişimi gösterilmektedir. Gözlemler aşağıdaki gibidir:
+
+Her epizot aşağıdaki adımlar çerçevesinde ilerlemektedir:
+•
+
+Ajan rastgele bir başlangıç ve hedef düğüm çifti ile
+başlatılır.
+
+•
+
+Güncel durum vektörüne göre epsilon-greedy stratejisi
+ile bir aksiyon seçilir.
+
+•
+
+Seçilen aksiyon sonucunda yeni duruma geçilir,
+batarya seviyesi güncellenir ve ödül hesaplanır.
+
+•
+
+Q-tablosu, klasik Q-learning güncelleme formülü ile
+güncellenir:
+h
+i
+′ ′
+Q(s, a) ← Q(s, a)+α r + γ max
+Q(s
+,
+a
+)
+−
+Q(s,
+a)
+′
+
+Şekil 2: Eğitim süresince her epizottaki toplam ödülün
+değişimi.
+
+a
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:02:55 UTC from IEEE Xplore. Restrictions apply.
+
+Şekil 3: Epsilon değerinin epizotlara göre azalması (epsilon
+decay).
+
+Şekil 5: Epizot başına şarj sayısındaki değişim.
+
+ağ) ve Ankara (orta ölçekli şehir merkezi). Her lokasyon
+için farklı alan büyüklükleri ve sistem konfigürasyonları test
+edilmiştir.
+Tablo II’de sunulan sonuçlar, algoritma performansının
+coğrafi lokasyon ve sistem parametrelerine göre önemli
+ölçüde değiştiğini göstermektedir. Yedi deney senaryosundan
+dördünde QL, üçünde ise HRL daha yüksek ödül değerleri elde
+etmiştir.
+Şekil 4: Her epizottaki yol uzunluğunun değişimi.
+
+•
+
+Reward: Eğitim başında düşük olan toplam ödül, ajan
+çevreyi tanıdıkça artmıştır. 3000’inci epizottan sonra
+daha stabil bir seviyeye ulaşılmıştır.
+
+•
+
+Path Length: Yol uzunlukları zamanla azalmış, ajan
+daha kısa yolları tercih etmeyi öğrenmiştir.
+
+•
+
+Refills: Şarj sayısında önce artış, sonra stabilizasyon
+gözlemlenmiştir. Bu durum, ajan ilk başta çok sık şarj
+olmayı denemiş fakat daha sonra bu davranışı optimize
+etmiştir.
+
+•
+
+Epsilon: Epsilon değeri belirlenen decay oranıyla
+azalmış ve ajan zamanla daha fazla sömürü (exploitation) yapmaya başlamıştır.
+
+Şekil 1’de Q-learning ajanı tarafından keşfedilen rota
+ile HRL algoritmasının önerdiği en kısa yol görsel olarak
+karşılaştırılmıştır. Bu görselleştirme, öğrenilen politikanın yalnızca mesafe açısından değil, aynı zamanda enerji yönetimi
+yönünden de daha dengeli kararlar alabildiğini göstermektedir.
+Q-learning ajanının ürettiği rota (kırmızı), HRL’nin en
+kısa yolundan (mor) %7.9 daha uzun olmakla birlikte enerji
+güvenliği açısından üstündür. Ajan, batarya seviyesi %40’a
+düştüğünde şarj istasyonuna saparak hedefe %65 batarya ile
+ulaşırken, en kısa yol takip edilseydi kritik seviye olan %15’e
+düşecekti. Bu örnek, algoritmanın mesafe optimizasyonu yerine enerji farkındalıklı karar verme becerisini göstermektedir.
+Bu çalışmada, Q Öğrenme (QL) ve Hiyerarşik Q Öğrenme
+(HRL) algoritmalarının farklı coğrafi lokasyonlarda ve çeşitli
+sistem parametreleri altında performansları karşılaştırılmıştır.
+Deneyler, gerçek dünya şehir ağları üzerinde simüle edilmiş
+ve batarya kapasitesi, enerji tüketimi ve istasyon yoğunluğu
+gibi kritik faktörlerin algoritma performansına etkisi analiz
+edilmiştir. Deney tasarımında üç ana lokasyon seçilmiştir:
+Berlin (kompakt şehir yapısı), İstanbul (karmaşık metropoliten
+
+1) Coğrafi Lokasyon Etkisi: Berlin’de gerçekleştirilen
+deneyler (Deney 1 ve 5), HRL algoritmasının bu lokasyonda
+tutarlı üstünlük gösterdiğini ortaya koymaktadır. 3 km alan
+testinde HRL %6.6, 6 km alan testinde ise %25 daha yüksek
+ödül elde etmiştir. Bu durum, Berlin’in kompakt şehir yapısının
+HRL’nin hiyerarşik planlama avantajını desteklediğini göstermektedir. İstanbul’da alan büyüklüğüne göre farklı sonuçlar
+gözlenmiştir. 3 km’lik küçük alanda HRL %7 üstünlük gösterirken, 10 km’lik geniş alanda QL %519.9’luk bir üstünlük
+sergilemiştir. Bu bulgular, alan büyüklüğünün algoritma performansı üzerindeki kritik etkisini vurgulamaktadır. Ankara’da
+gerçekleştirilen üç farklı deney (Deney 4, 6, 7), QL’nin bu
+lokasyonda tutarlı üstünlük gösterdiğini kanıtlamaktadır. Farklı
+batarya kapasiteleri ve enerji tüketim oranlarına rağmen, QL
+tüm senaryolarda daha yüksek ödül değerleri elde etmiştir.
+2) Enerji Kısıtlarının Etkisi: Deney 6 ve 7’nin karşılaştırması, enerji kısıtlarının algoritma performansı üzerindeki
+etkisini açıkça göstermektedir. Düşük batarya kapasitesi
+(40 birim) koşullarında QL %32.0, yüksek enerji tüketimi (80 u/km) koşullarında ise %9.8 üstünlük göstermiştir.
+Bu sonuçlar, kaynak kısıtlı ortamlarda QL’nin daha verimli
+olduğunu ortaya koymaktadır.
+3) Yakınsama Hızı ve Verimlilik: Ortalama epizot sayıları
+incelendiğinde, HRL (5,135.86 epizot) QL’ye (5,609.0 epizot)
+göre %8.4 daha hızlı yakınsama göstermiştir. Ancak QL,
+ortalama adım sayısı ve mesafe açısından daha verimli rotalar üretmiştir.Bu bulgular, algoritma seçiminde lokasyonel
+faktörler, enerji kısıtları ve performans önceliklerinin dikkatli
+bir şekilde değerlendirilmesi gerektiğini göstermektedir.
+A. Kısa Analiz
+Q-learning algoritması, özellikle başlangıçta çevre
+hakkında bilgi sahibi olmadığında düşük performans
+sergilemiştir. Ancak keşif süreci ilerledikçe, ödül
+fonksiyonundaki yönlendirici sinyaller sayesinde ajan
+daha etkin rotalar üretmeyi öğrenmiştir. Özellikle Dijkstra
+algoritmasıyla oluşturulan reward shaping bileşeni,
+ajanı hedefe yakınlaştıran yollara yönlendirmede etkili
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:02:55 UTC from IEEE Xplore. Restrictions apply.
+
+Tablo II: Q Öğrenme ve Hiyerarşik Öğrenme Algoritmalarının Deney Sonuçları
+Deney
+
+Alan
+
+Episod
+
+Şarj İstasyonu
+
+Batarya
+
+Tüketim
+
+1
+
+Berlin 3 km
+
+10,000
+
+1/5 düğüm
+
+60
+
+50 u
+
+2
+
+İstanbul 3 km
+
+10,000
+
+1/5 düğüm
+
+60
+
+50 u
+
+3
+
+İstanbul 10 km
+
+10,000
+
+2% düğüm
+
+150
+
+25 u
+
+4
+
+Ankara 6 km
+
+10,000
+
+50 düğüm
+
+100
+
+40 u
+
+5
+
+Berlin 6 km
+
+10,000
+
+50 düğüm
+
+100
+
+40 u
+
+6
+
+Ankara 5 km
+
+10,000
+
+50 düğüm
+
+40
+
+50 u
+
+7
+
+Ankara 5 km
+
+10,000
+
+50 düğüm
+
+100
+
+80 u
+
+olmuştur.Bununla birlikte, bazı epizotlarda lokal minimumlara
+saplanma veya batarya yönetiminde hatalı kararlar
+gözlemlenmiştir.
+B. Ağırlık Değişimlerinin Etkisi
+Ödül fonksiyonunda yer alan ceza/ödül katsayılarının
+değiştirilmesi, ajanın politikası üzerinde doğrudan etki yaratmaktadır. Örneğin:
+•
+
+Loop cezasının artırılması, döngü davranışlarını
+ciddi şekilde azaltmıştır.
+
+•
+
+Shortest path bonusunun artırılması, ajanı daha
+doğrudan rotalara yönlendirmiştir.
+
+•
+
+Şarj ödül/ceza oranlarının dengesiz verilmesi, ajanı
+ya çok fazla ya da yetersiz şarj davranışına itmiştir.
+
+Bu sonuçlar, çok bileşenli ödül fonksiyonunun öğrenme
+sürecini güçlü şekilde yönlendirdiğini ve tasarım aşamasında
+dikkatli dengelenmesi gerektiğini göstermektedir.
+V.
+
+S ONUÇLAR VE G ELECEK Ç ALI ŞMALAR
+
+Bu çalışmada elektrikli araçlar için enerji farkındalıklı rota
+planlaması Q-learning temelleri ile çözülmüştür. Çok bileşenli
+ödül fonksiyonu ile eğitilen ajan, Dijkstra algoritmasına göre
+enerji verimliliği açısından üstünlük göstermiştir.
+Q-learning algoritmasının yapısı, yüksek boyutlu sürekli
+durum uzaylarında ayrıklaştırma gerektirdiği için ölçeklenebilirlik sınırlıdır. Q-tablosu bellekte geniş bir alan kaplamakta olup, tüm durum-eylem çiftleri için ayrı değer tutulması gerektiğinden hafıza kullanımında verimsizlik oluşabilir. Epsilon-greedy keşif stratejisi, yeterli çeşitlilikte keşif
+yapılmadığında yerel maksimumlarda sıkışma riski taşır. Yol
+haritası veya şarj istasyonu dağılımı değiştiğinde, mevcut politika her zaman genellenebilir olmayabilir ve yeniden eğitim
+gerekebilir.
+Gelecek çalışmalarda Q-learning yerine, daha yüksek temsil gücüne sahip Deep Q-Network (DQN) mimarisi ile sürekli
+durum uzaylarının doğrudan öğrenilmesi hedeflenmektedir.
+DQN ile birlikte double Q-learning, dueling DQN, prioritized
+
+Yöntem
+QL
+HRL
+QL
+HRL
+QL
+HRL
+QL
+HRL
+QL
+HRL
+QL
+HRL
+QL
+HRL
+
+En İyi
+Ödül
+17,831.6
+19,012.2
+733.3
+784.4
+15,328.5
+2,473.4
+1,258.7
+1,256.1
+3,654.6
+4,569.8
+593.6
+449.6
+1,138.4
+1,036.4
+
+En İyi
+Epizot
+583
+2,693
+5,814
+8,079
+9,001
+4,410
+9,873
+4,747
+1,108
+2,637
+8,912
+8,649
+8,564
+7,717
+
+Adım Sayısı
+36
+52
+42
+43
+114
+69
+49
+48
+12
+37
+65
+59
+70
+72
+
+Mesafe
+(km)
+2.30
+2.46
+2.44
+2.52
+9.89
+6.14
+4.51
+4.36
+3.63
+4.49
+3.82
+4.39
+4.92
+5.64
+
+Şarj
+1
+1
+1
+1
+1
+0
+1
+1
+0
+1
+3
+4
+2
+3
+
+experience replay gibi gelişmiş RL teknikleriyle daha kararlı
+ve verimli öğrenme stratejileri araştırılacaktır. Gelecekte, çoklu
+elektrikli araç koordinasyonu ve filo optimizasyonu için çoklu
+ajanlı pekiştirmeli öğrenme (multi-agent RL) mimarileri de
+değerlendirilebilir.
+K AYNAKÇA
+[1]
+
+A. Puente-Castro, D. Rivero, E. Pedrosa, A. Pereira, N. Lau, and E.
+Fernandez-Blanco, “Q-Learning based system for Path Planning with
+Unmanned Aerial Vehicles swarms in obstacle environments,” Expert
+Systems with Applications, vol. 235, 2024, Art. no. 121240.
+[2] Y. Qi, J. Cao, and B. Wu, “Bidirectional Q-learning for recycling
+path planning of used appliances under strong and weak constraints,”
+Communications in Transportation Research, vol. 4, 2024, Art. no.
+100153.
+[3] C. Wang, X. Yang, and H. Li, “Improved Q-Learning Applied to
+Dynamic Obstacle Avoidance and Path Planning,” IEEE Access, vol. 10,
+pp. 92879–92891, 2022.
+[4] E. S. Low, P. Ong, and K. C. Cheah, “Solving the optimal path planning
+of a mobile robot using improved Q-learning,” Robotics and Autonomous
+Systems, vol. 115, pp. 143–161, 2019.
+[5] A. Maoudj and A. Hentout, “Optimal path planning approach based on
+Q-learning algorithm for mobile robots,” Applied Soft Computing, vol.
+94, 2020, Art. no. 106796.
+[6] Z. Xiang, H. Sun, and J. Zhang, “Application of Improved Q-Learning
+Algorithm in Dynamic Path Planning for Aircraft at Airports,” IEEE
+Access, vol. 11, pp. 107892–107905, 2023.
+[7] Y. Zhang, M. Li, Y. Chen, Y.-Y. Chiang, and Y. Hua, “A constraint-based
+routing and charging methodology for battery electric vehicles with deep
+reinforcement learning,” IEEE Transactions on Smart Grid, vol. 14, no. 3,
+pp. 2446–2459, 2022.
+[8] Ö. Aslan Yıldız, İ. Sarıçiçek, and A. Yazıcı, “A reinforcement learningbased solution for the capacitated electric vehicle routing problem from
+the last-mile delivery perspective,” Applied Sciences, vol. 15, no. 3,
+p. 1068, 2025.
+[9] M. Baum, J. Dibbelt, A. Gemsa, D. Wagner, and T. Zündorf, “Shortest
+feasible paths with charging stops for battery electric vehicles,” in Proc.
+23rd SIGSPATIAL Int. Conf. on Advances in Geographic Information
+Systems, 2015, pp. 1–10.
+[10] M. Cuchỳ, M. Jakob, and J. Mrkos, “Route and charging planning
+for electric vehicles: a multi-objective approach,” Transportation Letters,
+vol. 17, no. 1, pp. 1–21, 2025.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:02:55 UTC from IEEE Xplore. Restrictions apply.
+
+

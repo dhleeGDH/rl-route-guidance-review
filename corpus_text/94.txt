@@ -1,0 +1,1430 @@
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 69, NO. 5, MAY 2020
+
+4751
+
+Route Planning and Power Management for PHEVs
+With Reinforcement Learning
+Qian Zhang , Student Member, IEEE, Kui Wu , Senior Member, IEEE, and Yang Shi , Fellow, IEEE
+
+Abstract—In this article, we propose a novel control scheme
+for route planning with power management for plug-in hybrid
+electric vehicles (PHEVs). By considering the power management
+of PHEVs, we aim to find the route that leads to the minimum
+energy consumption. The scheme adopts a two-loop structure to
+achieve the control objective. Specifically, in the outer loop, the
+minimum energy consumption route is obtained by minimizing the
+difference between the value function of current round and the
+best value from all previous rounds. In the inner loop, the energy
+consumption index with respect to PHEV power management for
+each feasible route is trained with reinforcement learning (RL).
+Under the RL framework, a nonlinear approximator structure,
+which consists of an actor approximator and a critic approximator,
+is built to approximate control actions and energy consumption.
+In addition, the convergence of value function for PHEV power
+management in the inner loop and asymptotical stability of the
+closed-loop system are rigorously studied. Using Toyota Prius as
+the vehicle model and planning its route in a city with various
+navigation ranges, we demonstrate the effectiveness of the proposed
+control scheme with simulation studies.
+Index Terms—Reinforcement learning, path planning, energy
+management, optimization, electric vehicles.
+
+I. INTRODUCTION
+ONTINUOUS endeavor has been devoted to sustainable
+development of modern transportation systems. Gasolinepowered vehicles, having extensively served the world for over
+a century, have caused serious concerns on air pollutants and
+greenhouse gas emission. According to U.S Energy Information
+Administration (EIA), the emission of CO2 from U.S gasoline
+and diesel motor vehicles in 2016 was 1,540 million metric tons,
+which counted for 30% total CO2 emissions in US that year [1].
+Modern society is in the dire need of new types of vehicles that
+are more environmentally friendly. Answering this urgent call,
+various electric vehicles have been developed, including electric
+vehicles (EVs) and plug-in hybrid electric vehicles (PHEVs).
+EVs are subject to the problems of short driving range and long
+charging time. To avoid these problems, PHEVs operate with
+
+C
+
+Manuscript received June 21, 2019; revised October 17, 2019 and December
+25, 2019; accepted February 10, 2020. Date of publication March 9, 2020; date of
+current version May 14, 2020. This work was supported by the Natural Sciences
+and Engineering Research Council of Canada. The review of this article was
+coordinated by Prof. X. Hu. (Corresponding author: Yang Shi.)
+Qian Zhang and Yang Shi are with the Department of Mechanical Engineering
+and the Institute for Integrated Energy Systems (IESVic), University of Victoria,
+Victoria, BC V8P5C2, Canada (e-mail: qianzhang@uvic.ca; yshi@uvic.ca).
+Kui Wu is with the Department of Computer Science, University of Victoria,
+Victoria, BC V8P5C2, Canada (e-mail: wkui@uvic.ca).
+Digital Object Identifier 10.1109/TVT.2020.2979623
+
+both battery and gasoline. Nevertheless, PHEVs generally occur
+a higher energy cost than EVs. As such, it is much needed to
+further reduce the energy cost of PHEVs.
+Power management of PHEVs handles the switch between
+different operating modes and real-time torque distribution of
+electric motors (EMs) and gasoline engines. Normally, a PHEV
+has five possible operating modes: motor only, engine only,
+power-assist (motor and engine), recharging (engine charges the
+battery), and regenerative braking. Roughly speaking, existing
+solutions to PHEV power management are classified into four
+categories: rule-based, optimization-based, prediction-based,
+and learning-based schemes.
+The rule-based controller [2], [3] determines the operating
+modes of PHEVs and torque distribution by logic threshold,
+fuzzy logic control, or neural networks control. In practice,
+rule-based schemes may be impeded by several limitations, e.g.,
+values of logic threshold parameters need to match the vehicle
+status and configurations [4], and a large database of experience
+and experiments is usually required [5].
+In the optimization-based method, the toque distribution is
+obtained by solving a constrained optimization problem subject
+to vehicle dynamics. The objective function is defined by the
+energy consumption, and prior and prediction driving cycles
+are utilized to distribute the power between different power
+sources [6], [7]. Existing solutions include dynamic programming [8], [9], Pontryagin’s minimum principle [10], [11], and
+model predictive control (MPC) [12], [13]. Generally speaking, the methods in this category normally have high computational overhead and high complexity in changing operating
+conditions [14].
+In the prediction-based schemes, the global road information
+is needed. Methods in this category provide the torque distribution with known route and global traffic information [15], [16].
+The main difficulty of this method is that the information should
+be obtained in advance from on-board global positioning system
+(GPS), geographic information system (GIS), or advanced traffic
+flow modeling techniques.
+Among the above three categories, optimization method is
+online while the other two are off-line. The main challenge in
+the optimization method is on the modelling of vehicles and their
+driving conditions. Learning-based methods are thus proposed
+to tackle this challenge.
+Learning-based methods [17], in particular RL methods [18],
+[19], provide new opportunities to improve traditional and most
+commonly-used methods in industry. Different from previous
+approaches, learning-based methods do not require complete
+
+0018-9545 © 2020 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+4752
+
+Fig. 1.
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 69, NO. 5, MAY 2020
+
+The framework of the inner-outer loop system.
+
+a priori information of driving cycles and vehicle models for
+power management. They learn this knowledge during a training
+process. In the reinforcement learning (RL) framework, there
+are typically four elements: the agent, the environment, actions,
+and rewards. In the power management problem, the objective
+of RL agent is to minimize PHEVs’ overall fuel consumption.
+Q-learning is one of the basic RL algorithms [20]. One of the
+main advantages of Q-learning is model free. Training the power
+management policy requires discretization of the generally continuous state and control actions. The discrete representation
+allows a straight-forward solution to the integration in power
+management problem for PHEVs.
+All the existing solutions decouple path planning from PHEV
+power management. Path planning, which searches for a suitable
+path to a given destination, is usually considered as a separate,
+high-level problem and thus beyond the scope of PHEV power
+management. While this mindset has the root for engineering
+convenience, we believe that path planning and PHEV power
+management is interwoven and the two problems should be
+tackled in an integrated framework. Suppose that there are
+two paths of same length from a source to a destination in a
+city. One path is flat but has several traffic lights; the other
+has several upper-down slopes but no traffic lights. Shortest
+path-based path planning would treat the two paths equally. Path
+planning considering traffic conditions might select the second
+path because of no traffic lights [21], [22]. However, the first
+path may be the most energy saving path if the slopes on the
+second path lead to more frequent operating mode switches
+and a higher energy cost. Clearly, better decisions on path
+planning rely on the power management of PHEVs. Motivated
+by this observation, we propose a hierarchical control scheme
+that unifies path planning and power management for PHEVs
+energy saving. Note that our solution differs significantly from
+trip-oriented predictive control [23], where a path is assumed in
+advance and the energy management policy is derived for the
+given path without addressing any ad hoc road condition changes
+along the trip.
+
+Briefly speaking, our solution adopts inner and outer control
+loops, with the former for the learning process by considering
+driving conditions and the latter for energy minimization. The
+inner loop focuses on generating the control policy by using
+the model-free RL algorithm for power management problem of
+PHEVs. To guarantee the solvability of uncertain system dynamics, the nonlinear approximator structure is utilized to generate
+the control policy for a PHEV with an actor approximator and a
+critic approximator. The outer loop is designed for obtaining the
+minimum energy consumption route by minimizing the energy
+consumption over all candidate rounds. Fig. 1 shows the system
+configuration of the inner-outer loop system in this work.
+The main contributions of this paper are as follows.
+r An RL-based route planning algorithm, including inner and
+outer loops, is proposed for PHEVs by taking into account
+the road information. In the inner loop, the control policy
+is generated under model-free RL framework with road
+conditions for power management problem. In the outer
+loop, the minimum energy route is obtained by minimizing
+the difference between the value function of current round
+and the best value from all previous rounds.
+r The model-free nonlinear approximator structure for
+PHEVs is proposed. Under the proposed structure, the convergence of the value function for the power management is
+studied. Also, the closed-loop properties of resulting PHEV
+power management system are analyzed. In particular, the
+asymptotic stability of the closed-loop system is rigorously
+studied.
+The rest of this paper is organized as follows. In Section II,
+we formally formulate the control problem and provide the algorithm design. Section III presents the main theoretical results
+and proofs, including convergence of the value function for
+power management in the inner loop and asymptotic stability
+of the closed-loop system. Section IV illustrates a simulation
+example, using Prius as the vehicle model, to verify the proposed
+algorithm and theoretical results. We conclude the paper in
+Section V.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: ROUTE PLANNING AND POWER MANAGEMENT FOR PHEVs WITH REINFORCEMENT LEARNING
+
+The notations in this paper are as follows. The symbol R
+denotes the real space. For a matrix X, X  and X −1 denote
+the transpose and inverse of X (if X is invertible),
+respectively.
+√
+Given a vector x and a matrix P , xP = x P x is the P weighted norm. For a given matrix P , P > 0 means that P
+is positive definite. λ̄(P ) and λ(P ) denote the maximum and
+minimum eigenvalues of P , respectively. tr(P ) denotes the trace
+of P .
+II. PROBLEM FORMULATION AND ALGORITHM DESIGN
+We first introduce our inner-outer loop framework, shown in
+Fig. 1. The inner loop is for power management, and the outer
+loop is to find the minimum energy consumption route in the
+road networks. In Section II-A, the constrained optimization
+problem in the inner loop is solved to generate the control
+policy with a model-free RL algorithm. Section II-B studies the
+route planning problem by minimizing the energy consumption
+among the values from all rounds.
+A. Inner Loop: Power Management Using Reinforcement
+Learning
+To obtain a power management policy with RL, the agent
+learns from rewards for each action. The rewards represent
+interactions between the agent and the environment. The agent
+takes a control action based on the current state. The evaluated
+value for each state and action is updated by the reward. The
+map between states and actions is the control policy.
+Power management with geographical information is modeled by the following nonlinear input affine system
+x(k + 1) = f (x(k)) + g(x(k))a(k).
+
+(1)
+
+Here, x(k) denotes the system state vector that consists of
+position p(k), power demand at the wheel Pwhl (k), vehicle
+speed v(k), and state of charge (SoC) of battery SoC(k), i.e.,
+x(k) = [p(k) Pwhl (k) v(k) SoC(k)] ∈ X ⊂ R4 , where X denotes the system state space. a(k) is the action vector, including
+the desired output torque from engine Te,des (k), gear shift command of the transmission system s(k), and direction direc(k),
+i.e., a(k) = [Te,des (k) s(k) direc(k)] ∈ A, where A denotes
+the action space. k represents the duration of driving cycle.
+s(k) is the gear-shifting signal, whose value is chosen from
+{−1, 0, +1} representing downshifting, maintaining, and upshifting, respectively [24]. Functions, f (·) and g(·), do not have
+explicit forms and their meanings are explained in Remark 1.
+Remark 1: The utilization of the nonlinear input affine model
+for this work is mainly due to the following reasons. It is hard to
+obtain the accurate mathematical model for the overall system
+for power management. Also, the interactions between states
+and actions should be analyzed. The function f (·) describes the
+state updated rules, and the function g(·) represents the mapping
+between states and actions. Since generating the control policy
+for power management does not require complete information
+of overall system models, the nonlinear input affine system only
+involving related elements is a suitable system model.
+
+4753
+
+The reward function, which describes the vehicle energy
+recuperation after action a(k) at state x(k), is given by
+r(k) = −(Qf (k) + Qe (k))2 ,
+
+(2)
+
+in which Qf (k) and Qe (k) denote fuel and electric consumption,
+respectively.
+Rewards describe the interactions between the agent and the
+environment. In an RL problem, the evaluated value is defined
+as expected total future rewards. The control policy is trained to
+produce optimal actions, which maximizes the evaluated value
+for the state. The reward function involves two problems, i.e.,
+power management and route planning, which will be introduced
+in detail in Section II-B.
+The value function satisfies the following equation
+V (x(k + 1)) = α[r(k + 1) + γV (x(k + 1)) − V (x(k))]
++ V (x(k)) ,
+
+(3)
+
+where x(k + 1) is the next state, α ∈ (0, 1) is the learning
+step size and γ ∈ (0, 1) is a discount factor. The relationship
+between the next and current states is discussed in Remark 3 in
+Section II-B.
+We need to model the constraints in power management.
+For this, assume that ωe (k) denotes the engine speed, Te (k)
+represents the engine torque, Tm (k) denotes the electric motor
+torque, Treq (k) represents the requested torque of the vehicle.
+Let ωe,min and ωe,max denote the minimum and the maximum engine speeds, respectively. Similarly, we assume that
+ωm,min and ωm,max are the minimum and maximum electric motor speeds, respectively. Assume that Te,min (ωe (k))
+and Te,max (ωe (k)) are the minimum and maximum engine
+torques with speed ωe (k), respectively. Similarly, we assume
+that Tm,min (ωm (k), SoC(k)) and Tm,max (ωm (k), SoC(k)) are
+the minimum and maximum electric motor torques with speed
+ωm (k) and SoC(k), respectively. Let SoCmin and SoCmax represent the minimum and maximum values of SoC, respectively.
+For safe and smooth operation of the engine, the electric motor
+and the battery, the following inequalities should be satisfied.
+ωe,min ≤ ωe (k) ≤ ωe,max
+
+(4a)
+
+ωm,min ≤ ωm (k) ≤ ωm,max
+
+(4b)
+
+Te,min (ωe (k)) ≤ Te (k) ≤ Te,max (ωe (k))
+
+(4c)
+
+Tm,min (ωm (k), SoC(k)) ≤ Tm (k) ≤ Tm,max (ωm (k), SoC(k))
+(4d)
+SoCmin ≤ SoC(k) ≤ SoCmax .
+
+(4e)
+
+Constrained by the working principles of the vehicle, the
+SoC, torques of engine and motor should satisfy the following
+equations, respectively.
+Tm (k) + Te (k) = Treq (k)
+
+2 − 4P R
+Uoc − Uoc
+m int
+SoC(k + 1) = SoC(k) −
+2Qmax Rint
+v(k + 1) =
+
+(5a)
+(5b)
+
+1
+Tw
+CD ρd Af v(k)2 .
+− g(fr cos θ + sin θ) −
+M rw
+2M
+(5c)
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+4754
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 69, NO. 5, MAY 2020
+
+Fig. 2. The blue circle represents the boundary area to reduce the computational overhead.
+
+After the constraints are formulated, the action a(k) is
+calculated by solving the following constrained optimization
+problem.
+Problem 1 (Optimal Control Problem):
+a∗ (k) = arg max{r(k + 1) + V (x(k + 1))}
+
+(6)
+
+a(k)
+
+subject to constraints (4a)–(4e) and (5a)–(5c).
+The problem of RL-based power management is formulated
+with the constrained optimization problem. The actions and
+control policy will be produced by solving the optimal control
+problem. The following subsection studies the path planning
+problem, with the goal of finding the minimum energy consumption route in a road network.
+B. Outer Loop: Route Planning Algorithm
+In this subsection, path planning is studied using a Q-learning
+algorithm to find the minimum energy consumption route. Using
+Q-learning algorithm, the next state x(k + 1) depends on current
+state x(k). The action a(k) is uncertain before the agent arrives
+the next state. Then the Q-value is utilized to evaluate the control
+policy μ. Also, at the current state x(k), the next state x(k + 1)
+of the agent is uncertain after taking action a(k). For this reason,
+all the possibilities should be considered. After the agent tries
+most of the actions in each state, the map between a given state
+and a specific action is constructed. At the end of the algorithm,
+the agent finds the optimal results by taking the highest value of
+action at each state.
+Assume that a city map (e.g., Fig. 2) with roads and geographic information is given, including location of each road
+intersection, the vehicle speed limitation on each road segment,
+length and slope of each road segment.
+A route linking the source and the destination is decomposed
+into a series of road segments connected to each other. In
+each road segment, the distance, time, fuel consumption and
+electricity recuperation are calculated with the road information,
+such as the length l, road slope angle θ and vehicle speed v,
+respectively. The changes in road slope and vehicle speed affect
+
+the fuel consumption and electricity recuperation of the battery.
+For instance, road may change from downhill to uphill; speed
+may change due to deceleration to stop signs, traffic lights or
+traffic jams and acceleration from stop signs or traffic lights.
+The SoC of battery is the core dynamic state in the control
+system. We assume that the battery must recover with the help
+of engine when the SoC is below the threshold. SoC(k) and
+SoCref (k) are the current and reference SoC, respectively. ζ
+is the coefficient for SoC, whose value is determined by the
+empirical model introduced in Section IV-A.
+The main difference between the proposed route planning
+algorithm and the shortest path algorithm is that the reward
+function (2) in the proposed method uses fuel consumption
+and battery recuperation, while the shortest path algorithm only
+considers the distance. The reward function (2) in the Q-learning
+algorithm is designed to evaluate the road for the route planning
+problem, including the fuel consumption Qf (k) and electricity
+recuperation Qe (k). The reward is the same as the one in
+previous section. The fuel consumption Qf (k) and electricity
+recuperation Qe (k) in the k-th step are calculated based on the
+road slope angle θ(k), length l(k), vehicle speed v(k), SoC(k)
+and SoCref (k) as follows.
+Qf (k) = φ(θ(k), v(k), l(k))
+
+(7a)
+
+Qe (k) = ζ(SoC(k) − SoCref (k))).
+
+(7b)
+
+To this end, a series of road segments is obtained by solving
+the following optimization problem.
+Problem 2: Given the values of the current round and the best
+value from all previous rounds, find a series of road segments
+to minimize the fuel consumption.
+Remark 2: To reduce the computational overhead, we can
+define a circular boundary area that covers the start point and
+the destination, as shown in Fig. 2. When the state approaches
+to the boundary, we can add a large penalty so that the reward
+of the current state drops sharply.
+With reward function (2) defined, we design the following RL
+based route planning algorithm.
+Remark 3: The inner loop of the algorithm generates the
+updated action based on the estimation of next state. The next
+state is estimated from the current state and a possible action. The
+position p(k + 1) is obtained based on direc(k) of the action
+a(k) at the current state. We assume that the power demand
+Pwhl (k + 1) of next state is post-action parameters, which are
+the same as the pair observed in the current state Pwhl (k). The
+SoC(k + 1) and velocity v(k + 1) are derived based on the
+empirical model introduced in the previous section. The outer
+loop of the algorithm records the value function from the inner
+loop and returns when the value function converges.
+III. SYSTEM ANALYSIS
+In this section, the closed-loop properties of the proposed PHEV power management system are analyzed. First,
+the Hamilton-Jacobi-Bellman (HJB) equation for nonlinear
+discrete-time system is derived. In addition, the convergence
+of inner loop power management policy is discussed. In the end,
+the asymptotic stability of closed-loop system is proved.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: ROUTE PLANNING AND POWER MANAGEMENT FOR PHEVs WITH REINFORCEMENT LEARNING
+
+4755
+
+A. Hamilton-Jacobi-Bellman Equation
+
+B. Convergence
+
+The value function (3) of Q-learning algorithm is the main
+evaluation index of the control policy μ with given actions
+and system states. To prove the convergence of value function and stability of the closed-loop system with Q-learning
+control policy, the existence of the Hamiltonian function
+H(x(k), V (x(k)), a(k)) for nonlinear dynamics (1) needs to
+be proved. First, we introduce a well-known result [25].
+Lemma 1 ([25]): Assume that a(k) ∈ A is an admissible
+action arbitrarily selected for the nonlinear dynamics (1). If
+there exists a positive, uniformly convex, and continuously
+differentiable value function V (x(k)) satisfying the following
+equations
+
+The main objective of the proposed method is to find a series of
+road segments linking the source and the destination to minimize
+the fuel consumption. Also, the agent will try most of the actions
+and states to generate the action sequence. In the following, we
+analyze the convergence of the actions.
+To discuss the convergence of the actions, a good result in [26]
+Theorem 2.2 is recalled.
+Lemma 2. (Convergence [26]): Assume that the admissible
+action a(k) is obtained iteratively by solving (8) and updated
+using (10), the sequence of solutions V (x(k)) converges to the
+optimal HJB solution V ∗ (x(k)).
+Proof: See Theorem 2.2 in [26].
+
+The control actor and critic approximators are designed to
+approximate the optimal control input and Q-value, respectively.
+Since the approximation error is relatively small, we do not
+consider it in this work. Thus, the actual control signal and value
+function are defined as
+
+x(k)2Q + a(k)2R + (x(k + 1) − x(k))
+× ∇V (x(k))(x(k + 1) − x(k))
+= x(k)2Q + a(k)2R + Δx (k)∇V (x(k))Δx(k)
+= 0,
+
+(8)
+
+where Q and R are two positive definite matrices. Δx(k) =
+f (x(k)) + g(x(k))a(k) − x(k) ∈ X, and ∇V (x(k)) is the gradient vector of V (x(k)), a suitable Hamiltonian function for the
+nonlinear system exists
+H(x(k), V (x(k)), a(k))
+
+V (x(k)) = WV σV (x(k)).
+In addition, the approximated control input and value function
+are represented as
+â(k) = Ŵa (k)σa (x(k))
+
+= (x(k + 1) − x(k)) ∇V (x)(x(k + 1) − x(k))
+
+V̂ (x(k)) = ŴV (k)σV (x(k)),
+
++ x(k)2Q + a(k)2R
+= x(k)2Q + a(k)2R + Δx (k)∇V (x)Δx(k).
+
+(9)
+
+The Hamiltonian function (9) is a nonlinear function of the
+state, value function and actions. Thus, by differentiating (9)
+with respect to actions a(k), the updated action is given by
+a∗ (k) = −(g  (x(k))∇V (x(k))g(x(k)) + R)−1
+
+1
+= − R−1 g  (x(k))∇V (x(k + 1)).
+2
+
+where ŴV (k) and Ŵa (k) are the estimated weights of the
+optimal value function and action, respectively. σV (x(k)) and
+σa (x(k)) denote the activation functions, which satisfy σV (0) =
+0 and σa (0) = 0 when x(k) = 0. The following Bellman
+equation should be satisfied to guarantee the optimality.
+r(k + 1) + V (x(k + 1)) − V (x(k)) = 0.
+
+(12)
+
+According to the definition of value function, the Bellman
+equation is rewritten as
+
+× g  (x(k)) (∇V (x(k))f (x(k))x(k))
+(10)
+
+Thus, the Hamiltonian function (9) for the nonlinear dynamics
+is expressed as
+H(x(k), V (x(k)), a∗ (k))
+
+
+= x(k)2Q + a∗ (k)2R + Δx∗ (k) · ∇V (x)Δx∗ (k)
+= 0,
+
+a(k) = Wa σa (x(k)) = a∗ (k)
+
+(11)
+
+where Δx∗ (k) = f (x(k)) + g(x(k))a∗ (k) − x(k) ∈ X, and
+the optimal action a∗ (k) is obtained from (10).
+According to (10), the optimal action is calculated based on
+f (·) and g(·), whose accurate models are normally unknown.
+Hence we adopt an approximator structure to address this difficulty. In addition, the stability of the closed-loop system with
+the approximator structure and the approximate control policy
+is discussed in Section III-C.
+
+eB (k) = r(k + 1) + V̂ (x(k + 1)) − V̂ (x(k))
+= r(k + 1) + ŴV (k)σV (x(k + 1))
+− ŴV (k)σV (x(k)).
+In addition, we can obtain an error related to the terminal
+constraint, which is defined as
+eT (k) = −ŴV (k)σV (x̂(∞)),
+where x̂(∞) denotes the terminal state. Thus, the final error is
+obtained as
+eF (k) = eB (k) + eT (k)
+= r(k + 1) + ŴV (k)σV (x(k + 1))
+− ŴV (k)σV (x(k)) − ŴV (k)σV (x̂(∞)).
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+(13)
+
+4756
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 69, NO. 5, MAY 2020
+
+With gradient descent, the updated estimation weight of value
+function is represented as
+ŴV (k + 1) = ŴV (k) − αV
+
+σ˜V (x(k))eF (k)
+, (14)
+1 + σ˜V  (x(k))σ˜V (x(k))
+
+where σ˜V (x(k)) = σV (x(k + 1)) − σV (x(k)) − σV (x̂(∞)),
+and the bound of σ˜V (x(k)) is σ̃V m ≤ σ˜V (x(k)) ≤ σ̃V M . In
+addition, the error between the estimation and actual weights is
+defined as
+W̃V (k) = WV − ŴV (k)
+According to the Bellman equation (12), we can obtain that
+r(k + 1) + V (x(k + 1)) − V (x(k))
+= r(k + 1) + WV σV (x(k + 1)) − WV σV (x(k))
+= r(k + 1) + WV (σV (x(k + 1)) − σV (x(k)))
+= 0.
+
+Recall the optimal action, we have
+a∗ (k) = Wa σa (x(k))
+1
+= − R−1 g  (x(k))∇σV (x(k + 1))WV .
+2
+Then we can obtain that
+1
+Wa σa (x(k)) + R−1 g  (x(k))∇σV (x(k + 1))WV = 0.
+2
+In addition, the error of control policy is rewritten as
+1
+ã(k) = −W̃a (k)σa(x(k))− R−1 g (x(k))∇σV (x(k+1))WV
+2
+1
++ R−1 ĝ  (x(k))∇σV (x(k + 1))ŴV (k).
+(16)
+2
+Finally, substituting (16) into (15), we can rewrite the updated
+estimation weight of action as
+Ŵa (k + 1) = Ŵa (k) − αa
+
+σa (x(k))ã (k)
+1 + σa (x(k))σa (x(k))
+
+= Ŵa (k) − αa
+
+σa (x(k))
+1 + σa (x(k))σa (x(k))
+
+Thus, we can obtain r(k + 1) = −WV (σV (x(k + 1)) −
+σV (x(k))), and rewrite (13) as
+
+
+
+eF (k) = eB (k) + eT (k)
+
+×
+
+= −WV (σV (x(k + 1)) − σV (x(k)))
+
+1
+− R−1 g  (x(k))∇σV (x(k + 1))WV
+2
+
+1 −1 
+
++ R ĝ (x(k))∇σV (x(k + 1))W̃V (k) .
+2
+
++ ŴV (k)σV (x(k + 1))
+− ŴV (k)σV (x(k)) − ŴV (k)σV (x̂(∞))
+= −W̃V (k)(σV (x(k + 1)) − σV (x(k)))
+
+Then, the error of updated estimation weight of action is described as
+
+− ŴV (k)σV (x̂(∞)).
+Then, the error of updated estimation weight (14) is described
+as
+W̃V (k + 1) = W̃V (k) − αV
+
+W̃a (k + 1) = W̃a (k) + αa
+
+σa (x(k))ã (k)
+1 + σa (x(k))σa (x(k))
+
+= W̃a (k) − αa
+
+σa (x(k))
+1 + σa (x(k))σa (x(k))
+
+σ̃V (x(k))σ̃V (x(k))W̃V (k)
+1 + σ̃V (x(k))σ̃V (x(k))
+
+
+× W̃a (k)σa (x(k))
+
+σ̃V (x(k))(σV (x(∞)) − σV (x̂(∞)))WV
+− αV
+.
+1 + σ̃V (x(k))σ̃V (x(k))
+
+1
++ R−1 g  (x(k))∇σV (x(k + 1))WV
+2
+
+1 −1 
+
+− R ĝ (x(k))∇σV (x(k + 1))W̃V (k) .
+2
+
+Next, we define the difference between the approximated control
+input and optimal control policy as
+ã(k) = â(k) − a∗ (k)
+=
+
+1 −1 
+R ĝ (x(k))∇V̂ (x(k + 1)) + Ŵa (k)σa (x(k)).
+2
+
+Here, ĝ(·) is an estimated function from neural networks. With
+gradient descent, the updated estimation weight of action is
+represented as
+σa (x(k))ã (k)
+Ŵa (k + 1) = Ŵa (k) − αa
+,
+1 + σa (x(k))σa (x(k))
+
+(15)
+
+where αa > 0 is a constant. Then, the error between the actual
+weight and estimation weight is defined as
+W̃a (k) = Wa − Ŵa (k)
+
+− W̃a (k)σa (x(k))
+
+Remark 4: The control policy generated by the RL algorithm
+has the effect on the current state and updated action. However,
+convergence is required for all the state-action pairs while they
+are updated recursively.
+C. Stability
+After the convergence is proved, the stability of closed-loop
+system is further investigated in this subsection. The optimal
+value function V (x(k)) is taken as the Lyapunov function. Based
+on Theorem 1 in [27], the following theorem is derived.
+Theorem 1: Given a(k) ∈ A and the initial state x(0) ∈ X,
+and the value function V (x(k)) satisfying Equation (8) with
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: ROUTE PLANNING AND POWER MANAGEMENT FOR PHEVs WITH REINFORCEMENT LEARNING
+
+Algorithm 1: Route Planning for Estimating Control
+Policy μ.
+1: Repeat /* outer loop*/
+2:
+Repeat /* inner loop*/
+3:
+Initialize V (x(k)) arbitrarily at k = 0
+4:
+Observe x(k)
+5:
+Choose a(k) at x(k) using the proposed policy
+6:
+Take action a(k), observe r(k) and x(k + 1)
+7:
+Update the value at x(k + 1) by (3)
+8:
+Set k = k + 1.
+9:
+until x(k) is the target /* end of inner loop*/
+10: Calculate Ṽ (x(k)), which is the difference between
+V (x(k)) of current round and the best value of
+V ∗ (x(k)) from all previous rounds.
+11: until Ṽ (x(k)) is smaller than a given small threshold.
+/* end of outer loop */
+
+the condition V (0) = 0, the updated action (10) by using the
+Hamiltonian results is an admissible action for the nonlinear
+dynamics (1). The system is asymptotically stable using the
+control policy μ generated in Algorithm 1.
+Proof: See Appendix A.
+
+Remark 5: This section provides a basic analysis of the
+system with neural networks. Due to the complexity of the
+integrated framework, a multi-layer neural network is adopted to
+generate the control policy in this paper. The discussion for the
+multi-layer neural network structure is an extension of the above
+result by applying the backpropagation (BP) algorithm [28]. We
+omit the detail of BP algorithm since it can be found in exiting
+literature [28].
+IV. SIMULATION STUDIES
+In this section, the performance of the proposed method
+is demonstrated by an example with the Prius as the vehicle
+model. Our discourse begins with an explanation of vehicle
+models and simulation setup. In addition, the simulation results
+are explained, and the effectiveness of the proposed method is
+verified.
+A. Toyota Prius Hybrid Vehicle Modeling
+Although the complete and accurate mathematical model of
+the overall system is hard to obtain, the update rule of agent
+states should follow the vehicle dynamics and constraints of
+subsystems. In this section, the models of the agent are provided
+in the following. Generally speaking, a PHEV can be characterized by five sub-systems [29]: (1) vehicle dynamics; (2) engine
+fuel consumption model; (3) electric consumption of the EM;
+(4) transmission; and (5) battery model. Specifically, the Toyota
+Prius is selected as the studied car. Since this car is equipped with
+a series-parallel hybrid system, it is hard to describe the model
+of its powertrain exactly and explicitly. In the following, we will
+briefly introduce the mathematical model of each sub-system.
+Fig. 3 illustrates the schematic diagram of the five sub-systems.
+
+4757
+
+Fig. 3.
+
+The schematic diagram of the Prius (series-parallel PHEVs) [30].
+
+Fig. 4.
+
+The driving model of the PHEVs.
+
+1) Vehicle Dynamics: The vehicle dynamics for PHEVs
+mainly focuses on PHEVs’ longitudinal dynamics [29], which
+is illustrated in Fig. 4.
+The output torque Tw is obtained by the following equation
+Tw = ηt · if (Te + Tm ) + TB
+
+
+1
+dv
+2
+= M gfr cos θ + CD ρd Af v + M g sin θ + δM
+· rw ,
+2
+dt
+(17)
+where ηt represents the transmission efficiency. Te , Tm and TB
+are the torque of engine, the torque of EM, and the torque of
+braking, respectively. if denotes the basic ratio of planetary gear
+in Prius, which is a fixed ratio and equals the ring radius divided
+by the sun gear radius.
+v denotes the vehicle speed. The parameters fr , g and θ capture the operation condition of the vehicle and denote the rolling
+resistance coefficient, gravity acceleration, and road slope angle,
+respectively. M = Mo + Mp denotes the equivalent vehicle
+mass including the vehicle mass (i.e., Mo ) and the passenger
+load (i.e., Mp ). The parameters of the vehicle, rw , CD , ρd and
+Af , represent wheel radius, air drag coefficient, air density and
+frontal area, respectively.
+2) Fuel Consumption Model of Engine: Fuel economy is the
+most important assessment index of the power management
+strategy for PHEVs. Using fossil fuel engine, the fuel consumption rate is a nonlinear function of the speed and power
+of engine. The fuel consumption rate is obtained by searching
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+4758
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 69, NO. 5, MAY 2020
+
+TABLE I
+THE VALUES OF VEHICLE DYNAMICS FOR THE SIMULATION SETUP [29]
+
+Fig. 5. Fuel converter efficiency. The colourful contours with numbers illustrate the consumption contours of engine. The blue points represent the work
+points. The black contour shows the maximum value of fuel converter efficiency.
+
+Fig. 7. Energy usage under power and regen modes, respectively. The blue
+bars show the energy usages in different subsystems.
+
+output power of EM is described as follows.
+
+Tm ωm /ηm , Driving
+Pm =
+Tm ωm ηm , Braking
+
+Fig. 6. Motor controller efficiency. The colourful contours with numbers
+illustrate the consumption contours of electric motor. The blue points represent
+the work points. The two black contours show the maximum value of motor
+controller efficiency.
+
+the consumption contours of engine, which depends on the type
+of fuel and the type of engine.
+The corresponding ICE efficiency is shown by the labeled
+number of each contour. As an example, it is a 1.5 L SI Engine
+modeled by the advanced vehicle simulator ADVISOR [31],
+illustrated in Fig. 5. The engine has a peak power of 43 kW and
+a peak efficiency of 39%.
+3) Electric Consumption Model of EM: EM works under two
+operating modes, the driving mode and the braking mode. The
+
+(18)
+
+The above model shows that the EM output power Pm depends on the EM torque Tm , the EM speed ωm , and the EM
+efficiency ηm . The efficiency ηm is obtained by searching the EM
+efficiency map that depends on the type of EM. As an example,
+the colourful contours in Fig. 6 illustrate the EM efficiency of a
+15 kW permanent magnet motor.
+Toyota Prius employs an Electronically Controlled Continuously Variable Transmission (ECVT) system which plays a
+significant role in series-parallel PHEVs [30]. In PHEVs, the
+ECVT system is designed for ensuring the optimal operating
+modes of the engine and the motor related to the speed variations
+of the vehicles. In the simulation, the gear-shifting signal s(k)
+is considered in the analysis of the energy consumption.
+4) Battery Model: SoC is the main index to describe the
+battery operation. According to Kirchhoff’s voltage law, considering the change rate of the SoC and the power of battery for
+the rate of change of SoC Pbatt , SoC of next state is calculated
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: ROUTE PLANNING AND POWER MANAGEMENT FOR PHEVs WITH REINFORCEMENT LEARNING
+
+4759
+
+Fig. 8. Route planning results. Background colours indicate the elevation ranging from 0m as white to 800m as deep blue. The yellow lines show the road
+networks. The red line illustrates the route produced by the proposed method with the fuel consumption of 134263 KJ, while the green line represents the shortest
+path with the fuel consumption of 215715 KJ. Two paths share the same source A directing eastward and ending at the destination B.
+
+as follows.
+SoC(k + 1) = SoC(k) −
+
+Uoc −
+
+
+
+2 − 4P
+Uoc
+batt Rint
+, (19)
+2Qmax Rint
+
+where Uoc , Rint and Qmax are the open-circuit voltage, the
+internal resistance and the maximum value of battery capacity,
+respectively.
+Due to the difference between two operation modes of battery
+(i.e., charging and discharging), the internal resistance Rint can
+be described as
+
+Rdischg , discharging
+(20)
+Rint =
+Rchg ,
+charging
+where Rdischg and Rchg represent the internal resistances of the
+battery which indicate the battery is on discharging or charging
+mode, respectively. Values of the parameters related to vehicle
+dynamics are illustrated in Table I.
+B. Reinforcement Learning Simulations
+In this subsection, the solution to the integrated problem using
+RL is proposed to find the minimal energy consumption route
+while taking power management into account. Using the RL
+algorithm, the environment is assumed to be a given city map
+with roads and geographic information, as shown in Fig. 2. In
+the environment, the source and the destination are given, which
+are linked by a series of road segments. Between two points, it
+is recommended to include various speed limits and road slope
+angle to demonstrate the effectiveness of the proposed method.
+The action vector a(k) includes the desired output torque
+from engine Te,des (k), gear shift command of the transmission
+system s(k) and the direction direc(k). There are four directions
+
+for the agent (vehicle) from the current position p(k) to the next
+position p(k + 1) on the road map. The solution to the integrated
+problem using the RL algorithm is the instruction sequence with
+the form: [p(A), a(1) (from A to 1), p(1)], [p(1), a(2) (from 1
+to 2), p(2)], · · · , [p(n), a(n) (from n to B), p(B)].
+To control the computational overhead, we reduce the size of
+system states by only considering the road intersections in the
+simulation, i.e., actions are taken at the road intersections. In the
+training process, the velocity of vehicle for each road segment
+is an average value which is calculated based on the length and
+height of each road segment. Since the velocity and slope angle
+are constants for each road segment, the required power for each
+road segment is computed based on (17). As a result, the power
+management process is simplified, and the computational load
+is reduced.
+In the simulation, the training process is not affected by
+the battery performance. We use the SoC of the battery from
+90% to 20% in this simulation. The SoC is calculated by the
+ratio between the current and total energy. We do not consider
+battery degradation, which unnecessarily complicates the simulation and may introduce too much noise in the simulation
+results.
+The EM may work under two conditions: 1) providing the
+power to guarantee that the engine is working with high efficiency; 2) working as a generator to store the electric energy to
+the battery with the influence of inertia. The required power of
+EM is calculated by (18) with different working conditions. The
+SoC of next state is computed by (19) using Pbatt = Pm .
+The neural network is designed as a four-layer structure. The
+first layer includes the current state x(k), which is followed by
+two hidden layers with 10 neurons and 6 neurons, respectively.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+4760
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 69, NO. 5, MAY 2020
+
+σa and σV are two ReLU activation functions with dropout rate
+0.25. The last layer represents the Q-value for each direction of
+action a(k).
+The main idea of power management for PHEVs is to avoid
+ICE operation points in the low efficiency region. The efficiency
+contours of engine and EM are illustrated in Figs. 5 and 6,
+respectively. Also, Figs. 5 and 6 show that most corresponding
+operating points fall in the high efficiency region under different
+driving conditions and varying speeds.
+Fig. 7 shows the energy usage in different subsystems under
+power and regeneration modes. Each action is evaluated based
+on the required energy to travel on each road segment on
+the map (Fig. 8). Based on the vehicle dynamics provided in
+Section IV-A, the required power is computed for the car to travel
+on the selected roads (using information regarding elevation, the
+road slope angle θ). The energy consumption is calculated by
+multiplying the power with the travel time on the corresponding
+road segment. Fig. 8 shows the route planning results, where the
+red route shows the most energy efficient path and the green route
+is the shortest path which has a higher fuel consumption than
+the red route. The effectiveness of doing power management and
+route planning at the same time is verified.
+
+constants, which denote the convergence speeds of two approximators. Next, we analyze every term in (21). According to the
+system dynamics, we can obtain the difference of the value
+function with the action a(k + 1).
+ΔV (x(k)) = V (x(k + 1)) − V (x(k))
+= ∇V  (x(k))(f (x(k)) + g(x(k))a(k) − (x(k)))
+1
++ (f (x(k)) + g(x(k))a(k) − (x(k)))
+2
+× ∇2 V (x(k))(f (x(k))+g(x(k))a(k)−(x(k)))
+≤ ∇V  (x(k))(f (x(k))+g(x(k))a(k + 1)−x(k))
++
+
+× ∇2 V (x(k))(f (x(k))+g(x(k))a(k + 1)−x(k)).
+(22)
+According to (8), rewrite (22) as
+1
+ΔV (x(k)) = − a (k)(g  (x(k))∇V (x(k))g(x(k)) + R)a(k)
+2
+− x(k)2Q + (∇V  (x(k)) + (f (x(k))
+
+V. CONCLUSION AND FUTURE WORK
+In this paper, we proposed a route planning algorithm using
+RL with the help of road geographical information. Our goal is
+to find the path that minimizes the energy usage of PHEVs. A
+two-loop structure is adopted to integrate both path planning and
+energy management. To be specific, the route of the minimum
+energy consumption is obtained in the outer loop and the energy
+consumption index with respect to PHEV power management
+for each feasible route is trained by the RL framework in the
+inner-loop. To handle the power management for PHEVs using
+RL, the nonlinear approximator structure is built to approximate control actions and values by an actor approximator and
+a critic approximator, respectively. We also demonstrate the
+convergence of the value function for power management in the
+inner loop and asymptotical stability of the closed-loop system.
+Finally, simulation results show that the proposed algorithm
+provides an effective solution to the problem of routing PHEVs
+with the energy-efficient path.
+Further investigations are needed in the future to reduce the
+computational overhead of the RL algorithm. Searching for
+the optimal solution for the power management problem in
+continuous state and the action spaces is also an interesting
+direction for future research.
+APPENDIX A
+PROOF OF THEOREM 1
+In order to prove the stability, a good result is recalled [27].
+We start with the Lyapunov candidate.
+1
+1
+W̃V (k)2 +
+tr(W̃a (k)W̃a (k)),
+2αV
+2αa
+(21)
+where W̃V and W̃a are the weight estimation errors of the
+dynamics and actions, respectively. αV > 0 and αa > 0 are
+L = V (x(k)) +
+
+1
+(f (x(k)) + g(x(k))a(k + 1) − x(k))
+2
+
+− x(k)) ∇2 V (x(k)))
+× g(x(k))(a(k + 1) − a(k))
+1
++ a (k + 1)(g  (x(k))∇V (x(k))g(x(k)))
+2
+× a(k + 1).
+Since the updated action is obtained by (10), the above equation
+is rewritten as follows.
+ΔV (x(k)) = −x(k)2Q − a(k + 1)2R
+1
+− (a(k + 1) − a(k))
+2
+× (g  (x(k))∇V (x(k))g(x(k)) + R)
+× (a(k + 1) − a(k)).
+Since g  (x(k))∇V (x(k))g(x(k)) + R, R and Q are positive
+definite, we can obtain
+ΔV (x(k)) ≤ −x(k)2Q ≤ −λ(Q)x(k)2
+
+(23)
+
+Thus, the closed-loop system with the updated action a(k + 1)
+is locally asymptotically stable. According to Lemma 2, due
+to the convergence of the value function V (x(k)), the cost
+function of the system (1) with the updated action a(k + 1) is
+finite. In addition, V̂ (0) = 0 is guaranteed. We define La (k) =
+tr(W̃a (k)W̃a (k)). The first difference is obtained as
+ΔLa (k) = tr(W̃a (k + 1)W̃a (k + 1)) − tr(W̃a (k)W̃a (k))
+=
+
+−2αa σa (x(k))
+tr(ã(k)ã (k))
+1 + σa (x(k))σa (x(k))
+
++
+
+αa σa (x(k))σa (x(k))
+tr(ã(k)ã (k)). (24)
+(1 + σa (x(k))σa (x(k))2
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+ZHANG et al.: ROUTE PLANNING AND POWER MANAGEMENT FOR PHEVs WITH REINFORCEMENT LEARNING
+
+Considering the properties of trace operator, we substitute (16)
+σa (x(k))σa (x(k))
+and 1+σ
+< 1 into (24). By applying the upper
+
+a (x(k))σa (x(k))
+bounds of matrices, the first difference is rewritten as
+
+2
+σa (x(k))σa (x(k))
+2
+ΔLa (k) ≤ αa RgM σV M WV M
+1 + σa (x(k))σa (x(k))
++
+
+αa (gM σV M RWV M )2
+4 (1 + σa (x(k))σa (x(k)))
+
+2
+
+2αa σa (x(k))σa (x(k))
+W̃a (k)2
+1 + σa (x(k))σa (x(k))
+
+2
+σa (x(k))σa (x(k))
++ αa2
+W̃a (k)2
+1 + σa (x(k))σa (x(k))
+ 
+2
+σa (x(k))σa (x(k))RgM σV M
+2
++ αa
+W̃V (k)2
+1 + σa (x(k))σa (x(k))
+−
+
+−
+
+αa σa (x(k))RgM σV M WV M
+1 + σa (x(k))σa (x(k))
+
+W̃a (k)2 ,
+
+(25)
+
+where gM is the upper bound of function g(·). Since the bound
+of σa (x(k)) is 0 < σam ≤ σa  ≤ σaM , (25) is rewritten as
+
+2
+2
+σaM
+ΔLa (k) ≤ αa2 RgM σV M WV M
+2
+1 + σam
+−
++
+
+2
+2αa σaM
+W̃a (k)2
+2
+1 + σam
+
+αa (gM σV M RWV M )2
+
+2 )2
+4 (1 + σam
+
+2
+2
+σaM
+2
++ αa
+W̃a (k)2
+2
+1 + σam
+ 2
+2
+σaM RgM σV M
++ αa2
+W̃V (k)2
+2
+1 + σam
+
+−
+
+W̃V (k) − αV
+
+− αV
+
+σ˜V (x(k))σ˜V  (x(k))W̃V (k)
+1 + σ˜V  (x(k))σ˜V (x(k))
+
+σ˜V (x(k))(σV (x(∞)) − σV (x̂(∞)))ŴV (k)
+1 + σ˜V  (x(k))σ˜V (x(k))
+
+− W̃V (k)2
+
+σ˜V  (x(k))σ˜V (x(k))
+W̃V (k)2
+= −2αV
+1 + σ˜V  (x(k))σ˜V (x(k))
+−
+
+W̃V (k)σ˜V (x(k))(σV (x(∞)) − σV (x̂(∞)))ŴV (k)
+1 + σ˜V  (x(k))σ˜V (x(k))
+
++ αV2
+−
+
+σ˜V (x(k))σ˜V  (x(k))
+W̃V (k)
+1 + σ˜V  (x(k))σ˜V (x(k))
+
+σ˜V (x(k))(σV (x(∞)) − σV (x̂(∞)))ŴV (k)
+1 + σ˜V  (x(k))σ˜V (x(k))
+
+2
+
+.
+
+σ̃  (x(k))σ̃ (x(k))
+
+Since we have 1+σ̃V  (x(k))σ̃V (x(k)) < 1 and 0 < σ̃V m ≤
+V
+V
+σ̃V  ≤ σ̃V M , by applying Cauchy-Schwartz inequality, the
+first difference of Lyapunov function is rewritten as
+σ̃V2 M
+W̃V (k)2 + αV2 W̃V (k)2
+1 + σ̃V2 m
+
+
+2σ̃V2 M
+= −αV
+− αV W̃V (k)2 .
+(27)
+1 + σ̃V2 m
+
+ΔLV ≤ −2αV
+
+REFERENCES
+
+2
+2σam
++ σaM RgM σV M WV M
+W̃a (k)2
+2
+1 + σaM
+ 2
+2
+σaM RgM σV M
++ αa2
+W̃V (k)2
+2
+1 + σam
+
+= −αa
+
+4
+σam
+W̃a (k)2 .
+2 )2
+(1 + σaM
+
+(26)
+
+Then, since we have LV (k) = W̃V (k)2 , we can obtain the
+first difference as follows
+ΔLV (k) = W̃V (k + 1)2 − W̃V (k)2
+
+σ˜V (x(k))σ˜V  (x(k))W̃V (k)
+= W̃V (k) − αV
+1 + σ˜V  (x(k))σ˜V (x(k))
+σ˜V (x(k))(σV (x(∞)) − σV (x̂(∞)))ŴV (k)
+− αV
+1 + σ˜V  (x(k))σ˜V (x(k))
+
+×
+
+Combining Equations (23) (26) and (27), we conclude the
+asymptotic stability.
+
+αa σam RgM σV M WV M
+W̃a (k)2
+2
+1 + σaM
+
+− αa2
+
+
+
+4761
+
+
+
+[1] U. E. I. Administration, “How much carbon dioxide is produced from
+burning gasoline and diesel fuel?” 2017. [Online]. Available: https://www.
+eia.gov/tools/faqs/faq.php?id=307&t=11. Accessed on: Sep. 13, 2018.
+[2] X. Wang, L. Li, K. He, and C. Liu, “Dual-loop self-learning fuzzy control
+for amt gear engagement: Design and experiment,” IEEE Trans. Fuzzy
+Syst., vol. 26, no. 4, pp. 1813–1822, Aug. 2018.
+[3] X. Wang, L. Li, and C. Yang, “Hierarchical control of dry clutch for enginestart process in a parallel hybrid electric vehicle,” IEEE Trans. Transp.
+Electrific., vol. 2, no. 2, pp. 231–243, Jun. 2016.
+[4] M. Sorrentino, G. Rizzo, and I. Arsie, “Analysis of a rule-based control
+strategy for on-board energy management of series hybrid vehicles,”
+Control Eng. Pract., vol. 19, no. 12, pp. 1433–1441, 2011.
+[5] J.-S. Won and R. Langari, “Intelligent energy management agent for
+a parallel hybrid vehicle-part II: Torque distribution, charge sustenance
+strategies, and performance results,” IEEE Trans. Veh. Technol., vol. 54,
+no. 3, pp. 935–953, May 2005.
+[6] M. Wieczorek and M. Lewandowski, “A mathematical representation
+of an energy management strategy for hybrid energy storage system in
+electric vehicle and real time optimization using a genetic algorithm,”
+Appl. Energy, vol. 192, pp. 222–233, 2017.
+[7] Q. Jiang, F. Ossart, and C. Marchand, “Comparative study of real-time
+HEV energy management strategies,” IEEE Trans. Veh. Technol., vol. 66,
+no. 12, pp. 10 875–10 888, Dec. 2017.
+[8] L. Xu, F. Yang, J. Li, M. Ouyang, and J. Hua, “Real time optimal energy
+management strategy targeting at minimizing daily operation cost for
+a plug-in fuel cell city bus,” Int. J. Hydrogen Energy, vol. 37, no. 20,
+pp. 15 380–15 392, 2012.
+[9] A. Sciarretta, M. Back, and L. Guzzella, “Optimal control of parallel
+hybrid electric vehicles,” IEEE Trans. Control Syst. Technol., vol. 12, no. 3,
+pp. 352–363, Jun. 2004.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+4762
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 69, NO. 5, MAY 2020
+
+[10] N. Kim, S. Cha, and H. Peng, “Optimal control of hybrid electric vehicles
+based on pontryagin’s minimum principle,” IEEE Trans. Control Syst.
+Technol., vol. 19, no. 5, pp. 1279–1287, Sep. 2011.
+[11] L. Serrao, S. Onori, A. Sciarretta, Y. Guezennec, and G. Rizzoni, “Optimal
+energy management of hybrid electric vehicles including battery aging,”
+in Proc. IEEE 30th Amer. Control Conf., Jun. 2011, pp. 2125–2130.
+[12] S. Di Cairano, D. Bernardini, A. Bemporad, and I. V. Kolmanovsky,
+“Stochastic MPC with learning for driver-predictive vehicle control and
+its application to HEV energy management,” IEEE Trans. Control Syst.
+Technol., vol. 22, no. 3, pp. 1018–1031, May 2014.
+[13] F. Yan, J. Wang, and K. Huang, “Hybrid electric vehicle model predictive
+control torque-split strategy incorporating engine transient characteristics,” IEEE Trans. Veh. Technol., vol. 61, no. 6, pp. 2458–2467, Jul. 2012.
+[14] C. Hou, M. Ouyang, L. Xu, and H. Wang, “Approximate pontryagin’s
+minimum principle applied to the energy management of plug-in hybrid
+electric vehicles,” Appl. Energy, vol. 115, pp. 174–189, 2014.
+[15] Q. Gong, Y. Li, and Z.-R. Peng, “Trip-based optimal power management
+of plug-in hybrid electric vehicles,” IEEE Trans. Veh. Technol., vol. 57,
+no. 6, pp. 3393–3401, Nov. 2008.
+[16] Y. Sun, X. Wang, L. Li, J. Shi, and Q. An, “Modelling and control for
+economy-oriented car-following problem of hybrid electric vehicle,” IET
+Intell. Transport Syst., vol. 13, no. 5, pp. 825–833, 2019.
+[17] Y. L. Murphey et al., “Intelligent hybrid vehicle power control. Part
+II: Online intelligent energy management,” IEEE Trans. Veh. Technol.,
+vol. 62, no. 1, pp. 69–79, Jan. 2013.
+[18] X. Lin, Y. Wang, P. Bogdan, N. Chang, and M. Pedram, “Reinforcement
+learning based power management for hybrid electric vehicles,” in Proc.
+IEEE/ACM Int. Conf. Comput.-Aided Des., Nov. 2014, pp. 33–38.
+[19] C. Liu and Y. L. Murphey, “Power management for plug-in hybrid electric
+vehicles using reinforcement learning with trip information,” in Proc. IEEE
+Transp. Electrific. Conf. Expo., Sep. 2014, pp. 1–6.
+[20] R. S. Sutton and A. G. Barto, Reinforcement Learning: An Introduction.
+Cambridge, MA, USA: MIT Press, 1998.
+[21] J. Lin, W. Yu, X. Yang, Q. Yang, X. Fu, and W. Zhao, “A real-time en-route
+route guidance decision scheme for transportation-based cyberphysical
+systems,” IEEE Trans. Veh. Technol., vol. 66, no. 3, pp. 2551–2566,
+Mar. 2017.
+[22] M. A. S. Kamal, T. Hayakawa, and J.-I. Imura, “Road-speed profile for
+enhanced perception of traffic conditions in a partially connected vehicle
+environment,” IEEE Trans. Veh. Technol., vol. 67, no. 8, pp. 6824–6837,
+Aug. 2018.
+[23] H. Yu, M. Kuang, and R. McGee, “Trip-oriented energy management
+control strategy for plug-in hybrid electric vehicles,” IEEE Trans. Control
+Syst. Technol., vol. 22, no. 4, pp. 1323–1336, Jul. 2014.
+[24] C.-C. Lin, H. Peng, J. W. Grizzle, and J.-M. Kang, “Power management
+strategy for a parallel hybrid electric truck,” IEEE Trans. Control Syst.
+Technol., vol. 11, no. 6, pp. 839–849, Nov. 2003.
+[25] F. L. Lewis, D. Vrabie, and V. L. Syrmos, Optimal Control. Hoboken, NJ,
+USA: Wiley, 2012.
+[26] Z. Chen and S. Jagannathan, “Generalized Hamilton–Jacobi–Bellman
+formulation-based neural network control of affine nonlinear discrete-time
+systems,” IEEE Trans. Neural Netw., vol. 19, no. 1, pp. 90–106, Jan. 2008.
+[27] Q. Zhao, H. Xu, and S. Jagannathan, “Neural network-based finite-horizon
+optimal control of uncertain affine nonlinear discrete-time systems,” IEEE
+Trans. Neural Netw. Learn. Syst., vol. 26, no. 3, pp. 486–499, Mar. 2015.
+[28] F. Günther and S. Fritsch, “Neuralnet: Training of neural networks,” R J.,
+vol. 2, no. 1, pp. 30–38, 2010.
+[29] C. Yang, L. Li, S. You, B. Yan, and X. Du, “Cloud computing-based energy
+optimization control framework for plug-in hybrid electric bus,” Energy,
+vol. 125, pp. 11–26, 2017.
+[30] J. M. Miller, “Hybrid electric vehicle propulsion system architectures of
+the e-CVT type,” IEEE Trans. Power Electron., vol. 21, no. 3, pp. 756–767,
+May 2006.
+[31] N. R. E. Lab, “Advisor 2003 documentation,” 2003. [Online]. Available:
+http://bigladdersoftware.com/advisor/docs/advisor_doc.html. Accessed:
+Feb. 4, 2018.
+
+Qian Zhang (Student Member, IEEE) received the
+bachelor‘s and master’s degrees in control science and
+engineering from the Harbin Institute of Technology,
+Harbin, China, in 2014 and 2016, respectively. She
+is currently working toward the Ph.D. degree in mechanical engineering with the University of Victoria,
+Victoria, BC, Canada.
+
+Kui Wu (Senior Member, IEEE) received the B.Sc.
+and M.Sc. degrees in computer science from Wuhan
+University, Wuhan, China, in 1990 and 1993, respectively, and the Ph.D. degree in computing science from the University of Alberta, Edmonton, AB,
+Canada, in 2002. Later in 2002, he joined the Department of Computer Science, University of Victoria,
+Victoria, BC, Canada, where he is currently a Full
+Professor. His research interests include computer
+networks, vehicular networks, and stochastic modeling and control.
+
+Yang Shi (Fellow, IEEE) received the Ph.D. degree
+in electrical and computer engineering from the University of Alberta, Edmonton, AB, Canada, in 2005.
+From 2005 to 2009, he was an Assistant Professor and
+an Associate Professor with the Department of Mechanical Engineering, University of Saskatchewan,
+Saskatoon, SK, Canada. In 2009, he joined the
+University of Victoria, Victoria, BC, Canada, where
+he is currently a Professor with the Department of
+Mechanical Engineering. He was a Visiting Professor
+with the University of Tokyo from November 2013 to
+December 2013. His current research interests include networked and distributed
+systems, model predictive control, cyber-physical systems, robotics and mechatronics, navigation and control of autonomous systems (AUV and UAV), and
+energy system applications.
+Dr. Shi was the recipient of the University of Saskatchewan Student Union
+Teaching Excellence Award in 2007, the Faculty of Engineering Teaching
+Excellence Award at the University of Victoria in 2012, and the Craigdarroch
+Silver Medal for Excellence in Research in 2015. He received the JSPS Invitation
+Fellowship (short term). His coauthored paper was awarded the 2017 IEEE
+TRANSACTIONS ON FUZZY SYSTEMS Outstanding Paper Award. He received
+the Humboldt Research Fellowship for Experienced Researchers in 2018. He
+was a member of the IEEE IES Administrative Committee during 2017–2019,
+and he is currently the Chair of IEEE IES Technical Committee on Industrial
+Cyber-Physical Systems. He is currently the Co-Editor-in-Chief for the IEEE
+TRANSACTIONS ON INDUSTRIAL ELECTRONICS. He also serves as an Associate
+Editor for Automatica, IEEE TRANSACTIONS ON CONTROL SYSTEMS TECHNOLOGY, IEEE/ASME TRANSACTIONS ON MECHATRONICS, IEEE TRANSACTIONS
+ON CYBERNETICS, etc. He is a Fellow of ASME, Engineering Institute of
+Canada, and Canadian Society for Mechanical Engineering, and a Registered
+Professional Engineer in British Columbia, Canada.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:11 UTC from IEEE Xplore. Restrictions apply.
+
+

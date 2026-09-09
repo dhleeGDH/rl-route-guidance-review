@@ -1,0 +1,775 @@
+2023 3rd International Conference on Electronic Information Engineering and Computer (EIECT) | 979-8-3503-5770-7/23/$31.00 ©2023 IEEE | DOI: 10.1109/EIECT60552.2023.10442929
+
+2023 3rd International Conference on Electronic Information Engineering and Computer (EIECT)
+
+Optimization Method of DRL-based Route Planning
+under Limited Resources
+1st Chenhao Jin
+Sun Yat-sen University,
+Shenzhen Key Laboratory of Navigation and Communication
+Integration
+Shenzhen, China
+jinchh5@mail2.sysu.edu.cn
+
+2nd Xi Zhang
+Sun Yat-sen University,
+Shenzhen Key Laboratory of Navigation and Communication
+Integration
+Shenzhen, China
+zhangx589@mail2.sysu.edu.cn
+
+3rd Yiqian Zhang
+Sun Yat-sen University,
+Shenzhen Key Laboratory of Navigation and Communication
+Integration
+Shenzhen, China
+zhangyq75@mail2.sysu.edu.cn
+
+4th Congduan Li*
+Sun Yat-sen University,
+Shenzhen Key Laboratory of Navigation and Communication
+Integration
+Shenzhen, China
+licongd@mail.sysu.edu.cn
+
+Abstract—The performance of the route planning module is
+affected by the on-board computing and storage capabilities,
+which are growing rapidly but are still limited by the enormous
+scale of sensed data that need to be stored and processed. So,
+aiming at the problems of resource-limited deep reinforcement
+learning-based route planning methods, this paper proposes an
+optimization method to improve computational effectiveness by
+using Attention Mechanism and reduce data storage by using
+improved Double-DQN. The results show that the proposed
+method enables the planning model to focus on valid sensed
+information and ignore irrelevant information, as well as
+effectively reduce the amount of vehicle agent's experience data
+storage during environment exploration.
+
+Recent years, research in Deep Learning (DL) has also been
+extended to the field of route planning [2][3]. The property of
+deep neural networks (DNN) structure allows it to learn the hardto-perceive regular features directly from the raw data, and avoid
+processing complex data manually, thereby can reduce errors
+and information losses during the process. So DL models can
+adapt to different data distributions and scenarios, handle highdimensional data efficiently, and have better scalability. [4]
+proposed a self-attention mechanism based end-to-end AD
+method, which improves the robustness of AD by using an
+adaptive fusion mechanism “TransFuser” [5] to achieve a
+comprehensive perception of the traffic environment. [6]
+proposed a flexible and efficient feature representation: Neural
+Attention fields (NEAT) to address the challenging problem of
+joint BEV semantic prediction and vehicle trajectory planning
+from camera inputs on the CARLA simulator, which takes a step
+towards interpretable and high-performance end-to-end AD. [7]
+proposed a DL method to combine trajectory planning and direct
+control for end-to-end AD. End-to-End Learning-based adaptive
+fusion scheme may be a possible future direction, but the
+superiority of these approach relies on the complexity of the
+model framework and the large amount of data with labels.
+Firstly, under the limited on-board computing resources, the
+real-time performance of these methods is difficult to guarantee.
+Additionally, obtaining high-quality labelled data is extremely
+challenging, as such data usually involves personal privacy and
+security issues.
+
+Keywords—route
+planning,
+resource-constrained,
+reinforcement learning, Attention Mechanism
+
+deep
+
+I. INTRODUCTION
+The development of autonomous driving (AD) technology
+and V2X makes the on-board route navigation system more and
+more intelligent, which significantly improves traffic efficiency.
+The capability of the on-board route navigation module is
+directly related to the vehicle's route selection and driving
+smoothness, which depends on the performance of underlying
+planning algorithm. An Intelligent Connected Vehicle (ICV) can
+collect at least 10TB data per day, including vehicle
+geographical location, in-car and external environment data, and
+data from the Internet of Vehicle (IoV), so with limited on-board
+resources, how to use the large amount of information to plan a
+suitable path in real-time is an important challenge for current
+route planning technology.
+
+Deep Reinforcement Learning (DRL) [8] is an important
+branch of artificial intelligence that addresses an important
+problem in machine learning --- sequential decision making, a
+task that uses previous experience to decide how to take a series
+of actions in the environment so that the final target can be
+reached. DRL defines the problem as an intelligence agent,
+which allows the agent to interact with the environment
+continuously and collect experiences to learn how to act by
+obtaining the accumulated rewards from the environment. The
+environment can be stochastic. The agent can observe only part
+
+Traditional global planning algorithms, such as Dijkstra's
+algorithm, the A* family and the RRT family [1], have been
+proved to obtain optimal solutions theoretically. However, these
+algorithms have high computational complexity and low realtime performance, which cannot obtain the optimal solution
+under limited computing resources, and they are not suitable for
+route planning in dynamic environments.
+979-8-3503-5770-7/23/$31.00 ©2023 IEEE
+
+161
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:02 UTC from IEEE Xplore. Restrictions apply.
+
+of the information in the current state, and the observed
+information can be high-dimensional. So DRL is suitable for
+application in any kind of experience-based sequential decision
+making tasks like route planning [9] (Figure 1). [10] proposed a
+route planning with dynamic obstacle avoidance method of the
+manipulator based on a DRL algorithm soft actor-critic (SAC),
+this method can effectively avoid moving obstacles in the
+environment by designed a comprehensive reward function of
+dynamic obstacle avoidance and target approach. [11] proposed
+a novel DRL-based vehicle routing optimization method which
+is suited for real-time smart vehicle navigation. In the current
+research on route planning algorithms, the actual situation of
+limited on-board resources is rarely taken into account. So in this
+paper, we propose an optimization scheme for DRL-based route
+planning considering the limited on-board computing and
+storage resources. Our main contributions are as follows,
+
+information during driving, in order to reach the destination with
+the shortest distance, the least driving time, etc. The basic
+mathematical model is represented as follows:
+𝑚𝑖𝑛
+
+𝐶𝑜𝑠𝑡𝑖𝑗 =
+
+∑
+
+𝑎𝑢𝑣 𝑝𝑢𝑣
+
+𝑒(𝑢,𝑣)∈𝐸(𝐷)
+
+𝑠. 𝑡. ∑𝑉
+
+𝑝𝑢𝑣
+𝑣=1
+𝑒(𝑢,𝑣)∈𝐸(𝐷)
+
+− ∑𝑉
+
+𝑝𝑣𝑢
+𝑣=1
+𝑒(𝑣,𝑢)∈𝐸(𝐷)
+
+1,
+𝑢=𝑖
+= {−1, 𝑢 = 𝑗 , (1)
+0, 𝑢 ≠ 𝑖, 𝑗
+
+where 𝐸(𝐷) denotes the set of all edges in network, 𝑉 denotes
+the number of network points and 𝑝𝑢𝑣 denotes the decision
+variable. When 𝑝𝑢𝑣 = 1, it means that the path 𝑒(𝑢, 𝑣) belongs
+to the set 𝐸𝑖𝑗 (𝐷) which consisting of all paths that can reach the
+destination 𝑗 from the origin 𝑖 ( 𝐸𝑖𝑗 (𝐷) ∈ 𝐸(𝐷) ), otherwise
+𝑝𝑢𝑣 = 0. The purpose of the constraint is to find all possible
+paths from the origin 𝑖 to the destination 𝑗. When the 𝑎𝑢𝑣 is a
+deterministic value, the route planning turns to a problem for
+searching an optimal solution under the static deterministic
+condition, while for the case of minimal driving time, the weight
+𝑎𝑢𝑣 is determined by the multidimensional dynamic
+environmental characteristic information:
+
+(1) The attention mechanism is introduced to design the
+policy network of DRL, and the Query vector is carefully
+designed to be highly relevant to the optimization goal, so that
+our method can effectively filter the information useful for
+planning from the high-dimensional environment state
+information with fewer neurons under the limited computing
+resources.
+
+𝑖 𝑖
+𝑎𝑢𝑣 = ∑𝑁
+𝑖=0 𝑘 𝑥𝑢𝑣 ,
+
+(2) The improved Double-DQN is designed for the training
+process of the vehicle agent, in which the vehicle agent only
+needs to store information that is valuable for model training,
+while avoiding storing a large amount of invalid information
+with limited on-board storage resources.
+
+(2)
+
+where 𝑥 is the characteristic information of the real-time traffic
+network. In this case, the traffic flow is random, and the road
+capacity also shows different random characteristics at different
+time periods, so the route planning turns to a stochastic
+programming problem under dynamic network. Define 𝑇 =
+𝑡𝑢𝑣 |𝑡𝑢𝑣 ∈ 𝑇𝑢𝑣 } as the vehicle's duration on the edge of 𝑒(𝑢, 𝑣),
+and the expectation value mathematical model of the stochastic
+planning problem can be expressed as:
+
+The rest of this paper is organized as follows. Section II
+models the route planning problem and expounds the feasibility
+and limitations of the classical DRL. Section III describes our
+proposed algorithm in detail. Section IV analyzes the simulation
+results of our algorithm and conclusions are provided in Section
+V.
+
+𝑚𝑖𝑛
+
+𝐶𝑜𝑠𝑡𝑖𝑗 = 𝐸 [
+
+∑
+
+𝑡𝑢𝑣 𝑝𝑢𝑣 ]
+
+𝑒(𝑢,𝑣)∈𝐸(𝐷)
+
+𝑠. 𝑡. ∑𝑉
+
+𝑣=1
+𝑒(𝑢,𝑣)∈𝐸(𝐷)
+
+1,
+𝑢=𝑖
+−1,
+𝑢
+=𝑗 .
+𝑝
+=
+{
+𝑣=1
+𝑣𝑢
+𝑒(𝑣,𝑢)∈𝐸(𝐷)
+0, 𝑢 ≠ 𝑖, 𝑗
+(3)
+
+𝑝𝑢𝑣 − ∑𝑉
+
+In the dynamic environment, planning methods need to
+consider not only better routes whether they can find to the
+destination, but also the stability of the model when dealing with
+road networks of different complexity and congestion
+B. Deep Reinforcement Learning
+The choice of the road in the planning problem only depends
+on the vehicle's current location but not the historical states,
+which is Markov property and can be represented by the Markov
+decision process (MDP):
+
+Figure 1. Deep reinforcement learning for route planning.
+
+II. PROBLEM STATEMENT
+
+< 𝑆, 𝐴, 𝑇, 𝑅, 𝛾 >,
+
+A. Mathematical Model
+For realistic vehicle navigation, the route planning problem
+can be described as how to provide an appropriate driving route
+for a vehicle which knows a single origin 𝑖 to the single
+destination 𝑗 with the initial road network information
+(adjacency matrix), and also be able to adjust the driving route
+in real time according to the subsequent changes in road network
+
+(4)
+
+where 𝑆 represents the set of vehicle's state space, including all
+dynamic and static traffic information on the map, 𝐴 represents
+the set of paths that the vehicle can choose at each junction. The
+vehicle's path choice must obey the traffic rules, so the action
+dimensions that vehicle can choose are dynamically changing at
+each junction. 𝑇 is the state transition probability matrix, and is
+uncertain in route planning problems. 𝑅 is the reward or penalty
+162
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:02 UTC from IEEE Xplore. Restrictions apply.
+
+feedback by the environment after the vehicle chooses an action.
+γ is defined as the discount factor, which can control the impact
+of future states on current decision-making behavior.
+
+by bootstrap, but it does not help to mitigate the overestimation
+caused by maximization. Instead of choosing the maximum 𝑄value directly, DDQN uses the EvalNet to choose 𝑄 -values
+obtained from the TargetNet, that can alleviate the
+overestimation problem caused by maximization and thus
+decrease the overestimation errors.
+
+The objective of DRL is to maximize the cumulative reward,
+which is consistent with MDP, so DRL is suitable for solving
+complex and dynamic route planning problems in real traffic
+networks. In the discrete action space, the most used DRL
+algorithm is Deep Q-Network (DQN), which combines value
+function approximation with deep neural network (DNN) to
+learn the optimization goal. The DQN algorithm replaces the
+action-value evaluation table with a policy network:
+
+For vehicle agents, limited on-board resources will reduce
+the performance of DRL-based route planning methods, there
+are two problems: (1) In the actual route planning, the vehicle
+can receive multi-dimensional observations from the
+environment, but not all of these information contribute to the
+route decision-making. Under the limited on-board computing
+resources, the policy network not only needs to filter out useful
+information for route planning, but also needs to satisfy the
+demand of real-time response. (2) The neural network's output
+dimension is always fixed, but in the real traffic network, the
+optional action space of vehicle agents is dynamic at each
+junction, and some of the current studies fix the output
+dimension as four: forward, turn left, turn right and return, that
+is very inflexible. In addition, we only need to use the state
+features vector with the largest 𝑄-value when training the policy
+network, and the other useless state information will occupy a
+large portion of space in the vehicle's limited storage resources.
+
+(5)
+
+𝑄(𝑠, 𝑎) ≈ 𝑄(𝑠, 𝑎; 𝜃𝜋 ).
+
+When the vehicle needs to choose an action, it inputs all the
+traffic information into the neural network to obtain the stateaction value (𝑄-value) for different actions. Such information
+can be observed in the current state 𝑠. Then the vehicle can
+choose the next action s' with the highest 𝑄-value. During the
+driving process, the vehicle interacts with the environment
+continuously, receiving rewards 𝑟 for different actions, and all
+[𝑠, 𝑟, 𝑎, 𝑠′] are stored in the on-board storage resources for
+training the policy model:
+𝑄(𝑠, 𝑎) ← 𝑄(𝑠, 𝑎) + 𝛼 ⋅ [𝑟 + 𝛾 𝑚𝑎𝑥𝜋 𝑄(𝑠 ′ , 𝑎) − 𝑄(𝑠, 𝑎)]. (6)
+
+So, to address the above-mentioned problems, we will
+elaborate our optimization methods in the next section.
+
+The stream diagram of Nature-DQN (N-DQN) algorithm
+and Double-DQN (DDQN) is shown in Figure 2, the green
+stream is the environment interaction and experience storage
+part, the blue stream is the network training and update part, The
+difference between DDQN and N-DQN is that DDQN also
+needs to put 𝑠′ into the EvalNet to get the maximum 𝑄-values'
+action 𝑎, and then use 𝑎 to select the 𝑄-value obtained from
+TargetNet, that is,
+𝑇𝑎𝑟𝑔𝑒𝑡
+
+𝑦𝑡𝑁−𝐷𝑄𝑁 = 𝑅𝑡+1 + 𝛾 𝑚𝑎𝑥𝑎 𝑄𝑇𝑎𝑟𝑔𝑒𝑡 (𝑠𝑡+1 , 𝑎; 𝜃𝑡
+𝑦𝑡𝐷𝐷𝑄𝑁 = 𝑅𝑡+1 + 𝛾𝑄𝑇𝑎𝑟𝑔𝑒𝑡 (𝑠𝑡+1 ,
+
+III. PROPOSED SOLUTION
+The interaction process of proposed planning algorithm
+model based on DRL is shown in Figure 5. There are five
+elements that need to be designed carefully: the representation
+vector of environment information S, reward R, the action A, the
+agent π, and the training method. Each of them will be described
+in detail as follows:
+
+(7)
+
+)
+
+𝑇𝑎𝑟𝑔𝑒𝑡
+
+𝑎𝑟𝑔𝑚𝑎𝑥𝑎 𝑄𝐸𝑣𝑎𝑙 (𝑠𝑡+1 , 𝑎; 𝜃𝑡𝐸𝑣𝑎𝑙 ); 𝜃𝑡
+
+(1) STATE: It is assumed that the vehicle agent can not only
+obtain environment information from the static map in the
+planning process, but also through on-board sensors fusion
+technology and Vehicle to Network technology (V2N).
+Therefore, we choose the following multi-dimensional state
+features as real-time environmental representations in our
+method:
+
+)
+
+(8)
+which is shown in yellow stream.
+
+[𝑃𝑣 , 𝑃𝑑 , 𝑃𝑎 , 𝑁𝑙 , 𝐿, 𝐷, 𝑁𝑣 , 𝑉𝑎 , 𝑉𝑚 , 𝑁𝑜𝑢𝑡 , 𝑇𝑙 , . . . ],
+
+(9)
+
+where 𝑃𝑣 denotes the position of the vehicle, 𝑃𝑑 denotes the
+position of the destination, 𝑃𝑎 denotes the position of the action
+end-point, 𝑁𝑙 denotes the lanes number, 𝐿 denotes the action
+length, 𝐷 denotes the distance from the end of action to the
+destination, 𝑁𝑣 denotes the number of vehicles on the road, 𝑉𝑎
+denotes the average speed of all vehicles, 𝑉𝑚 denotes the road's
+maximum speed limit, 𝑁𝑜𝑢𝑡 denotes the number of outgoings
+and 𝑇𝑙 denotes the traffic lights at the junction. Except that, other
+information such as the vehicle's posture, pedestrian information,
+weather conditions, and accidents are not listed.
+Figure 2. Nature-DQN and DDQN flow diagram.
+
+The N-DQN algorithm tends to overestimate during training,
+which due to two reasons: bootstrap and maximization.
+Bootstrap can use the target network to alleviate the bias caused
+163
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:02 UTC from IEEE Xplore. Restrictions apply.
+
+calculated using three vectors < 𝑄𝑢𝑒𝑟𝑦, 𝐾𝑒𝑦, 𝑉𝑎𝑙𝑢𝑒 >. where
+𝑄𝑢𝑒𝑟𝑦 (𝑄) and 𝐾𝑒𝑦 (𝐾) are feature vectors used for computing
+the attention weights, 𝑉𝑎𝑙𝑢𝑒 (𝑉) is the source information. In
+the Attention mechanism, the attention score is obtained by
+calculating the similarity between 𝑄𝑢𝑒𝑟𝑦 and 𝐾𝑒𝑦 , and the
+attention result can be obtained by weighted sum of attention
+scores and 𝑉𝑎𝑙𝑢𝑒:
+𝐿
+
+𝑥
+𝐴𝑡𝑡𝑛(𝑄, 𝑆𝑜𝑢𝑟𝑐𝑒) = ∑𝑖=1
+𝑆 𝑖𝑚𝑖𝑙𝑎𝑟𝑖𝑡𝑦(𝑄, 𝐾𝑖 ) ∗ 𝑉𝑖 .
+
+(12)
+
+Figure 3. Reward mechanism.
+
+(2) REWARD: The appropriate reward mechanism can
+motivate the vehicle to choose the route that maximize the total
+return and avoid taking undesirable actions, and rewards directly
+affect the learning of the agent.
+The optimization goal of route planning algorithm is to
+minimize the vehicle's total travel time, so our reward
+mechanism is designed as the estimated remaining time for the
+vehicle to reach the action's end point, which is shown in Figure
+3,
+−(𝐷𝑟𝑒𝑚𝑎𝑖𝑛 /𝑉)
+on the way
+𝑅𝑠 = {
+,
+(10)
+0
+reach the end
+where 𝑉 is the current vehicle speed, 𝑉 = 1 if average speed is
+0. The negative sign indicates that the travel time of the vehicle
+is inversely related to the reward.
+
+Figure 5. Our improved DDQN flow diagram.
+
+(3) ACTION: In the planning problem, the action of the
+vehicle agent is to choose the next path at each junction. The
+action space in actual road networks for each junction is dynamic
+(Figure 4), and the vehicle agent can choose up to four actions:
+[move forward, turn left, turn right, return].
+
+(11)
+
+Figure 4. Dynamic action space in each vehicle.
+
+Figure 6. Attention Mechanism framework.
+
+(4) AGENT: We use the value function approximation
+method to obtain the optimal policy for the planning problem.
+So the design of the policy neural network for the vehicle agent
+is crucial. From the previous chapter, we know that the policy
+network has to filter the key information useful from the multidimensional feature information obtained from the environment,
+and these useful information have different contribution to the
+objective function, so unlike the commonly used fully connected
+neural networks, our approach uses the attention mechanism to
+design our policy neural network.
+
+So the essence of the Attention Mechanism is the same as
+that of equation (3.5). Using the Attention Mechanism in the
+policy network can help the vehicle agent to filter the
+information from the multi-dimensional feature information
+efficiently, and give different weights to different information.
+With the limited on-board computing resources of the vehicle,
+the attention can improve the decision-making ability and
+efficiency of the policy network, make it better adapted to
+different complex environments and tasks.
+The Scaled dot-product Attention model is used to design our
+policy network. 𝑉𝑎𝑙𝑢𝑒 and 𝐾𝑒𝑦 are usually the same, and our
+optimization objective is to minimize total travel time, so when
+calculating the similarity weight, we set the 𝑄𝑢𝑒𝑟𝑦 to be the
+estimated time of the action the agent takes plus the remaining
+arrival time after taking the action:
+
+The Attention Mechanism was first proposed in the field of
+NLP [12], which is similar to the human's selective visual
+attention mechanism, its core objective is to select the
+information that is more critical to the current task from a large
+amount of information. The framework of the Attention
+Mechanism is shown in Figure 6, where the results are mainly
+164
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:02 UTC from IEEE Xplore. Restrictions apply.
+
+𝑄𝑢𝑒𝑟𝑦 = −[𝑇𝑎 + (𝐷𝑟𝑒𝑚𝑎𝑖𝑛 /𝑉)].
+
+map with random traffic flows to simulate realistic traffic
+conditions, which is shown in Figure 8. The simulation map is
+generated by osmWebWizard.py and the random traffic flow is
+generated by randomTrips.py, both of which are in the SUMO
+tools.
+
+(13)
+
+(5) TRAINING: Since the dimension of a neural network is
+fixed, DRL based route planning algorithm commonly fix the
+output dimension to 4, which is the maximum number of actions
+that a vehicle agent can take. In this case, the state information
+fed by the environment will be a list consisting of the features
+with all actions (Figure 7.(a)):
+
+The training hyper-parameters of proposed algorithm are
+shown in Table 1. The Scaled dot-product Attention is designed
+as our policy network framework. To demonstrate the impact of
+different environment information on the policy results, we
+select 10 features as state representations, and design a
+benchmark method which used a fully connected neural network
+as the policy network to demonstrate the performance of the
+proposed method.
+
+1
+𝑆 = [𝑃𝑣 , 𝑃𝑑 , 𝑃𝑎1 , 𝑁𝑙1 , 𝐿1 , 𝐷1 , 𝑁𝑣1 , 𝑉𝑎1 , 𝑉𝑚1 , 𝑁𝑜𝑢𝑡
+, 𝑇𝑙1 , . . .
+2 2
+2
+2
+2
+2
+2
+2
+2
+𝑃𝑎 , 𝑁𝑙 , 𝐿 , 𝐷 , 𝑁𝑣 , 𝑉𝑎 , 𝑉𝑚 , 𝑁𝑜𝑢𝑡 , 𝑇𝑙 , . . .
+3
+𝑃𝑎3 , 𝑁𝑙3 , 𝐿3 , 𝐷3 , 𝑁𝑣3 , 𝑉𝑎3 , 𝑉𝑚3 , 𝑁𝑜𝑢𝑡
+, 𝑇𝑙3 , . . .
+4 4
+4
+4
+4
+4
+4
+4
+𝑃𝑎 , 𝑁𝑙 , 𝐿 , 𝐷 , 𝑁𝑣 , 𝑉𝑎 , 𝑉𝑚 , 𝑁𝑜𝑢𝑡 , 𝑇𝑙4 , . . . ].
+(14)
+
+Figure 7. 𝑄-value getting methods.
+Figure 8. Simulation city map.
+
+When the junction has less than four outgoings, some
+defaults also need to be set for non-exist actions, and we cannot
+evaluate how the setting of these defaults affects the policy
+network. In addition, to avoid the impact of high-dimensional
+state information and defaults on agent's decision making and
+storage, we use 𝑆 + 𝐴 as input information into the policy
+network and get the 𝑄-value to each action separately (Figure
+7.(b)), which makes our policy network more flexible. Futher
+more, we use the idea of DDQN to alleviate the overestimation
+problem caused by maximization, which not only reduces the
+overestimation errors, but also saves empirical storage space and
+avoids storing unnecessary information. Our algorithm for
+training vehicle agent is shown as Figure 5. The yellow stream
+shows that when the environment feedback the next state
+1
+2
+information, we first put St+1 = [st+1
+, st+2
+, … ] into the policy
+𝑗
+network to obtain 𝑠𝑡+1 that maximizes 𝑞𝑒 , and then store it in the
+memory library. During training, a batch of St+1 are randomly
+selected and fed into the target network to obtain 𝑞𝑡 , and the loss
+is calculated with 𝑞𝑒 to update the policy network. In the next
+section, we conduct extensive simulations to verify the
+feasibility and effectiveness of the proposed method.
+
+Table 1 Hyper-parameters for Training
+Parameter
+
+Value
+
+Episodes
+
+8000
+
+Adam optimizer learning rate
+
+0.001
+
+Exploration rate
+
+0.9→0.01
+
+Replay memory size
+
+3000
+
+Target network update frequency
+
+5
+
+Discount factor
+
+0.99
+
+Mini-batch for update
+
+8
+
+B. Results and Analysis
+Figure 9 shows the model training convergence curves of the
+proposed optimization method and the benchmark methods in
+the simulation map, where the environment state features are
+normalized in the benchmark methods. In the early training
+stages, the average travel time of our method is less than the
+benchmark methods, and in the late training stages, our method
+converges faster compared to the FNN method with the same
+number of neurons, which is credited to the design of the
+Attention Mechanism in the policy network that allows the
+vehicle agent to focus on the valid information faster. The results
+demonstrate the effectiveness of our method with limited
+computing resources.
+
+IV. SIMULATION RESULTS
+A. Simulations Setup
+We design comparative experiments on SUMO to verify the
+effectiveness of the proposed method. SUMO [13] is an open
+source traffic simulation suite, which allows modeling of
+intermodal traffic systems. Our optimization objective is to
+reduce the vehicle point-to-point travel time as much as possible
+with limited on-board computing and storage resources in the
+complex traffic network, so in our experiment, we use a real city
+165
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:02 UTC from IEEE Xplore. Restrictions apply.
+
+Table II The Average Travel Time of Different Planning Algorithms
+Method
+
+FNN-32
+
+FNN-100
+
+Ours-32
+
+𝑇𝑚𝑒𝑎𝑛
+
+151.3
+
+136.2
+
+138.6
+
+V. CONCLUSIONS
+In this paper, we propose a computing resource optimization
+scheme to reduce model complexity by using attention
+mechanism in policy network design and a storage resource
+optimization scheme by using improved DDQN during the
+vehicle agent training process. Simulation results demonstrate
+that the proposed method enables the model to effectively
+discard useless environment state information and focus on
+information that is useful for the optimization goal. In
+conclusion, our research enhances the application and
+deployment of DRL-based route planning solutions in realworld on-board navigation systems.
+Figure 9. Model training curves
+
+ACKNOWLEDGMENT
+This work was supported in part by the National Science
+Foundation of China (NSFC) with grant no. 61901534 and
+62271514, in part by the Guangdong Basic and Applied Basic
+Research Foundation under Key Project 2019B1515120032, in
+part by the Science, Technology and Innovation Commission of
+Shenzhen
+Municipality
+with
+grant
+no.
+JCYJ20210324120002007, JCYJ20190807155617099, and
+ZDSYS20210623091807023.
+
+We sum up the attention scores for each feature separately,
+and take the logarithm to obtain Figure 10, which visualizes the
+contribution of different environment features to the planning
+task. It can be found that for the route planning problem, the
+vehicle agent will pay more attention to whether there is a traffic
+light at the junction, the number of vehicles on the path, the
+remaining distance to the destination and the location
+information when making decisions and does not pay much
+attention to the speed information and outgoing information of
+the path, which is similar to the human attention mechanism.
+Therefore, with the limited computing resources, the planning
+algorithm can use the attention mechanism to discard some
+information with small contribution exchanging for the real-time
+response requirement.
+
+REFERENCES
+[1]
+
+[2]
+
+[3]
+
+[4]
+
+[5]
+
+[6]
+Figure 10. Sum attention score of each state feature.
+
+Table II shows the average travel time of proposed method
+and benchmark methods (average travel time of 5000 − 8000
+episodes). Compared to the FNN with 100 Neurous per layer,
+our optimization method can reduce the number of neural
+network parameters by about 68% for similar travel times,
+making it more suitable for use in route planning navigation
+systems with limited on-board resources.
+
+[7]
+
+[8]
+
+[9]
+
+D González, J Pérez, V Milanés, et al. A Review of Motion Planning
+Techniques for Automated Vehicles[J]. IEEE Transactions on Intelligent
+Transportation Systems, 2016, 17(4):1135-1145
+J. Liu, X. Mao, Y. Fang, D. Zhu and M. Q. . -H. Meng, "A Survey on
+Deep-Learning Approaches for Vehicle Trajectory Prediction in
+Autonomous Driving," 2021 IEEE International Conference on Robotics
+and Biomimetics (ROBIO), Sanya, China, 2021, pp. 978-985
+K. Muhammad, A. Ullah, J. Lloret, J. D. Ser and V. H. C. de Albuquerque,
+"Deep Learning for Safe Autonomous Driving: Current Challenges and
+Future Directions," in IEEE Transactions on Intelligent Transportation
+Systems, vol. 22, no. 7, pp. 4316-4336, July 2021
+A. Prakash, K. Chitta and A. Geiger, "Multi-Modal Fusion Transformer
+for End-to-End Autonomous Driving," 2021 IEEE/CVF Conference on
+Computer Vision and Pattern Recognition (CVPR), Nashville, TN, USA,
+2021, pp. 7073-7083
+K. Chitta, A. Prakash, B. Jaeger, Z. Yu, K. Renz and A. Geiger,
+"TransFuser: Imitation with Transformer-Based Sensor Fusion for
+Autonomous Driving," in IEEE Transactions on Pattern Analysis and
+Machine Intelligence, 2022
+K. Chitta, A. Prakash and A. Geiger, "NEAT: Neural Attention Fields for
+End-to-End Autonomous Driving," 2021 IEEE/CVF International
+Conference on Computer Vision (ICCV), Montreal, QC, Canada, 2021,
+pp. 15773-15783
+L. L. Li et al., "End-to-end Contextual Perception and Prediction with
+Interaction Transformer," 2020 IEEE/RSJ International Conference on
+Intelligent Robots and Systems (IROS), Las Vegas, NV, USA, 2020, pp.
+5784-5791
+Avik Santra; Souvik Hazra; Lorenzo Servadei; Thomas Stadelmayer;
+Michael Stephan; Anand Dubey, "Deep Reinforcement Learning," in
+Methods and Techniques in Deep Learning: Advancements in mmWave
+Radar Solutions , IEEE, 2023
+B. R. Kiran et al., "Deep Reinforcement Learning for Autonomous
+Driving: A Survey," in IEEE Transactions on Intelligent Transportation
+Systems, vol. 23, no. 6, pp. 4909-4926, June 2022
+
+166
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:02 UTC from IEEE Xplore. Restrictions apply.
+
+[10] P. Chen, J. Pei, W. Lu, and M. Li, “A deep reinforcement learning based
+method for real-time path planning and dynamic obstacle avoidance,”
+Neurocomputing, vol. 497, pp. 64–75, 2022.
+[11] S. Koh, B. Zhou, H. Fang, P. Yang, Z. Yang, Q. Yang, L. Guan, and Z.
+Ji, “Real-time deep reinforcement learning based vehicle navigation,”
+Applied Soft Computing, vol. 96, p. 106694, 2020.
+
+[12] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez,
+Ł. Kaiser, and I. Polosukhin, “Attention is all you need,” Advances in
+neural information processing systems, vol. 30, 2017
+[13] P. A. Lopez, M. Behrisch, L. Bieker-Walz, J. Erdmann, and E. Wiener,
+“Microscopic traffic simulation using sumo,” in The 21st IEEE
+International Conference on Intelligent Transportation Systems, 2018
+
+167
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 04,2026 at 00:32:02 UTC from IEEE Xplore. Restrictions apply.
+
+

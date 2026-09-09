@@ -1,0 +1,5 @@
+{"seed": 1, "variant": "old", "n_eval": 200, "distinct": 119, "cells": {"closed_time_min": 96.0, "closed_aligned": 100.0, "open_time_min": 0.0, "open_aligned": 61.5}}
+{"seed": 3, "variant": "old", "n_eval": 200, "distinct": 119, "cells": {"closed_time_min": 84.0, "closed_aligned": 100.0, "open_time_min": 0.0, "open_aligned": 86.5}}
+{"seed": 4, "variant": "old", "n_eval": 200, "distinct": 119, "cells": {"closed_time_min": 92.5, "closed_aligned": 100.0, "open_time_min": 0.0, "open_aligned": 44.5}}
+{"seed": 0, "variant": "old", "n_eval": 200, "distinct": 119, "cells": {"closed_time_min": 78.0, "closed_aligned": 99.5, "open_time_min": 0.0, "open_aligned": 39.0}}
+{"seed": 2, "variant": "old", "n_eval": 200, "distinct": 119, "cells": {"closed_time_min": 40.0, "closed_aligned": 100.0, "open_time_min": 0.0, "open_aligned": 67.5}}

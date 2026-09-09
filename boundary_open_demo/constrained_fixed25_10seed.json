@@ -1,0 +1,94 @@
+{
+  "C1": {
+    "boundary": "open",
+    "learner": "dqn",
+    "seeds": 10,
+    "completion_mean": 0.0,
+    "completion_sd": 0.0,
+    "lambda_mean": 25.0,
+    "lambda_max_seen": 25.0,
+    "saturated": false,
+    "per_seed_completion": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "per_seed_lambda": [
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0
+    ]
+  },
+  "C2": {
+    "boundary": "open",
+    "learner": "ppo",
+    "seeds": 10,
+    "completion_mean": 1.45,
+    "completion_sd": 0.687386354243376,
+    "lambda_mean": 25.0,
+    "lambda_max_seen": 25.0,
+    "saturated": false,
+    "per_seed_completion": [
+      0.5,
+      2.5,
+      1.0,
+      0.5,
+      1.5,
+      2.0,
+      1.5,
+      1.5,
+      1.0,
+      2.5
+    ],
+    "per_seed_lambda": [
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0
+    ]
+  },
+  "C3": {
+    "boundary": "closed",
+    "learner": "dqn",
+    "seeds": 5,
+    "completion_mean": 99.7,
+    "completion_sd": 0.4,
+    "lambda_mean": 25.0,
+    "lambda_max_seen": 25.0,
+    "saturated": false,
+    "per_seed_completion": [
+      100.0,
+      100.0,
+      100.0,
+      99.5,
+      99.0
+    ],
+    "per_seed_lambda": [
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0
+    ]
+  }
+}

@@ -1,0 +1,1198 @@
+VEGA: Electric Vehicle Navigation Agent via Physics-Informed Neural
+Operator and Proximal Policy Optimization
+
+arXiv:2509.13386v2 [cs.RO] 6 Mar 2026
+
+Hansol Lim, Minhyeok Im, Jonathan Boyack, Jee Won Lee, and Jongseong Brad Choi
+Abstract— We present VEGA, a vehicle-adaptive energyaware routing system for electric vehicles (EVs) that integrates
+physics-informed parameter estimation with RL-based chargeaware path planning. VEGA consists of two coupled modules:
+(1) a physics-informed neural operator (PINO) that estimates
+vehicle-specific physical parameters—drag, rolling resistance,
+mass, motor and regenerative-braking efficiencies, and auxiliary
+load—from short windows of onboard speed and acceleration
+data; (2) a Proximal Policy Optimization (PPO) agent that
+navigates a charger-annotated road graph, jointly selecting
+routes and charging stops under state-of-charge constraints.
+The agent is initialized via behavior cloning from an A* teacher
+and fine-tuned with curriculum-guided PPO on the full U.S.
+highway network with Tesla Supercharger locations. On a crosscountry San Francisco–to–New York route (∼4,860 km), VEGA
+produces a feasible 20-stop plan with 56.12 h total trip time
+and minimum SoC 11.41%. Against the controlled Energyaware A* baseline, the distance and driving-time gaps are small
+(−8.49 km and +0.37 h), while inference is >20× faster. The
+learned policy generalizes without retraining to road networks
+in France and Japan.
+
+Fig. 1. VEGA overview. A PINO estimates vehicle-specific parameters
+from speed and acceleration logs, and a PPO planner uses the resulting
+physics-based energy model to make charge-aware routing decisions on a
+charger-annotated road graph.
+
+I. INTRODUCTION
+Electric vehicles (EVs) are increasingly equipped with
+powerful onboard computers, advancing the vision of
+software-defined vehicles [1]. This capability enables onboard AI systems to optimize charge-aware path planning
+in real time, tailored to each vehicle’s current condition
+and operating environment. However, accurate per-vehicle
+energy prediction remains challenging: battery degradation,
+tire wear, payload variations, and environmental factors cause
+consumption to drift from factory specifications [2]. Most
+navigation systems rely on static models with fixed parameters, leading to range anxiety, suboptimal charging stops,
+and unplanned detours [3].
+We present VEGA (EV Energy-aware Guidance Agent),
+an end-to-end system that integrates vehicle-adaptive energy
+modeling with scalable charge-aware route planning on real
+road networks. Fig. 1 summarizes the end-to-end data flow.
+VEGA addresses two coupled challenges simultaneously:
+1) Vehicle-adaptive energy inference: A physics-informed
+neural operator (PINO) [4] estimates per-vehicle physical
+Hansol Lim, Jonathan Boyack, Jee Won Lee, and Jongseong
+Brad Choi are with the Department of Mechanical Engineering,
+State University of New York, Stony Brook, NY 11794, USA (email: hansol.lim@stonybrook.edu; jonathan.boyack@stonybrook.edu; jeewon.lee@stonybrook.edu; jongseong.choi@stonybrook.edu). Minhyeok Im
+is with the Department of Computer Science, State University of New York,
+Stony Brook, NY 11794, USA (e-mail: minhyeok.im@stonybrook.edu).
+This work supported by the National Research Foundation of Korea
+(NRF) grant funded by the Korea government (MSIT) (No. RS-2022NR067080 and RS-2025-05515607). (Corresponding author: Jongseong
+Brad Choi).
+
+parameters—aerodynamic drag, rolling resistance, mass,
+motor and regenerative-braking efficiencies, and auxiliary load—from short windows of onboard speed and
+acceleration logs. These parameters feed a physics-based
+power model, providing accurate, personalized energy
+consumption estimates without additional sensors.
+2) Charge-aware route planning: A reinforcement learning
+(RL) agent, trained via Proximal Policy Optimization
+(PPO) [5], navigates a charger-annotated road graph.
+The agent jointly selects road segments and charging
+stops while respecting state-of-charge (SoC) constraints,
+yielding fast planning decisions at inference time.
+What VEGA adds beyond existing tools. Classical shortestpath planners (e.g., Dijkstra, A*) can incorporate energy
+costs but scale poorly when SoC constraints require statespace expansion [3]. Commercial planners (e.g., Tesla Trip
+Planner) use proprietary models inaccessible for customization or research. Data-driven routing methods [6], [7] demonstrate promise on combinatorial problems but typically ignore vehicle-specific energy dynamics. VEGA uniquely couples (i) a physics-informed per-vehicle parameter inference
+module with (ii) a learned charge-aware routing policy on
+real continental-scale road graphs. At inference, the policy
+evaluates a fixed-size action set at each decision step instead
+of running a full online graph search.
+Contributions.
+1) A systems integration of a physics-informed model for
+EV parameter estimation with a PPO-based charge-aware
+
+routing agent, requiring only onboard speed logs from
+OBD-II data.
+2) Application to real-world Tesla Model 3 Long Range
+driving data on the full U.S. road graph with Tesla
+Supercharger locations, demonstrating feasibility on
+continental-scale networks.
+3) Integration of complementary RL techniques—behavior
+cloning from an Energy-aware A* teacher, on-policy
+PPO fine-tuning, and curriculum learning—for scalable
+charge-aware routing on large real-road graphs.
+II. RELATED WORK
+EV energy estimation. Physics-based longitudinal models [8] are interpretable but degrade when vehicle parameters
+drift (aging, payload, tire wear). Data-driven models [2] can
+adapt from logs but often sacrifice physical consistency.
+Physics-informed models (PINNs/operators) [9], [10], [4],
+[11] combine both; VEGA uses this line for vehicle-specific
+parameter adaptation before routing.
+EV routing and charging. Classical shortest-path methods
+(Dijkstra, A* [12]) are efficient for static single-criterion
+routing, but adding SoC and charging decisions expands
+the state space and increases search cost [3]. E-VRP formulations [13], [14] model nonlinear charging and battery
+feasibility, typically under fixed energy parameters.
+Learning-based routing. Deep RL and neural combinatorial
+optimization [6], [7], [15], [16], [17], [18], [19] provide
+scalable routing heuristics, but most studies do not couple
+policy learning with per-vehicle energy adaptation on real
+continental-scale graphs. VEGA integrates both: PINO-based
+energy adaptation and learned charge-aware routing on real
+road networks.
+III. PROBLEM FORMULATION
+We formalize the charge-aware EV routing problem on a
+real road network.
+A. Road Network and Charger Graph
+Let G = (V, E) be a directed road graph extracted from
+OpenStreetMap, where each node v ∈ V stores a geographic
+coordinate and each edge (i, j) ∈ E carries length dij
+(km) and speed limit v̄ij (km/h). A subset C ⊂ V marks
+charging stations (Tesla Superchargers in our experiments).
+Each charger provides a nonlinear charging-time function
+Tchg (b1 → b2 ) in minutes, described in Sec. IV-B.
+B. Objective
+Given a start node s ∈ V, a goal node g ∈ V, an initial
+SoC b0 ∈ [0, 100]%, and usable battery capacity B (kWh),
+we optimize over a decision sequence a0:T −1 . Each decision
+is either a move to an outgoing neighbor or a charge action:
+at ∈ N (vt ) ∪ {achg }.
+
+(1)
+
+The objective is to minimize total trip time until the goal is
+reached:
+T
+−1
+X
+min
+∆tt
+(2)
+a0:T −1
+
+t=0
+
+subject to v0 = s, vT = g, and the stepwise dynamics
+(
+j, at = j ∈ N (vt ),
+vt+1 =
+vt , at = achg ,
+(
+(3)
+bt − 100 Evt j /B,
+at = j ∈ N (vt ),
+bt+1 =
+min(bmax , bt + ∆bchg ), at = achg , vt ∈ C.
+with per-step elapsed time
+(
+dvt j /v̄vt j ,
+∆tt =
+Tchg (bt → bt+1 )/60,
+
+at = j ∈ N (vt ),
+at = achg .
+
+(4)
+
+The only hard SoC floor is bmin = 0%:
+bt ≥ bmin
+
+∀ t ∈ {0, . . . , T },
+
+(5)
+
+bt ≤ bmax
+
+after each charge action,
+
+(6)
+
+where bmax =80% is the charging cap used throughout the
+paper. The 15% reserve used in the reward is a soft penalty
+threshold, not an additional hard constraint.
+C. Inputs and Assumptions
+•
+
+•
+
+•
+
+Training inputs: Vehicle speed and acceleration logs from
+OBD-II; corresponding battery power measurements; road
+network from OSM; charger locations.
+Inference inputs: Recent speed/acceleration window (∼15
+min) for PINO parameter estimation; start/goal nodes;
+current SoC.
+Simplifying assumptions: (i) Flat terrain (no road grade);
+(ii) Cruising at posted speed limits (no traffic); (iii) No
+charger queueing delays; (iv) Charging curve from reference data. These are discussed in Sec. V-H.
+
+D. Notation
+Table I lists the most frequently used symbols; equationspecific symbols are defined locally at first use.
+IV. METHODOLOGY
+VEGA consists of two coupled modules (Fig. 2): (i) a
+PINO-based parameter estimator that infers vehicle-specific
+physical constants from speed and acceleration logs, and
+(ii) a PPO-trained routing agent that plans charge-aware paths
+on a real road graph using the estimated parameters.
+A. PINO-Based Vehicle Parameter Estimation
+We employ a physics-informed neural operator (PINO) [4]
+to map a short window of driving data to vehicle-specific
+parameters. Let Φψ denote the neural operator parameterized
+by weights ψ. Given a history window H of speed v and
+acceleration a measurements (approximately 15 minutes of
+OBD-II data at 10 Hz), the operator infers six parameters:
+Φψ : H(v, a) 7→ (Cd , Crr , m, Paux , η, µ).
+
+(7)
+
+The instantaneous battery power is modeled as:
+Pbat (t) =
+
+1
+[Pm (t)]+ − µ [−Pm (t)]+ + Paux ,
+η
+
+(8)
+
+where [x]+ = max(x, 0), Pbat > 0 denotes battery discharge, and Pbat < 0 denotes net charging. We use the
+
+TABLE I
+N OTATION S UMMARY
+Symbol
+
+Description
+
+Unit
+
+Road graph
+G=(V, E)
+dij , v̄ij
+C⊂V
+
+Directed road graph
+Edge length; speed limit
+Set of charging stations
+
+–
+km; km/h
+–
+
+Vehicle parameters (inferred by PINO)
+Φψ
+PINO estimator with weights ψ
+ψ
+PINO network weights
+Cd
+Aerodynamic drag coefficient
+Crr
+Rolling resistance coefficient
+m
+Vehicle mass
+A
+Frontal area
+Paux
+Auxiliary power (HVAC, etc.)
+η
+Motor/drivetrain efficiency
+µ
+Regenerative braking efficiency
+
+–
+–
+–
+–
+kg
+m2
+W
+–
+–
+
+Energy and battery
+Pbat (t)
+Instantaneous battery power
+P̄seg (v)
+Segment-level battery power
+Eij
+Energy consumed on edge (i, j)
+B
+Usable battery capacity
+bt
+State-of-charge at step t
+bmin , bmax
+SoC lower bound and charging cap
+∆bchg
+SoC gain per charge action (set to 5)
+Tchg (b1 → b2 )
+Charging time from SoC b1 to b2
+
+W
+W
+kWh
+kWh
+%
+%
+%
+min
+
+RL agent
+xt
+at
+achg
+rt
+πθ
+Nmax
+
+–
+–
+–
+–
+–
+steps
+
+Observation vector (∈ R26 )
+Action at step t
+Dedicated charge action index (= 8)
+Reward at step t
+PPO policy with parameters θ
+Maximum episode length
+
+Physical constants
+ρ
+Air density
+g
+Gravitational acceleration
+
+kg/m3
+m/s2
+
+Fig. 2. VEGA system architecture. A PINO module estimates vehiclespecific physical parameters from OBD-II speed and acceleration logs.
+These parameters feed a physics-based energy model that the PPO routing
+agent uses to plan charge-aware paths on a real road graph.
+
+The operator is trained with a hybrid loss:
+LPINO (ψ) =
+
+sign convention Pm > 0 for traction and Pm < 0 for
+braking/regen. Here η ∈ (0, 1] is drivetrain efficiency for
+traction power conversion, and µ ∈ [0, 1] is the effective
+regenerative recovery factor. The mechanical power on flat
+road is:
+
+Pm (t) = 12 ρACd v(t)3 + Crr mg v(t) + m a(t) v(t). (9)
+
+N
+1 X (i)
+(i)
+∥P − Ppred ∥2F
+N i=1 data
+N
+1 X (i) 2
++ λbuf
+∥P ∥ + Lreg ,
+N i=1 res F
+
+(10)
+
+where N is the mini-batch size, ∥·∥F is the Frobenius norm,
+(i)
+(i)
+Pdata and Ppred are measured and predicted battery-power
+sequences for sample i, λbuf weights the physics residual
+(i)
+term, Pres is the residual from evaluating (8)–(9), and Lreg
+includes smoothness and parameter-range priors (see [4] for
+details).
+B. Segment Energy and Charging Model
+
+The first term captures aerodynamic drag, the second rolling
+resistance, and the third inertial force. The grade power
+term (mgv sin α) is omitted under our flat-terrain assumption
+(Sec. III-C). We fix ρ = 1.225 kg/m3 and g = 9.81 m/s2
+throughout. The frontal area A is treated as a fixed vehiclegeometry constant, while PINO adapts Cd so the drag term
+ACd remains vehicle-specific. The battery capacity B used
+in SoC updates is the usable capacity (75.0 kWh for the Tesla
+Model 3 Long Range in Sec. V-A).
+
+For route planning, we compute energy consumption per
+road segment under a constant-speed approximation. All
+physics computations use SI units (m, s, W): road-graph
+attributes stored as km and km/h are converted to m and
+m/s before evaluating (11)–(12). Between nodes i and j
+with speed limit v̄ij and segment time ∆tij = dij /v̄ij , the
+segment-level battery power is:
+P̄seg (v̄ij ) =
+
+1
+η
+
+1
+2 ρACd
+
+
+3
+v̄ij
++ Crr mg v̄ij + Paux .
+
+(11)
+
+TABLE II
+O BSERVATION S PACE (xt ∈ R26 )
+
+Note that (11) is a simplified version of (8): it drops
+the acceleration term (constant speed) and the regenerative
+braking term (no deceleration within a segment), so routelevel energy estimates remain conservative in this simplified
+model. The segment energy consumption is then:
+
+Feature
+
+P̄seg (v̄ijSI ) ∆tijSI
+,
+(12)
+Eij =
+3.6 × 106
+where Eij is in kWh.
+SoC update. Given battery capacity B and SoC bt ∈
+[0, 100]%, traversing edge (i, j) yields:
+Eij
+.
+B
+Charging at a station node vt ∈ C updates:
+bt+1 = bt − 100
+
+bt+1 = min(bmax , bt + ∆bchg ) ,
+
+∆bchg = 5.
+
+(13)
+
+Tcum (b) = w⊤ β(b),
+Tchg (b1 → b2 ) = Tcum (b2 ) − Tcum (b1 ).
+
+(15)
+
+Here Tcum and Tchg are measured in minutes; we divide by 60
+whenever charging time is added to trip time or search cost.
+For each discrete charge action, the elapsed charging time
+is ∆tchg
+= Tchg (bt → bt+1 )/60, where bt+1 follows (14).
+t
+With the fitted coefficients reported in Sec. V-A, this gives
+Tchg (20 → 80) ≈ 32.4 min and Tchg (80 → 100) ≈ 33.6 min.
+C. Charge-Aware Routing as an MDP
+We formulate the routing problem as a Markov Decision
+Process (MDP) (S, A, P, R, γ) on graph G.
+Observation space. At each step t, the agent observes state
+xt ∈ R26 , decomposed into a core state and operational
+context. Table II provides the complete specification.
+The embedding ϕ(·) is graph-independent because it
+uses normalized coordinates rather than graph-specific node
+indices (Sec. V-F). For node v with latitude/longitude
+
+1
+lat
+lon
+lon
+, where ℓ̂lat
+(ℓlat
+v =
+v , ℓv ), we define ϕ(v) = 2 ℓ̂v + ℓ̂v
+lat
+ℓlat
+v −ℓmin
+lat
+ℓlat
+−ℓ
+max
+min
+
+ℓlon −ℓlon
+
+Operational context (15 features)
+Dist. to nearest charger dchg
+t (km)
+Charge steps remaining Remaining 5% steps to bmax
+qt
+Neighbor distances
+d(uk , g) for k=1. . .8
+Curriculum stage s
+Current difficulty level
+Neighbor count
+|N (vt )|
+Episode progress
+t/Nmax
+Start SoC reference
+bstart at charge session
+SoC margin buffer
+bt − 15 (clipped at 0)
+
+(14)
+
+Here bmax = 80% follows Sec. III. Eq. (14) is applied only
+when the agent selects the charge action (at =achg ) at a
+charger node (vt ∈ C). The environment masks the charge
+action when bt ≥ bmax (equivalently, it sets qt =0).
+Nonlinear charging time. Charging time is nonlinear: charging from 20% to 80% takes roughly the same time as 80% to
+100% (Fig. 3). We approximate the cumulative charging-time
+curve in Fig. 3 with a 5th-order polynomial. Define the SoC
+feature vector β(b) = [b, b2 , b3 , b4 , b5 ]⊤ and cumulative
+charge-time model
+
+v
+min
+and ℓ̂lon
+lon , with bounds taken from the
+v = ℓlon
+max −ℓmin
+active road graph. We define the remaining Table II terms
+as:
+D0 = Dt=0 ,
+
+t = 0,
+
+0,
+Pt−1
+Eavg (t) =
+=0 Eeτ
+(16)
+
+, t > 0,
+ Pτt−1
+d
+e
+τ
+τ =0
+
+
+max(0, bmax − bt )
+qt =
+.
+∆bchg
+
+Definition
+
+Core state (11 features)
+Current node
+Scalar coordinate embedding ϕ(vt )
+from latitude/longitude (normalized)
+Goal node
+Scalar coordinate embedding ϕ(g)
+from latitude/longitude (normalized)
+Distance-to-goal Dt
+Haversine distance (km)
+SoC bt
+Battery level (%)
+Charger availability
+c(vt ) ∈ {0, 1}
+Progress ratio
+1 − Dt /D0
+Step efficiency
+Eavg per km so far
+Battery danger: critical ⊮[bt < 15]
+Battery danger: low
+⊮[15 ≤ bt < 25]
+Near-goal flag
+⊮[Dt < Dthresh ]
+Near-charger flag
+⊮[dchg
+t < dchg,thresh ]
+
+Type Dim
+Cont.
+
+1
+
+Cont.
+
+1
+
+Cont.
+Cont.
+Bin.
+Cont.
+Cont.
+Bin.
+Bin.
+Bin.
+Bin.
+
+1
+1
+1
+1
+1
+1
+1
+1
+1
+
+Cont.
+Cont.
+
+1
+1
+
+Cont.
+Cont.
+Cont.
+Cont.
+Cont.
+Cont.
+
+8
+1
+1
+1
+1
+1
+
+Cont. = continuous, Bin. = binary.
+
+Here D0 is the initial start-goal haversine distance, eτ
+denotes the traversed edge at step τ , Eavg is in kWh/km,
+and qt = 0 if and only if bt ≥ bmax . We use fixed thresholds
+Dthresh =5 km and dchg,thresh =3 km across all experiments (not
+tuned per route).
+Action space. The agent selects from K+1 = 9 discrete
+actions. At each node vt with neighbors N (vt ), we preselect
+K=8 candidate edges ranked by proximity to the goal
+(haversine distance from neighbor to g). If |N (vt )| < K,
+remaining slots are padded with null actions that repeat the
+current node. The padded neighbor-distance features are set
+to Dt so the observation remains well-defined even when
+|N (vt )| < K. Action at ∈ {0, . . . , 7} selects the k-th ranked
+neighbor. Action at = achg = 8 triggers a charge action,
+valid only at supercharger nodes (c(vt )=1); the charge action
+is masked when vt ∈
+/ C or bt ≥ bmax . Each charge action
+applies the fixed 5% SoC increment in (14), and its duration
+is ∆tchg
+t = Tchg (bt → bt+1 )/60 from (15).
+Feasible action masking. We mask the charge action by
+charger availability and the 80% SoC cap. For move actions,
+we do not assume an additional hard mask by predicted postedge SoC; infeasibility is instead handled by SoC dynamics,
+low-SoC penalties, and episode termination when bt ≤ 0. An
+additional deployment-time feasibility mask could compute
+bnext
+= bt − 100Evt uk /B for each candidate neighbor and
+k
+suppress actions with bnext
+< 0.
+k
+Reward. The per-step reward combines four components:
+rt = rtbase + rtbat + rtchg + rtterm .
+•
+
+(17)
+
+rtbase : step penalty (−1) plus progress bonus for reducing
+distance to goal and a proximity incentive near the destination.
+
+rtbat : SoC safety penalty (large negative reward when bt <
+15%; moderate penalty for 15% ≤ bt < 25%); a decisionquality bonus for initiating charging when SoC is low and
+near a charger.
+chg
+• rt : penalty for invalid charging attempts; reward for
+initiating and completing charging sessions, scaled by
+urgency (lower starting SoC receives larger reward).
+term
+• rt
+: success bonus (+1000) when Dt < 5 km; batterydepletion penalty (bt ≤ 0); timeout penalty (t ≥ Nmax ).
+The reward coefficients were tuned via iterative experimentation. The agent is penalized when bt < 15% SoC, which
+corresponds to the buffer that accounts for modeling errors
+and real-world uncertainty (traffic, temperature, elevation).
+Termination. An episode terminates when Dt < 5 km
+(success), bt ≤ 0 (battery depletion), or t ≥ Nmax (timeout/truncation).
+•
+
+Algorithm 1 VEGA Training Pipeline
+Require: Road graph G, charger set C, PINO estimator Φψ , inferred params
+(Cd , Crr , m, Paux , η, µ)
+1: Phase A: Behavior Cloning
+2: for s = 1 to Sshort do
+3:
+Sample start/goal pair with distance ∼ Ds
+4:
+Run A* teacher with cost (18) → trajectory τ teach
+5:
+Store (st , ateach
+) pairs in Dteacher
+t
+6: end for
+7: Train πθ via LBC (21)
+8: Phase B: PPO Fine-tuning
+9: for curriculum stage s = 1 to 6 do
+10:
+for episode = 1 to Ms do
+11:
+Sample start/goal with distance ∼ Ds
+12:
+Rollout πθ autonomously → trajectory τ
+13:
+Compute rewards {rt }, advantages {Ât }
+14:
+Update θ via PPO clipped objective
+15:
+end for
+16: end for
+17: Expand to long routes Dexp ∈ {Ds , . . . , 3000} km
+
+D. Training: Behavior Cloning, PPO, and Curriculum
+Training proceeds in two phases, summarized in Algorithm 1.
+Phase A: Teacher pretraining. We pre-generate expert
+trajectories using a budgeted A* planner over the augmented
+search state z = (v, b), where v ∈ V and b is discretized
+in 5% SoC bins to match the charge-action granularity. The
+term budgeted refers to this explicit battery budget: successor
+states that would drive SoC below 0 are pruned during
+search. Move successors (i, b) → (j, b−100Eij /B) use edge
+cost
+cij = wt Tij + we Eij ,
+(18)
+where Tij = dij /v̄ij is travel time, Eij is edge energy
+from (12), and wt , we > 0 are fixed scalar weights. At
+charger nodes, the teacher also expands an explicit charge
+successor (i, b) → (i, min(bmax , b + ∆bchg )) with cost
+wt
+Tchg (b → min(bmax , b + ∆bchg )) .
+(19)
+cchg (b) =
+60
+The heuristic is:
+d(i, g)
+h(i) = wt
++ we Ẽ(i, g),
+(20)
+vmax
+where d(i, g) is haversine distance, vmax is the global speedlimit upper bound, and Ẽ(i, g) is the remaining-energy estimate obtained by evaluating (12) on a virtual edge of length
+d(i, g) at speed vmax . This heuristic is used as a consistent
+guide for efficient teacher rollouts; teacher optimality is not
+required because trajectories are used for behavior cloning
+pretraining.
+The policy πθ is initialized via behavior cloning on teacher
+trajectories over short routes:
+X
+LBC (θ) = −
+log πθ (a | s).
+(21)
+(s,a)∈Dteacher
+
+Here, Dteacher denotes the teacher-generated state-action
+dataset. In this work, we use Energy-aware A* as the
+teacher, but the behavior-cloning stage is planner-agnostic:
+VEGA can be retrained with trajectories from other teachers
+(e.g., Dijkstra or ant-colony optimization), after which PPO
+
+reinforces/adapts those strategies under the policy objective;
+systematic study of policy behavior under different or mixed
+teachers is future work.
+Phase B: PPO fine-tuning with curriculum. After pretraining, we fine-tune πθ using PPO [5] with generalized
+advantage estimation [20]. During PPO rollouts, the policy
+acts autonomously: no teacher actions override or replace the
+agent’s decisions, ensuring on-policy consistency. Training
+uses a short-to-long curriculum [21] with six distance stages:
+Ds ∈ {10, 25, 50, 100, 200, 300} km,
+
+s = 1, . . . , 6, (22)
+
+followed by expansion to long-distance routes up to 3000 km.
+The learning rate and batch size are annealed across stages.
+Here Sshort is the number of short-route behavior-cloning
+stages, Ms is the number of PPO episodes at curriculum
+stage s, and Dexp denotes expanded long-route distances.
+V. EXPERIMENTAL EVALUATION
+A. Environment and Data
+Road graph. We extract the U.S. highway network from
+OpenStreetMap, yielding a directed graph with ∼320,000
+nodes and ∼730,000 edges. Each edge encodes distance
+(km), speed limit (km/h), and geographic coordinates. We
+overlay 2,011 Tesla Supercharger locations as charger nodes
+(C).
+Vehicle data. Real-world driving logs are collected from
+a Tesla Model 3 Long Range with usable battery capacity
+B = 75.0 kWh via an OBD-II scanner (OBDLink MX+
+model) at 10 Hz, recording speed, acceleration, and battery
+power. Battery power is used during PINO training; online
+deployment uses speed/acceleration only for PINO updates
+and policy inference. A 15-minute driving window is sufficient for PINO parameter convergence (Fig. 4).
+Charging curve. We approximate the benchmark cumulative SoC-vs-time curve in Fig. 3 with the polynomial
+in Eq. (15). The fitted coefficients are w1 =5.123×10−1 ,
+w2 = − 1.889×10−2 , w3 =5.136×10−4 , w4 = − 5.500×10−6 ,
+and w5 =2.461×10−8 . These coefficients give Tchg (20 →
+
+Fig. 3. Nonlinear charging profile for the Tesla Model 3 Long Range.
+Charging from 80% to 100% SoC takes approximately as long as 20% to
+80%, motivating the 80% charging cap used by VEGA.
+
+80) ≈ 32.39 min and Tchg (80 → 100) ≈ 33.59 min, matching
+the curve shape used by the planner.
+Implementation. Training and runtime measurements ran
+on Ubuntu 24.04 LTS with an AMD Ryzen 9 9950X CPU
+and NVIDIA RTX 5090 (32 GB), using PyTorch 2.5.1 and
+CUDA 12.4. PPO hyperparameters: learning rate 3×10−4
+(annealed), discount γ=0.99, GAE λ=0.95, clip ratio ϵ=0.2,
+batch size 2048 (increased during curriculum).
+B. Baselines and Metrics
+We compare VEGA against:
+1) Tesla Trip Planner: The commercial reference system
+accessed through the Tesla vehicle interface. It uses
+proprietary models and live data (traffic, weather, charger
+availability).
+2) Energy-aware A*: Our budgeted A* teacher (Sec. IVD) run with full SoC tracking on the same road graph
+and PINO-based segment energy model. It is a searchbased reference minimizing the time-energy edge cost in
+Eq. (18); VEGA instead optimizes PPO return in Eq. (17),
+so their objectives are related but not identical.
+3) Shortest-time Dijkstra + greedy charging: Dijkstra’s
+algorithm minimizing travel time only, combined with a
+reactive charging heuristic—when SoC drops below 20%,
+detour to the nearest reachable charger and charge to 80%.
+Tesla comparison is a real-world reference, not a strict direct
+benchmark, because Tesla uses proprietary energy models
+and live context. Our primary quantitative comparisons are
+the two open baselines (E-A* and Dijkstra+Greedy) under
+identical simplified assumptions (flat-terrain segment model
+with haversine distance and speed-limit attributes, no altitude term). We do not include Google Maps as a baseline
+because Google Maps do not provide a charger-aware path
+optimization.
+C. PINO Validation
+Table III shows the parameters estimated by PINO from
+15 minutes of Tesla Model 3 driving data compared to
+factory reference specifications.
+
+Fig. 4.
+Convergence of PINO-estimated parameters over a 15-minute
+driving window. Estimates stabilize within approximately 10 minutes across
+multiple trials, demonstrating reliable real-time parameter inference.
+TABLE III
+PINO-E STIMATED VS . FACTORY R EFERENCE PARAMETERS
+η
+
+µ
+
+Factory ref.
+–
+–
+PINO estimate 0.830 0.741
+
+m (kg)
+1,844
+1,977
+
+Crr
+
+Cd
+
+0.00960 0.23
+0.00946 0.235
+
+Paux (W)
+–
+1,046
+
+Factory specifications for η, µ, and Paux are not publicly available; “–”
+indicates no reference value. The estimated mass (1,977 kg) exceeds the
+curb weight (1,844 kg), consistent with passenger and cargo loading
+during data collection.
+
+The PINO estimates are physically plausible: Cd =0.235
+closely matches the reference 0.23; Crr =0.00946 aligns
+with typical tire data; mass is slightly elevated due to
+payload. The motor efficiency (η=0.83) and regen coefficient
+(µ=0.74) fall within expected ranges for permanent-magnet
+synchronous motors. Fig. 4 shows stable convergence of
+parameter estimates within the 15-minute window across
+multiple trials.
+D. Controlled Routing Benchmarks
+1) Cross-Country Route (San Francisco to New York):
+Our main controlled benchmark is the transcontinental
+SF–NY route (∼4,860 km), which exceeds the maximum
+3,000 km curriculum-training distance by about 1,860 km.
+Table IV compares VEGA against Energy-aware A* and Dijkstra+Greedy under the same simplified flat-terrain model;
+the Tesla column is retained only as a real-world reference
+for the same start/goal pair.
+VEGA and Energy-aware A* both use 20 charging stops,
+while Dijkstra+Greedy requires 24 because its charger decisions are reactive. VEGA is already close to E-A* in route
+geometry: the distance gap is −8.49 km and the driving-time
+gap is +0.37 h. Interpreting the optimality gap. Relative to
+E-A*, VEGA shows a +2.44 h total-trip-time gap, split into
++0.37 h driving and +2.07 h charging. The charging gap is
+exactly matched by the dwell-time difference at the same 20
+stops: (30.72 − 24.51) min/stop ×20 = 124.2 min = 2.07 h.
+Relative to Dijkstra+Greedy, VEGA reduces the number of
+charging stops from 24 to 20 while keeping nearly identical
+energy intensity (166.18 vs. 165.23 Wh/km). This pattern is
+consistent with VEGA’s design: PPO makes local decisions
+over a restricted top-K action set, charging is discretized in
+
+TABLE V
+C ROSS -R EGIONAL G ENERALIZATION S UMMARY
+
+TABLE IV
+ROUTING C OMPARISON : S AN F RANCISCO TO N EW YORK (∼4,860 KM )
+Metric
+Distance (km)
+Driving time (h)
+Charging time (h)
+Total trip time (h)
+Charging stops
+Avg. dwell (min)
+Energy (kWh)
+Intensity (Wh/km)
+Min SoC (%)
+Planning time (s)
+
+VEGA
+
+E-A*
+
+Dijkstra
++Greedy
+
+Tesla
+Planner
+
+Metric
+
+US
+SF–NY
+
+France
+Paris–Toulouse
+
+Japan
+Tokyo–Fukuoka
+
+4,854.96
+45.88
+10.24
+56.12
+20
+30.72
+806.79
+166.18
+11.41
+< 2.0
+
+4,863.45
+45.51
+8.17
+53.68
+20
+24.51
+723.68
+148.91
+15.12
+∼ 45.0
+
+4,831.20
+44.95
+9.42
+54.37
+24
+23.55
+798.35
+165.23
+8.73
+∼ 54.0
+
+4,816.77
+44.67
+9.33
+54.00
+20
+27.99
+N/A
+N/A
+N/A
+N/A
+
+Distance (km)
+Driving time (h)
+Charging time (h)
+Total trip time (h)
+Charging stops
+Energy (kWh)
+Intensity (Wh/km)
+Planning time (s)
+
+4,854.96
+45.88
+10.24
+56.12
+20
+806.79
+166.18
+< 2.0
+
+643.05
+6.71
+0.84
+7.55
+2
+102.40
+159.24
+< 1.0
+
+1,120.34
+14.00
+1.68
+15.68
+4
+167.96
+149.92
+< 1.0
+
+E-A* = Energy-aware A* (teacher planner). Tesla Planner values from the
+vehicle interface; energy/SoC data not available. Dijkstra+Greedy charges
+reactively when SoC < 20%. Planning times are route-level wall-clock
+values on our local Ryzen 9 9950X + RTX 5090.
+
+5% steps with an 80% cap, and the reward favors safe completion over aggressive low-SoC behavior. VEGA and E-A*
+share the same PINO parameters and segment-energy model
+but optimize different objectives (Eq. (17) vs. Eq. (18)), so
+some trip-quality gap is expected. VEGA therefore provides
+fast feasible approximate planning (< 2 s vs. ∼ 45 s for EA*), not global optimality. VEGA remains feasible on SF–
+NY (minimum SoC 11.41% > 0), and the 15% reserve in
+the reward is a soft penalty threshold, not a hard constraint.
+E. Tesla Trip Planner Reference Case Study
+Tesla Trip Planner uses proprietary energy models and live
+data, so this comparison is qualitative rather than a controlled
+benchmark; VEGA matches Tesla’s 20-stop plan but has a
+2.12 h higher total trip time, including a 0.91 h charging-time
+gap explained by longer average dwell.
+F. International Zero-Shot Transfer
+Although trained only on U.S. routes, VEGA generalizes
+to international road networks. Table V summarizes zeroshot results across three regions using the same trained policy
+and the same U.S.-estimated PINO parameters. Fig. 5 shows
+representative VEGA routes for the three reported start/goal
+pairs.
+The agent successfully navigates all three routes without
+battery depletion, including the SF–NY case that is longer
+than the 3,000 km maximum curriculum-training distance.
+Energy intensity remains consistent across regions (149–
+166 Wh/km), and the France (643 km) and Japan (1,120 km)
+routes require 2 and 4 charging stops, respectively.
+
+(a) San Francisco–New York
+Fig. 5.
+
+All routes computed with the same trained VEGA policy and PINO
+parameters estimated from U.S. driving data.
+
+G. Design Choice Analysis
+PINO vs. factory parameters: inferred mass is +7.2%
+and Cd is +2.2% versus reference values; using factory
+mass would underestimate long-route energy by about ∼7%.
+Training strategy: behavior cloning from A* stabilized
+full-graph exploration, while short-to-long curriculum progression (10→300 km, then expansion to 3,000 km) reduced
+pathological looping near chargers. Long-horizon extrapolation: the main SF–NY evaluation route (4,860 km) is
+about 62% longer than the maximum curriculum distance,
+so the reported benchmark already tests beyond the training
+horizon. Charging design: the 80% cap is motivated by
+Sec. V-A, where 80%→100% charging is time-inefficient.
+H. Discussion and Limitations
+VEGA demonstrates that coupling physics-informed parameter estimation with learned charge-aware routing is
+feasible on continental-scale road networks. However, several
+simplifying assumptions warrant discussion.
+Flat terrain. We assume flat roads (α=0), omitting the grade
+power term mgv sin α from (9). On mountainous segments,
+this may underestimate energy consumption on uphills and
+overestimate on downhills. Prior work shows that road grade
+materially affects EV energy and that downhill recovery is
+real but incomplete because regenerative braking efficiency
+is limited and condition-dependent [22], [23]. Over long
+routes with mixed ascents/descents, some grade effects can
+partially cancel in aggregate, but local SoC errors can still
+be significant in steep terrain. VEGA uses a 15% low-SoC
+penalty threshold as a practical robustness buffer against this
+modeling error. In our implementation, we intentionally keep
+altitude disabled for the controlled open-baseline comparison
+
+(b) Paris–Toulouse
+Representative VEGA route visualizations for the three reported regions.
+
+(c) Tokyo–Fukuoka
+
+(VEGA, E-A*, Dijkstra+Greedy), where all three use the
+same flat-terrain energy model. We already have altitude
+access via Google Maps Platform APIs (Roads/Elevation)
+and will add grade-aware routing in future work.
+Cruising at speed limits. We assume constant-speed cruising at the posted speed limit for each segment. Real driving
+includes acceleration, deceleration, and traffic congestion,
+which can shift actual consumption. Highway cruising is a
+reasonable first approximation for long-distance routing, but
+integration with real-time traffic speed data would improve
+segment energy estimates.
+Charger availability. We do not model charger queue times
+or station availability. In practice, charger congestion can
+significantly affect total travel time, especially on popular
+corridors.
+Limitations of the study. Our main limitations are route
+coverage and sensitivity to parameter-estimation error. We
+report three representative routes across three regions (643–
+4,855 km) due to page limits. Additional start/goal pairs were
+explored during development, but they are not part of the
+reported benchmark here; a broader benchmark would better
+quantify variance across route types. The routing agent uses
+PINO-estimated parameters as input to the energy model, so
+if PINO estimates are inaccurate (e.g., due to unusual driving
+conditions in the calibration window), the resulting energy
+predictions can be biased. The low-SoC penalty in the reward
+is intended to improve robustness against this modeling error,
+potentially at the cost of longer charging sessions. From (13),
+an energy prediction error δE (kWh) induces an SoC error
+δb = 100 δE/B (%); with B=75 kWh (Sec. V-A), a 1 kWh
+error corresponds to about 1.33 SoC points.
+VI. CONCLUSION
+We presented VEGA, a system that integrates physicsinformed neural operator (PINO)-based vehicle parameter
+estimation with a PPO-trained charge-aware routing agent
+for electric vehicles. VEGA operates on real continentalscale road networks with charger infrastructure, using only
+onboard speed and acceleration logs to adapt its energy
+model to the current vehicle condition.
+On the transcontinental San Francisco–to–New York
+benchmark, VEGA produces a feasible 20-stop plan with
+56.12 h total trip time and minimum SoC 11.41%. The
+remaining gap to Energy-aware A* is dominated by charging
+dwell time rather than route distance or driving time, while
+inference remains >20× faster. The learned policy generalizes to unseen road networks in France and Japan without
+retraining.
+Future work includes incorporating road grade and realtime traffic data into the energy model, validating across multiple vehicle models, extending the evaluation to a large-scale
+benchmark with diverse route characteristics, and deploying
+VEGA for real-time onboard replanning on production EVs.
+R EFERENCES
+[1] L. Li et al., “Software-defined vehicles: Architecture, challenges, and
+perspectives,” IEEE Trans. Intell. Veh., vol. 8, no. 6, pp. 3803–3822,
+2023.
+
+[2] I. Miri, A. Fotouhi, and N. Ewin, “Electric vehicle energy consumption
+estimation for routing applications,” J. Clean. Prod., vol. 326, pp. 129–
+246, 2021.
+[3] R. Basso, B. Kulcsár, B. Egardt, P. Lindroth, and I. Sanchez-Diaz,
+“Energy consumption estimation integrated into the electric vehicle
+routing problem,” Transp. Res. Part D, vol. 69, pp. 141–167, 2019.
+[4] H. Lim, M. Im, J. Boyack, and J. B. Choi, “Physics-informed neural
+operator for real-time EV parameter estimation,” in Proc. IEEE Int.
+Conf. Intell. Transp. Syst. (ITSC), 2024, pp. 1–8.
+[5] J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov,
+“Proximal policy optimization algorithms,” arXiv preprint
+arXiv:1707.06347, 2017.
+[6] M. Nazari, A. Oroojlooy, L. V. Snyder, and M. Takác, “Reinforcement
+learning for solving the vehicle routing problem,” in Advances in
+Neural Inf. Process. Syst. (NeurIPS), 2018, pp. 9839–9849.
+[7] W. Kool, H. van Hoof, and M. Welling, “Attention, learn to solve
+routing problems!” in Int. Conf. Learn. Represent. (ICLR), 2019.
+[8] C. Fiori, K. Ahn, and H. A. Rakha, “Power-based electric vehicle
+energy consumption model: Model development and validation,” Appl.
+Energy, vol. 168, pp. 257–268, 2016.
+[9] M. Raissi, P. Perdikaris, and G. E. Karniadakis, “Physics-informed
+neural networks: A deep learning framework for solving forward and
+inverse problems involving nonlinear partial differential equations,” J.
+Comput. Phys., vol. 378, pp. 686–707, 2019.
+[10] Z. Li, N. Kovachki, K. Azizzadenesheli, B. Liu, K. Bhatt, A. Stuart,
+and A. Anandkumar, “Fourier neural operator for parametric partial
+differential equations,” arXiv preprint arXiv:2010.08895, 2021.
+[11] X. Wang et al., “Physics-informed approaches for electric vehicle
+battery power estimation from speed alone,” Appl. Energy, vol. 340,
+p. 121009, 2023.
+[12] P. E. Hart, N. J. Nilsson, and B. Raphael, “A formal basis for the
+heuristic determination of minimum cost paths,” IEEE Trans. Syst.
+Sci. Cybern., vol. 4, no. 2, pp. 100–107, 1968.
+[13] M. Schneider, A. Stenger, and D. Goeke, “The electric vehicle routing
+problem with time windows and recharging stations,” in Transp. Sci.,
+vol. 48, 2014, pp. 500–520.
+[14] A. Montoya, C. Guéret, J. E. Mendoza, and J. G. Villegas, “The
+electric vehicle routing problem with nonlinear charging function,”
+Transp. Sci., vol. 51, no. 4, pp. 1234–1249, 2017.
+[15] S. Chen et al., “Reinforcement learning for electric vehicle path
+planning with charging considerations,” IEEE Trans. Intell. Transp.
+Syst., vol. 23, no. 8, pp. 12 744–12 755, 2022.
+[16] C. Joshi, T. Laurent, and X. Bresson, “Learning heuristics for combinatorial optimization on graphs using deep reinforcement learning,”
+arXiv preprint arXiv:1903.04864, 2022.
+[17] Y. D. Kwon, J. Choo, B. Kim, I. Yoon, Y. Gwon, and S. Min, “POMO:
+Policy optimization with multiple optima for reinforcement learning,”
+in Advances in Neural Inf. Process. Syst. (NeurIPS), 2020, pp. 21 188–
+21 198.
+[18] Y. Bengio, A. Lodi, and A. Prouvost, “Machine learning for combinatorial optimization: A methodological tour d’horizon,” European J.
+Oper. Res., vol. 290, no. 2, pp. 405–421, 2021.
+[19] P. Swazinna, S. Udluft, and T. Runkler, “Overcoming model bias for
+robust offline deep reinforcement learning,” Eng. Appl. Artif. Intell.,
+vol. 104, p. 104366, 2021.
+[20] J. Schulman, P. Moritz, S. Levine, M. Jordan, and P. Abbeel, “Highdimensional continuous control using generalized advantage estimation,” arXiv preprint arXiv:1506.02438, 2016.
+[21] S. Narvekar, B. Peng, M. Leonetti, J. Sinapov, M. E. Taylor, and
+P. Stone, “Curriculum learning for reinforcement learning domains: A
+framework and survey,” ACM Comput. Surv., vol. 54, no. 7, pp. 1–36,
+2020.
+[22] K. Liu, T. Yamamoto, and T. Morikawa, “Impact of road gradient
+on energy consumption of electric vehicles,” Transportation Research
+Part D: Transport and Environment, vol. 54, pp. 74–81, 2017.
+[23] J. Bian and B. Qiu, “Effect of road gradient on regenerative braking
+energy in a pure electric vehicle,” Proceedings of the Institution of
+Mechanical Engineers, Part D: Journal of Automobile Engineering,
+vol. 232, no. 13, pp. 1736–1746, 2018.
+
+

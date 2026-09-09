@@ -1,0 +1,1520 @@
+Cluster Computing (2026) 29:17
+https://doi.org/10.1007/s10586-025-05842-8
+
+Multi-agent deep reinforcement learning based on cloud-edge
+computing for urban vehicle route guidance
+Zhuhua Liao1,2 · Junjian Gao1 · Aiping Yi1 · Yijiang Zhao1 · Yue Tang1
+Received: 16 April 2025 / Revised: 11 October 2025 / Accepted: 29 October 2025 / Published online: 11 November 2025
+© The Author(s), under exclusive licence to Springer Science+Business Media, LLC, part of Springer Nature 2025
+
+Abstract
+Urban traffic congestion has emerged as a significant challenge impairing travel efficiency and transportation resource
+utilization. Although vehicle route guidance plays a crucial role in mitigating urban traffic congestion, traditional methods
+fail to accurately assess the spatiotemporal traffic patterns and adapt swiftly to dynamic traffic conditions and vehicular
+interactions. To address the issues, this paper proposes a Multi-agent Deep Reinforcement Learning framework based
+on cloud-edge computing for urban vehicle route guidance. The framework deploys intersection-based agents to collect
+realtime traffic data, facilitate global deep reinforcement learning, and offer intelligent and interactive route guidance.
+Moreover, an accurately spatiotemporal traffic state information mining method is proposed by integrating Graph Convolutional Network (GCN) and Gated Recurrent Unit network (GRU) with an attention mechanism. Subsequently, a modeling approach for inter-agent spatial relationship based on Graph Attention Network (GAT) is presented to facilitate the
+transmission and fusion of traffic characteristics on cloud. Finally, the Spatio-Temporal Mean-Field multi-agent Dueling
+Q-Routing (ST-MF-DQR) algorithm is proposed to optimize vehicular spatiotemporal coordination. The experimental
+evaluations on both synthetic and real traffic networks demonstrate that our method minimizes average vehicle waiting
+and travel times, significantly improving urban traffic mobility.
+Keywords Urban route guidance · Multi-agent deep reinforcement learning · Graph neural network · Dueling
+Q-routing · Cloud-edge computing
+
+1 Introduction
+
+Aiping Yi
+apyi@hnust.edu.cn
+Zhuhua Liao
+zhliao@hnust.edu.cn
+Junjian Gao
+junjiangao@mail.hnust.edu.cn
+Yijiang Zhao
+zhaoyj@hnust.edu.cn
+Yue Tang
+2205060420@mail.hnust.edu.cn
+1
+
+School of Computer Science and Engineering, Hunan
+University of Science and Technology, Xiangtan 411201,
+Hunan, China
+
+2
+
+Intelligent Connected Vehicle Software Design and Service
+of Hunan Engineering Research Center, Xiangtan 411201,
+Hunan, China
+
+The continuous increase in urban vehicle numbers has led
+to frequent and unpredictable traffic congestion, posing a
+significant social challenge for modern cities [1]. This not
+only impacts the economic efficiency and environmental
+quality of urban areas but also diminishes the effectiveness
+and experience of people’s travel [2]. However, owing to
+the long-term evolutionary trend of transportation networks
+and the inherent spatiotemporal variations in traffic flow [3],
+vehicle route guidance has become a critical component of
+the Intelligent Transportation System (ITS). It can dynamically adjust driving routes based on real-time traffic conditions and provides users with optimal or suboptimal travel
+plans. Today, it is considered the most practical and effective approach to balancing urban traffic flow and alleviating
+road congestion [4, 5]. In recent years, intelligent transportation systems have utilized advanced communication technology to achieve real-time information exchange among
+vehicles, infrastructure, and management centers [6, 7].
+
+13
+
+17 Page 2 of 17
+
+This enables real-time information processing and sharing
+capabilities for distributed vehicle route guidance methods.
+But distributed vehicle route guidance demands large-scale
+state perception and predictive analysis of critical locations,
+which will entail quantitatively-intensive and time-sensitive
+computing. Cloud-edge computing can effectively shorten
+the transmission distance, reduce the transmission delay,
+and meet the needs of large-scale urban vehicle guidance
+[8]. Furthermore, currently many researchers are employing Deep Reinforcement Learning (DRL) to address the
+issue of the route guidance for every vehicle by utilizing
+vehicles, or within a certain range of vehicles by utilizing
+road network nodes as agents to make decisions based on
+real-time traffic information exchange [9–11]. However,
+providing macroscopic or microscopic route guidance and
+utilizing vehicle-mounted or roadside sensing devices will
+introduce different complexities and challenges to the system. The microscopic route guidance and vehicle-mounted
+sensing information can guide route anytime and anywhere
+in transportation networks, but it will impose increased
+computational burden on vehicles, complicated changes for
+agents, and challenges in cooperation between agents. On
+the other hand, the macroscopic route guidance and roadside sensing information simplifies the number of agents
+and algorithm complexity. This is because the number of
+intersections is much smaller than that of vehicles, and the
+amount of data that needs to be perceived and processed
+is much less than the microscopic approach. But there are
+still challenges to ensuring effective guidance. In short, the
+current methods mainly face the following challenges: (1)
+existing route guidance methods based on traffic prediction
+[12] struggle with accurately predicting real-time routes due
+to the randomness of traffic and unpredictability of participants; (2) Although agents can learn optimal strategies [13]
+and obtain real-time traffic information through continuous
+interaction with the environment, they tend to overlook the
+global spatiotemporal correlations of traffic information in
+the complex urban road network; (3) current traffic participants mainly take into account the current traffic conditions
+when directing the fastest or shortest routes, leading to a
+high volume of vehicles on these routes and creating new
+congestion issues. To address these challenges, it is essential
+to reasonably consider the interaction between vehicles and
+then coordinate their movements or steering decisions [14].
+Nevertheless, as the number of vehicles in the road network
+increases, modeling interactions among a large number of
+moving vehicles becomes challenging, posing significant
+difficulties in optimizing route guidance strategies for every
+individual vehicle.
+In this paper, we explore the distributed intelligent route
+guidance scheme for urban road networks in a cloud-edge
+computing environment, aiming to optimize traffic flow
+
+13
+
+Cluster Computing (2026) 29:17
+
+distribution at intersections and improve overall traffic efficiency. The main contributions of this paper are as follows:
+1. A multi-agent deep reinforcement learning framework based on cloud-edge computing is proposed for
+urban vehicle route guidance. The framework employs
+intersection-deployed roadside units and cloud-edge
+collaborating network to facilitate city-wide deep reinforcement learning, and establishes an intelligent interactive guidance model that reconciles vehicle-specific
+travel needs with both local and global traffic flow
+optimization.
+2. A method for extracting spatiotemporal characteristics and state information from urban traffic networks
+by integrating Graph Convolutional Networks (GCN)
+and Gated Recurrent Units (GRU) with an attention
+mechanism. Furthermore, a spatial relationship modeling approach for intersection agents is introduced,
+leveraging Graph Attention Network (GAT) to enhance
+the transmission and fusion of spatiotemporal traffic
+features.
+3. A mean field theory - based computational method and a
+spatiotemporal multi-agent dueling Q-routing (ST-MFDQR) algorithm are developed based on the average
+actions of neighboring vehicles, enabling intersection
+agents to model vehicle interactions and coordinate
+movements across space and time.
+The proposed framework and methods are experimentally
+validated through simulated and real urban traffic environments. And a comparison was conducted against popular
+baseline methods for demonstrating the effectiveness of the
+framework and methods presented in this paper.
+
+2 Related work
+Early research on vehicle route planning primarily focused
+on finding the optimal route for source-destination pairs on
+static road networks [15]. However, in real-world environments, traffic dynamics exhibit significant spatiotemporal
+characteristics, making algorithms designed for static road
+networks less applicable to dynamic networks. Some studies have proposed solutions that account for the long-term
+evolution [3] of the road network and the Out-of- Distribution scenarios, aiming to extend the validity period and
+area of deep learning-based traffic predicting results [16].
+Other studies dynamically plan routes for vehicles based on
+real-time traffic conditions. For example, Chen et al. [17]
+proposed a route navigation algorithm based on global traffic information, enabling dynamic, optimal, and diversified
+route choices. In recent years, there has been a growing
+
+Page 3 of 17 17
+
+Cluster Computing (2026) 29:17
+
+interest in prediction-based route planning, where researchers are developing methods to plan vehicle routes by predicting traffic flow distribution across the network. Liebig
+et al. [18] utilized Gaussian process regression to estimate
+traffic flow in areas with low sensor coverage and proposed
+a dynamic global route planning method based on real-time
+traffic prediction. Zhu et al. [19] introduced a predictionbased route guidance method that effectively controls and
+reduces traffic congestion by evaluating congestion types
+and predicting congestion duration. However, these methods are based on predictions of short-term stability in traffic,
+but in fact urban traffic is inherently stochastic and highly
+uncertain. Therefore, although the route guidance avoids
+traffic congestion with re-routing during the trip, it may still
+offer non-optimal routing. As a result, the guidance strategy should be updated adaptively in order to enhance its
+reliability.
+Deep reinforcement learning, as a model-free approach,
+is not only used in vehicle path planning [4], but also widely
+applied to vehicle route guidance that requires consideration
+of various vehicle positions and real-time traffic conditions,
+as well as more complex interactions. For example, Mao
+et al. [9] designed a Q-learning-based reinforcement learning (RL) framework for adaptive route guidance in stochastic time-varying networks, utilizing tree-based function
+approximation methods to improve algorithm efficiency
+and accuracy. Koh et al. [20] suggested employing a deep
+Q learning algorithm (or DQN) to address the challenges
+posed by high-dimensional state and action spaces in order
+to improve route guidance. Therefore, DQN has been
+widely concerned. For instance, Dmitry Mukhutdinov et
+al. [21] introducing a DQN-routing method. It models the
+routing problem as a multi-agent deep reinforcement learning problem and utilizes deep neural networks to acquire
+appropriate value estimation functions, enabling a routing
+node to perform optimal packet forwarding. Nevertheless,
+these methods primarily focus on single-agent reinforcement learning and their scalability is limited. And they
+also ignore the influence of global spatiotemporal feature
+information on local decision making in large space. Multiagent reinforcement learning (MARL) holds significant
+application value in vehicle route guidance by enabling
+multiple vehicle agents to achieve global system optimization through collaborative learning. Tang et al. [22] introduced an A∗R2 urban traffic route guidance method based
+on multi-agent reinforcement learning, showcasing its high
+adaptive learning capability. Arasteh et al. [10] designed a
+multi-agent reinforcement learning method based on GAT
+and Q-routing algorithm (short for GA-DQ-routing) to assist
+vehicles in route guidance. Lin et al. [23] proposed an edge
+intelligence-based vehicular network architecture to support real-time vehicle routing decisions through distributed
+
+multi-agent reinforcement learning models. Shou et al. [24]
+transformed the route selection behavior of agents (such
+as autonomous vehicles or intelligent navigation systems)
+and the system equilibrium process in traffic networks into
+a Markov routing game (MRG) problem, and designed a
+mean-field-based multi-agent deep Q-learning method to
+capture competition among agents. While these methods
+have demonstrated significant advantages of multi-agent
+reinforcement learning in urban traffic route guidance, they
+overlook the precise and efficient extraction of spatiotemporal features in dynamic traffic networks and the consideration of interactions between vehicles, leading to decreased
+system efficiency and significant resource wastage.
+In addition, numerous recent studies have focused on
+intelligent traffic light control at traffic intersections, which
+significantly contributes to reducing urban vehicle waiting times and enhancing travel efficiency. Many of these
+methods are based on multi-agent reinforcement learning,
+including intelligent traffic light control and multi-intelligent traffic light collaborative control [25–27]. However,
+these intelligent traffic light control approaches do not
+directly provide personalized route planning or guidance
+for vehicles and effectively to utilize real-time global traffic
+flow information to reroute vehicles.
+In summary, although current research on vehicle route
+guidance in urban areas has provided some solutions, there
+remain persisting issues in global spatiotemporal relationship extraction, guidance performance and efficiency, for
+city-based vehicle routing guidance, which need to be further studied. Therefore, this paper proposes a traffic intersection-based multi-agent deep reinforcement learning
+method based on cloud-edge computing for urban vehicle
+route guidance. This approach aims to effectively extract
+spatiotemporal features in dynamic traffic networks and
+capture interactions between vehicles, ultimately achieving
+spatiotemporal coordination among vehicles in urban environments and improving the efficiency of urban traffic.
+
+3 System model
+3.1 Multi-agent deep reinforcement learning
+framework
+For addressing issues related to the quality and responsiveness of urban vehicle route guidance, we propose a traffic intersection-based multi-agent reinforcement learning
+framework using cloud-edge computing, as shown in Fig. 1.
+This framework is specifically designed for multi-intersection areas and involves vehicles, roadside units and cloud
+servers. The cloud server serves as the central device for
+storing and processing global traffic perception information,
+
+13
+
+17 Page 4 of 17
+
+Cluster Computing (2026) 29:17
+
+Fig. 1 The multi-agent deep
+reinforcement learning framework
+based on cloud-edge computing
+
+while regional spatiotemporal traffic features and individual
+vehicle actions are processed by the roadside units. Furthermore, roadside units, serving as edge computing and communication devices, also function as agents and execute
+deep reinforcement learning algorithms based on eventdriven reinforcement learning concepts [28]. These agents
+perceive traffic intersection information and exchange
+information with other units or the cloud server, and provide route guidance services for vehicles in the local area
+upon receiving route guidance requests from vehicles, for
+instance, recommending the optimal exit direction (straight,
+left turn, or right turn) for vehicles about to leave the traffic
+intersection.
+Based on the existing urban traffic characteristics and the
+framework proposed in this paper, the following definitions
+are provided to better describe road conditions:
+Definition 1 Traffic Congestion Index (TCI): The TCI is
+used to assess road traffic conditions by taking into account
+both the average vehicle speed and vehicle density on the
+
+13
+
+road. This index offers a comprehensive evaluation of traffic
+congestion [19]:
+S e (t) = 1 −
+De (t) =
+
+V e (t)
+M Se
+
+Ne (t)
+M Ce
+
+
+
+
+
+T CI e (t) = w1 · S e (t) + w2 · De (t) 
+
+(1)
+(2)
+(3)
+
+In the formula, e ∈ E represents a road segment, V e (t)
+denotes the average speed of vehicles on the road, M Se
+is the maximum speed of the road, S e (t) is the average
+speed of vehicles on the road at time t, Ne (t) represents
+the number of vehicles on the road, M Ce is the maximum
+capacity of the road, and w1 and w2 reflect the importance
+of different elements, w1 + w2 =1. In this study, both w1
+and w2 were set to 0.5.
+Definition 2 Intersection Agent: An intersection agent is a
+roadside unit deployed at a traffic intersection, serving as an
+intelligent entity. The intersection agent is responsible for
+monitoring the traffic congestion index of its outgoing road
+
+Page 5 of 17 17
+
+Cluster Computing (2026) 29:17
+
+segments and responding to routing requests from vehicles
+on its incoming road segments.
+Definition 3 Vehicle Request: Vehicles operate on a firstcome, first-served basis. When a vehicle enters the decision
+area, it sends a routing request, including at least the destination information, to the corresponding intersection agent
+for receiving route guidance decisions.
+The model for urban route guidance, based on the research
+objectives and framework of this paper, can be defined as
+follows: Within a networked road network structure, multiagent systems collaborate to determine the optimal driving
+route for vehicles between their departure points and destinations based on route evaluation metrics. These evaluation metrics primarily include Average Travel Time (Avtt),
+Average Travel Distance (Avtd), and Average Waiting Time
+(Avwt). The objective is to minimize or achieve a composite
+optimality across these various evaluation metrics.
+Avtt =
+
+1
+N
+
+Avtd =
+
+1
+N
+
+Avwt =
+
+∑
+
+i∈N
+
+vti 
+
+(4)
+
+vli 
+
+(5)
+
+duri 
+
+(6)
+
+∑
+
+1
+N
+
+i∈N
+
+∑
+
+i∈N
+
+In the formula, N represents the total number of vehicles,
+vti and vli ​denote the travel time and travel distance for each
+vehicle from its initial detection entering the road network
+until it exits, respectively. duri represents the duration
+during which each vehicle’s speed is less than or equal to
+0.1 m/s.
+
+4 Method modeling
+4.1 Traffic intersection-based multi-agent
+reinforcement learning modeling
+Based on the characteristics of urban road network and
+vehicle guidance at traffic intersections, we model the
+vehicle route guidance problem as a Decentralized Partially
+Observable Markov Decision Process (Dc-POMDP). The
+key elements of the Dc-POMDP are elaborated as follows:
+Observation oit oit represents the state observed by intersection agent i at time step t . oti =< qti , cti , pti >, where
+qti denotes the vehicle routing requests received by the
+intersection agent. cti ​ represents the traffic information at
+the current intersection, mainly for the traffic congestion
+index of the outgoing road segments and the status of traffic lights (such as current phase and remaining time). pti
+
+represents the spatiotemporal features of the road network
+as perceived through a cloud server. The methodologies
+for extracting spatiotemporal features are presented in
+Sect. 4.2.1 and 4.2.2.
+Action ait Given observation oit ​ by agent i, action ait is
+defined as a finite set of all outgoing road segments that the
+incoming vehicle can be selected at each intersection.
+Reward r it In our study, the reward is defined as the negative value of the time duration during which each vehicle
+travels from entering one decision area at the intersection
+where the agent i is located to entering the subsequent decision area in accordance with the selected action.
+rti = −∆ T 
+
+(7)
+
+Discount factor γ: γ ∈ (0,1] is a hyperparameter in the
+reward calculation that determines the importance of future
+rewards. The greater the γ, the more the agent focuses on
+long-term rewards.
+
+4.2 Spatiotemporal mean-field multi-agent dueling
+Q-routing method
+To address the issue of vehicle route guidance at traffic
+intersections, we propose a Spatiotemporal Mean-Field
+Multi-Agent Dueling Q-routing (ST-MF-DQR) method.
+The overall framework is illustrated in Fig. 2. First, we utilize a Graph Convolutional Network (GCN) combined with
+a Gated Recurrent Unit (GRU) enhanced with an attention
+mechanism to extract spatiotemporal dependencies from
+the historical traffic states of the road network. The combination of GCN and GRU facilitates the extraction of the
+spatiotemporal relationship of traffic flow at each intersection. Moreover, by means of the combination with the attention mechanism, the key information in the time sequence
+data can be rapidly captured, thereby enhancing the accuracy and efficiency of the analysis. By integrating vehicle
+routing requests and real-time traffic state information, the
+local observation state of each intersection agent is further
+derived. Second, by representing communication between
+intersection agents as edges in a graph, a multi-intersection
+agent connectivity graph is constructed. And then a Graph
+Attention Network (GAT) is utilized to learn the spatial
+correlations between intersection agents, facilitating the
+transmission and fusion of spatiotemporal features. Finally,
+based on mean-field theory, the interactions between vehicles are taken into account to achieve vehicle coordination.
+The ST-MF-DQR algorithm effectively harnesses the spatiotemporal features of intersection agents and incorporates
+the mutual influence of vehicles through mean-field theory,
+
+13
+
+17 Page 6 of 17
+
+Cluster Computing (2026) 29:17
+
+Fig. 2 Spatiotemporal mean field multi-agent dueling Q-routing (ST-MF-DQR) framework
+
+thereby providing route guidance and achieving spatiotemporal coordination among vehicles.
+4.2.1 Spatiotemporal feature fusion of traffic based on
+intersection agent
+Traditional reinforcement learning-based route guidance
+methods typically only consider the current traffic state,
+but neglecting the spatiotemporal correlations of traffic
+information across the entire intricate road network. The
+abundance of traffic information generated by vehicles on
+the road often possesses rich spatiotemporal attributes and
+is only applicable within a specific time frame or area. To
+address the partial observability in the Dc-POMDP problem
+[29], this paper integrates historical traffic state information
+to explore the spatiotemporal dependencies of traffic states
+within the road network.
+Recognizing that the short-term traffic state of a road
+segment is influenced by upstream and downstream segments, we employ a Graph Convolutional Network (GCN)
+to extract the road network topology [30]. Since GCN is
+capable of effectively capturing the interaction of traffic
+flows (be they adjacent or non-adjacent) among road segments partitioned by intersections within the traffic network, which is crucial for enhancing the accuracy of traffic
+feature extraction.
+H
+
+(l+1)
+
+=σ
+
+
+
+1
+
+∼−2
+
+D
+
+1
+
+∼−2
+
+D
+A
+
+H
+
+(l)
+
+(l)
+
+W
+
+
+
+
+
+(8)
+
+Here, H (l) represents the node feature matrix and W(l)
+ = A + I signifies
+denotes the weight matrix at layer l, A
+
+13
+
+the adjacency matrix with self-loops added to obtain a sym∼
+, and σ
+metric matrix, D stands for the degree matrix of A
+denotes the sigmoid activation function.
+
+The GRU demonstrates proficiency in processing time
+series data and is capable of capturing the temporal dependence of traffic by learning the dynamic changes of traffic
+data at intersections. Compared to Long Short-Term Memory (LSTM) networks, the GRU aslo can effectively address
+the vanishing gradient issue in Recurrent Neural Networks
+(RNNs) and offers a faster runtime and fewer parameters.
+Therefore, we employ GRU to capture the temporal dependencies of traffic states with the specific calculation process
+as follows:
+rt = σ (Wr xt + Ur ht−1 + br ) 
+
+(9)
+
+zt = σ (Wz xt + Uz ht−1 + bz ) 
+
+(10)
+
+∼
+
+(11)
+
+ht = tanh (Wh xt + Uh (rt *ht−1 ) + bh ) 
+∼
+
+ht = zt ∗ ht + (1 − zt ) ∗ ht−1 
+
+(12)
+
+In the above equations, xt represents the input at time t,
+ht−1 denotes the hidden layer state from the previous time
+step, and ht ​is the output state at time t. rt ​is the reset gate,
+controlling how much past information to forget, zt is the
+∼
+
+update gate, balancing old and new states, and ht is the
+candidate state. This mechanism allows the model to adaptively learn temporal patterns from traffic time series. The
+input weights are denoted by Wr , Wz and Wh , while br ,
+bz and bh ​represent the input biases, and σ is the sigmoid
+
+Page 7 of 17 17
+
+Cluster Computing (2026) 29:17
+
+activation function. Next, the GRU hidden output sequence
+is adaptively selected and weighted according to the attention weight.
+(
+)
+e(t) = σ W x(t) + b 
+(
+
+(t)
+
+exp ei
+
+(t)
+α i = ∑m
+
+i=1
+
+P =
+
+∑T
+
+i=1
+
+)
+
+(t)
+
+exp(ei )
+
+
+
+αi hi 
+
+(13)
+(14)
+(15)
+
+In the equations, e(t) signifies the score value correspond(t)
+ing to the state ht extracted by the GRU and α j is the
+weight coefficient at time t. The final output P serves as
+the weighted representation of the spatiotemporal features
+extracted at time t.
+Due to the spatiotemporal evolution of the traffic environment, intersection agents do not require gathering environmental state information from all traffic intersections or
+road segments in order to avoid redundancy and increased
+computational complexity. The intersection agents interact
+with the cloud server to obtain the spatiotemporal features
+pit ∈ P of the outgoing road segments, enabling them to
+effectively perceive the spatiotemporal changes in local traffic conditions. By integrating vehicle routing requests with
+current traffic information, we can derive the local observation state for each intersection agent:
+(
+)
+oit = contact qti , cit , pit 
+
+(16)
+
+Intersection agents should not rely solely on local observation state information, as inadequate information may result
+in ineffective decision-making. Therefore, we empower
+intersection agents to learn to capture critical information
+and mitigate environmental instability through communication with neighboring agents [31]. And we conceptualize the
+relationship between intersection agents connected by roads
+as a graph and utilize a Graph Attention Network (GAT)
+[32] to facilitate communication between agents. GAT
+learns to assign different importance to neighboring agents
+based on their current states, initially, we compute the attention coefficients between each current intersection agent i
+and its neighboring agent j by the equation:
+( i ) ( j )T
+
+eij
+t = ot We · ot We
+
+∑
+α ij
+t =
+
+exp(LeakyRelu(eij
+t ))
+
+j∈ Ni
+
+exp(LeakyRelu(eij
+t ))
+
+
+
+(18)
+
+Here, Ni denotes the set of neighboring intersections for
+intersection agent i. The observation features of each agent
+are propagated to adjacent agents and updated through selfattention mechanism, while the GAT unit utilizes multihead attention to stabilize the training process. Considering
+that vehicle route guidance is oriented towards vehicle destinations, we then connect vehicle requests to obtain a new
+representation of the observed state of the intersection agent
+i, denoted as zti ​:
+hit = σ
+
+( ∑
+K
+1
+K
+
+k=1
+
+∑
+
+j∈ Ni
+
+(
+)
+zti = contact qti , hit 
+
+k j
+α ijk
+t W ot
+
+)
+
+
+
+(19)
+(20)
+
+Here, K represents the number of attention heads, and W k
+is the weight matrix for attention head K.
+4.2.2 Spatial-temporal mean field multi-agent dueling
+Q-routing method
+The intersection agent’s vehicle guidance involves directing
+the vehicle to the appropriate next traffic intersection based
+on the average action and global state of the vehicle at the
+traffic intersection, similar to the IP packet routing process.
+Therefore, this paper adopts a Q-routing algorithm [21] that
+applies reinforcement learning to address the packet routing problem, specifically for action selection in intersection vehicles. First, we treat each traffic intersection as an
+independent agent. For a traffic intersection ni , it needs to
+constantly process the first vehicle in its queue, destined
+for traffic intersection nd . The agent ni ​needs to select an
+action a to direct the vehicle to the adjacent intersection
+agent nj ​as the next hop. The reward is defined as the negative value of the travel time between traffic intersections ni
+and nj . Upon receiving the reward ri , traffic intersection
+ni updates its Q table based on the reward ri :
+Qtable−i (n
+[d , nj ) = (1 − α ) Qtable−i (n
+] d , nj )
++ a rli + max Qtable−j (nj , nk )
+
+
+
+(21)
+
+k
+
+(17)
+
+Here, We ​ represents the embedding parameters. Subsequently, the attention coefficients undergo normalization to
+derive the attention scores by the equation:
+
+Here, α ∈ (0, 1] is the learning rate, and nk represents
+the neighboring nodes of nj . While the routing agent ni ​
+estimates travel time for a vehicle passing through intersection ni ​towards the destination nd based on its Q table,
+it overlooks coordination between vehicles within the road
+network.
+
+13
+
+17 Page 8 of 17
+
+Mean Field Game (MFG) theory offers a powerful
+framework for studying stochastic dynamic games [33,
+34], characterized by: (1) a large number of participants;
+(2) infinitesimally small impact of any single individual
+on the environment. The core concept of MFG theory is to
+approximate the original large-scale game problem with the
+optimal control problem of a single individual in an appropriate sense, analyzing the best response of the mean field
+(the average behavior of the group). Vehicle route selection
+process in traffic environments shares similar characteristics
+with MFG: Typically, a substantial number of vehicles are
+present on the roads across the city, and decision of a single
+vehicle has minimal impact on other vehicles. However, the
+same direction movement of many vehicles will have a significant impact on road traffic. That is, the route selection of
+a vehicle depends only on the current vehicle’s strategy and
+the distribution of strategies of other vehicles, without needing to distinguish or understand the movement characteristics of each individual vehicles. Therefore, it is unnecessary
+to study pairwise interactions among all vehicles, instead,
+the focus should be on the interaction between the individual vehicle and the state (or action) distribution of the
+entire population of vehicles. Specifically, for each intersection agent, we contemplate computing the average motion
+information of vehicles passing through and queuing at the
+intersection to provide guidance for the requesting vehicle.
+From the perspective of a moving vehicle, subsequent to
+traversing the preceding intersection agent, it will issue a
+request as it approaches the succeeding intersection agent.
+If the vehicle sends a routing request to agent i, taking into
+account other vehicles on the road network, its guiding
+action
+(
+)
+ait is determined by the value function Qi zti , ait , a− ,
+where a− represents the joint actions of all other vehicles.
+For the current vehicle, this may contain redundant information. In terms of route guidance task, actions of distant vehicles have limited impact on it. For instance, when a vehicle
+Fig. 3 The distribution of vehicles
+action in the neighborhood
+
+13
+
+Cluster Computing (2026) 29:17
+
+encounters a decision point at an intersection, the influencing factors primarily consist of the vehicles on the selectable
+roads and those will pass through the current intersection.
+a− ​can be approximated as the action distribution of nearby
+vehicles. Referring to the mean field approximation in [35],
+this approximate action information is denoted as the average action of neighboring vehicles. In this study, considering a discrete action space, the available action space for
+vehicles can be encoded by one-hot encoding. We define
+′
+
+the average action of neighboring vehicles as a ​ (refer to
+Eq. 22), which represents the distribution of vehicle actions
+influenced by the current intersection agent j within a time
+period T , as shown in the example in Fig. 3. In the left figure, there are 7 vehicles in the current state select right turn
+action and 3 vehicles in the current state select down-going
+action; in the right figure, there are 4, 1 and 2 vehicles in the
+current state select right-going, down-going and up-going
+action respectively.
+−
+
+a=
+
+1
+Nj
+
+∑
+
+c
+c ∈ N (j) a 
+t∈ T
+
+(22)
+
+Here, N refers to a collection of vehicles, c refers to one of
+these vehicles, and ac refers to the guiding action of vehicle
+c in the current state.
+According to the previous idea and the principle of mean
+field reinforcement learning [33, 36], the action value function can be approximately expressed as:
+(
+)
+Qi zti , ait , a− =
+
+1
+Nj
+
+( i i c)
+i
+c ∈ N (i) Q zt , at , a
+( t ∈ T)
+
+∑
+
+−i
+
+≈ Qi zti , ait , a
+
+
+
+(23)
+
+The dueling DQN [37] is an improved method based on
+DQN, which introduces a novel network structure. In this
+
+Page 9 of 17 17
+
+Cluster Computing (2026) 29:17
+
+structure, the Q function is decomposed into two subfunctions (as shown in Eq. 24): the state value function
+V (oi ; ω , β ) and the advantage function A(oi , a; ω , α ).
+The state value function represents the expected return in a
+given state, while the advantage function measures the extra
+reward of taking a specific action compared to other actions.
+( i i
+)
+( i
+)
+i
+i
+[ Q zt , at ; ω, α, β = V zt ; ω, β + ]
+(
+)
+) 
+∑ i( i ′
+Ai zti , ait ; ω, α − A1
+A zt , a ; ω, α
+
+(24)
+
+a
+
+ω represents the shared network parameters, while α and
+β denote the parameters of the advantage function network
+and the value function network, respectively. For simplicity,
+we will uniformly use ω to represent the parameters of the
+Q network in the following sections.
+Finally, combining Eqs. (21) and (24), the agent updates
+the parameters of Qi by minimizing the loss function L
+through interactions with neighboring agents:
+2
+L (ω i ) = (yj − Qi (zti , ait , a ; ω i )) 
+
+(25)
+
+(
+)
+j
+yj = r + γ max a′t+1 Qj zt+1
+, a′t+1 , a ; ω j × (1 − fj ) 
+
+(26)
+
+In the equation, yj represents the target Q value, Qj indicates the network of the next intersection agent that the
+vehicle arrives at, γ is the discount factor, and fj is the indicator of whether the vehicle has reached its destination. If
+the vehicle has reached its destination, fj = 1; otherwise,
+fj = 0.
+
+5 Experiments
+5.1 Experimental environment
+This paper utilizes the open-source traffic simulation software SUMO (Simulation of Urban Mobility, ​h​t​t​p​s​:​/​/​e​c​l​i​p​
+s​e​.​d​e​v​/​s​u​m​o​/​​​​)​ to evaluate traffic guidance algorithms and
+visualize simulation activities. TraCI (Traffic Control Interface) and Libsumo interface are employed for data acquisition from the SUMO traffic simulation environment and for
+real-time modifications and control. For the experimental
+data, we used synthetic and real network data with synthetic
+traffic.
+Synthetic traffic network We synthesized a 5 × 5 traffic grid,
+as shown in Fig. 4. It comprises 25 intersections and 120 road
+segments. Each intersection is linked by 4 pairs of opposing
+road segments, and each directed road segment consists of
+two lanes with a total length of 15,000.00 m. Vehicles are
+introduced into the network at rates of 40 vehicles/min, 60
+vehicles/min, and 80 vehicles/min over a period of 1800 s
+to simulate low, medium, and high traffic flows. 70% of the
+vehicles enter the network from its edges, with starting locations distributed randomly.
+Yuelu traffic network We extracted a portion of the road
+network for Yuelu District in Changsha City from OpenStreetMap, as depicted in Fig. 5. The coverage encompasses
+35 intersections and 114 road segments. Each intersection
+is linked by 3 or 4 pairs of road segments in opposite directions, with segments featuring either two or three lanes and
+a total length of 56,329.01 m. Vehicles are introduced into
+the network at rates of 120 vehicles/min, 160 vehicles/min,
+and 200 vehicles/min over a period of 1800 s to simulate
+
+Fig. 4 The synthetic traffic network
+with 25 intersections and 120 road
+segments
+
+13
+
+17 Page 10 of 17
+
+Cluster Computing (2026) 29:17
+
+Fig. 5 Real traffic network for
+Yuelu Distict with 35 intersections
+and 114 road segments
+
+length of 5,5000 m. The traffic flow and turn rate data are
+derived from actual taxi trajectory data.
+
+5.2 Baseline methods and evaluation metrics
+To evaluate the multi-agent deep reinforcement learning
+method for traffic intersection-based route guidance, we
+conducted a comparison of the following four methods:
+Dijkstra [15]: Vehicles aim to reach their destination
+by selecting the route with the shortest current travel
+time.
+2. Dynamic User Assignment (DUA) 2: DUA is an iterative method implemented by SUMO developers, utilizing the duarouter tool to calculate the fastest route for
+each vehicle based on current road network congestion
+in order to achieve dynamic user equilibrium. That is no
+vehicle can reduce its travel cost (typically travel time)
+by changing its route.
+3. DQN-routing [21]: This method, proposed by Dmitry
+Mukhutdinov and others, models the routing problem as
+a multi-agent deep reinforcement learning problem and
+employs deep neural networks to represent each routing
+agent as a learning entity, providing a distributed routing approach applicable to systems such as communication networks and logistics (e.g., traffic route guidance).
+4. GA-DQ-routing [10]: This method, proposed by F.
+Arasteh and others, is a network-aware multi-agent
+deep reinforcement learning method for guiding vehicle routes. It combines Graph Attention Networks and
+1.
+Fig. 6 Real traffic network for Manhattan with 48 intersections and
+230 road segments
+
+low, medium, and high traffic flows. Vehicle starting locations are distributed randomly.
+Manhattan traffic network1 We used a real-world dataset
+from Manhattan, New York, as illustrated in Fig. 6. It is
+a 16 × 3 grid network in Manhattan consisting of 48 intersections and 230 road sections. Each intersection has four
+approaches and four exits, and each consisting of three lanes
+(left turn lane, through lane, and right turn lane), with a total
+
+2
+1
+
+​h​t​t​p​s​:​​​/​​/​t​r​a​f​f​​i​​c​-​​s​i​g​​n​a​​l​​-​c​o​​n​t​r​​o​l​.​g​i​t​h​​u​b​.​i​o​/​.
+
+13
+
+For details on the DUA, the reader may refer to https:​​​//su​mo.​dl​r.de​
+/do​cs/​Demand/​Dyna​mic_User_ Assignment.html .
+
+Cluster Computing (2026) 29:17
+
+Page 11 of 17 17
+Table 1 Comparison of algorithm performance in synthetic traffic network (80 vehicles/minute) environment
+Algorithm
+Avtt (s)
+Avtd (m)
+Avwt (s)
+Dijkstra
+189.97
+910.55
+88.65
+DUA
+150.54
+895.26
+63.29
+DQN-routing
+149.78
+902.79
+61.42
+GA-DQ-routing
+140.33
+901.61
+52.90
+ST-MF-DQR
+125.96
+896.87
+43.09
+Table 2 Comparison of algorithm performance in Yuelu traffic network (200 vehicles/minute)
+Algorithm
+Avtt (s)
+Avtd (m)
+Avwt (s)
+Dijkstra
+519.58
+3559.22
+274.50
+DUA
+404.40
+3476.26
+190.15
+DQN-routing
+407.06
+3475.16
+194.36
+GA-DQ-routing
+404.64
+3454.73
+182.42
+ST-MF-DQR
+363.47
+3338.52
+155.44
+Table 3 Comparison of algorithm performance in Manhattan traffic
+network
+Algorithm
+Avtt (s)
+Avtd (m)
+Avwt (s)
+Dijkstra
+494.94
+1142.63
+345.46
+DUA
+372.15
+1186.67
+234.79
+DQN-routing
+322.45
+1293.26
+225.86
+GA-DQ-routing
+319.17
+1286.73
+220.74
+ST-MF-DQR
+288.80
+1265.23
+179.55
+
+Fig. 7 Comparison of average vehicle travel time for different traffic
+arrival rates
+
+Q-routing methods to provide guidance for vehicle
+routes.
+We use the three metrics from Sect. 3.1 to evaluate
+the performance of different algorithms in vehicle route
+guidance.
+
+5.3 Method comparison and results analysis
+The experiments were conducted in a Python 3.8 environment using the PyTorch deep learning framework. The
+Multi-Layer Perceptron (MLP) within the Q-networks of
+all agents contains a hidden layer with 128 neurons. The
+discount factor is configured as 0.99, the learning rate for
+agents is set to 0.01, and the optimizer employs the commonly used Adam; The GCN consists of one layer with a
+hidden size of 32. The hidden size of the GRU is set to 128,
+
+and the GAT utilizes 4 attention heads with a hidden size of
+32. Each episode consists of 600 steps, with a batch size of
+64. The learning rate is set to 0.001, and the optimizer uses
+the common RMSprop. Subsequently, we will present the
+experimental comparison and result analysis for the method
+proposed in this paper.
+As shown in Fig. 7, in both the synthetic 5 × 5 traffic network and the real traffic network in the Yuelu District of
+Changsha, the proposed method consistently achieves lower
+average vehicle travel times compared to the baseline methods across varying vehicle arrival rates. This demonstrates
+the robustness and adaptability of the proposed method to
+different traffic scenarios.
+Table 1 illustrates the performance of the proposed
+method in terms of Average Travel Time (Avtt), Average
+Travel Distance (Avtd), and Average Waiting Time (Avwt),
+and compares it with Dijkstra, DUA, and GA-DQ-routing
+(Tables 2 and 3).
+The Average Travel Time (Avtt) and Average Waiting
+Time (Avwt) are key performance metrics for evaluating
+route guidance methods. A lower Avtt indicates reduced time
+spent on the road, while a lower Avwt signifies decreased
+congestion and smoother vehicle movement. In addition,
+the Average Distance Traveled (Avtd) indicates the optimization degree of the algorithm in terms of the route planning distance. The experimental results demonstrate that the
+proposed method achieves optimal performance, especially
+
+13
+
+17 Page 12 of 17
+
+for the Avtt and Avwt, on the three datasets. Compared to
+other baseline methods, our method has the lowest Avtt
+on all datasets, signifying its effectiveness in reducing the
+Avtt. The Avwt performance of our method is also significantly superior to other methods, reflecting its advantages in
+reducing congestion and improving traffic mobility.
+In the more complex Manhattan traffic network, our
+method exhibits more obvious advantages. Although GADQ-routing introduces Graph attention network (GAT) to
+improve network awareness, it remains challenging to fully
+capture spatio-temporal characteristics, and the modeling of multi-vehicle interactions is limited. In comparison
+to GA-DQ-routing, which demonstrates the best performance among the baseline methods, the Avtt in our method
+is reduced by (288.80–319.17.80.17)/288.80 = 10.51%, and
+the Avwt is reduced by (179.55- 220.74)/179.55 = 22.94%. In
+other words, our method achieves significant advantages in
+both Avtt and Avwt indices through the synergistic effect of
+spatiotemporal feature extraction and mean field modeling.
+Figure 8 illustrates thermal maps of the Traffic Congestion Index (TCI) for each road at different times under the
+5 × 5 synthetic traffic network (80 vehicles/minute), Yuelu
+District of Changsha (200 vehicles/minute) traffic network
+and Manhattan traffic network environments. The horizontal
+axis represents time, while the vertical axis denotes different
+roads. In comparison to alternative methods, the heatmaps
+for the ST-MF-DQR depict more roads with lower congestion indices. This indicates that ST-MF-DQR effectively
+distributes vehicles more evenly across all roads, demonstrating its ability to make better use of limited road capacity and alleviate imbalances in traffic flow, thereby reducing
+urban traffic congestion more effectively than other common method.
+Figure 9 (a), (b) and (c) depict the training curves for Avtt
+in the 5 × 5 traffic network (80 vehicles/minute), the Yuelu
+District of Changsha (200 vehicles/minute) and Manhattan
+traffic network, respectively. It can be observed that the Avtt
+for all three methods gradually converges as the number of
+training iterations increases. However, it is noteworthy that
+the proposed method demonstrates faster converges and
+achieves a lower Avtt value compared to the baseline methods, indicating its effectiveness and robustness in achieving
+convergence.
+
+5.4 Ablation experiments
+To evaluate the contribution of individual components
+within the proposed ST-MF-DQR framework, the following
+ablation studies are conducted:
+(1) MF-DQR: By removing the GCN and GRU components
+combined with the attention mechanism, we validate
+
+13
+
+Cluster Computing (2026) 29:17
+
+the contribution of spatiotemporal feature extraction to
+the performance of traffic route guidance.
+(2) ST-DQR: By removing the vehicle interaction modeling based on mean field theory, we validate the importance of multi-vehicle collaboration in optimizing route
+selection.
+In ablation experiments, as can be observed from Table 4,
+the Avtt of MF-DQR increased significantly, especially in
+the Manhattan road network by 10.19%. This indicates that
+spatio-temporal characteristics are crucial for route optimization in complex dynamic scenarios. Although ST-DQR
+also achieves good results on the three datasets, compared
+with ST-MF-DQR, both Avtt and Avwt increase to varying degrees. This also indicates that it is necessary to consider the coordination among vehicles in the vehicle route
+guidance.
+
+5.5 Discussion
+Over all, the proposed scheme has the following advantages: (1) Cloud-edge computing is utilized to deploy multiagent deep reinforcement learning in key spatiotemporal
+environments (i.e. intersections), and mean field theory is
+employed to achieve cooperative interactive learning based
+on key spatio-temporal locations. Moreover, by leveraging
+GCN, GRU and the attention mechanism, the spatiotemporal characteristics as well as the interaction relationship
+between intersections are obtained. This enables real-time
+guidance when vehicles approach intersections within different ranges and at different times. This approach not only
+takes into account the global traffic situation but also considers the interaction among the key traffic nodes, enabling
+more accurate and efficient feature extraction. (2) The
+method proposed in this paper adjusts the route in real time
+based on the current travel to the intersection as well as the
+current local and global states. In contrast to the traditional
+approach, which merely plans the path to the destination
+according to the global state. Therefore, the method presented in this paper can address the challenges mentioned
+above.
+In addition, this paper also considers some effective
+strategies for enhancing decision-making efficiency. For
+instance, based on cloud-edge computing architecture,
+global traffic characteristics are mined in the cloud, while
+roadside units mainly only process local information. Furthermore, average field game method is adopted to simplify
+guided decision processing.
+Finally, we analyze the computational complexity of the
+proposed scheme. Since deep reinforcement learning is a
+cyclic process, we analyze the time complexity of an inference process. In our scheme, we suppose that the hidden
+
+Cluster Computing (2026) 29:17
+
+Page 13 of 17 17
+
+Fig. 8 Heat Map Comparison of
+Traffic Congestion Indices
+
+13
+
+17 Page 14 of 17
+
+Cluster Computing (2026) 29:17
+
+dimension is h, and the number of connecting edges between
+agents and adjacent agents is much smaller than the number
+of agents N. On this basis, the inference time is mainly spent
+on graph computing. Thus, the complexity is mainly composed of the following parts: (1) The GCN-GRU-attention.
+Its complexity is O(L · E · h + (∆ t · h2 + ∆ t2 · h )),
+where L is the number of GCN layers, E is the number of
+edges of the global graph, and Δt is the length of the time
+series. (2) The GAT layer computing. Its time complexity is
+O(N · h2 ), where the size of the traffic network, the number
+of agents and the hidden state will affect the computing cost
+of the algorithm.
+
+6 Conclusions
+
+Fig. 9 Average travel time training curve
+
+13
+
+This work proposes a multi-agent deep reinforcement
+learning method for urban vehicle route guidance within
+a cloud-edge computing framework. Leveraging multiagent reinforcement learning, the framework optimizes
+route guidance by accounting for spatiotemporal variations,
+thereby balancing urban traffic flow and alleviate local congestion. Furthermore, we propose an approach for extracting spatiotemporal traffic state information using Graph
+Convolutional Networks (GCN) and Gated Recurrent Unit
+(GRU) with attention mechanisms. Additionally, we use
+Graph Attention Networks (GAT) to model the intersectionlevel spatial dependencies, enabling the transfer and integration of the distributed spatiotemporal traffic features.
+Specifically, we introduce the Spatiotemporal Mean Field
+Multi-Agent Dueling Q-routing (ST-MF-DQR) algorithm,
+which incorporates mean field theory to coordinate vehicle
+actions within spatiotemporal constraints, enhancing multiagent cooperation. The proposed method was experimentally validated on the SUMO simulation platform using
+both synthetic and real traffic networks. Comparative evaluations against various baseline approaches demonstrated its
+superior performance across multiple metrics, effectively
+improving urban vehicle route guidance and multi-agent
+cooperation. In the future, we will analyze the influence
+of traffic signal duration, quantity, and road level on traffic conditions. Additionally, we will fully integrate all key
+factors and intelligent traffic signal facilities into the route
+guidance system for enhancing the effectiveness of the
+proposed approach. We will also explore integrating the
+proposed route guidance framework with reinforcement
+learning-based intersection signal control. By jointly optimizing vehicle routing and signal control within the same
+multi-agent framework, we aim to achieve a more holistic
+and coordinated traffic management system, thereby further
+improving urban traffic efficiency.
+
+Page 15 of 17 17
+
+Cluster Computing (2026) 29:17
+Table 4 Results of the ablation experiments of the ST-MF-DQR
+Traffic Network
+Type
+GCN and GRU combined
+with attention
+Synthetic
+MF-DQR
+ST-DQR
+√
+ST-MF-DQR
+√
+Yuelu
+MF-DQR
+ST-DQR
+√
+ST-MF-DQR
+√
+Manhattan
+MF-DQR
+ST-DQR
+√
+ST-MF-DQR
+√
+Author contributions Zhuhua Liao: conceptualization, methodology,
+writing-review & editing. Junjian Gao: methodology, resources, writing-original draft. Aiping Yi: conceptualization, methodology, writing-original draft. Yijiang Zhao: writing-review & editing. Yue Tang:
+writing-review & editing.
+Funding This work was supported by the Humanities and Social Sciences Project of Ministry of Education of China (No. 24YJAZH237)
+and the Natural Science Foundation of Hunan Province (Grant No.
+2024JJ5163).
+Data availability The real-world dataset from Manhattan, New York:
+https://traffic-signal-control. github.io. Data source: Manhattan_16 × 3.
+
+Mean field theory-based Vehicle
+interaction modeling
+√
+√
+√
+√
+√
+√
+
+9.
+10.
+
+11.
+12.
+
+Declarations
+Competing interests The authors declare no competing interests.
+Ethics declaration Not applicable.
+
+References
+1.
+2.
+3.
+
+4.
+5.
+
+6.
+7.
+8.
+
+Nagy, A.M., Simon, V.: Improving traffic prediction using congestion propagation patterns in smart cities [J]. Advanced Engineering Informatics 50, 101343 (2021)
+Walraven, E., Spaan, M.T., Bakker, B.: Traffic flow optimization:
+A reinforcement learning approach [J]. Engineering Applications
+of Artificial Intelligence 52, 203–212 (2016)
+Wang, B., Zhang, Y., Shi, J., Wang, P., Wang, X., Bai, L., Wang,
+Y.: Knowledge expansion and consolidation for continual traffic
+prediction with expanding graphs [J]. IEEE Transactions on Intelligent Transportation Systems 24(7), 7190–7201 (2023)
+Lin, J., Yu, W., Yang, X., et al.: A Real-Time En-Route route guidance decision scheme for Transportation-Based cyberphysical
+systems [J]. IEEE Trans. Veh. Technol. 66(3), 2551–2566 (2017)
+Zhang, Y., Zhao, W., Wang, J., Yuan, Y.: Recent progress, challenges and future prospects of applied deep reinforcement learning: A practical perspective in path planning [J]. Neurocomputing
+608, 128423 (2024)
+Luo, L., Sheng, L., Yu, H., et al.: Intersection-based V2X routing
+via reinforcement learning in vehicular ad hoc networks [J]. IEEE
+Trans. Intell. Transp. Syst. 23(6), 5446–5459 (2021)
+Ahmad, A., Din, S., Paul, A., et al.: Real-Time route planning and
+data dissemination for urban scenarios using the internet of things
+[J]. IEEE Wireless Communications 26(6), 50–55 (2019)
+Zhu, L., Li, B., Tan, L.: Vehicular edge cloud computing content
+caching optimization solution based on content prediction and
+
+13.
+14.
+
+15.
+16.
+
+17.
+18.
+19.
+20.
+21.
+
+22.
+
+Avtt (s)
+
+Avtd (m)
+
+Avwt (s)
+
+138.73
+131.43
+125.96
+393.00
+405.32
+363.47
+318.25
+316.89
+288.80
+
+908.74
+907.26
+896.87
+3413.44
+3453.88
+3338.52
+1283.01
+1274.83
+1265.23
+
+51.36
+45.30
+43.09
+171.99
+197.00
+155.44
+183.95
+181.64
+179.55
+
+deep reinforcement learning [J]. Ad Hoc Networks 165, 103643
+(2024)
+Mao, C., Shen, Z.: A reinforcement learning framework for the
+adaptive routing problem in stochastic time-dependent network
+[J]. Transp. Res. Part. C: Emerg. Technol. 93, 179–197 (2018)
+Arasteh, F., Sheikhgargar, S., Papagelis, M.: Network-aware
+multi-agent reinforcement learning for the vehicle navigation
+problem [C]. Proceedings of the 30th International Conference on
+Advances in Geographic Information Systems ((SIGSPATIAL), 4
+pages. (2022)
+Du, S., Zhu, Z., Wang, X., et al.: Real-time local path planning
+strategy based on deep distributional reinforcement learning [J].
+Neurocomputing 599, 128085 (2024)
+Shang, J., Cong, Q.T., Mehdi, K.E.: Regional route guidance with
+realistic compliance patterns: Application of deep reinforcement
+learning and MPC [J]. Transp. Res. Part. C: Emerg. Technol. 158,
+104440 (2024)
+Khalid, M., Wang, L., Wang, K., et al.: Deep reinforcement learning-based long-range autonomous valet parking for smart cities
+[J]. Sustainable Cities Soc. 89, 104311 (2023)
+Lu, J., Li, J., Yuan, Q., et al.: A multi-vehicle cooperative routing
+method based on evolutionary game theory [C]. Proceedings of
+the IEEE Intelligent Transportation Systems Conference (ITSC),
+(2019)
+Dijkstra, E.W.: A note on two problems in connexion with graphs
+[M]. in: Edsger Wybe Dijkstra: His Life, Work, and Legacy, 287–
+290. (2022)
+Wang, B., Ma, J., Wang, P., Wang, X., Zhang, Y., Zhou, Z., Wang,
+Y.: Stone: A spatio-temporal ood learning framework kills both
+spatial and temporal shifts [C]. In Proceedings of the 30th ACM
+SIGKDD Conference on Knowledge Discovery and Data Mining
+(pp. 2948–2959). (2024), August
+Chen, B., Ding, Z., Wu, Y., et al.: An optimal global algorithm
+for route guidance in advanced traveler information systems [J].
+Information Sciences 555, 33–45 (2021)
+Liebig, T., Piatkowski, N., Bockermann, C., et al.: Dynamic route
+planning with real-time traffic predictions [J]. Inform. Syst. 64,
+258–265 (2017)
+Zhu, W., Zhu, C., Prediction-based, A.: Route guidance method
+toward intelligent and green transportation system [J]. IEEE
+Internet Things J. 10(14), 12763–12776 (2023)
+Koh, S., Zhou, B., Fang, H., et al.: Real-time deep reinforcement
+learning based vehicle navigation [J]. Appl. Soft Comput. 96,
+106694 (2020)
+Mukhutdinov, D., Filchenkov, A., Shalyto, A., et al.: Multi-agent
+deep learning for simultaneous optimization for time and energy
+in distributed routing system [J]. Future Generation Comput.
+Syst. 94, 587–600 (2019)
+Tang, C., Hu, W., Hu, S., et al.: Urban traffic route guidance
+method with high adaptive learning ability under diverse traffic
+
+13
+
+17 Page 16 of 17
+
+23.
+24.
+
+25.
+26.
+
+27.
+28.
+
+29.
+30.
+
+31.
+32.
+33.
+34.
+35.
+36.
+37.
+
+scenarios [J]. IEEE Trans. Intell. Transp. Syst. 22(5), 2956–2968
+(2020)
+Lin, K., Li, C., Li, Y., et al.: Distributed learning for vehicle routing decision in software defined internet of vehicles [J]. IEEE
+Trans. Intell. Transp. Syst. 22(6), 3730–3741 (2021)
+Shou, Z., Chen, X., Fu, Y., et al.: Multi-agent reinforcement learning for Markov routing games: A new modeling paradigm for
+dynamic traffic assignment [J]. Transportation Research Part C:
+Emerging Technologies 137, 103560 (2022)
+Zhang, Y., Yu, Z., Zhang, J., et al.: Learning decentralized traffic
+signal controllers with Multi-Agent graph reinforcement learning
+[J]. IEEE Trans. Mob. Comput. 23(6), 7180–7195 (2024)
+Bie, Y., Ji, Y., Ma, D.: Multi-agent deep reinforcement learning
+collaborative traffic signal control method considering intersection heterogeneity [J]. Transportation Research Part C: Emerging
+Technologies 164, 104663 (2024)
+Liu, J., Qin, S., Su, M., et al.: Multiple intersections traffic signal
+control based on cooperative multi-agent reinforcement learning
+[J]. Inf. Sci. 647, 119484 (2023)
+Menda, K., Chen, Y.C., Grana, J., et al.: Deep reinforcement
+learning for Event-Driven Multi-Agent decision processes [J].
+IEEE Transactions on Intelligent Transportation Systems 20(4),
+1259–1268 (2019)
+Hausknecht, M., Stone, P.: Deep recurrent Q-learning for partially
+observable MDPs [C]. proceedings of the AAAI fall symposium
+series, (2015)
+Liao, Z., Huang, H., Zhao, Y., et al.: Analysis and forecast of traffic flow between urban functional areas based on Ride-Hailing
+trajectories [J]. ISPRS International Journal of Geo-Information
+12(4), 144 (2023)
+Chen, H., Liu, Y., Zhou, Z., et al.: Gama: Graph attention multiagent reinforcement learning algorithm for Cooperation [J]. Appl.
+Intell. 50, 4195–4205 (2020)
+VeliČkoviĆ, P., Cucurull, G., Casanova, A., et al.: Graph attention
+networks. arXiv preprint arXiv:171010903, (2017)
+Tanaka, T., Nekouei, E., Pedram, A.R., et al.: Linearly solvable
+mean-field traffic routing games [J]. IEEE Trans. Autom. Control.
+66(2), 880–887 (2020)
+Cabannes, T., Lauriere, M., Perolat, J., et al.: Solving N-player
+dynamic routing games with congestion: A mean field approach.
+(2021). arXiv preprint arXiv:2110.11943
+Yang, Y., Luo, R., Li, M., et al.: Mean field multi-agent reinforcement learning [C]. International conference on machine learning
+(ICML), 5571–5580. (2018)
+Ren, J., Zheng, J., Guo, X., et al.: MeFi: Mean field reinforcement
+learning for cooperative routing in wireless sensor network[J].
+IEEE Internet Things J. 11(1), 995–1011 (2023)
+Su, Y., Zhang, T., Xu, M., Tan, M., et al.: Rough knowledge
+enhanced dueling deep Q-network for household integrated
+demand response optimization [J]. Sustainable Cities and Society
+101, 105065 (2024)
+
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.
+Springer Nature or its licensor (e.g. a society or other partner) holds
+exclusive rights to this article under a publishing agreement with the
+author(s) or other rightsholder(s); author self-archiving of the accepted
+manuscript version of this article is solely governed by the terms of
+such publishing agreement and applicable law.
+
+13
+
+Cluster Computing (2026) 29:17
+Zhuhua Liao received the Ph.D.
+degree in Computer Architecture
+from Institute of Computing Technology, Chinese Academy of Sciences, in 2012. From 2016 to
+2017, he was a Visiting Scholar
+with the Department of Computer
+Science, Memphis University in
+the United States. He is currently
+an Associate Professor with the
+Department of Computer Science
+and Engineering, Hunan University of Science and Technology,
+China. His research interests
+include cloud/edge computing,
+machine learning and intelligent
+transportation.
+Junjian Gao received the master’s degree in software engineering at the Hunan University of
+Science and Technology, China, in
+2025. His main research interests
+are in the fields of artificial intelligence, data mining and intelligent transportation.
+
+Aiping Yi received the master’s
+degree in control engineering at
+the Hunan University of Science
+and Technology, China, in 2014.
+Currently she is an engineer and
+works for the School of Computer
+Science and Engineering, Hunan
+University of Science and Technology, Xiangtan, China. Her
+main research interests are in the
+fields of data mining, artificial
+intelligence
+and
+distributed
+computing.
+
+Page 17 of 17 17
+
+Cluster Computing (2026) 29:17
+Yijiang Zhao received the
+Ph.D. degree in Central South
+University, Changsha, China, in
+2016. From 2018 to 2019, he was
+a Visiting Scholar in Purdue University. He has been a professor in
+Hunan University of Science and
+Technology, Xiangtan, China. His
+research interests include modeling and processing of crowdsourcing
+geographic
+data,
+spatiotemporal data mining, etc.
+
+Yue Tang is currently an undergraduate student majoring in computer science and technology at
+the School of Computer Science
+and Engineering, Hunan University of Science and Technology,
+Xiangtan, China. Her main
+research interests are data mining
+and artificial intelligence.
+
+13
+
+

@@ -1,0 +1,1726 @@
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 25, NO. 7, JULY 2024
+
+7323
+
+Graph Convolutional Network Based
+Multi-Objective Meta-Deep Q-Learning
+for Eco-Routing
+Xin Ma , Yuanchang Xie , and Chunxiao Chigan
+
+Abstract— Route selection can greatly affect vehicle fuel consumption and emissions. Finding the most fuel/energy-efficient
+route is known as the eco-routing problem. Existing eco-routing
+solutions do not effectively consider the critical traffic signal
+information and rely on fuel consumption models that may not be
+sufficiently accurate. To address the eco-routing problem in a signalized traffic network, this paper proposes a graph convolutional
+network based multi-objective meta-deep Q-learning (GM2 DQL)
+method. The problem is formulated as dynamic multi-objective
+Markov decision processes (MOMDP) and is tackled through
+deep reinforcement learning and meta-learning. We identify that
+graph convolutional network (GCN) is an efficient and suitable
+feature representation for a signalized traffic network. GM2 DQL
+can explore the optimal routes with respect to drivers’ different
+preferences on saving fuel and travel time. Through GM2 DQL,
+the agent is trained under a series of learning environments
+that are characterized by historical vehicle trajectories, fuel
+consumption data, and traffic signal data in the remote data
+center. The vehicle requesting eco-routing service can download
+the model that represents the action value function of the
+historical dynamic driving conditions. The model in the vehicle
+can quickly adapt to the most recent driving condition through
+online one-shot learning and predict the optimal eco-routes for
+the subsequent unseen driving conditions of the signalized traffic
+network. Extensive proof-of-concept experiments validate that
+GM2 DQL can effectively discover optimal eco-routes. It saves up
+to 71% travel time and 62% fuel, compared to the conventional
+shortest-path routing strategy that is widely used in navigation
+systems.
+Index Terms— Eco-routing, signalized traffic network, metalearning, graph convolutional network, deep Q-learning.
+
+I. I NTRODUCTION
+
+A
+
+PPROXIMATELY 26% of the petroleum in the US is
+consumed by vehicles [1]. Gasoline will remain as the
+predominant vehicle fuel through year 2050 despite a growing
+mix of alternative fuel technologies for vehicles [2]. Route
+Manuscript received 29 August 2022; revised 24 April 2023, 26 August
+2023, and 2 November 2023; accepted 3 December 2023. Date of publication
+16 January 2024; date of current version 2 July 2024. This work was supported
+in part by the National Science Foundation under Grant CNS-0644056 and in
+part by UML Internal Seed Grant. The Associate Editor for this article was
+P. Wang. (Corresponding author: Chunxiao Chigan.)
+Xin Ma and Chunxiao Chigan are with the Department of
+Electrical and Computer Engineering, University of Massachusetts
+Lowell, Lowell, MA 01854 USA (e-mail: Xin_Ma@student.uml.edu;
+Tricia_Chigan@uml.edu).
+Yuanchang Xie is with the Department of Civil and Environmental Engineering, University of Massachusetts Lowell, Lowell, MA 01854 USA (e-mail:
+Yuanchang_Xie@uml.edu).
+Digital Object Identifier 10.1109/TITS.2023.3348034
+
+selection has been identified and proven to majorly impact
+vehicle fuel consumption and emissions [3], [4]. Therefore,
+to further save fuel/energy for existing and future on-road
+vehicles, including the connected and autonomous vehicles in
+the future, it is significant to find fuel-efficient routes for them.
+Finding the most fuel/energy-efficient routes for on-road vehicles is known as the eco-routing problem. Recently, Google
+Maps App also started to provide eco-friendly routes for users
+to choose from [5]. The emergence of vehicle data platforms
+based on connected vehicle technologies enables the collection
+of real-time driver behavior, traffic, and fuel consumption
+data [6], [7]. Such data also provides rich information for
+computing eco-friendly routes.
+The conventional methods that solve eco-routing problem
+mainly follow a two-stage process. 1) With estimated vehicle
+trajectories or speed profiles, estimate the expected cost in
+terms of fuel consumption/emissions for all road links through
+microscopic fuel consumption models [8], [9], [10], [11].
+2) Search for eco-routes by minimizing the expected cost
+through optimization methods: shortest path [8], [9], [10]
+or dynamic programming [11]. Unfortunately, one critical
+fuel consumption impact factor, traffic signal information,
+is not considered in these conventional methods. The frequent
+vehicle accelerations and decelerations caused by traffic signals can affect vehicle trajectories and significantly increase
+fuel consumption, especially in city driving [3], [4]. In one
+study considering stochastic eco-routing for signalized traffic
+network [12], the eco-routing problem is formulated as a
+Markov Decision Process (MDP). The traffic signal status
+is then included in the MDP state, and the state transition
+probabilities are used to compute the expected fuel cost.
+However, all the above-mentioned eco-routing methods [8],
+[9], [10], [11], [12] have two major issues. First, the estimated
+or predicted road-link fuel/energy consumption costs may not
+be sufficiently accurate. The link-based costs are time-varying
+and can even be nonstationary due to the real-world dynamic
+traffic. Therefore, the estimated or predicted link cost for
+the time being may not equal/reflect the actual link costs in
+the future. Second, it is difficult to develop a microscopic
+fuel/energy consumption model to accurately estimate or predict the instantaneous fuel/energy consumption in real-world
+driving conditions for a vehicle. Although machine learning
+based fuel consumption models [13], [14] have been developed
+to predict a vehicle’s fuel/energy consumption, their accuracy
+
+1558-0016 © 2024 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+7324
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 25, NO. 7, JULY 2024
+
+and generalization ability to unseen traffic conditions are
+limited by the training data. Besides, the existing data-driven
+fuel consumption models [3], [4] often fail to include a comprehensive set of fuel/energy consumption impact factors [15].
+Their training data are not large and diverse enough to cover
+all typical driving conditions. Therefore, to improve the model
+accuracy and generalization ability, these offline constructed
+microscopic fuel consumption models [3], [4] need to have
+online adaptation capabilities in the future [15].
+This paper proposes a one-step solution based on reinforcement learning (RL) for efficient and accurate eco-routing.
+Highlights of the proposed approach include: 1) We bypass the
+vehicle trajectory prediction and fuel/energy consumption prediction. This is because the predicted values may be inaccurate
+and may not reflect the reality. Instead, historical real-world
+trajectories and measured instantaneous fuel consumption data
+are collected from on-road vehicles and directly utilized to
+train a model that predicts eco-routes via RL. Specifically,
+through a connected vehicle data collection platform [6],
+[7] or a mobile App, the historical real-world trajectories
+can be sampled from the dynamic traffic environment. The
+instantaneous fuel consumption data can be accessed from
+the on-board diagnostics (OBD) ports of modern vehicles and
+collected through the same platform or an App. II) To capture
+the traffic signal effect on fuel consumption with MDP, the
+explicit estimation of state transition probabilities is no longer
+needed. Rather, the transition probabilities can be implicitly
+captured through a RL method, Q-learning. Through RL,
+the model that represents action value function and predicts
+eco-routes can be directly trained using accessible data (i.e.,
+historical trajectories, measured fuel consumption and traffic
+data). There is no need to go through an intermediate step (i.e.,
+predicting fuel consumption), which may induce additional
+errors.
+To design such a desired RL solution for eco-routing, three
+technical challenges need to be tackled. First, how to train
+a RL model to capture dynamic traffic environments. The
+dynamic traffic environments that are inherently in temporary
+sequence may lead to a catastrophic forgetting issue to the RL
+model [16]. The model can only capture the environments that
+are learned most recently and forgets about the environments
+learned a while ago. Second, from the learning environment
+aspect, the dynamic traffic networks are nonstationary environments with distribution shifts. The nonstationarity can make
+the catastrophic forgetting issue occur more frequently and
+jeopardize the model’s accuracy and generalization capability.
+Third, for eco-routing applications in practice, it is necessary
+and important for the model to be able to quickly adapt to new
+traffic conditions. Therefore, the model needs to be updated
+continuously online. However, a signalized traffic network is
+usually very complex, and the corresponding MDP state space
+is large, which costs the RL a long time to learn and adapt.
+The above challenges can be tackled through metalearning [17], [18] and an efficient feature representation.
+Meta-learning is a methodology for learning to learn.
+It enables a model to capture the distributions of various
+learning tasks. Therefore, only a small set of training data
+samples and less computation are needed to complete a new
+
+learning task in meta-learning, which is also called few-shot
+learning [17], [18]. Meta-learning can help an eco-routing
+model adapt to a new traffic environment quickly. Since
+the eco-routing model covers different distributions of the
+traffic environments through meta-learning, the catastrophic
+forgetting issue can be properly addressed. Additionally, nonstationary environments can be considered as a sequence of
+stationary tasks [19]. Since meta-learning can continuously
+adapt to distribution changes across tasks [17], [18], it helps
+the eco-routing model quickly adapt to nonstationary traffic
+environments.
+From the feature representation perspective, a computationally efficient representation is important and desired.
+In conventional RL-based navigation and path finding algorithms, raw images/videos are usually directly utilized as input
+features [20], [21], [22], [23], [24]. Accordingly, to abstract
+the underlying link connectivity information from pixels,
+complex deep neural network representations with many hidden layers, e.g., convolutional neural networks (CNN), are
+always required. Meanwhile, such representation can cost a
+long training time. Graph convolutional network (GCN) [25]
+directly takes graph features as the input, in which the link
+connectivity has already been explicitly abstracted by the
+graph model. Fortunately, it is straightforward to represent a
+traffic network with a graph. Therefore, compared to CNN
+that inputs pixels, applying GCN saves many lower neural
+network layers and induces much simpler model architecture
+and less training time. Furthermore, compared to CNN, GCN
+is a more easily generalizable representation for traffic network features. The GCN representation focuses on the logic
+connectivity of road links. It does not include the redundant
+specific spatial positions and orientations of road links as
+CNN does. A well-trained GCN representation for a traffic
+network can be more easily generalized to represent other
+traffic networks at different geolocations but with the same
+network topography. This will further save the training time
+if we want to conduct re-training/ transfer learning on these
+traffic networks based on some pre-trained models in practice.
+Thus, that forms another theoretical reason why GCN is a
+better feature representation candidate than CNN for ecorouting. Recently, lightweight GCNs have been successfully
+applied for traffic prediction [26], [27], [28], [29], yet there has
+been no work on solving eco-routing through GCN based RL.
+Additionally, from the practical application aspect, it is necessary to formulate eco-routing as a dynamic multi-objective
+MDP (MOMDP) problem. In reality, drivers have different
+preferences/weights on saving travel time and fuel/energy
+consumption. Therefore, it is necessary for the model to
+explore optimal routes in terms of various preferences on
+travel time and fuel consumption. In this study, the optimal
+linear support (OLS) [30] framework is adopted, which can
+effectively support multi-objective deep reinforcement and
+works efficiently with meta-learning.
+This paper proposes a graph convolutional network based
+multi-objective meta-deep Q-learning (GM2 DQL) for ecorouting. GM2 DQL applies the GCN for feature representation, OLS for multi-objective solution, and meta-learning
+for training. This paper has four major contributions.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+MA et al.: GRAPH CONVOLUTIONAL NETWORK BASED MULTI-OBJECTIVE META-DEEP Q-LEARNING FOR ECO-ROUTING
+
+1) This work applies reinforcement learning to address the
+eco-routing problem considering critical traffic signal information. 2) This study adopts deep Q-learning (DQL) based
+meta-reinforcement learning for eco-routing. The proposed
+method achieves fast one-shot adaptation in a new environment and efficiently tackles the catastrophic forgetting
+and nonstationary environment issues. In addition to solving the multi-objective problems, the proposed method can
+also be applied to generic DQL-based meta-reinforcement
+learning that has a discrete action space. 3) We introduce
+OLS as a suitable muti-objective framework for meta-learning.
+With DQL-based meta-reinforcement learning, we develop a
+multi-objective meta-deep Q-learning algorithm. 4) Through
+comprehensive simulation experiments, it is verified that GCN
+is an efficient feature representation for eco-routing. Both
+GCN and meta-RL help generalize the model to unseen traffic
+conditions.
+This paper is organized as follows: Section II presents
+related work, while Section III elaborates the details of
+GM2 DQL. Section IV discusses the experiments conducted
+and provides an analysis of the corresponding results analysis.
+Finally, Section V concludes this study and suggests directions
+for future research.
+II. R ELATED W ORK
+This section first reviews existing works related to
+eco-routing from the perspective of problem formulation.
+Next, we review methods related to our GM2 DQL design
+from the perspective of the solution space. These include deep
+reinforcement learning for navigation/routing, multi-objective
+reinforcement learning, and meta-learning for deep reinforcement learning.
+A. Eco-Routing
+Many conventional eco-routing solutions use GPS-based
+vehicle trajectories to estimate the trajectories/speed profiles
+for each road link, which are important inputs for fuel
+consumption models. To estimate fuel consumption, authors
+of [31] characterized driving patterns by five features from
+GPS data and input them into microscopic engine map models.
+A measure called weighted fuel consumption factor for each
+link was calculated and fed into a shortest path algorithm for
+finding eco-routes. To estimate vehicle operational parameters
+on energy/emission for eco-routing, authors of [9] combined
+multiple sources of traffic information including GPS trajectories through a data fusion algorithm. Later, other authors
+proposed a simulation-based framework [32] for eco-routing.
+Link-based speed was estimated by a traffic assignment model
+and was further used to estimate link fuel consumption.
+The method used cruise speed to calculate fuel consumption
+without considering vehicle accelerations and decelerations.
+Therefore, the estimated fuel consumption cannot well reflect
+reality. Some researchers attempted to consider both fuel
+consumption and travel time in eco-routing and formulated it
+as a constrained shortest-path problem [10]. Their algorithm is
+to minimize travel time with fuel consumption as a constraint.
+In [33], link-based emission was modeled as a nonlinear function with respect to link length and link travel time. With the
+
+7325
+
+estimated emission as a constraint, a traffic assignment model
+was developed to solve eco-routing problems. All the above
+solutions rely on the currently estimated fuel consumption
+values, which might not reflect the future unseen dynamic
+driving conditions.
+Rather than estimating the current fuel/energy consumption,
+machine learning has recently been adopted for fuel/energy
+consumption modeling. The learned data-driven models were
+used to predict second-by-second fuel/energy consumption
+values for each vehicle [13], [14] in the near future. With
+collected GPS trajectories and CO2 emissions, support vector
+machine (SVM) was applied in [34] to build a CO2 emission
+model, which was further utilized to search for eco-routes
+using the k-shortest path algorithm. In [11], Gaussian mixture regression was utilized for fuel consumption modeling
+considering real-world vehicle trajectories. Based on the fuel
+consumption model, a travel-time constrained eco-routing
+algorithm was developed to search for eco-routes. The authors
+found that the shortest path, fastest path, and eco-route could
+be different for a real-world traffic network. Authors of [14]
+proposed a probabilistic Bayesian learning approach to predict
+the energy consumption of electric vehicles. They accounted
+for the uncertainty in link energy consumption and adopted linear programming to find eco-routes. Google Maps [5] recently
+started to provide eco-routes for users to choose from. The fuel
+consumptions of different candidate routes are estimated based
+on the National Renewable Energy Laboratory (NREL) Route
+Energy Prediction Model by taking the predicted traffic speeds
+of each route into consideration.
+However, previous eco-routing methods did not explicitly
+consider the impacts of traffic signals except a 2015 study [12].
+The authors proposed a stochastic eco-routing method for signalized traffic networks and formulated them as MDP. The link
+length and traffic signal status were used to estimate vehicle
+trajectories. The estimated trajectories were further used to
+compute the state transition probabilities of MDP and predict
+link fuel consumption through a fuel consumption model.
+Eco-routes can then be obtained by minimizing the expected
+fuel consumption constrained by travel time through dynamic
+programming. Additionally, previous studies mostly focused
+on finding eco-routes without paying adequate attention to the
+accuracy of fuel consumption models.
+B. Deep Reinforcement Learning for Navigation/Routing
+Deep reinforcement learning (DRL) has strong feature
+representation capability due to its deep neural network structure. DRL models do not require expensive labelled data
+and are trained through the interactions between agent and
+environment. Different variants of CNN-based DRL models
+have been developed to solve navigation problems considering simulated 2D or 3D maze-like environments [20], [35],
+[36]. In Neural SLAM [37], a RL agent with an external
+memory implemented with long short-term memory (LSTM)
+and convolution demonstrated the ability to represent the
+occupancy map of a simulated 3D world. Authors of [38]
+showed that semi-parametric topological memory, which was
+based on CNN encoders, can help agent build a topological
+map of the simulated environment. In [39], authors proposed
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+7326
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 25, NO. 7, JULY 2024
+
+imagination-augmented agents (I2As) based on LSTM and
+a convolutional encoder. They showed that I2As can predict
+the trajectories from a learned environment model. To tackle
+the sparsity of the reward signals in such environments,
+auxiliary tasks were used to train agents [40], [41], [42].
+The simulated environments in the above research were
+simple and unrealistic. More realistic navigation schemes
+in simulated environments were proposed in [21] and [22].
+To handle navigation problems with real-world image data
+as the input through DRL, the DRL-based robot navigation
+methods and the corresponding real-world training dataset
+were proposed [23], [24], [43]. Since images/videos were
+directly utilized as the input in these studies, the more realistic
+the environment was, the more complex deep network architectures were required to capture and represent the features.
+Furthermore, the vehicle routing problem (VRP), which is
+the generalized travelling salesman problem, was addressed
+through recurrent neural network (RNN)-based DRL in [44].
+This work aimed at solving the classical NP-hard combinatorial problem in graph theory. Although VRP is different from
+the eco-routing problem in a signalized traffic network, the
+success in [44] shows the potential of applying RL to find
+eco-routes.
+C. Multi-Objective Reinforcement Learning (MORL)
+There are two main types of MORL based on the number of learned policies, i.e., single-policy approaches and
+multi-policy approaches [45]. Single-policy approaches focus
+on finding the best single policy for multiple objectives
+with given/derived preferences. For example, the weighted
+sum [46], [47] approach combines multi-objective functions.
+The w-learning approach [48] assigns the optimal action for at
+least one objective. [49], [50] quantify the degrees of importance for different objectives so that the optimal action can be
+obtained through comparisons. The geometric approach [51]
+computes the average reward for multiple objectives. Overall,
+single-policy approaches require analysts to explicitly specify
+their preferences/weights for different objectives and cannot
+automatically explore all preferences.
+On the other hand, multi-policy approaches aim at finding a set of policies that approximate the Pareto front. For
+example, the convex hull approach [52] simultaneously learns
+optimal policies for all linear preferences. A value-based
+RL method extending the Bellman equation was proposed
+in [53], [54] to maintain the convex hull of Pareto front.
+In [55], a fitted Q-iteration (FQI) approach was developed
+to approximate the Pareto front. However, these methods are
+difficult to scale up with respect to the preference space,
+and it is challenging for them to adapt to new preferences.
+The scalarized Q-learning, i.e., OLS [30], embeds the deep
+Q-learning algorithm inside an outer loop method. The outer
+loop efficiently explores potential preferences in the convex
+coverage set, and the inner loop conducts multi-policy updates
+for the Q-functions scalarized by the preferences. As a result,
+the complete optimal policies for all possible preferences
+can be searched. In modular MODRL [56], decision values
+are used to dynamically judge and adjust the priorities of
+
+preferences based on scalarized actions. Obtaining the priority parameters requires extra computation. In [57], the OLS
+was further extended to be based on a single pair of Deep
+Q-Network (DQNs) to reduce computation. On top of these
+works, to make the learning more sample efficient, authors
+of [58] proposed a generalized MORL. A global optimality
+filter was developed to update envelope Q-function. We have
+identified that the original OLS is most suitable in our design
+and works the best with meta-learning (refer to Section III-C
+for details).
+D. Meta-Learning for Deep Reinforcement Learning
+Generally, there are three categories of meta-deep reinforcement learning. The first category is based on recurrent
+neural networks (RNN) [59], [60], [61]. RNN, such as LSTM,
+learns to learn a function that outputs the policy for an agent.
+However, it is usually time-consuming to train such an RNN.
+Later, model-agnostic meta-learning (MAML) [17] was
+proposed as a generic meta-learning framework, and it can fit
+any types of neural network models and learning, including
+reinforcement learning. MAML was shown to outperform
+RNN-based approaches in terms of computation complexity
+and accuracy [18]. MAML was further extensively studied
+from the perspective of gradient update [18], nonstationary tasks [19], [62], multi-agent environments [19], and
+dynamic real-world environments [63]. It was demonstrated
+that MAML-based methods can efficiently capture the distributions of tasks and rapidly adapt to a new task even with
+limited exposure to the new task. Authors of [64] showed
+that Q-learning was competitive among all types of RL when
+applied to meta-learning. The MAML-based RL family [17],
+[18], [19], [62], [64] belongs to the policy-gradient approach,
+which is more suitable for addressing problems with a continuous action space. Therefore, they are not appropriate for
+solving our eco-routing problem with a discrete action space
+(cf. Section III. A for details).
+The third category is the task inference-based approach,
+in which an extra component that predicts future tasks is
+introduced to improve the sample efficiency for the task.
+In PERL [65], to interpolate off-policy learning, probabilistic
+latent contexts for different tasks are explicitly modeled. The
+model was used to infer tasks in an unsupervised manner.
+In TESP [66], a task encoder based on RNN was developed
+to generate latent task embeddings, which were further used
+to sample episodes. POMDP [67] adopted a belief network for
+task inference, which was trained through supervised learning
+with privileged task information as the ground truth. Authors
+of [68] proposed a self-supervised dual-agents reward shaping strategy for task exploration and a context-aware graph
+network for task inference. Recently, TIGR [69] employed a
+generative model and Gaussian mixture models with recurrent
+units to capture the multi-modality of tasks. The evolvement
+of the above inference-based methods suggests that achieving
+high sample efficiency often requires task inference models
+to be added to the meta-deep RL framework. To reduce
+computation complexity, our design is based on the original
+MAML-based methodology (cf. Section III-C for detailed
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+MA et al.: GRAPH CONVOLUTIONAL NETWORK BASED MULTI-OBJECTIVE META-DEEP Q-LEARNING FOR ECO-ROUTING
+
+reasons), and we need to develop a MAML-based RL that
+works for the discrete action space.
+III. G RAPH C ONVOLUTIONAL N ETWORK -BASED
+M ULTI -O BJECTIVE M ETA -D EEP Q-L EARNING
+To efficiently solve eco-routing problems through reinforcement learning, we exploit graph convolutional network
+(GCN) representation, multi-objective reinforcement learning
+framework, and meta-learning methodology, and develop a
+GCN-based multi-objective meta-deep Q-learning (GM2 DQL)
+algorithms.
+With the commercially available connected vehicle-based
+data acquisition and communication platforms [6], [7], it is
+reasonable to assume that data transmissions are available
+between vehicles and a data center. The GM2 DQL is achieved
+through the interactions between a RL agent and a series of
+learning environments that reflect the dynamics of the target
+signalized traffic network. Every learning environment consists
+of a graph representing the signalized traffic network, together
+with its link-based costs (in terms of travel time and fuel
+consumption) and traffic signal data. Specifically, link-based
+costs are calculated by averaging the costs of all vehicles that
+drive through a particular link over a short period of time. The
+time-series traffic signal status during that period is logged as
+the corresponding traffic signal data. The general process of
+GM2 DQL is summarized as three steps: 1) In the remote data
+center, GM2 DQL offline trains a GCN model that represents
+the action value function used by the agent interacting with
+the learning environments; 2) Vehicles requesting eco-routing
+services download the model from the data center, and quickly
+update the model to the latest local driving conditions online
+with the most up-to-date learning environments (i.e., one-shot
+learning); and 3) The updated models (i.e., adapted to the
+local driving conditions) are applied by individual vehicles
+to predict eco-routes.
+A. Graphic Convolutional Network (GCN) Representation
+for Markov Decision Processes on Multiple Road Links
+To efficiently represent a signalized traffic network, the
+eco-routing problem is formulated as dynamic multi-objective
+Markov decision processes (MOMDP). The state, action and
+reward are key elements that describe the MOMDP and
+characterize the trajectories for eco-routing. In our preliminary
+research [70], the state definition only contains the information
+for a single road link. This definition assumes that each road
+link is independent. In reality, the traffic conditions on road
+links of a signalized traffic network can be causally related
+with each other and not independent. Additionally, considering
+multiple road links may help the agent capture the dependency
+among road links and understand the overall traffic conditions
+of the entire signalized traffic network. Doing so may make
+the model more forward looking and generate eco-routes
+that generalize well to unseen traffic conditions. Thus, it is
+meaningful to relax the previous assumption in [70] and define
+the MOMDP considering multiple road links.
+We propose to apply GCN-based reinforcement learning
+to capture the MOMDP on all links of the signalized traffic
+
+7327
+
+network. GCN-based RL takes the state of MOMDP as the
+feature input and predicts the actions that will induce ecoroutes. The rest of this section defines the state, action, reward
+of MOMDP for the GCN-based RL, followed by the GCN
+model structure design.
+1) State Definition: To make sure the state reflects multiple
+road links as our new assumption requires, the connectivity
+and characteristics of all links are needed. First, a graph is
+needed to reflect the connectivity of the target traffic network.
+The directed links of the traffic network are defined as vertices
+of a graph, i.e., L = {L 1 , L 2 , . . . ,L N }, where N is the
+total number of links. The corresponding adjacency matrix
+A ∈ {0, 1} is utilized to represent the connectivity of the
+links. If there exists a connection between two links L i and
+L j , the corresponding entry in the matrix ai j = 1. Otherwise,
+ai j = 0.
+Second, the characteristics of all the road links are represented by a feature matrix X ∈ R N ×3 . In this paper, the feature
+matrix X includes three specific feature vectors.
+X = [0, T T , P]
+
+(1)
+
+0 ∈ R N ×1 is the traffic signal status vector that contains
+the traffic signal status for all road links. When the traffic
+signal for link i is green, vector element γi = 0. When the
+traffic light is red, γi is the wait time, which is the remaining
+red light/signal time for that link. Since the goal of this
+specific work is to conduct proof-of-concept of our algorithms,
+we assume the traffic signals on all the lanes of a link share
+the same traffic signal status. Essentially, we are considering
+a two-phase control. The state can be expanded to cover cases
+with more complicated control strategies such as protected left
+turn.
+T T ∈ R N ×1 is the travel time vector of all the links. Each
+element tt i is the vehicle travel time (in seconds) for link i.
+P ∈ R N ×1 is the position information vector of the subject
+vehicle. Its element pi is 1 if the subject vehicle is on link i.
+Otherwise, pi is 0.
+Lastly, the state is defined as the product of the preprocessed
+adjacency matrix Â and feature matrix X , which is denoted
+as
+(2)
+
+s = ÂX
+
+GCN is essentially a deep neural network. The purpose of
+preprocessing the adjacency matrix is to solve the problems
+of numerical instabilities and exploding or vanishing gradients
+during training the deep neural network [71]. The preprocessing is conducted through a renormalization trick, which is
+1
+
+1
+
+Â = D̃ − 2 Ã D̃ − 2
+
+(3)
+
+where
+Ã = A + I N , I N is an identify matrix, and D̃ii =
+P
+Ã
+j ij.
+The state s = ÂX associates the features on a road link with
+the features of the links it is connected to. The ÂX product
+has been theoretically proven to be equivalent to the spectral
+convolutions on the graph using kernel gϑ = diag(ϑ), i.e.,
+gϑ ∗ X , where gϑ is parameterized by ϑ ∈ R N [71]. Therefore,
+the ÂX product is also called a graph convolutional layer
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+7328
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 25, NO. 7, JULY 2024
+
+(GConv). Furthermore, stacking up multiple GConv layers
+can capture more complex nonlinear relationships between the
+features of one link and the other links it is connected to.
+2) Action Definition: An action is the decision of which
+downstream link to be selected when the subject vehicle
+is approaching the end of its current link. For a typical
+intersection with four road-approaches possible actions are
+turning left, turning right, and driving straight through the
+intersection. Therefore, the action set A is defined as
+A = {left, right, straight}.
+
+(4)
+
+3) Reward Definition: The reward r is defined as a vector
+that contains the negative values of costs after an action is
+taken. Since there are two objectives in the MOMDP, i.e.,
+travel time (T T ) and fuel consumption (FC). The reward r
+is:
+r = [−T T, −FC]T .
+
+(5)
+
+In our case, rewards are mostly negative values. Once the agent
+reaches the final destination, the reward will be maximum, i.e.,
+0. In that sense, the agent will be rewarded for getting close
+to the destination.
+4) GCN Model Structure: The GCN model is used to represent the action value function for GCN-based reinforcement
+learning. The GCN model takes the current state s as the input
+features and predicts the best action a ∈ A as the output
+that will lead to an eco-route. To represent the action value
+function, both the GConv layers and the multi-layer perceptron
+(MLP) layer are required. As mentioned in the state definition
+section, stacked GConv layers can be utilized to capture the
+complex nonlinear relationships among the features of all
+connected road links of the signalized traffic network. An MLP
+is used as the final output layer of the GCN model. Through
+the MLP, the feature output from the GConv layers can be
+mapped into the action space. For example, an action value
+function can be represented by two GConv layers and one
+MLP layer, which is written as
+ 
+
+ 
+Q (s, a; θ ) = σ σ Âσ ÂX θ1 θ2 θ3
+(6)
+where θi denotes the model parameters for the i th layer, and
+the ReLU function is selected for the activation function σ in
+this work.
+B. Data Collection and Preprocessing for Link-Based Costs
+and Traffic Signals
+Learning environments are required for an agent to learn
+dynamic traffic of the target signalized traffic networks. As discussed in the introduction and related work sections, it is
+important for the learning environments to accurately reflect
+real-world dynamic traffic. For this purpose, the following
+strategies are proposed to take advantage of the collected realworld data.
+1) Definition of Graph-Based Learning Environment and
+Link-Based Cost: In our design, a series of graphs are
+generated from the real-world vehicle routing trajectories that are defined in the context of MOMDP, i.e.,
+s1 , a1 , r 1 , s2 , a2 , r 2 , . . .}. The graphs proposed in this section
+
+Fig. 1.
+
+Free-flow segments and delay segments for a two-way link.
+
+are the graph data structures used to efficiently represent the
+learning environments. However, they are defined differently
+from the graph applied for GCN representation in the previous
+section (i.e., Section III. A). In these graphs, intersections
+are defined as vertices and averaged link-based costs are
+defined as edges. The costs for each graph contain the average travel time and average fuel consumption for all links.
+These instantaneous costs from each vehicle are averaged
+over all the vehicles that have traveled through each link in
+a short period of time, e.g., 5-min. The average link-based
+costs retain the cost variations over time that exist in raw
+trajectories. They contain more important information than the
+costs experienced by individual vehicles. Additionally, using
+the average link-based data rather than raw trajectories helps
+the model avoid overfitting during training, improve model
+generalization, and save training time.
+The link-based costs and traffic signal data for learning
+environments are assumed to be collected through existing
+commercial connected vehicle-based data platforms [6], [7],
+and/or driver’s mobile devices. All the data is eventually
+transmitted to the data center.
+2) Traffic Signal Effect on Link-Based Cost: To reflect
+the link cost variations due to the impacts of traffic signals,
+we propose to split each road link into two segments: freeflow segment and delay segment. Heavily congested traffic
+scenarios are not considered in this research. The free-flow
+segment mainly reflects the average cost under the freeflow condition, which dominates the cost of a link when
+the associated traffic signal is green. The delay segment
+mainly reflects the average cost of delay at an intersection
+when the red light is on. In this work, we define the delay
+segment as the last portion of a link (e.g., last 25 meters of a
+250-meter link), which ends at the center of the intersection
+(illustrated in Fig. 1). The rest of the link is the free-flow
+segment. Thereafter, the cost for each link can be represented
+as
+cost = cost link + cost delay .ratiodelay
+(7)
+
+intersection
+waiting
+time
+
+for red light
+total red light duration
+ratiodelay =
+
+0
+for non-red light
+(8)
+In (7), cost stands for either travel time or fuel consumption;
+cost link is for the free-flow segment; and cost delay is for the
+delay segment when the traffic signal turns red. ratiodelay
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+MA et al.: GRAPH CONVOLUTIONAL NETWORK BASED MULTI-OBJECTIVE META-DEEP Q-LEARNING FOR ECO-ROUTING
+
+is used to further scale cost delay to estimate the delay for
+a vehicle arriving in the middle of a red signal. If minor
+traffic spillback happens when the traffic signal is green, traffic
+spillback in the downstream of the segment causes the increase
+of instantaneous cost values in the upstream free-flow segment.
+Through averaging the instantaneous costs from individual
+vehicles over a short period of time (e.g., 5-min), the effect of
+minor spillback can be reflected in the cost link of downstream
+free-flow segment. Therefore, we can still set the ratiodelay
+as zero in this case and capture the major cost information.
+3) Benefits of Graph-Based Learning Environment: There
+are several advantages of applying such graph-based learning environments using real-world data. First, compared to
+the simulation-based learning environments discussed in the
+related works (Section II), our graph-based learning environments considering real-world data (traffic signal data, travel
+time and fuel consumption data) can more accurately reflect
+reality. Second, compared to directly utilizing actual costs that
+are experienced/explored by an agent in the physical environment, the averaged linked-based cost reduces the complexity of
+the learning environment, reduces training time, and enhances
+model generalization. Conventionally, traffic flows of an urban
+traffic network do not change much within a short period
+(e.g., 5 mins), and the distribution of the costs over the traffic
+network can be seen as a constant. Thus, it is unnecessary
+to let the agent spend much time to explore the network
+and learn the link cost distribution from the actual costs
+experienced by individual vehicles. Meanwhile, doing this may
+cause overfitting the model to the limited samples experienced
+in a short period. Instead, the mean costs can be directly
+obtained using our method, which saves tremendous learning
+time and helps the GCN model generalize. Moreover, the GCN
+model is essentially a function approximator. It can interpolate
+and generalize to unseen traffic environments that might
+cause variations to the cost distribution. Additionally, our
+proposed meta-learning considers different cost distributions
+learned from other environments in different time periods.
+Moreover, the GCN model has the capability to interpolate the
+small variations if major information about cost distribution is
+provided. It will gradually complete the whole cost distribution
+through reinforcement learning over time. Therefore, the mean
+cost values from other environments/distributions can help the
+GCN model further interpolate and generalize to previously
+unseen situations.
+C. Multi-Objective Meta-Reinforcement Learning
+As discussed in the introduction, this study considers two
+objectives in eco-routing. Therefore, there may exist multiple
+optimal policies depending on the analyst’s preferences for
+the two objectives. To address this issue, we adopt a specific
+multi-objective reinforcement learning that is suitable for
+meta-learning and propose multi-objective meta-reinforcement
+learning algorithms in this research.
+Recall that the state-of-the-art MORL methods (cf.
+Section II-C) are based on DQN and the scalarized deep
+Q-learning approach [30], [57], [58]. The objective of these
+methods is to train an agent that can find the convex coverage
+set (CCS), which contains optimal policies for all possible
+
+7329
+
+user preferences. The CCS theoretically is a subset of the
+Pareto front for multi-objective optimization [57], [58], and
+it contains all the optimal solutions with respect to different preferences for its outer convex boundary. The original
+OLS [30] explores weight vectors and identifies whether a
+weight vector belongs to CCS through the outer loop, and
+the inner loop explores optimal multi-policies and updates
+the scalarized Q-functions for a specific preference provided
+by the outer loop. To improve the generalization ability of
+OLS to preferences, generalized MORL algorithms [57], [58]
+have been developed based on a single DQN model. These
+generalized algorithms all share an additional step in the inner
+loop, which trains the same DQN for multiple other possible
+preferences.
+We find the original OLS to be an appropriate MORL
+solution and it works the best with meta-learning. The rationales are explained as follows. First, OLS can make the
+meta-learning converge more easily. MORL trains DQN models over multiple preferences that are parameterized by a
+weight vector w, and meta-learning conducts training over
+multiple environments. Generalized MORL algorithms are
+designed for a distribution of a single learning environment/
+task. If a generalized MORL algorithm [57], [58] is adopted
+together with meta-learning, the data samples from diverse
+distributions are used in MORL, and they eventually randomize the only DQN model. For example, given samples from
+N
+N different distributions {si , ai , r i }i=1
+that share the same
+N
+state and action, their rewards {r i }i=1 can be different or even
+diversified. The optimal action for the next step ai+1 will also
+be different.
+R = w T r i + γ max w T Q (si+1 , ai+1 ; θ )
+ai+1
+
+(9)
+
+Therefore, scalarizing rewards and optimal value vector
+Q with different weights can eventually randomize the
+Q-function that is represented by the only DQN model (i.e.,
+θ ) during the gradient update of accumulated reward R. This
+can further randomize the accumulated gradients of the DQN
+model, so the optimization direction to the optimum is hard
+to guarantee. Therefore, applying the OLS with multiple DQN
+models dedicated for different weights can avoid such issues in
+meta-learning and make the convergence more easily. Second,
+regarding the concern that OLS might lack generalization,
+the meta-learning can help generalize the models with data
+from other distributions. Third, from the model adaptation
+aspect, adapting the model for a given preference weight
+vector is faster than adapting a model that covers all the
+weights, because the training process with other weights will
+not be executed. Therefore, it is worthwhile to spend additional
+storage on multiple models for different weights to achieve
+faster model adaptation speed.
+The multi-objective meta-deep Q-learning algorithms are
+proposed, which consist of two major parts: i) offline multiobjective meta-deep Q-learning with historical data in data
+center (Algorithms 1 and 2); and ii) online model adaptation
+with the most recent data on a vehicle (Algorithm 3). Fig. 2
+illustrates the entire process of our proposed multi-objective
+meta deep Q-learning algorithms for eco-routing.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+7330
+
+Fig. 2.
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 25, NO. 7, JULY 2024
+
+Block diagram of the GM2 DQL algorithms.
+
+Algorithm 1 Multi-Objective Meta-Deep Q-Learning (Offline
+in Data Center)
+1: while (True)
+2:
+Receive envs from a traffic network
+3:
+DQN_models = ∅
+4:
+Initialize improvement threshold τ
+5:
+reuse = copyNearestModel
+6:
+DQN_models: {θ} = DOL(envs, τ , DQN_models,
+reuse, Meta-DQL)
+7: end while
+
+The multi-objective meta-deep Q-learning (Algorithms 1
+and 2) runs offline in the data center using a large amount of
+historical learning environments that are prepared as described
+in Section III-B. During the offline learning, the OLS (in
+Algorithm 1) is adopted as the outer loop and directs the
+meta-learning function (Algorithm 2) to automatically explore
+all the possible preferences parameterized by weight vectors
+w}. To expediate the learning speed, a full model reuse transfer
+learning strategy is applied when a new weight w ′ needs to
+be explored. The complete DQN model parameters θ learned
+from the previous w that is closest to w ′ in the sequence of
+scalarization weights is reused. For the details of OLS, please
+refer to [30].
+The meta-deep Q learning (Algorithm 2) is developed and
+set as the inner loop of Algorithm 1 to learn from multiple
+environments for the given weight w. From the DQN parameters aspect, to reduce overestimation of actions [72], a double
+DQN model containing an additional target network θ − that
+shares the same structure as the DQN θ is adopted for gradient
+updates.
+The dynamic environments in Algorithm 2, denoted by envs,
+are considered as a set of MOMDPs over time. Although
+each environment may have its own cost/reward distribution,
+together they can be seen as a joint distribution ρenvs . The goal
+of meta-learning is to efficiently capture the joint distribution
+ρenvs with a limited number of trajectory samples. For a
+specific environment, the agent generates trajectories through
+ϵ-greedy exploration (lines 8-16 in Algorithm 2). To improve
+sample efficiency and model generalization, the trajectories
+are stored in the replay memory D (line 12), so they will be
+resampled differently and reused in the later learning iterations. For policy gradient-based RL that works for continuous
+
+Algorithm 2 Meta-Deep Q-learning
+1: function Meta-DQL(envs, w, θ )
+2: Initialize target network parameters θ − = θ
+3: Initialize thread-specific parameters θ ′ = θ
+|envs|
+4: Initialize counters for environments {Ti }i=1 = {0
+5: Initialize gradient dθ = 0
+6: while all {T i } ≤ I teration max do
+7:
+for all envi ∈ envs do
+8:
+for k ≤ K do// Sample K trajectories by agent
+9:
+t =0
+10:
+repeat
+11:
+Sample( an action through ϵ-greedy:
+random action in A
+at =
+max w T Q(st , a; θ − )
+12:
+13:
+14:
+15:
+16:
+17:
+18:
+19:
+20:
+21:
+
+a∈A
+
+Save trajectory {st , at , r t , st+1 } into replay
+memory D
+t ←t +1
+Ti ← Ti + 1
+until st reaches terminal or t == tmax
+end for
+Sample K trajectories {s j , a j , r j , s j+1 } Kj=1 from D
+Synchronize θ ′ ← θ
+Clear gradient dθ ← 0
+for j ∈ [1, n] do // compute accumulated
+gradients
+R
+=
+ envi
+ w T r j , atterminal
+
+T
+T
+−
+ w r j + γ max w Q s j+1 , a j+1 ; θ , o/w
+a j+1∈A
+
+22:
+23:
+24:
+25:
+26:
+27:
+28:
+29:
+30:
+31:
+
+Accumulated gradients:
+2
+dθ ← dθ + ∇θ ′ Renvi − w T Q s j , a j ; θ ′
+end for
+Update θ ← θ − αdθ
+if Ti mod Itarget == 0 then
+Update target network θ − = θ
+end if
+end for
+episode ← episode + 1
+end while
+return θ
+
+actions, it has been proven that updating the model parameters
+in every trial with K trajectories encourages the agent to learn
+a faster RL algorithm [6], [7] to facilitate meta-reinforcement
+learning. Therefore, we apply this technique in our meta-deep
+Q-learning algorithm and find it works for our discrete actions,
+as shown in lines 17 to 23. Additionally, to further enhance the
+computation efficiency during learning multiple environments,
+multi-threading is utilized. Thread specific model parameters
+θ ′ enable the computation of accumulated gradients for multiple environments in parallel (line 22). If multi-thread is not
+used, θ ′ is replaced with θ . In lines 25 to 27, the target network
+is updated every Itarget iterations.
+Through multi-objective meta-deep Q-learning as shown in
+Algorithms 1 and 2, DQN models are built that capture the
+joint distribution of all the historical learning environments.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+MA et al.: GRAPH CONVOLUTIONAL NETWORK BASED MULTI-OBJECTIVE META-DEEP Q-LEARNING FOR ECO-ROUTING
+
+7331
+
+Algorithm 3 Multi-Objective Meta-Adaptation (Online in
+Vehicle)
+1: Download DQN_models from data center
+2: reuse = copyNearestModel
+3: DQN_models_adapted: {θ } = DOL(envnew , τ ,
+DQN_models, reuse, standard DQL)
+Algorithm 4 Eco-Route Prediction (Online in Vehicle)
+1: w is set by driver
+2: Select the model θ nearest to w
+3: For st is not terminal:
+4:
+Predict a = max wT Q(st , a; θ )
+5:
+6:
+
+aϵ A
+
+Fig. 3.
+
+Signalized traffic network from Pasadena, CA.
+
+Obtain st+1 based on st and a
+end
+
+As shown in Algorithm 3, a vehicle that requests eco-routing
+service downloads the previously learned DQN models from
+the data center (line 1 in Algorithm 3). The vehicle can quickly
+adapt the downloaded models to the most recent learning
+environment through regular deep Q-learning (line 3) and
+achieve one-shot learning. To further accelerate the model
+adaptation, adaptive ϵ-greedy exploration is adopted [73] in
+this study.
+To find the eco-route (Algorithm 4) based on the preference
+weight w specified by the driver, the DQN model whose
+weight vector is the closest to w is selected for eco-route
+identification (lines 1-2 in Algorithm 4). Lastly, with the
+model parameters θ frozen, the eco-routes are calculated using
+lines 3-6 while the target vehicle is traveling through the
+signalized traffic network. In this process, the actual cost of
+the target vehicle is used.
+IV. E XPERIMENTS AND R ESULTS
+To evaluate the performance of our GM2 DQL method
+for eco-routing, we conduct experiments that are based on
+microscopic traffic simulation. The GM2 DQL algorithms are
+implemented with the Python programming language and
+PyTorch deep learning framework. The traffic environment
+used to train and test the algorithms is simulated with a widely
+used open-source traffic simulator called Simulation of Urban
+Mobility (SUMO) [74].
+A. Experiment Settings
+As shown in Fig. 3, the signalized traffic network considered
+for the experiments is selected from the City of Pasadena,
+CA. It is sampled from the OpenStreetMap [75]. The traffic
+network consists of 16 signalized intersections, 18 two-way
+links and 6 one-way links. The mix of two-way and one-way
+links and traffic signals at each intersection are very typical
+for signalized traffic networks in major US cities.
+With microscopic traffic simulation, randomness can be
+introduced to train and test the proposed model’s ability to handle eco-routing in complicated and realistic traffic scenarios.
+Given our scope defined in Section III-B, we need to configure
+SUMO to generate sufficiently busy traffic conditions without
+
+causing any congestion for this traffic network. To realize
+this experiment using SUMO, 2,000 vehicles are simulated
+to travel on the network in Fig. 3 over a two-hour period.
+First of all, the trips of all the simulated vehicles are randomly
+generated. This helps to randomize the trip origin-destination
+(OD) pattern of the traffic network and decouple the OD
+from any fixed distributions, allowing the trip OD pattern and
+the distributions of costs on each link to change over time.
+Compared to adapting to a traffic environment follows certain
+OD patterns, random distributions significantly increase the
+difficulty for the model to adapt. Therefore, the dynamic
+random distributions are necessary and important to test if
+the proposed GM2 DQL algorithms can quickly adapt the
+model to a new traffic environment. Second, the cycle lengths
+and phase durations for traffic signals are inherited from the
+OpenStreetMap. The traffic signal timing plans of different
+intersections are not coordinated, which also help quickly
+diversify the distributions of OD and link-based costs. Third,
+to thoroughly test our algorithms given the traffic network,
+it is helpful to keep the target vehicle (i.e., the RL agent)
+in the network as long as possible. Therefore, the agent will
+make as many eco-routing predictions/decisions as possible.
+Thus, the origin and destination of the target vehicle are set
+as two locations that are separated by a maximum number of
+links and the longest distance. Additionally, the learning and
+testing environments are all sampled from the simulated traffic
+by SUMO.
+To achieve realistic simulations of an even larger traffic
+network for model evaluation, besides the three key points
+mentioned above, three additional aspects need to be properly
+considered. One is to select a bigger traffic network with more
+vehicles and trips. Second, dominant OD in addition to random
+OD may need to be considered. Third, intersections with more
+road-approaches (e.g., protected left turns) can be included.
+Since a real-world implementation is not our goal in this paper
+and it does not help us effectively evaluate the performance
+of GM2 DQL, this can be the focus of our future research.
+The HBEFA [24] model is adopted in this paper to simulate
+the instantaneous fuel consumption of each vehicle. This
+model is also included in SUMO. The architecture of the
+model is configured empirically through experiments. The
+GCN model in this paper is configured to have two GConv
+layers with ReLU nonlinearities for each GConv, and an MLP
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+7332
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 25, NO. 7, JULY 2024
+
+TABLE I
+H YPERPARAMETERS F OR GM2 DQL
+
+as the last layer as shown in equation (6). To represent the
+target signalized traffic network, the GCN has 25 neurons in
+the first GConv layer and 15 neurons in the second GConv
+layer. The last MLP layer contains 6 neurons. Moreover, the
+hyperparameters of the GM2 DQL (Algorithms 1 and 2) are
+provided in TABLE I. The same hyperparameters are used for
+meta-adaptation (Algorithm 3) except for a smaller learning
+rate of 1 × 10−3 . Meta-adaptation requires additional adaptive
+ϵ-greedy exploration [73] parameters, which are α = 0.01,
+σ = 0.02, and δ = 1/3. Before feeding the data into the
+model, the two elements of the reward are normalized so that
+each ranges between 0 and 1.
+
+Fig. 4. Offline training performance of GM2 DQL (Upper Left: W = [1, 0],
+Upper Right w = [0, 1], Lower Left w = [0.74, 0.26]).
+
+B. Training Performance
+The costs of each link, in terms of travel time and
+fuel consumption, are calculated by moving average with a
+5-min sliding window and a 1-min sliding step. Five learning
+environments (i.e., link-based graphs) and the corresponding
+traffic signal data are used for offline GM2 DQL training
+(Algorithms 1 and 2). These five learning environments collectively reflect traffic conditions for 25 minutes. A separate set
+of learning environment and its traffic signal data are collected
+after another 5 minutes. This new dataset represents the most
+recent traffic environment and is used for meta-adaptation
+(Algorithm 3) training.
+The offline training performance of GM2 DQL is shown in
+Fig. 4. As can be seen from these plots, three preferences of
+travel time and fuel consumption are automatically explored by
+the algorithms and characterized by the following preference
+weights (w): [1, 0], [0, 1] and [0.74, 0.26]. The increasing
+trend of average reward per episode (ARPE) with respect to
+training episode suggests the convergence of the GM2 DQL
+(Algorithms 1 and 2). The ARPE for w = [0.74, 0.26] starts
+with higher values since the training is automatically based
+on the previously trained model with w = [1, 0]. Model with
+weight w = [1, 0] is selected by the training algorithm since
+the model’s weight is nearest to the target weight w = [0.74,
+0.26] (line 6, Algorithm 1). In our previous study [70] considering a single road link each time for state representation,
+the model training took about 15,000 episodes. In this paper,
+considering multiple road links increases the state space and
+consequently requires more meta-learning episodes.
+1 One step of a trajectory is a s a , r sample.
+t t t
+2 Step here means training step, or gradient update.
+
+Fig. 5. Training performance of meta-adaptation (Upper left: w = [1, 0],
+upper right w = [0, 1], lower left w = [0.74, 0.26]).
+
+The training performance of multi-objective metaadaptation (Algorithm 3) is shown in Fig. 5. Through this
+step, the output DQN models from GM2 DQL (Algorithm 1)
+are adapted to the latest environment within 650 episodes
+for the model with w = [1, 0] and 500 episodes for the
+models with two other weights. The adaptation episodes
+are almost the same as in our previous study [70] using
+MLP-based DQN models. The GCN-based meta-adaptation
+also achieves online one-shot learning. Compared to learning
+an environment from scratch, which takes about 5,000
+episodes, the GCN-based meta-learning saves about 90%
+computation time. However, compared to our previous
+preliminary work that considers only single link in the state
+representation [70], simultaneously considering multiple road
+links increases the model adaptation time per episode. For the
+implementation using single thread and only CPU (without
+GPU), which reflects the worst case and slowest scenario,
+the actual meta-adaptation time is about 30 seconds. This
+is approximately three time longer than the model in our
+preliminary study needs [70].
+C. Testing for Eco-Routing
+To test the model’s performance on predicting eco-routes,
+the adapted DQN model is applied to a simulated target vehicle
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+MA et al.: GRAPH CONVOLUTIONAL NETWORK BASED MULTI-OBJECTIVE META-DEEP Q-LEARNING FOR ECO-ROUTING
+
+that travels from the same origin to the same destination in new
+dynamic driving conditions. To make sure the testing driving
+conditions are different from the driving conditions used for
+model training, we select the simulated traffic 5 minutes
+after the last dataset used for meta-adaptation. To test the
+generalization ability of the DQN models, multiple new traffic
+environments are used, which are characterized by the traffic
+data collected at 5 mins, 6 mins, . . . , 11 mins after the
+latest meta-adaptation, respectively. It is meaningful to test the
+models on future traffic conditions, since latency often exists in
+collecting real-time traffic data. For example, the “real-time”
+travel time information displayed on roadside dynamic message signs may be based on the data collected several minutes
+ago due to latency. Furthermore, changes in traffic conditions
+over a longer period (e.g., 15 mins) can be very significant
+and beyond what the DQN models generalization ability can
+handle. To avoid such risks, we recommend initiating a new
+meta-adaptation 15 mins after the previous one. Therefore, the
+new traffic environments 5 mins to 15 mins after the start of
+a meta-adaptation are used for testing.
+Evaluation Metrics Four metrics are used for evaluating the
+proposed model’s eco-routing performance: tested travel time,
+fuel consumption, travel time saving, and fuel saving. Since the
+link cost distributions of various testing traffic conditions can
+be very different, the travel time and fuel consumption of the
+identified eco-route may also change significantly. Comparing
+them across testing traffic conditions does not provide much
+value. To address this issue, we propose another metric called
+normalized cost as defined below:
+tested cost-min
+.
+(10)
+Normalized cost =
+max − min
+The normalized cost is based on min-max normalization,
+and it reflects the relative distance of a route to the optimal
+route with the minimum cost. The tested travel time and
+fuel consumption values of an identified eco-route can be
+normalized through equation (10) based on the maximum and
+minimum costs of all possible paths. The range of normalized
+costs is from 0 and 1. Value 0 indicates the identified eco-route
+is optimal in terms of travel time or fuel consumption, and
+1 means the route is the farthest from the optimal solution.
+Usually, min-max is adopted for data normalization instead of
+as an evaluation metric. This is because it can be affected by
+outliers, which could be the samples from other distributions.
+As discussed in the introduction, although the distributions of
+each testing traffic environment are different, the distribution
+of a specific environment can be seen as stationary and
+fixed. Therefore, adopting the min-max normalization (i.e., the
+normalized cost) as an evaluation metric is not an issue in our
+case. Based on the five performance evaluation metrics, the
+proposed eco-routing approach is compared with several other
+benchmark routing methods.
+Besides the GM2 DQL, three other eco-routing methods are also considered here for comparisons, which are
+1) the Dijkstra’s shortest path method, 2) human driver’s
+random exploration, and 3) our preliminary MLP-based metalearning [70] that only considers single link. As proposed
+earlier in this section, simulated traffic 5 - 15 mins after
+
+Fig. 6.
+
+7333
+
+Testing results on traffic 5 mins after last meta-adaptation.
+
+TABLE II
+T RAVEL T IME AND F UEL C ONSUMPTION ON T RAFFIC 5 M INS
+A FTER L AST M ETA -A DAPTATION
+
+the meta-adaptation are used for testing the four methods.
+Specifically, the Dijkstra’s shortest path method is used to
+find the fastest route and most fuel-efficient route. These
+routes are calculated based on the traffic network in Fig. 3
+with the latest traffic data received by a vehicle. The human
+driver’s random exploration represents the use case without
+considering any eco-routing method. It randomly explores
+all the possible routes from the origin to destination that
+consists of no more than 6 links. The 6-link constraint is
+to avoid travelling backward. One of the randomly explored
+routes is also the optimal eco-route. The MLP-based DQN
+and GCN-based DQN models are tested directly under the
+dynamic traffic environments according to Algorithm 4. For
+these two DQN methods, three preference weights (i.e., w =
+[1, 0], w = [0, 1] and w = [0.5, 0.5]) are selected to represent
+typical drivers’ preferences: shortest travel time, lowest fuel
+consumption, and considering both objectives equally.
+Fig. 6 shows the testing results of the four methods based
+on the traffic condition 5 mins after the last meta-adaptation.
+Each point indicates the travel time and fuel consumption of
+a route. As shown in Fig. 6 and TABLE II, both MLP-based
+meta-learning and GCN-based meta-learning methods identify
+the same eco-route for all the preference weights. GCN-based
+method identifies the optimal route for travel time and/or fuel
+consumption. MLP-based method achieves the same performance as GCN-based method in this case. The normalized
+costs in TABLE II are calculated according to (10). The
+results in TABLE II suggest that the GCN-based eco-route
+takes 71% less travel time and saves 58% fuel compared to
+the route generated by the shortest path method. The shortest
+path method performs worse than the other methods, since
+the traffic conditions change over the 5 mins. The eco-routes
+identified through the shortest path method based on the traffic
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+7334
+
+Fig. 7.
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 25, NO. 7, JULY 2024
+
+Testing results on traffic 6 mins after last meta-adaptation.
+
+condition 5 mins earlier are not the optimal for the testing
+environment 5 mins later. The shortest path method makes
+decisions based on historical traffic information that is updated
+every 5 mins. In other words, the identified shortest path
+is optimal only in terms of the traffic information collected
+5 mins ago. The simulated traffic environments are highly
+dynamic in this study. Unlike the proposed reinforcement
+learning model that can generalize to unseen traffic conditions,
+the shortest path method therefore underperforms the proposed
+GM2 DQL method.
+The same kind of tests are also conducted with future
+traffic environments. The testing environments are indexed
+by the simulation start time, which are 6 min, 7 min, . . . ,
+11 mins1F3 after receiving the latest traffic data and finishing
+meta-adaptation. The evaluation results are shown in Fig. 7
+through Fig. 12.
+To more effectively present and evaluate the eco-routes
+found by different methods in the tests, the normalized
+costs of travel time and fuel consumption for all scenarios
+(Fig. 6 – Fig. 12) are summarized in Fig. 13. The two plots in
+Fig. 14 show the savings in travel time and fuel consumption
+for all the tests. The horizontal axes in both Figs. 13 and 14
+indicate the start time of different dynamic testing traffic
+environments. The results shown in Fig. 13 and Fig. 14
+also reflect the generalization performance of the proposed
+model.
+Overall, GCN-based meta-learning outperforms all other
+methods, as can be seen from Fig. 6 – Fig. 14. The shortest path method tends to find routes with higher costs for
+both travel time and fuel consumption, which indicates the
+underlying traffic environment and cost distribution change
+significantly even over short time periods and are nonstationary. Therefore, using instantaneous traffic information in
+dynamic environments to find eco-routes often leads to suboptimal solutions. The previous MLP-based meta-learning
+method can find the optimal routes in terms of both objectives with respect to all the preferences in the tests up
+to 7 mins2F4 after the last meta-adaptation with real-time
+traffic data (Fig. 6). After that, its eco-route finding performance becomes worse than that of the GCN-based method.
+This shows the generalization ability of the MLP-based
+3 The start time of 11 mins after the last traffic used for model
+meta-adaptation can cover the traffic condition up to 15 mins after the metaadaptation, since we use a 5-min sliding window.
+4 The simulation start time plus the travel time: 5 mins + 128 s ˜ 7 mins.
+
+Fig. 8.
+
+Testing results on traffic 7 mins after last meta-adaptation.
+
+Fig. 9.
+
+Testing results on traffic 8 mins after last meta-adaptation.
+
+method is worse than the GCN-based method. Thus, considering multiple links in state representation through GCN
+helps better generalize the model to unseen future traffic
+conditions.
+The shortest travel time route and most fuel-efficient route
+are different in Fig. 8 and Fig. 9, which is caused by the major
+changes in the underlying link cost distributions. In Fig. 8,
+the GCN-based method finds an eco-route with normalized
+fuel consumption being 0.05 and normalized travel time being
+0.11 (Fig. 13). Based on the definition of normalized cost
+in (10), these values suggest that the GCN-based method
+performs well. The GCN-based method tends to select routes
+that lead to shorter travel time for two reasons: 1) As discussed
+in Section III, travel time information is considered in both
+the state and reward definitions, while fuel consumption is
+only considered in the reward. Therefore, the corresponding
+GCN-based DQN model is better at differentiating travel time.
+2) The differences among fuel consumption values are smaller
+than travel time, although feature normalization is applied.
+This makes it more difficult for the model to differentiate the
+small differences in fuel consumption. Additionally, in Fig. 9,
+the GCN-based method finds an eco-route with slightly higher
+fuel consumption but much shorter travel time, compared
+to the MLP-based method. This phenomenon can also be
+explained by the above two reasons.
+Fig. 13 and Fig. 14 show that the GCN-based DQN model
+can generalize well and identify eco-routes within the next
+15 mins, although traffic environments in this period are
+not used to train the model. However, as shown in Fig. 13,
+the fuel consumption and travel time of the routes predicted
+by both the MLP-based and GCN-based DQN models have
+an increasing trend over time. It suggests that their performances gradually deteriorate as time increases. This reveals
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+MA et al.: GRAPH CONVOLUTIONAL NETWORK BASED MULTI-OBJECTIVE META-DEEP Q-LEARNING FOR ECO-ROUTING
+
+7335
+
+Fig. 14.
+Comparisons on saving travel time and fuel for all the tests
+(left: GCN meta-learning vs. shortest-path, right: GCN-meta-learning vs. MLP
+meta-learning).
+Fig. 10.
+
+Testing results on traffic 9 mins after last meta-adaptation.
+TABLE III
+C OMPARISONS ON S AVING T RAVEL T IME A ND F UEL ON T RAFFIC 5 M INS
+A FTER L AST M ETA -A DAPTATION
+
+TABLE IV
+P ERFORMANCE C OMPARISON B ETWEEN GCN-BASED AND
+MLP-BASED R EPRESENTATIONS
+Fig. 11.
+
+Fig. 12.
+
+Testing results on traffic 10 mins after last meta-adaptation.
+
+Testing results on traffic 11 mins after last meta-adaptation.
+
+Fig. 13. Normalized travel time (left) and normalized fuel consumption
+(right) for all the tests.
+
+the DQN model’s generalization ability is affected by the
+nonstationary unseen future traffic. In practice, it is very
+likely to have significant changes in urban traffic conditions
+after every 5 to 15 mins. Our experiment results suggest that
+meta-adaptation can handle unseen future traffic for up to
+15 mins, beyond which the underlying link cost distribution
+changes are too significant for the DQN model’s generalization
+ability to tackle. In this case, another meta-adaptation would be
+required.
+
+GCN-based meta-learning can more accurately identify
+eco-routes than the MLP-based meta-learning in [70]. The
+reasons boil down to the fundamental differences between
+these two state representation methods: 1) GCN representation
+considers the spatial relationships among the features of
+multiple road links of the entire signalized traffic network.
+It is more suitable for representing complex MDP state space.
+For the MLP-based method, if a feature of the current link
+appeared before, this feature will not be considered as a
+new state. In contrast, for GCN-based representation, any
+feature change on any link generates a new state. Therefore,
+GCN-based representation can describe a more complex MDP
+with more states. This also explains why GCN-based metalearning requires more training time in both meta-learning
+and meta-adaptation. Thus, multi-threading and GPU are recommended to further accelerate GCN-based meta-learning;
+2) Since GCN-based meta-learning can handle/capture complex MDP states and the spatial relationships among road
+links, GCN-based DQN models can be better generalized to
+find eco-routes in unseen and dynamically changing traffic
+conditions. Additionally, since multiple downstream road links
+are considered by GCN-based DQN models, they are more
+forward looking than the MLP-based approach that only
+considers the current link in state representation. Overall,
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+7336
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 25, NO. 7, JULY 2024
+
+the results suggest that considering multiple links in state
+representation helps to improve a model’s ability to generalize
+and find eco-routes, and is more suitable for modeling complex
+traffic networks/conditions (e.g., considering traffic signal status); and 3) From the model architecture perspective, despite
+being more powerful, the GCN-based model may require
+fewer model parameters than the MLP-based model. In our
+experiment, the MLP-based model has 2,040 parameters.
+While the GCN-based model only requires 540 parameters,
+which is 3.8 times fewer. A simpler architecture can facilitate
+model hardware implementation. Additional comparisons of
+GCN- and MLP-based models are summarized in TABLE IV.
+V. C ONCLUSION AND F UTURE W ORK
+This paper proposes a GCN-based multi-objective metadeep Q-learning (GM2 DQL) method to efficiently learn a
+dynamically changing signalized traffic network and automatically explore eco-routes in terms of drivers’ different
+preferences of travel time and fuel consumption. The developed algorithms are evaluated using a signalized traffic
+network simulated by SUMO. The results suggest that the
+GM2 DQL method can quickly adapt its DQN models to
+the latest traffic condition and achieve one-shot learning.
+The adapted model can successfully identify eco-routes even
+under future unseen traffic conditions (e.g., within the next
+15 mins) that have never been used to train the model. Also,
+the GM2 DQL eco-routing method can save up to 71% travel
+time and 62% fuel consumption compared to the conventional
+shortest path method. Compared to our previous MLP-based
+eco-routing method that only considers the features of single
+road link in state representation, the GCN-based method
+proposed as representation part of the GM2 DQL can save up to
+25% in travel time and 19% in fuel consumption. Additionally,
+compared to the MLP-based method, the GCN-based method
+requires nearly 4 times fewer model parameters, making it
+a more computationally efficient representation of signalized
+traffic networks. Therefore, the GM2 DQL is more suitable
+for modeling/solving eco-routing in real-world complex traffic
+environments.
+Although it is tempting to evaluate the proposed algorithms and resulting model in the real world, doing so would
+require a tremendous amount of resources (e.g., data from
+connected vehicle platforms [6]) and is beyond the scope of
+this research. For future work, the impacts of traffic network
+size on the proposed model’s performance should be studied.
+Different GCN model architectures (e.g., additional GConv
+layers) can also be investigated. To scale our method to
+larger traffic networks, we plan to follow through these two
+action items: 1) It is anticipated that the size of the traffic
+network will affect the model training and adaptation time.
+We will identify the maximum traffic network size that can
+be handled by the proposed model. 2) We will tackle the
+eco-routing problem for a very large area by breaking down
+the entire area into subnetworks. Moreover, this study has
+considered randomly generated OD patterns and verified the
+fundamental method. In the future, realistic time-dependent
+OD matrices will be used to train and test our proposed
+algorithms. Additionally, explicitly considering more realistic
+
+traffic signal control schemes, such as protected left turns,
+in MDP state representation may lead to additional interesting
+findings. Finally, the fuel consumption model in this study
+can be complemented by an energy consumption model for
+electric vehicles, so that the proposed GM2 DQL method
+can be extended for studying electric vehicle eco-routing
+problems.
+R EFERENCES
+[1] (2019). Energy Use for Transportation—Energy Explained, Your
+Guide to Understanding Energy—Energy Information Administration. [Online]. Available: https://www.eia.gov/energyexplained/?page=
+us_energy_transportation#tab1
+[2] Annual Energy Outlook 2021. Accessed: Jan. 9, 2022. [Online].
+Available:
+https://www.eia.gov/pressroom/presentations/AEO2021_
+Release_Presentation.pdf
+[3] E. Demir, T. Bektaş, and G. Laporte, “A review of recent research on
+green road freight transportation,” Eur. J. Oper. Res., vol. 237, no. 3,
+pp. 775–793, Sep. 2014.
+[4] M. Zhou, H. Jin, and W. Wang, “A review of vehicle fuel consumption
+models to evaluate eco-driving and eco-routing,” Transp. Res. D, Transp.
+Environ., vol. 49, pp. 203–218, Dec. 2016.
+[5] (2021). Google Maps Eco-Friendly Routing: Accelerating the Journey to Sustainability for One Billion People. [Online]. Available: https://www.gstatic.com/gumdrop/sustainability/google-maps-ecofriendly-routing.pdf
+[6] (Nov. 12, 2021). WEJO and Its Partners Creating the Next Generation of Mobility Together. [Online]. Available: https://scag.ca.
+gov/sites/main/files/file-attachments/mtf052621-wejo.pdf?1621980584
+[7] J. Asiag. (Nov. 12, 2021). Drive Efficient Fleet Fuel Management
+With Connected Vehicle Data. [Online]. Available: https://otonomo.
+io/blog/efficient-fleet-fuel-management/
+[8] M. Barth, K. Boriboonsomsin, and A. Vu, “Environmentally-friendly
+navigation,” in Proc. IEEE Intell. Transp. Syst. Conf., Sep. 2007,
+pp. 684–689.
+[9] K. Boriboonsomsin, M. J. Barth, W. Zhu, and A. Vu, “Eco-routing
+navigation system based on multisource historical and real-time traffic information,” IEEE Trans. Intell. Transp. Syst., vol. 13, no. 4,
+pp. 1694–1704, Dec. 2012.
+[10] Y. Nie and Q. Li, “An eco-routing model considering microscopic
+vehicle operating conditions,” Transp. Res. B, Methodol., vol. 55,
+pp. 154–170, Sep. 2013.
+[11] X. Huang and H. Peng, “Eco-routing based on a data driven fuel
+consumption model,” 2018, arXiv:1801.08602.
+[12] J. Sun and H. X. Liu, “Stochastic eco-routing in a signalized traffic
+network,” Transp. Res. Proc., vol. 7, pp. 110–128, Jan. 2015.
+[13] L. Alfaseeh, R. Tu, B. Farooq, and M. Hatzopoulou, “Greenhouse gas
+emission prediction on road network using deep sequence learning,”
+Transp. Res. D, Transp. Environ., vol. 88, Nov. 2020, Art. no. 102593.
+[14] R. Basso, B. Kulcsár, and I. Sanchez-Diaz, “Electric vehicle routing
+problem with machine learning for energy prediction,” Transp. Res. B,
+Methodol., vol. 145, pp. 24–55, Mar. 2021.
+[15] X. Ma, M. Shahbakhti, and C. Chigan, “Connected vehicle based
+distributed meta-learning for online adaptive engine/powertrain fuel
+consumption modeling,” IEEE Trans. Veh. Technol., vol. 69, no. 9,
+pp. 9553–9565, Sep. 2020.
+[16] D. Isele, A. Cosgun, and K. Fujimura, “Analyzing knowledge transfer
+in deep Q-networks for autonomously handling multiple intersections,”
+2017, arXiv:1705.01197.
+[17] C. Finn, P. Abbeel, and S. Levine, “Model-agnostic meta-learning for
+fast adaptation of deep networks,” Presented at the Int. Conf. Mach.
+Learn. (ICML), 2017.
+[18] Z. Li, F. Zhou, F. Chen, and H. Li, “Meta-SGD: Learning to learn
+quickly for few-shot learning,” 2017, arXiv:1707.09835.
+[19] M. Al-Shedivat, T. Bansal, Y. Burda, I. Sutskever, I. Mordatch,
+and P. Abbeel, “Continuous adaptation via meta-learning in nonstationary and competitive environments,” Presented at the ICLR,
+2018.
+[20] A. Banino et al., “Vector-based navigation using grid-like representations
+in artificial agents,” Nature, vol. 557, no. 7705, pp. 429–433, May 2018.
+[21] Y. Zhu et al., “Target-driven visual navigation in indoor scenes using
+deep reinforcement learning,” in Proc. IEEE Int. Conf. Robot. Autom.
+(ICRA), May 2017, pp. 3357–3364.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+MA et al.: GRAPH CONVOLUTIONAL NETWORK BASED MULTI-OBJECTIVE META-DEEP Q-LEARNING FOR ECO-ROUTING
+
+[22] Y. Wu, Y. Wu, G. Gkioxari, and Y. Tian, “Building generalizable agents
+with a realistic and rich 3D environment,” 2018, arXiv:1801.02209.
+[23] J. Bruce, N. Sünderhauf, P. Mirowski, R. Hadsell, and M. Milford, “Oneshot reinforcement learning for robot navigation with interactive replay,”
+Presented at the 31st Conf. Neural Inf. Process. Syst., 2017.
+[24] K. Mo, H. Li, Z. Lin, and J.-Y. Lee, “The AdobeIndoorNav dataset:
+Towards deep reinforcement learning based real-world indoor robot
+visual navigation,” 2018, arXiv:1802.08824.
+[25] Z. Wu, S. Pan, F. Chen, G. Long, C. Zhang, and P. S. Yu,
+“A comprehensive survey on graph neural networks,” IEEE Trans.
+Neural Netw. Learn. Syst., vol. 32, no. 1, pp. 4–24, Jan. 2021.
+[26] L. Zhao et al., “T-GCN: A temporal graph convolutional network for
+traffic prediction,” IEEE Trans. Intell. Transp. Syst., vol. 21, no. 9,
+pp. 3848–3858, Sep. 2020.
+[27] Y. Fang, F. Zhao, Y. Qin, H. Luo, and C. Wang, “Learning all dynamics:
+Traffic forecasting via locality-aware spatio-temporal joint transformer,”
+IEEE Trans. Intell. Transp. Syst., vol. 23, no. 12, pp. 23433–23446,
+Dec. 2022.
+[28] W. Zhang, Z. Wu, X. Zhang, G. Song, Y. Wang, and J. Chen, “Robust
+and hierarchical spatial relation analysis for traffic forecasting,” IEEE
+Trans. Intell. Transp. Syst., vol. 24, no. 1, pp. 201–217, Jan. 2023.
+[29] J. Zhu et al., “KST-GCN: A knowledge-driven spatial–temporal graph
+convolutional network for traffic forecasting,” IEEE Trans. Intell. Transp.
+Syst., vol. 23, no. 9, pp. 15055–15065, Sep. 2022.
+[30] H. Mossalam, Y. M. Assael, D. M. Roijers, and S. Whiteson, “Multiobjective deep reinforcement learning,” 2016, arXiv:1610.02707.
+[31] E. Ericsson, H. Larsson, and K. Brundell-Freij, “Optimizing route choice
+for lowest fuel consumption—Potential effects of a new driver support
+tool,” Transp. Res. C, Emerg. Technol., vol. 14, no. 6, pp. 369–383,
+Dec. 2006.
+[32] H. A. Rakha, K. Ahn, and K. Moran, “INTEGRATION framework
+for modeling eco-routing strategies: Logic and preliminary results,” Int.
+J. Transp. Sci. Technol., vol. 1, no. 3, pp. 259–274, Sep. 2012.
+[33] A. Chen, Z. Zhou, and S. Ryu, “Modeling physical and environmental
+side constraints in traffic equilibrium problem,” Int. J. Sustain. Transp.,
+vol. 5, no. 3, pp. 172–197, Feb. 2011.
+[34] W. Zeng, T. Miwa, and T. Morikawa, “Application of the support vector
+machine and heuristic k-shortest path algorithm to determine the most
+eco-friendly path with a travel time constraint,” Transp. Res. D, Transp.
+Environ., vol. 57, pp. 458–473, Dec. 2017.
+[35] M. Kempka, M. Wydmuch, G. Runc, J. Toczek, and W. Jaskowski,
+“ViZDoom: A doom-based AI research platform for visual reinforcement learning,” in Proc. IEEE Conf. Comput. Intell. Games (CIG),
+Sep. 2016, pp. 1–8.
+[36] G. Brunner, O. Richter, Y. Wang, and R. Wattenhofer, “Teaching a
+machine to read maps with deep reinforcement learning,” in Proc. AAAI
+Conf. Artif. Intell., 2018, vol. 32, no. 1, pp. 2763–2770.
+[37] J. Zhang, L. Tai, M. Liu, J. Boedecker, and W. Burgard, “Neural SLAM:
+Learning to explore with external memory,” 2017, arXiv:1706.09520.
+[38] N. Savinov, A. Dosovitskiy, and V. Koltun, “Semi-parametric topological
+memory for navigation,” Presented at the ICLR, 2018.
+[39] S. Racanière et al., “Imagination-augmented agents for deep reinforcement learning,” in Proc. Adv. Neural Inf. Process. Syst., 2017,
+pp. 5690–5701.
+[40] M. Jaderberg et al., “Reinforcement learning with unsupervised auxiliary
+tasks,” 2016, arXiv:1611.05397.
+[41] P. Mirowski et al., “Learning to navigate in complex environments,”
+2016, arXiv:1611.03673.
+[42] G. Lample and D. S. Chaplot, “Playing FPS games with deep reinforcement learning,” in Proc. 31th AAAI Conf. Artif. Intell., 2017,
+pp. 2140–2146.
+[43] A. Chang et al., “Matterport3D: Learning from RGB-D data in indoor
+environments,” 2017, arXiv:1709.06158.
+[44] M. Nazari, A. Oroojlooy, L. Snyder, and M. Takác, “Reinforcement
+learning for solving the vehicle routing problem,” in Proc. Adv. Neural
+Inf. Process. Syst., 2018, pp. 9839–9849.
+[45] C. Liu, X. Xu, and D. Hu, “Multiobjective reinforcement learning:
+A comprehensive overview,” IEEE Trans. Syst., Man, Cybern., Syst.,
+vol. 45, no. 3, pp. 385–398, Mar. 2015.
+[46] N. Sprague and D. Ballard, “Multiple-goal reinforcement learning
+with modular Sarsa(0),” in Proc. 18th Int. Joint Conf. Artif. Intell.,
+2003, pp. 1445–1447.
+[47] D. C. K. Ngai and N. H. C. Yung, “A multiple-goal reinforcement learning method for complex vehicle overtaking maneuvers,”
+IEEE Trans. Intell. Transp. Syst., vol. 12, no. 2, pp. 509–522,
+Jun. 2011.
+
+7337
+
+[48] M. Humphrys, “Action selection methods using reinforcement learning,”
+in From Animals to Animats, vol. 4. Cambridge, MA, USA: MIT Press,
+1996, pp. 135–144.
+[49] X. Shen, Y. Guo, Q. Chen, and W. Hu, “A multi-objective optimization
+genetic algorithm incorporating preference information,” Inf. Control,
+vol. 36, no. 6, p. 746, 2007.
+[50] Y. Zhao, Q. Chen, and W. Hu, “Multi-objective reinforcement learning
+algorithm for MOSDMP in unknown environment,” in Proc. 8th World
+Congr. Intell. Control Autom., Jul. 2010, pp. 3190–3194.
+[51] S. Mannor and N. Shimkin, “The steering approach for multi-criteria
+reinforcement learning,” in Proc. NIPS, 2001, pp. 1563–1570.
+[52] L. Barrett and S. Narayanan, “Learning all optimal policies with multiple
+criteria,” in Proc. 25th Int. Conf. Mach. Learn., 2008, pp. 41–47.
+[53] K. Hiraoka, M. Yoshida, and T. Mishima, “Parallel reinforcement learning for weighted multi-criteria model with adaptive margin,” Cognit.
+Neurodyn., vol. 3, no. 1, pp. 17–24, Mar. 2009.
+[54] H. Iima and Y. Kuroe, “Multi-objective reinforcement learning for
+acquiring all Pareto optimal policies simultaneously—Method of determining scalarization weights,” in Proc. IEEE Int. Conf. Syst., Man,
+Cybern. (SMC), Oct. 2014, pp. 876–881.
+[55] A. Castelletti, F. Pianosi, and M. Restelli, “Multi-objective fitted Qiteration: Pareto frontier approximation in one single run,” in Proc. Int.
+Conf. Netw., Sens. Control, Apr. 2011, pp. 260–265.
+[56] T. Tajmajer, “Modular multi-objective deep reinforcement learning with
+decision values,” in Proc. Federated Conf. Comput. Sci. Inf. Syst.
+(FedCSIS), Sep. 2018, pp. 85–93.
+[57] A. Abels, D. Roijers, T. Lenaerts, A. Nowé, and D. Steckelmacher,
+“Dynamic weights in multi-objective deep reinforcement learning,” in
+Proc. Int. Conf. Mach. Learn., 2019, pp. 11–20.
+[58] R. Yang, X. Sun, and K. Narasimhan, “A generalized algorithm for
+multi-objective reinforcement learning and policy adaptation,” in Proc.
+33rd Conf. Neural Inf. Process. Syst., 2019, pp. 1–12.
+[59] Y. Duan, J. Schulman, X. Chen, P. L. Bartlett, I. Sutskever, and
+P. Abbeel, “Rl2 : Fast reinforcement learning via slow reinforcement
+learning,” 2016, arXiv:1611.02779.
+[60] J. X. Wang et al., “Learning to reinforcement learn,” 2016,
+arXiv:1611.05763.
+[61] N. Mishra, M. Rohaninejad, X. Chen, and P. Abbeel, “A simple neural
+attentive meta-learner,” 2017, arXiv:1707.03141.
+[62] A. Nagabandi, C. Finn, and S. Levine, “Deep online learning via metalearning: Continual adaptation for model-based RL,” Presented at the
+ICLR, 2018.
+[63] A. Nagabandi et al., “Learning to adapt in dynamic, real-world environments through meta-reinforcement learning,” 2018, arXiv:1803.11347.
+[64] R. Fakoor, P. Chaudhari, S. Soatto, and A. J. Smola, “Meta-Q-learning,”
+2019, arXiv:1910.00125.
+[65] K. Rakelly, A. Zhou, C. Finn, S. Levine, and D. Quillen, “Efficient offpolicy meta-reinforcement learning via probabilistic context variables,”
+in Proc. Int. Conf. Mach. Learn., 2019, pp. 5331–5340.
+[66] L. Lan, Z. Li, X. Guan, and P. Wang, “Meta reinforcement learning with
+task embedding and shared policy,” 2019, arXiv:1905.06527.
+[67] J. Humplik, A. Galashov, L. Hasenclever, P. A. Ortega, Y. W. Teh,
+and N. Heess, “Meta reinforcement learning as task inference,” 2019,
+arXiv:1905.06424.
+[68] H. Wang, J. Zhou, and X. He, “Learning context-aware task reasoning
+for efficient meta-reinforcement learning,” in Proc. 19th Int. Conf. Auton.
+Agents Multiagent Syst., 2020, pp. 1440–1448.
+[69] Z. Bing, L. Knak, F. Oliver Robin, K. Huang, and A. Knoll, “Metareinforcement learning in broad and non-parametric environments,”
+2021, arXiv:2108.03718.
+[70] X. Ma, Y. Xie, and C. Chigan, “Meta-deep Q-learning for eco-routing,”
+in Proc. IEEE 2nd Connected Automated Vehicles Symp. (CAVS),
+Sep. 2019, pp. 1–5.
+[71] T. N. Kipf and M. Welling, “Semi-supervised classification with graph
+convolutional networks,” Presented at the ICLR, 2017.
+[72] H. Van Hasselt, A. Guez, and D. Silver, “Deep reinforcement learning
+with double Q-learning,” in Proc. AAAI Conf. Artif. Intell., 2016, vol. 30,
+no. 1, pp. pp. 2094–2100.
+[73] M. Tokic, “Adaptive ε-greedy exploration in reinforcement learning
+based on value differences,” in Proc. Annu. Conf. Artif. Intell. Cham,
+Switzerland: Springer, 2010, pp. 203–210.
+[74] B. Pattberg. (2018). DLR—Institute of Transportation Systems—
+SUMO—Simulation of Urban Mobility. [Online]. Available: http://www.
+dlr.de/ts/en/desktopdefault.aspx/tabid-9883/16931_read-41000/
+[75] (2019). OpenStreetMap. [Online]. Available: http://www.opens
+treetmap.org
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+7338
+
+IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 25, NO. 7, JULY 2024
+
+Xin Ma received the master’s degree in electrical engineering from Boston University in 2010,
+the master’s degree in computer engineering from
+Northeastern University in 2012, and the Ph.D.
+degree in computer engineering from the University of Massachusetts Lowell in 2019. His research
+interests include machine learning, data mining, and
+signal processing. He is currently in artificial intelligence/machine learning industry.
+
+Yuanchang Xie received the B.S. and M.S. degrees
+in transportation engineering from Southeast University, China, in 2000 and 2003, respectively, and
+the Ph.D. degree in civil engineering from Texas
+A&M University, USA, in 2007. From 2008 to 2011,
+he was an Assistant Professor with South Carolina
+State University, USA. He is currently a Professor
+with the Department of Civil and Environmental
+Engineering, University of Massachusetts (UMass)
+Lowell, USA. His research interests include intelligent transportation systems, transportation safety,
+traffic control and simulation, and data analytics. He is a Registered Professional Engineer in the State of South Carolina. He is a member of the
+Transportation Research Board (TRB) Artificial Intelligence and Advanced
+Computing Applications Committee. He also serves as an Associate Editor
+for Accident Analysis & Prevention.
+
+Chunxiao Chigan received the Ph.D. degree in
+electrical engineering from The State University of
+New York in 2002. She is currently a Professor in
+electrical and computer engineering with the University of Massachusetts Lowell. Her research interests
+include network and cyber security, connected
+and autonomous vehicles and security, cognitive
+radio-based networks and security, and wireless
+ad hoc and sensor networks, and the Internet of
+Things (IoT). Her research is sponsored by the U.S.
+National Science Foundation (NSF), U.S. Department of Defense (DOD), U.S. Department of Energy (DOE), and the industry.
+She was a recipient of the NSF CAREER Award in 2007. She regularly
+serves as a Technical Program Committee (TPC) Member for leading IEEE
+conferences, including IEEE INFOCOM, IEEE ICC, IEEE GLOBECOM, and
+IEEE WCNC. She serves as an Associate Editor for IEEE T RANSACTIONS
+ON I NTELLIGENT T RANSPORTATION S YSTEMS .
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:51:56 UTC from IEEE Xplore. Restrictions apply.
+
+

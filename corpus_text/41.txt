@@ -1,0 +1,431 @@
+International Conference on Transportation and Development 2018
+
+Autonomous Vehicle Routing Optimization in a Competitive Environment: A
+Reinforcement Learning Application
+Alireza Mostafizi1; Mohammad Rayeedul Kalam Siam2; and Haizhong Wang, Ph.D.3
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+1
+
+Oregon State Univ., Dept. of Civil and Construction Engineering, Corvallis, OR 97331. E-mail:
+mostafia@oregonstate.edu
+2
+Oregon State Univ., Dept. of Civil and Construction Engineering, Corvallis, OR 97331. E-mail:
+siamm@oregonstate.edu
+3
+Oregon State Univ., Dept. of Civil and Construction Engineering, Corvallis, OR 97331. E-mail:
+haizhong.wang@oregonstate.edu
+ABSTRACT
+This paper presents a multiagent approach to identify the shortest path for the intelligent
+agents (i.e., autonomous vehicles) traveling through the transportation network using a Qlearning algorithm. In addition, this paper discusses how a machine achieves an optimal solution
+in the case that there are a large number of intelligent agents trying to minimize their travel times
+simultaneously. The Q-learning algorithm with a reverse order Q matrix is updated to reach the
+optimal path within a grid network, during which different coefficients have been evaluated and
+analyzed based on their impact on the algorithm’s performance. The reinforcement learning
+algorithm is then applied to the multiagent system with different market penetration of
+autonomous vehicle agents. The results revealed that as the percentage of intelligent agents
+increases, it is more difficult to converge to an optimal solution. A physical interpretation is that
+when all of the agents are trying to maximize their utility, and if the intelligent agents have
+conflicted interests with each other, the system does not converge to a global optimum. We
+found that the final converged total travel time reaches its minimum when 75% of the agents are
+intelligent autonomous vehicles. The critical threshold lies between 50% and 75%, below which
+the system performance improves marginally over time.
+1. INTRODUCTION
+The escalating advancement of information and communications technology (ICT), the
+internet of things (IoTs), and the automation have had a significant influence on the landscape of
+transportation. These technologies have given rise to the prospect of autonomous vehicle (AV)
+technology which aims to improve traffic performance in terms of safety, mobility, and
+environmental impacts (Genders and Razavi 2015). The idea of driverless vehicles has been in
+existence for decades; however, the exorbitant costs and the lack of proper technological
+advancements have stalled its large-scale production (Fagnant and Kockelman 2015).
+Nevertheless, an acceleration in the research and development efforts in the last decade has
+brought the idea of the AV to realization. For example, the introduction of the Google car
+brought AVs to the spotlight (Guizzo 2011, Markoff 2010). However, the existing literature does
+not document the approaches by which AVs find and determine their routes in the road networks
+(Bagloee et al., 2016). Real-time traffic information systems are considered as an effective
+method to deliver messages to drivers and vehicles regarding the travel times as well as
+upcoming incidents. This real-time communication capability between connected and
+autonomous vehicles (CAV) as well as the infrastructure may be beneficial to the vehicles’
+directionality abilities, leading to more efficient and intelligent route-finding algorithms
+
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+109
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+International Conference on Transportation and Development 2018
+
+(Mostafizi et al, 2017). As a result, the future of autonomous vehicles, and routing behavior in
+particular, relies on centralized control to a certain extent to fully utilize the transportation
+network capacity. In this paper, the learning environment of the centralized control system is
+replicated to find the shortest path for the intelligent agents travelling through a grid
+transportation network using a Q-learning algorithm. The objectives of this paper are two-folded.
+In the first part, the authors focused on replicating the behavior of the controller in terms of
+learning the shortest path for a single intelligent vehicle in a simplified transportation grid
+network with a background traffic. Later, the authors studied how different percentages of
+intelligent vehicles impacts the total mobility of the whole system, measured by the average of
+travel times.
+In the remainder of the article, Section 2 briefly introduces the past research done on this
+area. Section 3 contains the methodology that describes the formulation of both the individual
+and the competitive learning environment. Section 4 discusses how a machine achieves an
+optimal solution in the case that there are large number of intelligent agents trying to minimize
+their travel times. Finally, Section 5 concludes the major findings of this work.
+2. LITERATURE REVIEW
+Connected and Autonomous Vehicle (CAV) systems coupled with vehicle-to-vehicle (V2V)
+and vehicle-to-infrastructure (V2I) information exchange may introduce far-reaching impacts on
+several levels on the current transportation arena such as demand and behavior side, traffic
+mobility, as well as environmental relevant issues, and consequently, have attracted significant
+attention from both academia and industry. Actual performance at the network level will echo
+these new changes and will be greatly affected by the specific routing and scheduling algorithms
+developed for both individual autonomous vehicles and for vehicle fleets. To address the above
+notion, Du et al. (2015a) developed a coordinated routing mechanism that allows smart vehicles
+to talk to each other so that they can make online routing decisions in real time; this strategy may
+aid in avoiding probable traffic congestion to some degree. Later, Du et al. (2015b) extended the
+work and developed a coordinated online in-vehicle routing mechanism that also accommodates
+information perturbation. This work has some attractive features such that: (1) CV vehicles make
+a routing coordination group based on their route choice; each smart vehicle in each group shares
+traffic information including its route choice with other members; and (2) a control center that
+collects and processes real-time information including general traffic condition, vehicles’
+tentative route choice, and travel time prediction among vehicles in a connected environment.
+This paper chooses reinforcement learning (RL) algorithm to define the quickest path for the
+intelligent agents travelling along the transportation network. RL is a technique for learning
+control strategies for autonomous agents from trial and error (Kaelbling et al. 1996, Sutton et al.,
+1998). The agents interact with the environment to obtain information, and use resulting
+feedback (reward and the consecutive state) to reinforce behavior that result in desired
+conclusions. A lot of research (Littman and Boyan 1993, Baruah et al. 2004, Peshkin and Savova
+2002) have successfully applied RL algorithm in the context of vehicle routing; however, this is
+the first attempt, to the authors’ knowledge, to implement RL algorithm in a connected and
+autonomous vehicle environment.
+3. METHODOLOGY
+This paper considers a network grid where nodes represent intersections and links represent
+travel links. Nodes at the farthest left of the grid are the origins and the other side nodes are
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+110
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+International Conference on Transportation and Development 2018
+
+111
+
+representing the destinations. In each origin, there are 50 agents whose destination is randomly
+assigned to one of the destination nodes. Two types of agents are included: naïve (i.e.,
+conventional vehicles) and intelligent (i.e., autonomous vehicles). Naïve agents have no
+connection to the centralized control, and therefore choose their route based on the so-called
+diagonal shortest path, calculated with the following pattern.
+ 6  D y )  /2 
+dy
+ 6 Dy ) /2
+
+
+ R..R RDRD..RDRD R..R
+dy  0
+
+Diagonal Shortest Route  
+dy  0
+ R..R RURU ..RURU R..R
+ 6 D y )  /2
+ 6 D y )  /2 
+
+dy
+
+
+
+
+where d y = YDestination  YOrigin , R represents Right action, D represents Down action, and U
+represents Up action.
+However, intelligent agents are connected to the controller that can provide them with the
+shortest path. Therefore, for each agent travelling through this network, the route would be a
+combination of certain “Right” actions and d y “Up” or “Down” actions, based on the sign of
+dy .
+
+As mentioned earlier, the contribution of the paper is formulated in two scenarios:
+ Scenario I: How a centralized controlling system can learn the optimal shortest route for
+an individual intelligent agent?
+ Scenario II: How does this machine achieves an optimal solution in the case that there are
+a large number of intelligent agents trying to minimize their travel times?
+The general approach to optimize the route for the intelligent agents in this study is to exploit
+the Q-learning algorithm (Watkins and Dayan 1992) with reverse updates to speed up the goalbased domain. The simulator was built in Netlogo (Wilensky, 1999) and agent-based modeling
+was incorporated to replicate cars’ movement and speed synchronization as following:
+ Speed of the front vehicle  deceleration If there is any vehicle in sight
+Speed  
+If the is no vehicle in sight
+ Speed  acceleration
+Where acceleration and deceleration are set to reflect the comfortable range of acceleration
+and deceleration of passenger cars.
+Since traffic congestions are simulated in the model and incorporated in the process of
+learning, rewards were stochastic. Therefore, each trajectory was run 10 times and the average
+rewards of each state were used to update the Q matrix. The learning approach is summarized
+hereunder.
+1. Start with all zeros initial Q Matrix
+2. Take the action considering  greedy exploration exploitation policy
+3. Collect the reward
+4. Go back to step 2 until reaching the destination
+5. Do the same trajectory 10 times
+6. Update Q function in a reverse order based on the average observed rewards in 10 trials
+of the same trajectory as following
+
+
+
+Q  s, a   Q  s, a    R  s    Max ´ Q  ś, á   Q  s, a 
+a
+
+
+
+7. Go to 2: After trying 10 different trajectories, calculate and report the performance
+measurement.
+
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+International Conference on Transportation and Development 2018
+
+In addition, to formulate this problem, three key features of reinforcement learning are
+defined as following:
+ States
+Each intersection is known as a state.
+ Actions
+For the Scenario  , possible actions are D and R , regarding the network constraints.
+This means that an agent cannot move outside the network. For the Scenario  , possible
+actions are R , and either D or U (based on the sign of d y ), considering the constraint
+that an agent cannot move outside the network. Also, an agent cannot pass its destination
+vertically. This means that any sets of actions will take an agent to its own destination for
+sure.
+ Rewards
+Since the objective is to find the “Shortest” path, reward of each state is based on the time
+to get to that state from previous states, formulated as the following.
+Reward  state    MaxTraveltime  Traveltime  state  *1000
+where MaxTraveltime is calculated based on the link length and the minimum speed of the
+vehicles. There also is a significant reward for the destination, based on the time it takes
+to get to the destination from the origin, formulated as the following.
+Final Reward   MaxTotal Traveltime  Total Traveltime  *1000
+Where MaxTotal Traveltime is calculated based on Manhattan distance between origin and
+destination and the minimum speed of the agents.
+
+Figure 1. Background traffic pattern.
+
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+112
+
+International Conference on Transportation and Development 2018
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+SCENARIO I: INDIVIDUAL LEARNING ENVIRONMENT
+This paper considered two different network sizes, three by three and six by six, to reduce the
+amount of computational needs, and prove the concept. In this scenario, all agents are naïve,
+except one intelligent agent at the top left of the grid, heading to bottom right. Based on the
+travel pattern proposed earlier and the diagonal shortest path algorithm defined, the expected
+background traffic resembles Figure 1.
+As shown in the Figure 1, the middle of the network is heavily congested, and thus, the
+shortest path should avoid those links as much as possible. Therefore, the shortest path from the
+top left to the bottom right is not the diagonal path, and it is more likely to be inclined to the
+bottom left of the grid. Also, since vertical links are less congested in the beginning, it is
+expected that the shortest path will be more vertical in the beginning and after that, it tries to get
+to the destination by moving horizontally. To compare the impact of different coefficients, the
+learning environment is set for two different network sizes, and for deferent values of β, α, and ϵ
+for the epsilon greedy exploitation policy.
+SCENARIO II: COMPETITIVE LEARNING ENVIRONMENT
+In this scenario, the authors focused on having multiple agents to learn at the same time. As
+aforementioned, there are 50 agents in each origin. However, a specific percentage of the agents
+in each origin is set as intelligent agents in this scenario. The destinations are assigned randomly.
+Definition of States and rewards are exactly the same as the first part. However, possible actions
+are defined as the following.
+If d y  0 , Possible Actions(state) =  RU 
+If d y  0 , Possible Actions(state) =  R D
+If d y  0 , Possible Actions(state) = { R}
+It is assumed that an agent cannot travel outside the network. Also, an agent cannot pass its
+destination vertically. Since the objective is to identify the optimal shortest path, logical
+constraints are applied to ensure possible actions in a way that an agent reaches its destination for
+sure, and to ensure that the simulation realized the learning potential for finding the shortest path.
+The next section presents the results from both scenarios.
+
+Figure 2. Learning curve for various ϵ (α=0.1 and β=0.99).
+
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+113
+
+International Conference on Transportation and Development 2018
+
+4. RESULTS
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+SCENARIO I: INDIVIDUAL LEARNING ENVIRONMENT
+The objective of the first scenario is to fine-tune the learning algorithm to ultimately deploy
+on the multi-agent system with many intelligent agents learning simultaneously. Therefore, the
+following figures show distinctive performances of the algorithm due to varying coefficients on a
+3x3 grid network. Figure 2 shows the algorithm’s performance for diverse values for ϵ.
+Considering the background traffic, the optimal route would be the one that starts from the
+bottom left intersection, and due to the nature of the idealized grid network, it is hard to explore
+the corners of the network. So, setting ϵ to 0.9, even though it makes the learning curve less
+noisy, it would converge to the near-optimal route eventually but computationally intensive. On
+the other hand, setting ϵ to be 0.1, this makes the learning curve very noisy, and a reliable
+convergence to the optimal route is achieved almost at the same time as 0.9-greedy policy. In this
+study, as convergence to the optimal policy is more important than the way of convergence and
+the algorithm’s performance, for this reason, ϵ is set to be 0.5 which practically is a random
+exploration policy.
+Figure 3 represents how different discount factors affect the performance of the algorithm.
+Since the rewards of each state are in line with the final reward, having a large β sometimes
+makes the learning curves to be noisy. As can be seen in Figure 3, all three curves show that the
+algorithm converged to the near-optimal route. However, β=0.99 converges in a noisier manner.
+To ensure that the algorithm converges to the shortest route, β is set to 0.99 for the rest of
+simulations.
+
+Figure 3. Learning curve for various β (α=0.1 and ϵ=0.5).
+Figure 4 presents the impact of different values of α on the algorithm’s performance. As
+expected, the smaller the  is, the smoother the learning process would be.
+Therefore, for the analysis in Scenario II, the coefficients are set to the following values:
+α=0.1, β=0.99, and ϵ=0.5.
+The final results in the first scenario is the sample of algorithm run for a six by six network.
+As observed, similar to the smaller network, ϵ of 0.5 converges faster, but noisier, compared to
+the other two. In addition, the final route that came from the algorithms is shown in Figure 6. As
+expected, the optimal route is inclined to the bottom left part of the network.
+
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+114
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+International Conference on Transportation and Development 2018
+
+Figure 4. Learning curve for various α (β=0.5 and ϵ=0.5).
+
+Figure 5. Learning curve for various ϵ (α=0.1 and β=0.99).
+
+Figure 6. Final optimal routes.
+Scenario II: COMPETITIVE LEARNING ENVIRONMENT
+Figure 7 shows the evolution of total travel time when there are more than one intelligent
+agent in the network. Of the all agents in the network (Naïve and Intelligent) for different
+percentages (market penetration) of the intelligent agents, the final converged total travel times is
+minimized when 75% of the agents are intelligent, not all of them. This suggests that as the
+number of intelligent agents increase, a convergence to the optimal solution becomes harder or
+even impossible. This is due to the fact that when all of the agents are trying to optimize their
+utility function with conflicting interests between each other, reaching an optimal solution is
+becoming infeasible. In this case, having 100% of intelligent agents is even worse than all other
+three different scenarios. On another note, having intelligent agents improves the performance of
+the system, compared to scenarios without any.
+
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+115
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+International Conference on Transportation and Development 2018
+
+Figure 7. Total travel times for different percentage of intelligent agents.
+
+Figure 8. Average travel time of intelligent agents.
+Figure 8 presents the average travel time of the scenarios in which all agents are intelligent.
+The results are interesting and informative. The learning curve of the intelligent agents for a
+market penetration of 75% and 100% is deteriorating over the simulation horizon, instead of
+improving. On the other hand, the system performance for a market penetration of 25% or 50 %
+intelligent agents improves over simulation time. Therefore, it is reasonable to conjecture there
+exists a critical threshold between 50% and 75%, above which the system performance
+deteriorates, and below which the system performance improves over the simulation horizon.
+5. CONCLUSION
+This study consists of two major sections. Firstly, Q-learning algorithm with a reverse order
+Q Matrix Update is applied to reach the optimal shortest path within a grid network from the top
+left corner to the bottom right corner, during which different coefficients have been evaluated
+and analyzed based on their impact on the algorithm’s performance. Secondly, a learning
+algorithm is implemented to the multi-agent systems with different percentage of intelligent
+agents. The results revealed that as the percentage of intelligent agent increases, it is more
+difficult to converge to the optimal solutions. It can be explained that when all of the agents are
+trying to optimize their utility function, and if their benefits contradict with the others, reaching
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+116
+
+International Conference on Transportation and Development 2018
+
+optimal solution is not feasible. In addition, this study found that the final converged total travel
+times reach the minimum when 75% of the agents are intelligent. The results of competitive
+learning environment suggest that the scope of the threshold would lie between 50% and 75%,
+above which the system deteriorates, while below which the system improves over the
+simulation horizon. This further validates that increasing percentage of intelligent agents does
+not necessarily improves the performance of the system.
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+REFERENCES
+Bagloee, S. A., Tavana, M., Asadi, M., and Oliver, T. (2016). Autonomous vehicles: challenges,
+opportunities, and future implications for transportation policies. Journal of Modern
+Transportation, 24(4), 284-303.
+Baruah, P., Urgaonkar, R., and Krishnamachari, B. (2004, November). Learning-enforced time
+domain routing to mobile sinks in wireless sensor fields. In Local Computer Networks, 2004.
+29th Annual IEEE International Conference on (pp. 525-532). IEEE.
+Du, L., Chen, S., and Han, L. (2015). Coordinated online in-vehicle navigation guidance based
+on routing game theory. Transportation Research Record: Journal of the Transportation
+Research Board, (2497), 106-116.
+Du, L., Han, L., and Chen, S. (2015). Coordinated online in-vehicle routing balancing user
+optimality and system optimality through information perturbation. Transportation Research
+Part B: Methodological, 79, 121-133.
+Fagnant, D. J., and Kockelman, K. (2015). Preparing a nation for autonomous vehicles:
+opportunities, barriers and policy recommendations. Transportation Research Part A: Policy
+and Practice, 77, 167-181.
+Genders, W., and Razavi, S. N. (2015). Impact of connected vehicle on work zone network
+safety through dynamic route guidance. Journal of Computing in Civil Engineering, 30(2),
+04015020.
+Guizzo, E. (2011). How Google’s self-driving car works. IEEE Spectrum Online, 18(7), 11321141.
+Hong, D., Kimmel, S., Boehling, R., Camoriano, N., Cardwell, W., Jannaman, G., and Russel, E.
+(2008, August). Development of a semi-autonomous vehicle operable by the visuallyimpaired. In Multisensor Fusion and Integration for Intelligent Systems, 2008. MFI 2008.
+IEEE International Conference on (pp. 539-544). IEEE.
+Kaelbling, L. P., Littman, M. L., and Moore, A. W. (1996). Reinforcement learning: A survey.
+Journal of artificial intelligence research, 4, 237-285.
+Littman, M., and Boyan, J. (1993, July). A distributed reinforcement learning scheme for
+network routing. In Proceedings of the international workshop on applications of neural
+networks to telecommunications (pp. 45-51). Erlbaum Hillsdale, NJ, U.S.
+Mostafizi, A., Dong, S., and Wang, H. (2017). Percolation phenomenon in connected vehicle
+network through a multi-agent approach: Mobility benefits and market penetration.
+Transportation Research Part C: Emerging Technologies, 85, 312-333.
+Peshkin, L., and Savova, V. (2002). Reinforcement learning for adaptive routing. In Neural
+Networks, 2002. IJCNN'02. Proceedings of the 2002 International Joint Conference on (Vol.
+2, pp. 1825-1830). IEEE.
+Sutton, R. S., and Barto, A. G. (1998). Reinforcement learning: An introduction (Vol. 1, No. 1).
+Cambridge: MIT press.
+Watkins, C. J., and Dayan, P. (1992). Q-learning. Machine learning, 8(3-4), 279-292.
+
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+117
+
+International Conference on Transportation and Development 2018
+
+Downloaded from ascelibrary.org by Tufts University on 07/18/18. Copyright ASCE. For personal use only; all rights reserved.
+
+Wilensky, U. (1999). NetLogo.(ccl. northwestern.edu/netlogo). Center for Connected Learning
+and Computer Based Modeling, Northwestern University.
+
+© ASCE
+
+International Conference on Transportation and Development 2018
+
+118
+
+

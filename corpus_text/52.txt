@@ -1,0 +1,2266 @@
+Future Generation Computer Systems 153 (2024) 375–390
+
+Contents lists available at ScienceDirect
+
+Future Generation Computer Systems
+journal homepage: www.elsevier.com/locate/fgcs
+
+Connected vehicles’ dynamic route planning based on reinforcement learning
+Kanghua Ma, Shubing Liao, Yunyun Niu ∗
+School of Information Engineering, China University of Geosciences in Beijing, Beijing, 100083, China
+
+ARTICLE
+
+INFO
+
+Keywords:
+Internet of Vehicles (IoV)
+Connected vehicle
+Traffic congestion
+Dynamic route planning
+Reinforcement learning
+
+ABSTRACT
+Real-time route planning is a challenging work for the Internet of Vehicles (IoV) systems. Some people
+have used swarm intelligence algorithms to schedule routes for connected vehicles. These algorithms are
+always sensitive to the setting of initial parameters. These days, reinforcement learning algorithms to
+some extent overcome this drawback. However, previous research based on reinforcement learning has not
+taken into account the real-time variation in the number of vehicles on each lane. In this work, a new
+reinforcement learning algorithm, named dynamical-weighted Q-learning (DWQL), is proposed. This approach
+plans the routes for connected vehicles by introducing dynamic weighting factors into Q-learning algorithm.
+By employing dynamic weighting factors, the algorithm selects the optimal route for connected vehicles based
+on their current positions as well as congestion status of the accessible roads. The experimental results show
+that compared to existing algorithms, the DWQL algorithm proposed in this paper can effectively reduce the
+duration, time loss, waiting time, economic cost, and improve the traffic efficiency of the IoV system.
+
+1. Introduction
+The Internet of Vehicles (IoV) has drawn more and more public
+attentions these days [1–3]. The idea of IoV originates from the Internet of Things (IoT), and it is considered one of the most promising
+technologies in IoT technology [4]. The IoV system collects data by
+using a sensor network, establishes communication between connected
+vehicles through wireless communication technology [5,6], and processes the needs of drivers through advanced technologies such as
+fog computing, big data processing and reinforcement learning [7].
+The IoV technology is considered the cornerstone of future urban
+transportation [8,9].
+Dynamic route planning is a crucial research area in the IoV domain,
+and several noteworthy studies in this field deserve attention. For
+instance, Shao et al. used the multi-objective evolutionary algorithm
+to solve the multi-objective vehicle routing problem with random
+demand. In the process of evolution, the radial basis function (RBF)
+network was introduced to identify potential knowledge of individuals.
+With the invert generation distance (IGD), the number of vehicles,
+and the driver remuneration acted as the evaluation indexes, after
+weighting the summation of all the metrics, the results improved by
+11.33% compared to other algorithms [10]. Kanoh applied a genetic
+algorithm of virus infection to navigate vehicles. When traffic jams
+occur during vehicle driving, virus genetic algorithm was deployed to
+choose alternative routes [11]. Lai et al. used the hybrid evolutionary
+algorithm to solve the dynamic route planning problem and tested it
+
+on a multi-intersection map network in Singapore. The results proved
+that the hybrid evolutionary algorithm for solving the dynamic route
+planning problem (HEADRPP) had good robustness regarding the dynamic route planning problem [12]. Jung et al. used the ant colony
+optimization (ACO) algorithm to solve the dynamic route problem in
+the IoV environment [13], the algorithm have been proven to have the
+ability to prevent a great number of vehicles from gathering on one
+road and causing congestion. Lin et al. used multi-objective particle
+swarm optimization (MOPSO) algorithm to the optimal route planning
+of underwater robots. The results demonstrate that dynamic weighting
+yields higher efficiency and better stability compared to fixed weighting [14]. However, these swarm intelligence algorithms have numerous
+initial parameters, requiring significant manual adjustment effort, and
+are prone to achieving local optimal solutions [15,16]. In comparison
+to swarm intelligence algorithms, reinforcement learning algorithms,
+such as deep Q-network (DQN) and Q-learning, have relatively fewer
+parameters, which allows for convenient parameter adjustment, and
+yielding solutions of relatively higher quality [17–20].
+Benefiting from the increased computational power of computers,
+reinforcement learning is used to solve problems in many fields [21,
+22]. Zhou et al. developed a new algorithm based on the multi-agent
+advantage actor critic (MA2C) framework. The results show that this
+algorithm outperforms other existing algorithms in terms of efficiency,
+safety, and driver comfort indexes [23]. Yang et al. proposed a new
+reinforcement learning algorithm efficient transfer actor–critic (ETAC)
+
+∗ Corresponding author.
+E-mail address: yniu@cugb.edu.cn (Y. Niu).
+
+https://doi.org/10.1016/j.future.2023.11.037
+Received 13 February 2023; Received in revised form 27 November 2023; Accepted 30 November 2023
+Available online 9 December 2023
+0167-739X/© 2023 Elsevier B.V. All rights reserved.
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+learning based on the model-free actor–critic algorithm, which is used
+to reduce the communication delay between the connected vehicles
+and improve the reliability of communication between connected vehicles in the IoV era [24]. Peng et al. proposed an algorithm for
+emergency evacuation of large buildings using neural networks. The
+obtained results show that the algorithm evacuates 8–10 times faster
+than traditional search algorithms or existing software [25]. Sharma
+et al. proposed a q-matrix pre-training reinforcement learning algorithm, such as DQN, double DQN (DDQN), etc. In fire evacuation, these
+pre-training algorithms were compared with the original algorithm
+without the pre-training phase. The results showed that the pre-training
+algorithms gave better results compared to the original algorithm in
+terms of convergence and stability [17]. Geng et al. proposed a dynamically adjustable route planning (DARP) algorithm, where the agent
+learns strategies through a dueling deep Q-network (Dueling DQN).
+The simulation results show that compared with traditional shortest
+route planning algorithms, the DARP algorithm based on dueling deep
+Q-network saves 52% of time under congested conditions [26]. Huo
+proposed a improved DQN algorithm. This algorithm can effectively
+find routes with optimal values, making route planning more rational
+and intelligent [27]. However, traffic is dynamic, a lane that is clear
+and unobstructed at one moment may suddenly become congested and
+vice versa. Thus, a route planning method based on reinforcement
+learning is proposed in this work, and introduces dynamic weighting
+factors into this method. The convergence of this reinforcement learning algorithm has been proven by scholars and has a good theoretical
+basis. These factors are calculated based on real-time road traffic conditions, allowing the algorithm to dynamically select relatively smooth
+roads for connected vehicles.
+The main contributions of this work are as follows:
+
+Fig. 1. Reinforcement learning framework.
+
+∙ 𝑠 ∈ 𝑆: 𝑆 is a finite set of states, and 𝑠 represents a specific state,
+such as the location;
+∙ 𝑎 ∈ 𝐴: 𝐴 is a finite set of actions, and 𝑎 represents a specific action,
+such as going right;
+∙ Agent: The agent is equivalent to the brain of the algorithm. It
+provides the action 𝑎𝑡 according to the state 𝑠𝑡 of the environment
+during training, and conducts self-learning according to the feedback
+of the environment regarding action 𝑎𝑡 ;
+∙ Environment: The environment is all the components outside the
+agent, which can inform the agent of the current state 𝑠𝑡 , receive the
+action 𝑎𝑡 given by the agent and yielding to change the state, and
+feedback the corresponding reward 𝑟𝑡 to the agent according to the
+changed state 𝑠𝑡+1 ;
+∙ 𝑟(𝑠𝑡 , 𝑎𝑡 , 𝑠𝑡+1 ): Reward 𝑟(𝑠𝑡 , 𝑎𝑡 , 𝑠𝑡+1 ) is a function. After the agent gives
+a specific action 𝑎′𝑡 according to a specific state 𝑠′𝑡 , the environment
+uses this function to calculate the degree of excellence through (𝑠′𝑡 , 𝑎′𝑡 )
+and changes the specific state 𝑠′𝑡+1 . The degree of excellence, also called
+instant reward, can be negative or positive;
+∙ 𝑇 (𝑠𝑡 , 𝑎𝑡 , 𝑠𝑡+1 ) ∼ 𝑃𝑟 (𝑠𝑡+1 |𝑠𝑡 , 𝑎𝑡 ): It represents the state transition
+equation, which predicts the next state 𝑠𝑡+1 based on the current state
+𝑠𝑡 and the action 𝑎𝑡 . Moreover, 𝑃𝑟 is used to describe the possibility of
+selecting the action 𝑎𝑡 . The greater 𝑃𝑟 is, the more likely the selection
+the action 𝑎𝑡 will be, making 𝑠𝑡 change to 𝑠𝑡+1 ;
+∙ 𝜋(𝑠𝑡 ) → 𝑎𝑡 : This equation establishes the mapping between the
+current state of the external environment 𝑠𝑡 and the action 𝑎𝑡 . Mapping relationships can be established using function approximations or
+table-record.
+
+• A reinforcement learning algorithm, dynamical-weighted Qlearning (DWQL), is proposed in this work, which introduces
+dynamic weighting factors into Q-learning algorithm. The DWQL
+has good convergence, and the dynamic weighting factors allow
+the algorithm to dynamically plan routes for connected vehicles
+based on real-time traffic conditions.
+• Several indexes are considered when evaluating the efficiency
+of the DWQL, including time loss, duration, waiting time, and
+economic cost. Experimental scenarios abstracted from road networks around the world are used to test the robustness of the
+DWQL.
+This paper states the preliminaries in the second section. The environment and methodology are introduced in the third section, including
+environment definition, the algorithm DWQL, proposed in this work, as
+well as the improved communication mode and simulation setting. The
+fourth section proposes the experimental results and discussion as the
+outcomes of the proposed DWQL algorithm, are analyzed and compared
+to other algorithms. The fifth section summarizes this work, and the
+Appendix provides supplementary experiments to prove the robustness
+of the DWQL algorithm in diverse scenario.
+
+2.2. Deep Q-network
+The DQN algorithm is one of the RL algorithms, where the Q
+value is calculated using the function approximation method [18]. DQN
+contains two networks 𝜃 ′ , 𝜃 ′′ . Moreover, this DQN algorithm uses one
+of the neural networks 𝜃 ′ , takes the current state 𝑠𝑡 as the input, and
+uses 𝑄′ (𝑠𝑡 , 𝑎𝑡 ) ≈ 𝑄(𝑠𝑡 , 𝑎𝑡 ) to approximately calculate the Q value of each
+action under the current state, As a result, the 𝑄′ (𝑠𝑡 , 𝑎𝑡 ) value is the
+output of the network and the action using Eq. (1) as shown below:
+{
+𝑎𝑟𝑔𝑚𝑎𝑥 (𝑄(𝑠𝑡 , 𝑎𝑡 ); 𝜃 ′ ) if 𝑒 ≤ 𝜖
+𝜋(𝑠𝑡 ) =
+(1)
+𝑟𝑎𝑛𝑑𝑜𝑚(𝐴) if 𝑒 > 𝜖
+
+2. Preliminaries
+In this section, the basic concepts of reinforcement learning and
+the specific reinforcement learning algorithms utilized in this study,
+namely DQN, DDQN, and Dueling DQN, are introduced.
+
+where 𝑒 is a random number, and 𝜖 is the greedy factor. When the
+value of 𝑒 is less than the greedy factor 𝜖, the neural network is
+used to calculate the action strategy. When 𝑒 is greater than 𝜖, the
+action strategy is randomly selected. This operation ensures that more
+candidate solutions can be searched and the optimal action strategy,
+under the current state 𝑠𝑡 , can be obtained. During the learning process,
+the learning goal must be set, and so does DQN. Thus, the calculation
+equation of the target value of DQN is shown in Eq. (2) as indicated
+here after:
+
+2.1. Reinforcement learning
+Reinforcement learning (RL) is a standard Markov decision-making
+process, which is guided by the agent’s continuous trial-and-error learning. It also interacts with the environment to obtain rewards and
+punishments, as shown in Fig. 1.
+RL is based on the following concepts:
+
+𝑦𝑡 = 𝑟(𝑠𝑡+1 |𝑠𝑡 , 𝑎𝑡 ) + 𝛾 ⋅ 𝑚𝑎𝑥 𝑄(𝑠𝑡+1 , 𝑎𝑡+1 ; 𝜃 ′′ )
+376
+
+(2)
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Therefore, the lost function can be defined as follows:
+′ 2
+
+ = E[(𝑦𝑡 − 𝑄(𝑠𝑡 , 𝑎𝑡 ); 𝜃 ) ]
+
+average of the value of all possible actions in the current state. This
+function can be modeled using the below equation:
+∑
+(𝑠𝑡 ; 𝜃, 𝛽) =
+𝜋(𝑎𝑡 |𝑠𝑡 ) ⋅ 𝑞(𝑎𝑡 , 𝑠𝑡 )
+(7)
+
+(3)
+
+According to the lost function, the gradient can be calculated, and
+some optimizers, such as root mean square propagation (RMSProp),
+adaptive gradient (Adagrad), adaptive moment estimation (Adam) [28–
+30], can be selected to adjust the parameters in the neural network.
+In addition, DQN contains the following key operations:
+∙ Fix target: In this case, only one network (e.g. 𝜃 ′ ) will update the
+parameters immediately during training, while the other network (e.g.
+𝜃 ′′ ) will not update temporarily and is only used to calculate the 𝑦
+value. After specific training steps, this second network will be updated
+by copying the parameters of 𝜃 ′ to 𝜃 ′′ in order to adjust the training goal
+of the network and avoid network overfitting.
+∙ Experience replay: DQN uses an experience base to store the
+previous experiences. During the training process, the quadruples, such
+as ⟨𝑠𝑡 , 𝑎𝑡 , 𝑠𝑡+1 , 𝑟𝑡 ⟩, are saved in the experience base. In the later training
+process, a part of the experience can be extracted from the experience
+base to another training. This can disrupt the time correlation between
+data to a certain extent.
+
+𝑎𝑡 ∈𝐴
+
+where the 𝑞(𝑎𝑡 , 𝑠𝑡 ) function represents the value of action 𝑎𝑡 at the
+current state 𝑠𝑡 . However, the advantage function (𝑠𝑡 , 𝑎𝑡 ; 𝜃, 𝛼) is used
+to estimate the level that the value of an action 𝑎𝑡 is superior to
+the average value of all actions in the current state. If the advantage
+function of an action is greater than zero, the action is more efficient
+than the average action. Conversely, if the advantage function of an
+action is negative, the action is not as good as the average action.
+This allows better actions to be selected with greater probability, thus
+accelerating the network convergence. Therefore, the complete Q value
+function in Dueling DQN is represented in Eq. (8) as follows:
+𝑄(𝑠𝑡 , 𝑎𝑡 ; 𝜃, 𝛼, 𝛽) = (𝑠𝑡 ; 𝜃, 𝛽) + (𝑠𝑡 , 𝑎𝑡 ; 𝜃, 𝛼)
+
+where 𝜃 represents the neural network structure, and 𝛼 and 𝛽 are the
+parameters of two full connection layers. However, if this equation is
+used, there will be an ‘‘unidentifiable’’ problem: different combinations
+of state value function  and advantage function  can get the same 𝑄
+value function, but the 𝑄 cannot obtain the exact and unique  and .
+Therefore, the proposer of the algorithm forces the advantage function
+to have ‘‘zero advantage’’ in the selected action [34], thus, Eq. (8) can
+be rewritten as follows:
+
+2.3. Double deep Q-network
+DQN has amazing performance in several fields, but, sometimes, the
+over-estimation problem of DQN may make its performance very poor.
+The root cause of the over-estimation mainly comes from Eq. (2) when
+being used in the DQN selection action. However, the selected action in
+a certain state is not necessarily the action having the largest Q value;
+thus, the max operation in this equation will make the estimated 𝑦 value
+larger than the real 𝑦 value. Therefore, to solve the problem of overestimation, Hasselt et al. proposed the DDQN algorithm [31]. They used
+two neural networks to select the action and calculate the Q value of
+the action, respectively. Fortunately, as two neural networks are used
+in DQN, no extra space cost is needed. In more detail, DDQN calculates
+the target 𝑦𝑡 in two steps:
+∙ The first step is through a neural network 𝜃 ′′ to get the action 𝑎′𝑡
+that maximizes the value function, as displayed in Eq. (4).
+𝑎′𝑡 = 𝑎𝑟𝑔𝑚𝑎𝑥 𝑄(𝑠𝑡+1 , 𝑎𝑡 ; 𝜃 ′′ )
+
+𝑄(𝑠𝑡 , 𝑎𝑡 ; 𝜃, 𝛼, 𝛽) = (𝑠𝑡 ; 𝜃, 𝛽) + ((𝑠𝑡 , 𝑎𝑡 ; 𝜃, 𝛽)
+− max (𝑠𝑡 , 𝑎𝑡+1 ; 𝜃, 𝛼))
+
+To improve the stability of the algorithm, the average is used instead
+of the maximization operation, and Eq. (9) is rewritten as follows:
+𝑄(𝑠𝑡 , 𝑎𝑡 ; 𝜃, 𝛼, 𝛽) = (𝑠𝑡 ; 𝜃, 𝛽) + ((𝑠𝑡 , 𝑎𝑡 ; 𝜃, 𝛼)
+1 ∑
+(𝑠𝑡 , 𝑎𝑡+1 ; 𝜃, 𝛼))
+−
+𝑙𝑒𝑛(𝐴)
+
+(10)
+
+where 𝑙𝑒𝑛(𝐴) represents the number of actions. Although this changes
+the original meaning of the state value function as well as the advantage function, practice shows that this operation improves the stability
+and efficiency of the Dueling DQN algorithm.
+3. Environment and methodology
+
+(4)
+
+3.1. Environment definition
+In this work, two road network structures are constructed with some
+degree of realism, such as the maximum capacity for each roadway.
+To facilitate the simulation and learning of the different algorithms
+treated in this work, each intersection in the road network structure
+is identified with a unique number, and there is a road between each
+two adjacent intersections. Therefore, the state of a vehicle in the road
+network is expressed as (𝑖, 𝑗), where 𝑖 and 𝑗 represent the respective
+numbers of the two intersections, moreover, the vehicle is on the road
+between the two intersections, as shown in Fig. 2. Referring to this
+figure, the vehicle numbered 𝑉 2 is currently between intersections
+numbered 𝐼2 and 𝐼3, so the state of 𝑉 2 is (2, 3). This representation
+enables the transition between the actual road and the input state
+required by the neural network.
+The agent converts the current road of the connected vehicle into
+the state (𝑖, 𝑗) that serves as an input, calculates the next road 𝑁𝑟
+according to the strategy it had learned, and notifies the environment
+about the next road for the connected vehicle is 𝑁𝑟 . When the environment receives this information, it executes function 𝐼(𝑖, 𝑗) to calculate
+whether the current road of the vehicle can reach the 𝑁𝑟 directly, since
+this latter may not be connected to the current road. Therefore, function
+𝐼(𝑖, 𝑗) can be expressed as follows:
+{
+0
+if
+𝑑𝑖𝑠𝑡(𝑖, 𝑗) = 0 𝑜𝑟 ∞,
+𝐼(𝑖, 𝑗) =
+(11)
+1 else
+
+(5)
+
+However, the two above steps can be combined to obtain the
+calculation equation of the 𝑦𝑡 value in DDQN:
+𝑦𝑡 = 𝑟(𝑠𝑡+1 |𝑠𝑡 , 𝑎𝑡 ) + 𝛾 ⋅ 𝑄(𝑠𝑡+1 , 𝑎𝑟𝑔𝑚𝑎𝑥 𝑄(𝑠𝑡+1 , 𝑎𝑡 ; 𝜃 ′′ ); 𝜃 ′ )
+
+(9)
+
+𝑎𝑡+1 ∈𝐴
+
+∙ The second step deploys another neural network 𝜃 ′ to obtain the
+𝑦𝑡 value for the action 𝑎′𝑡 calculated in the first step, as shown below:
+𝑦𝑡 = 𝑟(𝑠𝑡+1 |𝑠𝑡 , 𝑎𝑡 ) + 𝛾 ⋅ 𝑄(𝑠𝑡+1 , 𝑎′𝑡 ; 𝜃 ′ )
+
+(8)
+
+(6)
+
+By deploying the parameters of the current network to participate
+in the calculation of 𝑦𝑡 values, the over-estimation can be reduced to a
+certain extent, thus, unbiased estimation will be achieved [32]. To sum
+up, DDQN and DQN have the same steps except for the difference in
+calculation of 𝑦𝑡 value [33].
+2.4. Dueling deep Q-network
+According to the calculation equation of 𝑄(𝑠, 𝑎), the calculation of Q
+value is divided to two parts: definition of the state 𝑠 and determination
+of the action 𝑎. Therefore, the Dueling DQN algorithm improves DQN
+at the level of network structure, as it divides the output of the network
+into two parts: state value function (𝑠𝑡 ; 𝜃, 𝛽) and advantage function
+(𝑠𝑡 , 𝑎𝑡 ; 𝜃, 𝛼). In more detail, the state value function is equal to the sum
+of the value of candidate action multiplied by the probability of taking
+that action under the current state value 𝑠𝑡 , similar to the weighted
+377
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+In Section 3.1, we introduced how the state of the vehicle is represented in this work. Assume that the state of vehicle 𝑣 is (𝑖, 𝑗), and take
+this state as the input of the RL algorithm. When selecting the action
+𝑎𝑡 , the following equation is applied:
+𝑎𝑡 = 𝑟𝑎𝑛𝑑𝑜𝑚()
+
+𝑖𝑓 𝑒 < 𝜖
+
+(14)
+
+where the 𝜖 is the greedy factor. When the random number 𝑒 is less
+than the hyperparameter 𝜖, 𝑎𝑡 is randomly selected from the actions
+in the current state. The purpose of using the greedy factor 𝜖 is to
+enable the agent to explore more unknown states in route planning
+and effectively avoid falling into local optimum. However, if 𝑒 is greater
+than the hyperparameter 𝜖, the dynamic weighting factors 𝜆𝑛 (𝑖, 𝑗, 𝑘) will
+be involved in the selection of 𝑎𝑡 as shown in the following equations:
+1
+( + 𝑔𝑎𝑝 ) ∗ (𝑖, 𝑗, 𝑘)
+(𝑖, 𝑗) 𝑐𝑎𝑟
+𝑎𝑡 = 𝑎𝑟𝑔𝑚𝑎𝑥(𝜆𝑛 (𝑖, 𝑗, 𝑘) ∗ 𝐼(𝑖, 𝑗) ∗ 𝑄(𝑠𝑡−1 , 𝑎𝑡−1 ))
+
+𝜆𝑛 (𝑖, 𝑗, 𝑘) = 1 −
+Fig. 2. Overview of IoV system.
+
+where 𝑐𝑎𝑟 is the average length of the vehicle, 𝑔𝑎𝑝 is the average gap
+of the vehicle, (𝑖, 𝑗, 𝑘) is the number of vehicles on lane 𝑘 between
+intersection 𝑖 and intersection 𝑗. This can be calculated using the
+infrastructure 𝐼, and (𝑖, 𝑗) is the distance between the intersections
+𝑖 and 𝑗. In short, the dynamic weighting factors 𝜆𝑛 (𝑖, 𝑗, 𝑘) can be
+considered as the attenuation rate of Q value on the 𝑘th lane between
+both intersections. As the number of vehicles increases within a lane,
+the magnitude of 𝜆𝑛 (𝑖, 𝑗, 𝑘) decreases significantly. Consequently, the
+decay in value of Q intensifies, which aligned with real-world situation.
+This trend arises due to the inclination of people to avoid lanes with
+a high density of vehicles. The value of 𝜆𝑛 (𝑖, 𝑗, 𝑘) is used to simulate
+this tendency. Since the dynamic weight 𝜆𝑛 (𝑖, 𝑗, 𝑘) and Q values are
+calculated separately, both the current status of the road and the
+previous experience are taken into account when selecting the action
+𝑎𝑡 .
+
+where 𝐼(𝑖, 𝑗) is an indicator reflecting whether the intersection 𝑖 can
+directly reach intersection 𝑗, where 𝑑𝑖𝑠𝑡(𝑖, 𝑗) represents the distance
+from intersection 𝑖 to intersection 𝑗. When 𝑑𝑖𝑠𝑡(𝑖, 𝑗) is zero, 𝑖 and 𝑗 are
+the same intersection. When 𝑑𝑖𝑠𝑡(𝑖, 𝑗) tends to infinity, intersections 𝑖
+and 𝑗 are not directly connected. In addition to these two cases, 𝑑𝑖𝑠𝑡(𝑖, 𝑗)
+is the straight-line distance between both intersections 𝑖 and 𝑗. The
+environment calculates whether the vehicle’s current road 𝐶𝑟 (equivalent to state (𝑖, 𝑗)) is directly connected to the road 𝑁𝑟 determined by
+the agent through function 𝐼(𝑖, 𝑗). If they are not directly connected,
+a penalty is fed back to the agent. If it is reachable, it determines
+whether it is closer to the destination. If it is closer to the destination,
+the agent receives a reward, but if it is farther away, the agent receives
+a smaller penalty. The agent can adjust its strategy according to the
+change of state and the feedback from the environment. This way, the
+reinforcement learning agent can autonomously learn the structure of
+the road network and plan the best route.
+
+3.3. Communication mode
+In this work, physical entities are divided into connected vehicles (V), infrastructure (I), and agent (A). Other entities, such as
+crowds, street lights, etc., are not considered for the time being. The
+communication modes used in this work include vehicle-to-vehicle
+(V2V) communication, vehicle-to-agent (V2 A) communication, agentto-infrastructure (A2I) communication, and vehicle-to-infrastructure
+(V2I) communication [36]. The flow of each communication mode is
+outlined in Algorithm 1. The X2I category encompasses V2I and A2I,
+while X2 A includes V2 A. Finally, when a vehicle passes through an
+intersection during driving, the following steps are executed in the
+order shown in Fig. 3.
+(1) When a vehicle passes the intersection, the broadcast mode is
+used to initialize the request. First, to determine the road 𝑅𝑛 corresponding to the vehicle’s location, the communication mode, which is
+fixed as V2I, is applied to communicate with the infrastructure. In this
+step, other vehicles or agents in the network will not respond after
+receiving the message. Then V2 A is used to interact with the agent
+to determine the next action 𝑎𝑡 of the vehicle, and it will execute this
+action as soon as possible;
+(2) The infrastructure is in the center of the intersection. When the
+infrastructure receives the request, the operation is determined by the
+parameter 𝑚. If it is a V2I interactive mode, the infrastructure directly
+sends back the road 𝑅𝑛 in that direction. In case of A2I interaction
+mode, the infrastructure counts the number of vehicles in all directions
+separately 𝑁𝑐 and sends the different values back to the agent;
+(3) The agent is responsible for planning the route in a specific
+area. Upon receiving V2 A information, the agent uses the road name
+𝑅𝑛 to determine whether it is within the managed area under its
+governance. If not, it will not respond. However, if it is within the area,
+the agent performs the route planning for the connected vehicle using
+the algorithm proposed in this work.
+
+3.2. Dynamical-weighted Q-learning
+DWQL proposed in this work introduces dynamic weighting factors
+into Q-learning algorithm for solving the dynamic route planning problem. Q-learning is a values-based RL algorithm, which uses a table to
+record the Q values [19,35]. The size of the table is 𝑠𝑖𝑧𝑒𝑞 = 𝑙𝑒𝑛(𝑠𝑡𝑎𝑡𝑒) ∗
+𝑙𝑒𝑛(𝑎𝑐𝑡𝑖𝑜𝑛), and all its elements are initialized to zero. At the beginning
+of training, since all Q values are null, the random search will be
+adopted with a greater possibility 𝜖, and the agent will randomly select
+an action. As the state space of the agent search becomes larger and
+the probability of the random search 𝜖 decreases, the agent can choose
+actions according to the Q table with greater probability (1 − 𝜖). After
+the agent selects an action, Bellman equation (expressed in Eq. (12)) is
+used to calculate the expectation of the Q value:
+𝑄(𝑠𝑡+1 , 𝑎𝑡+1 ) = E[𝑟(𝑠𝑡+2 |𝑠𝑡+1 , 𝑎𝑡+1 ) + 𝛾 ∗ 𝑟(𝑠𝑡+3 |𝑠𝑡+2 , 𝑎𝑡+2 )
++𝛾 2 ∗ 𝑟(𝑠𝑡+3 |𝑠𝑡+2 , 𝑎𝑡+2 ) + ⋯]
+
+(15)
+
+(12)
+
+The expectation 𝑄(𝑠𝑡+1 , 𝑎𝑡+1 ) represents the sum of the immediate
+reward and the discount future rewards for selecting 𝑎𝑡+1 in the current
+state 𝑠𝑡+1 . Using this equation, the Q table can be updated according to
+Eq. (13):
+𝑄(𝑠𝑡 , 𝑎𝑡 ) = 𝑄(𝑠𝑡 , 𝑎𝑡 ) + 𝛼[𝑟(𝑠𝑡+1 |𝑠𝑡 , 𝑎𝑡 ) + 𝛾max 𝑄(𝑠𝑡+1 , 𝑎𝑡+1 ) − 𝑄(𝑠𝑡 , 𝑎𝑡 )] (13)
+𝑎 ∈𝐴
+𝑡
+
+where 𝛼 is the learning rate and 𝛾 is the discount factor. According to
+Eq. (13), the greater the learning rate 𝛼, the less the previous training
+effect will be retained. The larger the discount factor 𝛾 is, the bigger
+the updates max𝑎𝑡 ∈𝐴 𝑄(𝑠𝑡+1 , 𝑎𝑡 ) can provide. Using Eq. (13) and the past
+and present experience as input to train the agent, this step is repeated
+until all Q values in the Q table converge, and the best Q table will be
+obtained yielding to select the best action 𝑎𝑡 .
+378
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+SUMO is a widely used simulation software in the field of traffic control
+field [38–40]. Compared to other simulation software, such as VISSIM,
+and TRANSIMS, SUMO can balance between the accuracy and the
+speed of the simulation [41]. Moreover, SUMO includes a script named
+𝑅𝑎𝑛𝑑𝑜𝑚𝑇 𝑟𝑖𝑝𝑠.𝑝𝑦, which is used in this work to randomly and evenly
+select locations to generate vehicles for simulation. This is similar to
+the actual situation. The vehicles start randomly on the branch roads,
+then converge into the main road, drive on this road for a while, and
+then leave. The pseudocode for the specific flow of simulation is shown
+in Algorithm 2.
+
+Algorithm 1 Information interaction
+1:
+2:
+3:
+4:
+5:
+6:
+7:
+8:
+9:
+10:
+11:
+12:
+13:
+14:
+15:
+16:
+17:
+18:
+19:
+20:
+21:
+22:
+23:
+24:
+25:
+26:
+27:
+
+function Init(𝑖𝑑𝑣 ):
+𝑅𝑛 ← 𝑉 2𝐼(𝑖𝑑𝑣 , 𝑉 2𝐼)
+𝑎𝑡 ← 𝑉 2𝐴(𝑖𝑑𝑣 , 𝑅𝑛 , 𝑑𝑠 , 𝑉 2𝐴)
+exec 𝑎𝑡
+end function
+function X2I(𝑖𝑑𝑥 , 𝐶𝑚):
+if 𝐶𝑚 = 𝑉 2𝐼 then
+𝑆𝑒𝑛𝑑(𝑅𝑛 )
+else if 𝐶𝑚 = 𝐴2𝐼 then
+for each j ∈ 𝑁𝑖 do
+𝑁𝑐 .𝑎𝑝𝑝𝑒𝑛𝑑(𝑅𝑛 )
+end for
+Send 𝑅𝑛
+end if
+end function
+
+Algorithm 2 Specific Flow of Simulation
+1:
+2:
+3:
+4:
+5:
+6:
+7:
+8:
+9:
+10:
+11:
+12:
+13:
+14:
+15:
+16:
+17:
+18:
+19:
+20:
+21:
+22:
+23:
+24:
+25:
+
+function X2A(𝑖𝑑𝑥 , 𝑅𝑛 , 𝑑𝑒𝑠, 𝐶𝑚):
+if 𝐶𝑚 = 𝑉 2𝐴 then
+𝑁𝑐 ← 𝑋2𝐼(𝑖𝑑𝑎 , 𝐴2𝐼)
+for 𝑒𝑎𝑐ℎ𝑡𝑢𝑝𝑙𝑒 ∈ 𝑁𝑐 do
+1
+𝜆𝑛 (𝑖, 𝑗, 𝑘) ← 1 − (𝑖,𝑗)
+(𝑐𝑎𝑟 + 𝑐𝑎𝑝 ) ∗ (𝑖, 𝑗, 𝑘)
+end for
+𝑎𝑡 ← 𝑎𝑟𝑔𝑚𝑎𝑥(𝜆𝑛 (𝑖, 𝑗, 𝑘) ∗ 𝐼(𝑖, 𝑗) ∗ 𝑄(𝑖, 𝑗, 𝑘)
+Send(𝑎𝑡 )
+end if
+end function
+
+function Initialize_Environment(𝑓 𝑖𝑙𝑒𝑠):
+Load_Road_Network
+Load_Vehicles
+end function
+function main(𝑎𝑟𝑔𝑠):
+while episode_id <episodes.length do:
+Initialize_Environment(𝑎𝑟𝑔𝑠.𝑓 𝑖𝑙𝑒𝑠)
+𝑎𝑟𝑔𝑠.𝑓 𝑖𝑙𝑒𝑠 ← 𝑎𝑟𝑔𝑠.𝑓 𝑖𝑙𝑒𝑠.𝑛𝑒𝑥𝑡𝐹 𝑖𝑙𝑒𝑠
+for each algorithm algo do
+algo.Route_Planing()
+𝑟𝑒𝑠𝑢𝑙𝑡𝑠 ← 𝑎𝑙𝑔𝑜.𝐺𝑒𝑡_𝑅𝑒𝑠𝑢𝑙𝑡()
+end for
+end while
+end function
+function Route_Planning:
+𝑉 𝑒ℎ𝑖𝑐𝑙𝑒𝑠 = 𝑋2𝐼(𝑠𝑒𝑙𝑓 .𝐼𝑑, 𝐴2𝐼)
+while 𝑉 𝑒ℎ𝑖𝑐𝑙𝑒𝑠.𝑙𝑒𝑛𝑔𝑡ℎ >0 do:
+for each vehicle do
+Calculate 𝑎𝑡 using Eq. 14
+Send (𝑎𝑡 )
+end for
+end while
+end function
+
+The function MAIN serves as the entry point for the simulation. It
+handles tasks such as the file selection, the algorithm control, and the
+result calculation. The files used by SUMO include the traffic flow files
+generated by the 𝑅𝑎𝑛𝑑𝑜𝑚𝑇 𝑟𝑖𝑝𝑠.𝑝𝑦 script and the road network structure
+file developed in this work.
+In this work, two road network structures are constructed for simulation; thus, the results are divided into two sets. Each set is divided into
+different episodes. The number of vehicles in each episode is different;
+however, the vehicles in these episodes are in an equal difference
+sequence. The set is divided into different numbers of vehicles to
+evaluate the route planning ability of the different algorithms in several
+congestion environments.
+Fig. 3. Vehicles pass through the intersection.
+
+4. Results
+3.4. Simulation setting
+
+In this work, simulation experiments are carried out by using the
+simulation software SUMO. Parameters involved in this work are set
+and shown in Table 1:
+In order to compare the efficiency of the algorithms, it is necessary
+to choose some suitable indexes. The cost of driving a vehicle comprises
+economic cost and time cost. Therefore, in this work, waiting time,
+duration, time loss, and economic cost are used as the evaluation
+indexes. Other evaluation indexes, such as idle time, can be calculated
+from the indexes used in this paper.
+1. Waiting time: the time in seconds when the vehicle speed is less
+than 0.01 m/s during driving. It is used to calculate the parking time
+of connected vehicles during traffic congestion or other events.
+
+In this work, a simulation methodology is adopted to carry out
+experiments. In contrast to real environments, simulation-based experiments have the advantages of enhanced safety, cost-efficiency, and
+flexibility. At the same time, due to the simplification inherent in the
+model, simulation cannot completely replace the real environment. Certain influencing factors, such as the driver’s skill level and psychological
+aspects, are not considered; therefore, potential disparities may exist
+between the simulation and the real environment outcomes.
+The software used for simulation is Simulation of Urban MObility
+(SUMO), which is an open-source traffic simulation software [37].
+379
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+Table 1
+Parameter setting.
+
+Table 2
+Results of each algorithm on the low traffic under the basic scenario.
+
+Parameter
+
+Notation
+
+Value
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Vehicle length
+Vehicle gap
+Max speed
+Vehicle acceleration
+Learning rate
+Reward decay
+Greedy factor
+Pheromone importance factor
+Heuristic importance factor
+Pheromone evaporation rate
+Initial value of pheromone
+Pheromone release quantity
+
+𝑐𝑎𝑟
+𝑐𝑎𝑟
+ms
+𝑎
+𝛼1
+𝛾
+𝜖
+𝛼2
+𝛽
+𝜆
+𝜏
+𝑄
+
+3 m
+1 m
+80 km/h
+0.8−2.4 m/s2
+0.01
+0.9
+0.9
+1
+2
+0.9
+0
+1
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+1.225
+0.749
+3.210
+8.218
+0.743
+0.833
+
+6.624
+5.469
+11.296
+7.792
+5.269
+2.760
+
+12.662
+10.637
+19.239
+15.223
+10.268
+10.053
+
+0.148
+0.118
+0.215
+0.168
+0.116
+0.114
+
+Table 3
+Results of each algorithm on the medium traffic under the basic scenario.
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+1.421
+0.852
+9.845
+12.741
+0.850
+0.983
+
+7.180
+5.547
+17.929
+7.792
+5.546
+1.924
+
+13.616
+10.777
+26.209
+19.386
+10.579
+7.622
+
+0.157
+0.126
+0.291
+0.213
+0.122
+0.119
+
+(e.g., x-axis) represents the number of vehicles, and the ordinate (e.g.,
+y-axis) is the time of each index, measured in seconds. The results are
+displayed as follows:
+∙ The performance of the ACO [13], DQN [27], Tabu Search (TS),
+DWQL, Dueling DQN [26], and DDQN algorithms for different indexes
+in each episode under low traffic from 50 to 350 is displayed in Fig. 5:
+The DWQL shows slightly inferior performance compared to DQN
+and DDQN algorithms in terms of waiting time but outperforms the
+ACO algorithm results. Moreover, in terms of duration and economic
+cost, DWQL performed better than the other algorithms, and even
+in terms of time loss, DWQL shows great advantages over the other
+algorithms. After that, for each algorithm’s four indexes (waiting time,
+time loss, duration, economic cost), the sum is divided by the number
+of vehicles. Table 2 shows the average time of these algorithms:
+The calculation results show that the DWQL is slightly weaker at
+the level of waiting time than DQN (0.084 s per vehicle) and DDQN
+(0.09 s per vehicle). This difference is not obvious. In other indexes (i.e.,
+duration, economic cost), the performance of DWQL is better than the
+other algorithms. Moreover, in terms of time loss, the DWQL is almost
+nearly 3 s better than the other algorithms. DWQL exhibits slightly
+inferior performance compared to DQN and DDQN algorithms in terms
+of waiting time, however, it has more advantages in terms of time loss
+index. Moreover, the DWQL also has some advantages in the duration
+index.
+∙ For medium traffic ranging from 400 to 750 vehicles, the performance of the different algorithms is shown in Fig. 6:
+Referring to this traffic flow of Fig. 6, the proposed algorithm is
+weaker than the DQN and DDQN algorithms regarding the waiting
+time, but the duration has started to outperform other algorithms.
+Moreover, at the same time, on the index of time loss, DWQL is still
+better than the other algorithms, and the advantages become more
+pronounced. In more detail, each index of the DWQL is only growing
+slowly, while for other algorithms, such as TS and Dueling DQN,
+an apparent growth trend with significantly higher time consumption
+are encountered compared to the other algorithms. In addition, the
+algorithm DWQL proposed in this paper is able to reduce the economic
+cost well compared to other algorithms. Finally, the time consumption
+of the algorithm on each index is shown in Table 3.
+∙ For high traffic flow ranging from 800 to 1000 vehicles, TS and
+Dueling DQN algorithms, which exhibit low efficiency, are excluded
+from this part in order not to affect the efficiency comparison with
+other algorithms. Referring to Fig. 7, the DWQL has obvious advantages over the other algorithms in terms of time loss and duration.
+Concerning the waiting time, there is no big difference between the
+DWQL and the best algorithm. In addition, the algorithm proposed in
+this paper reduces a small amount of economic cost compared to other
+
+Fig. 4. Basic road network.
+
+2. Time loss: the time in seconds when the vehicle speed is lower
+than the ideal speed during driving. The ideal speed is calculated based
+on the maximum speed of the vehicle and the speed factor of the type of
+vehicle type (e.g., truck, car). This index is used to indicate how much
+room for improvement there is in traffic efficiency.
+3. Duration: the time difference, in seconds, between the entry and
+exit of the connected vehicle from the road network. It is used to
+calculate the total driving time of connected vehicles.
+4. Economic cost: the economic cost during the vehicle driving,
+mainly energy consumption, in yuan.
+The smaller the value of the indexes computed in the algorithm
+is, the more advantageous the algorithm will be. Certain algorithms
+are excluded from the comparison due to their poor performance in
+specific episodes. Moreover, this operation can effectively address the
+issue of insufficiently the efficiency gap between algorithms cannot be
+displayed well when the 𝑦-axis span is too large. To facilitate display
+in the table, F1, F2, F3, and F4 are used instead of waiting time, time
+loss, duration, and economic cost, respectively.
+4.1. Basic scenario
+The basic scenario comprises a ring road formed by four intersections. In addition, each lane contains two round-trip lanes as shown in
+Fig. 4. At intersections, connected vehicles face multiple choices during
+driving, establishing significant challenges for agents in route planning.
+On this road network scenario, the vehicle count is an equidistant
+difference sequence, ranging from 50 to 1000, with an increasing of 50
+vehicles per simulation step. Each count is taken as an episode, wherein
+the performance of the different algorithms is compared. The abscissa
+380
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Fig. 5. Low traffic of basic scenario.
+Table 4
+Results of each algorithm on the high traffic under the basic scenario.
+
+Table 5
+Results of each algorithm on the dynamic traffic under the basic scenario.
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+ACO
+DQN
+DDQN
+DWQL
+
+1.473
+1.078
+0.936
+1.138
+
+7.187
+6.019
+5.680
+3.668
+
+13.862
+11.254
+10.758
+6.174
+
+0.159
+0.131
+0.125
+0.123
+
+ACO
+DQN
+DDQN
+DWQL
+
+1.812
+0.926
+0.891
+1.122
+
+8.219
+5.844
+5.515
+3.457
+
+15.150
+11.101
+10.569
+7.284
+
+0.177
+0.129
+0.123
+0.058
+
+algorithms. Moreover, Fig. 7 shows no apparent growth trend due to
+the large span of the coordinate axis; however, the experimental data
+still exhibit significant growth. Note that Fig. 7 depicts the performance
+of each algorithm:
+
+4.2. Complex scenario
+To test whether each algorithm is equally applicable in different
+environments, we constructed the complex scenario and carried out
+experiments in this new scenario. This scenario is highly complex, with
+70 intersections and five exits (three exits upward, one to the right,
+and one downward), see Fig. 8. Due to the limited dimensions of the
+scenario thumbnail, certain road details, such as the number of lanes,
+are not shown. In this simulation environment, there are quite a lot of
+loops. If the agent cannot handle it correctly, the connected vehicles
+may circle in the road network and cannot find the exit, which may
+lead to an increase in the value of duration index value. As a result, the
+agent confronts a higher number of choices and more significant route
+planning challenges compared to the scenario presented in Section 4.1.
+
+The time consumption of each algorithm on the large batch is shown
+in Table 4:
+∙ In order to make the experiments closer to the real-world situation,
+experiments of dynamic traffic were conducted. In this experiment, the
+traffic flow changes as follows: 100 vehicles per hour for the initial halfhour, followed by 500 vehicles per hour for the subsequent half-hour,
+and then 1000 vehicles per hour for one hour. Subsequently, the traffic
+decreased to 500 vehicles per hour for the following half-hour and
+finally reverted to 100 vehicles per hour for the last half-hour. These
+dynamic traffic experiments aimed to simulate the traffic conditions
+in urban areas transitioning from off-peak to peak hours and back to
+off-peak. The experimental results are summarized in Table 5.
+
+In this simulation, the number of vehicles represents an equal
+difference sequence ranging from 100 to 1000, with an increasing of
+100 vehicles per simulation step. These vehicles are still randomly
+generated in the road network. Other settings remain the same as those
+in the basic scenario experiments. Moreover, TS and DDQN were not
+included in the comparison due to their poor performance. The full
+results were as follows:
+
+In the dynamic traffic experiments, the results are similar to those
+of fixed traffic. The algorithm DWQL proposed in this paper is only
+slightly higher than the DQN and DDQN algorithms in terms of waiting
+time index, while it achieves good results in other indexes.
+381
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Fig. 6. Medium traffic of basic scenario.
+
+Table 6
+Results of each algorithm on the low traffic under the complex scenario.
+
+Table 7
+Results of each algorithm on the medium traffic under the complex scenario.
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+ACO
+DQN
+Dueling DQN
+DWQL
+
+14.930
+8.695
+48.494
+6.630
+
+67.943
+68.251
+96.262
+39.402
+
+219.944
+229.707
+195.901
+99.760
+
+1.353
+1.360
+1.083
+0.582
+
+ACO
+DQN
+Dueling DQN
+DWQL
+
+38.589
+25.689
+103.588
+9.302
+
+98.511
+94.587
+158.123
+45.690
+
+254.074
+258.693
+208.231
+102.854
+
+1.383
+1.509
+1.131
+0.622
+
+Table 8
+Results of each algorithm on the high traffic under the complex scenario.
+
+∙ For low traffic flow ranging from 100 to 400, the performance of
+the algorithms is presented in Fig. 9:
+It can be observed that DWQL exhibits slightly weaker performance
+than some other algorithms in the first two episodes of the waiting time
+index but demonstrates greater advantages over the other algorithms
+in the upcoming three episodes, as well as at the level of other three
+indexes. Additionally, the DDQN algorithm, which performed well in
+the waiting time index during experiments under the basic scenario,
+exhibits poor performance in this simulation, while the performance of
+DWQL remains stable. Therefore, Table 6 presents the average time for
+each index, calculated by dividing the total time by the total number
+of vehicles.
+∙ In the subsequent experiments with a medium traffic flow (from
+500 to 700), the DWQL algorithm demonstrates greater advantages, as
+depicted in Fig. 10:
+The performance of DWQL is still very stable, keeping the four
+indexes at a lower level than the other three algorithms. While other algorithms show a sharp increase in time consumption, the growth trend
+of DWQL is not that apparent. However, there is still a considerable
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+ACO
+DQN
+Dueling DQN
+DWQL
+
+98.491
+52.255
+177.551
+19.861
+
+161.088
+136.705
+242.851
+55.395
+
+298.059
+318.840
+299.417
+128.759
+
+1.509
+1.675
+1.524
+0.634
+
+increase in time consumption between adjacent episodes. Moreover,
+Table 7 shows the average time consumption of each index of the
+algorithms involved in the comparison:
+∙ For high traffic flow (from 800 to 1000), DWQL demonstrates
+significant advantages. The results are presented in Fig. 11 and Table 8:
+∙ Similarly, dynamic traffic experiments were also conducted in the
+complex scenario to further prove the general applicability of the algorithm proposed in this paper, the changes in traffic flow are the same as
+the dynamic traffic experiments in Section 4.1. The experimental results
+are shown in Table 9.
+382
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Fig. 7. High traffic of basic scenario.
+
+due to the algorithm’s feature of updating at each single step and
+learning quickly, enabling it to respond promptly to changing traffic
+flow. Based on the principles of algorithm like DQN and other function
+approximation algorithms, it is evident that the fundamental concept of
+these algorithms consists of finding the Q value. This Q value is refined
+by adjusting the parameters of the neural network. This is slightly
+different from the way of directly recording Q values. Moreover, in
+terms of convergence speed, the table-record approach will be much
+faster as the neural network methods need more computation to adjust,
+such as function approximation method. Additionally, the introduction
+of the dynamic weighting factor helps the algorithm select relatively
+smooth roads for connected vehicles.
+The advantages of function approximation are also obvious: the
+table-record method requires a discrete and limited action space, if it
+is an infinite or continuous action space, it is not possible to use the
+table-record method, while the function approximation can be executed
+under such conditions. In this case, the function approximation method
+is superior to the other approach in principle, but in this study, this is
+not feasible. First, when connected vehicles arrive at the intersection,
+the number of roads available is always limited, which indicates that
+the action space is discrete and limited. Second, if the area controlled
+by the agent is too large, the amount of computation required will
+increase exponentially, which in turn will affect the algorithm efficiency. Therefore, the table-record method is more suitable for this
+case in this study. The final experimental results demonstrate that
+the table recording method DWQL exhibits significant advantages over
+other algorithms and shows good overall performance. The experiments
+in the Appendix further demonstrate the robustness of the algorithm
+proposed in this paper.
+
+Fig. 8. Complex road network.
+
+Table 9
+Results of each algorithm on the dynamic traffic under the complex scenario.
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+ACO
+DQN
+Dueling DQN
+DWQL
+
+101.644
+38.510
+130.382
+21.141
+
+162.394
+114.327
+191.927
+76.002
+
+308.418
+286.694
+260.185
+134.547
+
+1.799
+1.672
+1.518
+1.293
+
+4.3. Discussion
+The series of experiments conducted in this section demonstrate
+the superiority of the algorithm proposed herein. This is primarily
+383
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Fig. 9. Low traffic of complex scenario.
+
+5. Conclusion
+
+more complex scenarios such as those involving traffic control scenarios, in addition to considering the combination of other reinforcement
+learning algorithms to provide other applications in IoV systems.
+
+In this work, a new reinforcement learning algorithm DWQL is
+proposed for a dynamic route planning of connected vehicles in the
+IoV systems. In the results section, experiments were conducted in
+two scenarios with different traffic, and the results showed that the
+proposed algorithm (e.g., DWQL) can greatly reduce the waiting time,
+time loss, duration, and economic cost of vehicles compared to previous algorithms. the DWQL algorithm reduces the time loss index by
+59.11% (ACO), 49.95% (DQN), 82.01% (TS), 74.79% (Dueling DQN),
+and 47.86% (DDQN) per vehicle, respectively. It can also reduces the
+duration index by 45.95% (ACO), 34.33% (DQN), 70.34% (TS), 60.48%
+(Dueling DQN), and 32.02% (DDQN) per vehicle, respectively. The
+economic cost is reduced by 40.4% (ACO), 29.2% (DQN), 82.6% (TS),
+66.3% (Dueling DQN), and 25.4% (DDQN) per vehicle, respectively.
+Under the large-scale road network, TS and DDQN were removed
+due to their poor performance. Moreover, the time loss index of the
+DWQL algorithm is reduced by 79.31% (ACO), 76.84% (DQN), and
+86.43% (Dueling DQN) per vehicle, respectively, whereas the duration
+is reduced by 74.93% (ACO), 76.13% (DQN), and 73.06% (Dueling
+DQN) per vehicle, respectively. It can also reduces the waiting time
+index by 58.7%, 44.8% and 69.3%, respectively, and the economic cost
+decreased by 53.5% (ACO), 60.6% (DQN), and 53.2% (Dueling DQN)
+per vehicle, respectively.
+If the algorithm proposed in this paper is applied to real-world
+scenarios, it has the potential to significantly reduce the likelihood
+of traffic congestion. In situations where congestion occurs due to
+high traffic flow, the algorithm can assist connected vehicles in swiftly
+leaving congested road networks and reaching their destinations. This
+has the potential to greatly improve traffic efficiency in the era of IoV.
+As for the future work, we will extend the proposed algorithm DWQL to
+
+CRediT authorship contribution statement
+Kanghua Ma: Conceptualization, Software, Writing – original draft.
+Shubing Liao: Methodology, Writing – review & editing. Yunyun
+Niu: Conceptualization, Methodology, Supervision, Validation, Writing
+– review & editing.
+Declaration of competing interest
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to
+influence the work reported in this paper.
+Data availability
+Data will be made available on request.
+
+Funding
+This work was supported by the National Natural Science Foundation of China [grant numbers 62172373, 61872325]; the Fundamental
+Research Funds for the Central Universities, China [grant number
+2652019028].
+384
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Fig. 10. Medium traffic of complex scenario.
+
+Fig. 11. High traffic of complex scenario.
+
+385
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Appendix
+This section serves as supplementary experiments to demonstrate
+the robustness and effectiveness of the DWQL algorithm proposed in
+this paper. The experimental scenarios are exacted from road networks
+in some cities around the world. The experimental scenarios are shown
+in Figs. 12 to 26. The detailed information of these scenarios is summarized in Table 10. Experiments were conducted in these scenarios
+with algorithms ACO, DQN, TS, Dueling DQN, DDQN, DWQL and the
+performance of each algorithm is summarized in Table 11. The experimental results demonstrate the robustness of the proposed algorithm
+DWQL in this paper.
+
+Fig. 14. Road network in Paris.
+
+Fig. 12. Road network in Berlin.
+
+Fig. 15. Road network in Moscow.
+
+Fig. 13. Road network in London.
+Fig. 16. Road network in Shanghai.
+386
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Table 10
+Detailed information of road networks.
+No.
+
+Location
+
+Number of intersections
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+
+Berlin
+London
+Paris
+Moscow
+Shanghai
+Washington
+Canberra
+Ottawa
+Amsterdam
+Tokyo
+Beijing
+Brasilia
+New York
+New Delhi
+Rome
+
+58
+141
+31
+82
+60
+207
+36
+36
+119
+203
+114
+88
+49
+134
+192
+
+Fig. 17. Road network in Washington.
+
+Fig. 20. Road network in Amsterdam.
+
+Fig. 18. Road network in Canberra.
+
+Fig. 21. Road network in Tokyo.
+Fig. 19. Road network in Ottawa.
+387
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Table 11
+Comparison results under the real-world scenario.
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Algorithm
+
+Road network in Berlin
+
+F1
+
+F2
+
+F3
+
+F4
+
+Road network in London
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+735
+266
+1265
+289
+277
+250
+
+2814.6
+1248.7
+3288
+4607
+1499s
+1249
+
+14 130
+12 580
+14 404
+11 057
+6798
+6577
+
+164.85
+146.77
+1685
+129.0
+79.3
+76.73
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+675
+346
+699
+375
+313
+137
+
+3044.7
+1469.9
+2828.9
+2607
+1640
+1355
+
+16 975
+9781
+10 325
+12 317
+9771
+9431
+
+198.04
+114.11
+120.46
+143.7
+114
+110.03
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Road network in Paris
+
+Road network in Moscow
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+195
+385
+310
+324
+157
+150
+
+2270
+4565.5
+2231.9
+2804
+2608.8
+2007.6
+
+8435
+12 686
+7773
+8953
+8360
+4963
+
+98.41
+148
+90.69
+104.45
+97.5
+57.9
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+167
+159
+576
+202
+354
+156
+
+2154.6
+6076.6
+4093
+5024
+7132.1
+1372
+
+16 076
+43 347
+19 281
+20 962
+48 194
+8785
+
+187.55
+505.71
+224.95
+244.56
+562.26
+102.49
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Road network in Shanghai
+
+Road network in Washington
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+6704
+4256
+8028
+4728
+5166
+2110
+
+10 330.7
+7136.2
+11 064.3
+7934
+7027.9
+6601.9
+
+26 279
+20 722
+23 908
+20 962
+24 956
+20 545
+
+306.59
+241.76
+278.93
+244.56
+291.15
+239.69
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+842
+324
+525
+512
+333
+196
+
+6580.2
+3597.8
+8245
+7604
+6224.6
+1315
+
+23 129
+15 223
+19 720
+18 057
+22 212
+12 017
+
+269.84
+177.6
+230.07
+210.67
+259.14
+140.2
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Road network in Canberra
+
+Road network in Ottawa
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+2867
+2478
+3415
+2581
+2878
+1596
+
+6932.2
+5729
+5942.2
+7604
+4872.2
+3979.3
+
+13 605
+15 947
+10 625
+18 057
+8229
+6483
+
+158.73
+186.05
+123.96
+210.67
+96.01
+75.64
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Road network in Amsterdam
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+4798
+2748
+7178
+2891
+3620
+1778
+
+10 813.5
+3354.9
+15 418
+4607
+4240.3
+3158
+
+14 220
+5389
+18 122
+11 057
+6263
+3858
+
+165.9
+62.87
+211.42
+129
+73.07
+45.01
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Road network in Tokyo
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+1845
+3211
+4131
+3916
+6875
+1103
+
+3839.4
+4472
+5130.7
+5296
+7595
+3129
+
+13 411
+9615
+9508
+11 653
+10 461
+7732
+
+156.46
+112.18
+110.93
+135.95
+122.05
+90.21
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+2076
+1605
+3481
+1864
+903
+904
+
+2955
+1865
+4678
+2153
+1846.7
+1756.9
+
+4313
+3071
+6746
+4135
+3434
+3049
+
+50.32
+35.83
+78.7
+48.24
+40.06
+35.57
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Road network in Beijing
+
+Road network in Brasilia
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+480
+600
+770
+604
+819
+340
+
+1466
+1534
+2606
+2153
+3216.3
+760.7
+
+5166
+5105
+7678
+4135
+5027
+2644
+
+60.27
+59.56
+89.58
+48.24
+58.65
+30.85
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+Road network in New York
+
+1073
+631
+1830
+740
+691
+663
+
+5819.7
+3652.4
+6281.6
+3154.1
+2478.7
+2265.6
+
+22 523
+21 846
+18 421
+14 435
+10 209
+9460
+
+262.77
+254.87
+214.91
+168.41
+119.12
+110.37
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+3994.6
+3151.9
+8098.4
+5391.2
+3269.5
+3148.3
+
+13 121
+13 586
+18 258
+14 682
+11 534
+10 433
+
+153.08
+158.5
+213.01
+171.29
+134.56
+121.72
+
+Road network in New Delhi
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+180
+171
+359
+203
+185
+147
+
+2527
+2837.7
+2286.7
+3560.5
+3176.5
+1148
+
+15 300
+17 473
+9791
+17 635
+19 595
+7898
+
+178.5
+203.85
+114.23
+205.74
+228.61
+92.14
+
+Algorithm
+
+F1
+
+F2
+
+F3
+
+F4
+
+268
+251
+423
+312
+318
+257
+
+5176
+4898
+5267.2
+5130.2
+5528
+4197
+
+18 507
+9823
+9572
+13 954
+15 190
+5667
+
+215.91
+114.6
+111.67
+162.8
+177.22
+66.12
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+Road network in Rome
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+ACO
+DQN
+TS
+Dueling DQN
+DDQN
+DWQL
+
+388
+
+942
+464
+975
+723
+815
+466
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+Fig. 25. Road network in New Delhi.
+
+Fig. 22. Road network in Beijing.
+
+Fig. 23. Road network in Brasilia.
+
+Fig. 26. Road network in Rome.
+
+References
+[1] L.A. Maglaras, A.H. Al-Bayatti, Y. He, I. Wagner, H. Janicke, Social internet of
+vehicles for smart cities, J. Sens. Actuator Netw. 5 (1) (2016) http://dx.doi.org/
+10.3390/jsan5010003.
+[2] T. Limbasiya, D. Das, S.K. Das, MComIoV: Secure and energy-efficient message
+communication protocols for internet of vehicles, IEEE/ACM Trans. Netw. PP
+(99) (2021) 1–13, http://dx.doi.org/10.1109/TNET.2021.3062766.
+[3] L. Du, W. Chen, Z. Pei, H. Zheng, D. Wu, Learning-based lane-change behaviour
+detection for intelligent and connected vehicles, Comput. Intell. Neurosci. 2020
+(1) (2020) 1–13, http://dx.doi.org/10.1155/2020/8848363.
+[4] Z. Li, H. Wu, Y. Lu, Coalition based utility and efficiency optimization for multitask federated learning in Internet of Vehicles, Future Gener. Comput. Syst. 140
+(2023) 196–208, http://dx.doi.org/10.1016/j.future.2022.10.014.
+[5] Data-driven clustering for multimedia communication in Internet of vehicles,
+Future Gener. Comput. Syst. 94 (2019) 610–619, http://dx.doi.org/10.1016/j.
+future.2018.12.045.
+
+Fig. 24. Road network in New York.
+389
+
+Future Generation Computer Systems 153 (2024) 375–390
+
+K. Ma et al.
+
+[30] D. Xu, S. Zhang, H. Zhang, D.P. Mandic, Convergence of the RMSProp deep
+learning method with penalty for nonconvex optimization, Neural Netw. (2021)
+http://dx.doi.org/10.1016/j.neunet.2021.02.011.
+[31] H.v. Hasselt, Double Q-learning, in: Proceedings of the 23rd International
+Conference on Neural Information Processing Systems - Volume 2, NIPS ’10,
+Curran Associates Inc., Red Hook, NY, USA, 2010, pp. 2613–2621.
+[32] A.W. Moore, C.G. Atkeson, Prioritized sweeping: Reinforcement learning with
+less data and less time, Mach. Learn. 13 (1) (1993) 103–130, http://dx.doi.org/
+10.1023/A:1022635613229.
+[33] L. Chrpa, B.D. Schutter, D. Magazzeni, T.L. Mccluskey, M. Vallati, Proceedings
+of thirtieth AAAI conference on artificial intelligence, in: National Conference on
+Artificial Intelligence, 2016.
+[34] Z. Wang, N.D. Freitas, M. Lanctot, Dueling network architectures for deep
+reinforcement learning, in: JMLR.org, 2015, http://dx.doi.org/10.48550/arXiv.
+1511.06581.
+[35] G. Rummery, M. Niranjan, On-Line Q-Learning Using Connectionist Systems,
+Technical Report, 1994.
+[36] N. Lu, N. Cheng, N. Zhang, X. Shen, J.W. Mark, Connected vehicles: Solutions
+and challenges, Internet Things J. IEEE (2014) http://dx.doi.org/10.1109/JIOT.
+2014.2327587.
+[37] P.A. Lopez, M. Behrisch, L. Bieker-Walz, J. Erdmann, E. Wiener, Microscopic
+traffic simulation using SUMO, in: The 21st IEEE International Conference on
+Intelligent Transportation Systems, 2018, http://dx.doi.org/10.1109/ITSC.2018.
+8569938.
+[38] M. Behrisch, L. Bieker, J. Erdmann, D. Krajzewicz, SUMO – Simulation of Urban
+MObility: An overview, in: Simul, 2011.
+[39] B. Li, J. Li, M. Han, Deep reinforcement learning-based charging price determination considering the coordinated operation of hydrogen fuel cell electric
+vehicle, power network and transportation network, IEEE Access 11 (2023)
+75508–75521, http://dx.doi.org/10.1109/ACCESS.2023.3296783.
+[40] A. Gholamhosseinian, J. Seitz, PCIMS: Plenary centralized intersection management scheme for heterogeneous connected vehicles, in: 2023 IEEE International
+Conference on Omni-Layer Intelligent Systems (COINS), 2023, pp. 1–6, http:
+//dx.doi.org/10.1109/COINS57856.2023.10189259.
+[41] M. Maciejewski, A comparison of microscopic traffic flow simulation systems for
+an urban area, Transp. Probl. 5 (4) (2010).
+
+[6] Machine learning based optimization for vehicle-to-infrastructure communications, Future Gener. Comput. Syst. 94 (2019) 488–495, http://dx.doi.org/10.
+1016/j.future.2018.10.047.
+[7] A SFC-based access point switching mechanism for Software-Defined Wireless
+Network in IoV, Future Gener. Comput. Syst. 98 (2019) 577–585, http://dx.doi.
+org/10.1016/j.future.2019.01.030.
+[8] C. Wang, S. School, Brief discussion on research situation and development of
+Internet of vehicles, China Internet (2016).
+[9] J. Wang, C. Jiang, Z. Kai, T. Quek, L. Hanzo, Vehicular sensing networks in a
+smart city: Principles, technologies and applications, IEEE Wirel. Commun. 25
+(1) (2018) 122–132, http://dx.doi.org/10.1109/MWC.2017.1600275.
+[10] Y. Niu, J. Shao, J. Xiao, W. Song, Z. Cao, Multi-objective evolutionary algorithm
+based on RBF network for solving the stochastic vehicle routing problem, Inform.
+Sci. 609 (2022) 387–410, http://dx.doi.org/10.1016/j.ins.2022.07.087.
+[11] H. Kanoh, Dynamic route planning for car navigation systems using virus genetic
+algorithms, Int. J. Knowl.-Based Intell. Eng. Syst. 11 (1) (2007) 65–78, http:
+//dx.doi.org/10.1002/j.2161-4296.1978.tb01326.x.
+[12] W.L. Lai, D. Srinivasan, A hybrid evolutionary algorithm for dynamic route
+planning, in: IEEE Congress on Evolutionary Computation, 2007, pp. 4743–4749,
+http://dx.doi.org/10.1109/CEC.2007.4425094.
+[13] K.H.N. Bui, J.J. Jung, ACO-based dynamic decision making for connected
+vehicles in IoT system, IEEE Trans. Ind. Inform. (2019) 1, http://dx.doi.org/
+10.1109/TII.2019.2906886.
+[14] Y.H. Lin, L.C. Huang, S.Y. Chen, C.M. Yu, The optimal route planning for
+inspection task of autonomous underwater vehicle composed of MOPSO-based
+dynamic routing algorithm in currents, Appl. Ocean Res. 75 (2018) 178–192,
+http://dx.doi.org/10.1016/j.apor.2018.03.016.
+[15] H. Wang, R.-y. Jia, Y. Zhang, P. Qi, A quick ant colony algorithm of solving the
+0-1 knapsack problem, Comput. Technol. Dev. 17 (1) (2007) 104–107.
+[16] H. Wang, Solving maximum clique problem based on ant colony optimization,
+Comput. Appl. Softw. (2010).
+[17] J. Sharma, P.A. Andersen, O.C. Granmo, M. Goodwin, Deep Q-learning with Qmatrix transfer learning for novel fire evacuation environment, IEEE Trans. Syst.
+Man Cybern.: Syst. PP (99) (2020) 1–19, http://dx.doi.org/10.1109/TSMC.2020.
+2967936.
+[18] V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou, D. Wierstra, M.
+Riedmiller, Playing atari with deep reinforcement learning, Comput. Sci. (2013)
+http://dx.doi.org/10.48550/arXiv.1312.5602.
+[19] C. Watkins, P. Dayan, Q-learning, Mach. Learn. 8 (3–4) (1992) 279–292, http:
+//dx.doi.org/10.1007/BF00992698.
+[20] H.V. Hasselt, A. Guez, D. Silver, Deep reinforcement learning with double
+Q-learning, Comput. Sci. (2015) http://dx.doi.org/10.48550/arXiv.1509.06461.
+[21] T. Bonny, M. Kashkash, F. Ahmed, An efficient deep reinforcement machine learning-based control reverse osmosis system for water desalination, Desalination 522 (2022) 115443, http://dx.doi.org/10.1016/j.desal.2021.
+115443.
+[22] S. Sun, Z. Cao, H. Zhu, J. Zhao, A survey of optimization methods from a
+machine learning perspective, IEEE Trans. Cybern. 50 (8) 3668–3681. http:
+//dx.doi.org/10.1109/TCYB.2019.2950779.
+[23] W. Zhou, D. Chen, J. Yan, Z. Li, H. Yin, W. Ge, Multi-agent reinforcement
+learning for cooperative lane changing of connected and autonomous vehicles
+in mixed traffic, 2021, http://dx.doi.org/10.1007/s43684-022-00023-5.
+[24] H. Yang, X. Xie, M. Kadoch, Intelligent resource management based on reinforcement learning for ultra-reliable and low-latency IoV communication networks,
+IEEE Trans. Veh. Technol. 68 (5) (2019) 4157–4169, http://dx.doi.org/10.1109/
+TVT.2018.2890686.
+[25] Y. Peng, S.W. Li, Z.Z. Hu, A self-learning dynamic path planning method for
+evacuation in large public buildings based on neural networks, Neurocomputing
+365 (Nov.6) (2019) 71–85, http://dx.doi.org/10.1016/j.neucom.2019.06.099.
+[26] Y. Geng, E. Liu, R. Wang, Y. Liu, W. Rao, S. Feng, Z. Dong, Z. Fu, Y. Chen,
+Deep reinforcement learning based dynamic route planning for minimizing travel
+time, in: 2021 IEEE International Conference on Communications Workshops
+(ICC Workshops), IEEE, 2021, pp. 1–6.
+[27] Q. Huo, Multi-objective vehicle path planning based on DQN, in: International
+Conference on Cloud Computing, Performance Computing, and Deep Learning
+(CCPCDL 2022), Vol. 12287, SPIE, 2022, pp. 351–357.
+[28] Y. Lecun, L. Bottou, Gradient-based learning applied to document recognition,
+Proc. IEEE 86 (11) (1998) 2278–2324, http://dx.doi.org/10.1109/5.726791.
+[29] D. Kingma, J. Ba, Adam: A method for stochastic optimization, Comput. Sci.
+(2014) http://dx.doi.org/10.48550/arXiv.1412.6980.
+
+Kanghua Ma received his bachelor’s degree in software
+engineering from the University of South China, Hengyang,
+China, in 2020. He is currently pursuing the master’s
+degree at China University of Geosciences, Beijing, China.
+His research interest covers reinforcement learning, traffic
+control and route planning.
+
+Shubing Liao received his bachelor’s degree in Highway
+and Railway Engineering from Beijing Jiaotong University
+and master’s degree in Survey and Mapping. He is currently
+pursuing the doctor’s degree in Cartography and Geographic
+information Engineering with China University of Geosciences, Beijing, China. His research interest is focusing on
+application of Geo-information system (GIS) and artificial
+intelligence (AI) technology in intelligent transportation
+system and smart city.
+
+Yunyun Niu is a Professor with the School of Information Engineering, China University of Geosciences, Beijing,
+China. She received the Ph.D. Degree in Systems Analysis
+and Integration from the Huazhong University of Science
+and Technology, Wuhan, China in 2012. Her research
+interests mostly focus on artificial intelligence and route
+planning.
+
+390
+
+

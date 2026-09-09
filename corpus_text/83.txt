@@ -1,0 +1,923 @@
+2022 IEEE 18th International Conference on Automation Science and Engineering (CASE) | 978-1-6654-9042-9/22/$31.00 ©2022 IEEE | DOI: 10.1109/CASE49997.2022.9926699
+
+2022 IEEE 18th International Conference on Automation
+Science and Engineering (CASE)
+August 20-24, 2022. Mexico City, Mexico
+
+A Deep Q Learning-Model Predictive Control Approach to vehicle routing
+and control with platoon constraints
+Francesco Giannini1 , Giancarlo Fortino1 , Giuseppe Franzè2 and Francesco Pupo1
+DRHC problem of a vehicle platoon with constrained nonlinear dynamics is investigated by using γ-gain stability
+arguments, whereas in [10], the DMPC scheme is based on
+the state trajectories parameterized as polynomial splines.
+Finally, in [11] a DMPC strategy for solving the formation
+problem of leader-follower (LF) systems is derived by exploiting explicit robust model-based control techniques with
+set-theoretic ideas.
+The routing decisions have gained an increasing relevance
+because they allow to address as the way traffic is distributed
+over a given network by significantly improving the traffic
+efficiency. Such an issue has been attacked by resorting to
+distributed machine learning schemes and combining historical and real-time traffic environment information to rationally
+plan vehicle travel paths [12][13][14]. In this context, particular attention has been devoted to Reinforcement Learning
+(RL) paradigm [15]. Accordingly some recent contributions
+addressing the so-called Vehicle Routing Problem (VRP)
+testifies the increasing interest acquired by this promising
+research field, see [1][16][17].
+In this paper the path planning problem for autonomous
+multi-vehicle platoons, moving in URNs is faced by developing a DRHC architecture coupled with a Deep Q Learning
+(DQL) scheme. Here, the idea consists in exploiting the
+capability of a DQL approach to derive adequate routing
+decisions in order to safely drive the platoon towards its target under the guarantee that collisions amongst the involved
+vehicles never occur. Finally, simulations on a multi-agent
+system of three point mobile agents are provided to show
+the effectiveness of the proposed control architecture. Some
+remarks conclude the paper.
+The rest of the paper is organized as follows. In Section II
+the path planning planning problem for urban road networks
+is formulated. Section III describes the proposed control
+architecture whose main feature is to combine into a unique
+framework Deep Reinforcement Learning and distributed
+RHC arguments.
+
+Abstract— In this paper we deal with the control of platoon of
+autonomous vehicles driving in Urban Road Networks (URNs).
+We exploit the idea of using Deep Reinforcement Learning
+(DRL) as the path planner of the proposed architecture. The
+advantage of this solution is the capability to deal with the
+actual traffic congestion while driving the autonomous vehicle
+to its destination. In particular, the high-level routing decisions
+are translated into manipulable set-points for Receding Horizon
+controllers by making more computational affordable and
+efficient the control action on the vehicle dynamics. Feasibility
+and asymptotic closed-loop stability are formally proved. Some
+simulations on a platoon, consisting of three agents described by
+double-integrator models, are provided to show the effectiveness
+of the overall architecture.
+
+I. I NTRODUCTION
+In recent years, regulating traffic flows with the aim to
+alleviate congestion phenomena and keep road services at a
+satisfactory level is an issue that has assumed an increasing
+relevance. The most promising approaches for an intelligent
+management of these aspects rely on the exploitation of
+Internet of Vehicles (IoV) based paradigms, where each
+vehicle is connected and, at least one roadside unit (RSU)
+is deployed stationary on the road segment, see [1] and
+references therein.
+The coordination and control of multi-vehicle systems
+have attracted the attention of several researchers in the last
+decades as testified by relevant review contributions, see e.g.,
+[2], [3]. More recently, the attention has been devoted to
+analyze stabilization [4], [5] and path following [6] topics,
+that in turn involve two relevant aspects: the characterization
+of admissible state trajectories tubes for the current leader
+and the design of ad-hoc control architecture to keep the
+relative positions of the vehicles within safe and acceptable
+limits.
+Model Predictive Control (MPC) seems to be the most
+adequate approach for dealing with this class of problems
+in virtue of its intrinsic capabilty to explictly comply with
+hard constraints.Hereafter, a brief review of some useful
+contributions is given. In [7] a distributed receding horizon
+control (DRHC) scheme for nonlinear platoons is developed.
+The contribution [8] proposes a synchronous DRHC for
+nonholonomic multi-vehicle systems. In [9], the constrained
+
+II. P ROBLEM FORMULATION
+Consider a group of L autonomous vehicles topologically
+organized as a platoon (see Fig. 1) and moving on a URN
+(see e.g. Fig. 2). Each vehicle is described by the following
+discrete-time state space double integrator model:
+ i
+r (t + 1) = ri (t) + vi (t),
+Σi :
+(1)
+vi (t + 1) = vi (t) + ui (t), i = 1, . . . , L,
+
+2 Giuseppe Franzè is with DIMEG, Università della Calabria, Via Pietro
+Bucci, Cubo 44-C, Rende (CS), 87036, ITALY,
+1 Francesco
+Giannini,
+Francesco
+Pupo
+and
+Giancarlo
+Fortino are with DIMES, Università della Calabria, Via
+Pietro
+Bucci,
+Cubo
+41-C,
+Rende
+(CS),
+87036,
+ITALY,
+
+francesco.giannini@dimes.unical.it
+{giancarlo.fortino, giuseppe.franze,
+francesco.pupo}@unical.it
+978-1-6654-9042-9/22/$31.00 ©2022 IEEE
+
+where t ∈ ZZ+ := {0, 1, . . .}, ri (t) ∈ IRm and vi (t) ∈ IRm are
+positions and speed of the i − th agent, while ui ∈ IRm the
+563
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:13 UTC from IEEE Xplore. Restrictions apply.
+
+T
+
+T
+
+input vector. Moreover, by denoting with xi (t) = [ri vi ]T
+its state, the dynamics can be rewritten as
+xi (t + 1) = Ai xi (t) + Bi ui (t)
+
+The overall control architecture, depicted in Fig. 3, is
+hereafter detailed. Essentially, it consists of three units: a
+Path Planner based on the DRL algorithm (bank of L units),
+and an Reference Generator (bank of L units) and a RHC
+controller each one tuned w.r.t. the agents Σi , i = 1, . . . , L.
+
+(2)
+
+1
+
+1
+
+a (t)
+
+x (t)
+
+L
+
+x (t)
+
+PATH - PLANNER
+(DRL)
+
+.
+.
+.
+
+.
+.
+.
+L
+
+Fig. 3.
+. . .
+
+Fig. 1.
+
+Follower i
+
+. . .
+
+Follower 2
+
+u (t)
+
+1
+
+1
+
+Σ
+
+L
+
+L
+
+RHC
+
+Σ
+
+L
+
+u (t)
+
+L
+
+x (t+1)
+
+Distributed control architecture exploiting the DRL scheme
+
+Follower L
+
+At each time instant t, the Path Planner receives the state
+measurement of the generic agent Σi at t, namely xi (t), and
+generates the action ai (t) to be executed by the vehicle Σi
+until the next junction. The latter translates into the set-point
+zi (t) for the underlying control logic translated thanks to
+the Reference Generator unit. Hence, the RHC controller
+computes an admissible command ui (t) in a distributed
+receding horizon fashion.
+
+Leader-follower topology
+
+2
+Definition 1: A junction is a decision point over a URN.
+Definition 2: A link (or equivalently, a segment) is defined
+as a portion of a road between two junctions.
+Then, given a URN, the problem to solve can be stated as
+follows:
+Road Network Path Planning (RNPP) Problem Given the vehicle platoon (1) and an URN, determine a
+distributed state-feedback control policy
+u1 (t) = g(x1 (t), x1f );
+ui (t) = g(xi (t), xi−1 (t), xif ), i = 2, . . . , L,
+
+A. DRL Path-Planner
+The aim of the Path-Planner is to choose the proper action
+for each agent in order to alleviate traffic congestion on
+the overall URN, while considering its own destination.
+Q learning [19] is a routing decision method that avoids
+the need of a traffic evolution model (see [20])). Deep Q
+Learning is a Q learning whose Q-function is defined as a
+neural network (see figure 4), containing the agents’ beliefs
+about the environment and the other agents.
+The multi-agent RL model is defined as:
+
+(4)
+
+compatible with (3) such that, starting from an admisT
+T
+T
+sible initial condition x(0) = [x1 (0), x2 (0), . . . , xL (0)]T ,
+the team is driven to the prescribed target position x f =
+T
+T
+T
+[x1f , x2f , . . . , xLf ]T , regardless any junction occurrence. 2
+In order to solve the RNPP problem, we made the following
+assumptions:
+Assumption 1: At each time instant t, the generic i − th
+follower subsystem is informed on the current state value of
+the (i − 1) − th subsystem.
+2
+Assumption 2: There exists at least an admissible path
+complying with the RNMP problem prescriptions;
+2
+
+< V, Σ, Λ, Φ >
+
+(5)
+
+where
+• V = {AV 1 , . . . , AV h } is the set of vehicle-agents that
+partecipate in RL,
+• Σ = {σ1 , . . . , σh } is the set state of the agents, specifically the driving edge of each vehicle and the vehicles’
+density on that edge,
+• ΛAV i is the action space of the vehicle AV i , e.g. "turn
+right", "exit at the next junction",
+• Φ : Σ × Λ × Σ → R is the reward function.
+The RL sample time is not fixed but it is triggered by the
+evolution of the simulation. The vehicle has to choose an
+action when it entries in the "decision zone" (see figure 5),
+i.e. when it is near to a junction.
+The chosen reward, during the trip of the autonomous
+vehicle, is sum of two components:
+
+III. D ISTRIBUTED RHC ARCHITECTURE
+A distributed RHC strategy will be developed for the
+platoon configuration of Fig. 1, under Assumption 1 and
+Assumption 2
+
+φi (k + 1) = Φ(k + 1) + χi (k + 1) i ∈ V
+•
+
+Φ(k + 1) =
+
+Urban road network created with NETEDIT 1.11.0, see [18]
+
+(6)
+
+The aim of the first term is to alleviate traffic congestion.
+It is the gradient of traffic density over the entire URN:
+M
+
+Fig. 2.
+
+x (t+1)
+
+.
+.
+.
+
+.
+.
+.
+
+z (t)
+
+a (t)
+
+Leader
+
+RHC
+
+.
+.
+.
+L
+
+1
+
+1
+
+1
+
+z (t)
+
+REFERENCE GENERATOR
+
+where xi ∈ IRn , n = 2m, and the following constraints are
+prescribed:
+
+T
+i )2 } ⊂ IRm
+
+ri (t) ∈ Xri := {ri ∈ IRm : ri ri ≤ (rmax
+
+
+T i
+ i
+m
+i
+i
+i
+v (t) ∈ Xv := {v ∈ IR : v v ≤ (vimax )2 } ⊂ IRm
+(3)
+T
+
+ui (t) ∈ U i := {ui ∈ IRm : ui ui ≤ (uimax )2 } ⊂ IRm ,
+
+
+
+∀t ≥ 0, i = 1, . . . , L.
+
+µ j (k)
+
+∑ ( w jl j
+
+j=1
+
+−
+
+µ j (k + 1)
+w jl j
+
+564
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:13 UTC from IEEE Xplore. Restrictions apply.
+
+)
+
+(7)
+
+online and it can deal with the actual traffic congestion
+condition.
+DQL-Algorithm
+Initialization
+1: Initialize Qi (σi , a; θi ) with random weights θi .
+2: Initialize σi (0) = σi0 where σi0 is the known initial state.
+For each k do
+1: Select a random action ai (k) with probability ε(k),
+otherwise ai (k) = maxa Qi (σ(k), a; θi ).
+2: Observe the system reward Φ(k + 1) and the new states
+σ(k + 1)i .
+3: Calculate the reward φi (k + 1).
+4: Update θi = θi − α∇θ L(θi ).
+The Q-function Qi (σi , a; θi ) is the total expected discounted reward if the agent i takes the action a in the state
+σi and acts optimally thereafter:
+Qi (σi (k), a(k); θi ) = E[φi (k +1)+γφi (k +2)+γ2 φi (k +3)+. . . ]
+The parameter γ ∈ (0, 1) is the discount factor while α ∈
+(0, 1) is the learning rate. The Q-function is initialized with
+random weights because we assume that the agents don’t
+know anything about the traffic before the training. The
+action ai (k) depends on the decision graph (see figure 6)
+related to the vehicle i, its actual position and the state of the
+environment described by its observation. In each possible
+state, the best action for the vehicle i is s.t. maximizes the
+Q-function. During the training there is a trade-off between
+exploration and exploitation, solved with an epsilon-greedy
+policy: the probability ε(k) is a decreasing function of time.
+The loss function is a squared loss, defined as:
+
+Fig. 4. Neural Network Structure. The labels "elus" and "elua" are name
+to indicate the activation functions on the two branches.
+
+L(k + 1; θi ) = (φi (k + 1) − φ̂i (k + 1))2
+where
+
+Fig. 5. The "decision zone": when the autonomous vehicle is near to a
+junction it has to choose an action. The idea of near can be imposed by
+a constant threshold or it is a function of current speed, braking force and
+driver’s reaction time.
+
+φ̂i (k + 1) = Qi (σi (k), ai (k); θi ) − γ max Qi (σi (k + 1), a; θi )
+a
+
+where M is the number of road segments, µ j (k) is the
+number of vehicles on the edge j at the step k, w j is
+the average width of the edge j, l j is the length of the
+j
+edge j. Therefore the term µ (k)
+is the vehicle density
+w jl j
+on edge j at time k. The reward is good if the density
+decrease because of the action.
+• χi (k +1) is a heuristic function created with an approach
+similar to [21]. It is defined as the current longitudinal
+velocity of the vehicle divided by the euclidian distance
+from the current location to the destination.
+When the episode terminates, the last reward depends on
+the final position.
+Each vehicle i ∈ V is an intelligent agent whose behaviour
+is described in the following algorithm. The algorithm runs
+
+Fig. 6. The graph corresponding to the URN of Fig. 2. Each node is
+labeled with a junction’s id. The goal is the junction labeled as J6.
+
+565
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:13 UTC from IEEE Xplore. Restrictions apply.
+
+j
+
+Let (Ti )k be the generic PI region of the i − th vehicle,
+then the distance constraint is:
+
+B. RHC controllers
+To formally comply with the RNMP problem prescriptions, we define tubes of admissible state trajectories. Let
+denote with xin and x f in (x f in an equilibrium) the entrance
+point and the exit point along the j−th link, respectively,
+the link crossing problem is addressed by resorting to a settheoretic approach [22] based on a proper computation of
+sequence of pairs of Positively Invariant (PI) regions and
+corresponding stabilizing state-feedback control laws for the
+multi-agent system (2)-(3). To this end, the state constraints
+are re-defined by taking into account the link-free region,
+j
+namely O f ree ,
+j
+
+(Xc )ij , X i ∩ O f ree i = 1, . . . , L, j = 1, . . . , M,
+
+j
+
+αmin ≤ dist(xi , (Ti−1 )k ) ≤ αmax
+
+(10)
+
++
+
+αcmin , αcmax
+
+where
+∈ IR are knobs selected according to the
+operating environment at hand to preserve the safety along
+the platoon. As a consequence, the set of state xi is selected
+such that the distance from the same-level controllable region
+of the predecessor Σi−1 along the LF chain is bounded
+j
+j
+/ Based on these
+by αcmin and αcmax , i.e (Ti )k ∩ (Ti−1 )k = 0.
+arguments, the k − th PI region for the leader dynamics is
+obtained by solving the following optimization:
+DMPC-PL :
+min J∞1 (t) s.t
+(11)
+
+(8)
+
+j
+
+j
+
+(F1 )k ,(T1 )k
+
+where direction of travel and center line are taken into
+account, see the explanatory example of Fig. 7.
+
+j
+
+j
+
+j
+
+(A1 + B1 (F1 )k )(T1 )k ⊂ (T1 )k ⊆ (Xc )1j
+j
+
+j
+
+(F1 )k (T1 )k ) ⊂ U 1 ,
+j
+
+(12)
+(13)
+
+j
+
+j
+
+(ξ1 )k ∈ (T1 )k−1 ∩ (T1 )k
+
+(14)
+
+Conversely, for each follower the following optimization
+takes place:
+DMPC-PF :
+min J∞i (t) s.t
+(15)
+j
+j
+(F ) ,(T )
+i k
+
+Fig. 7. Geometric constraints (dashed green zone) due to direction travel
+and center line (dashed red line)
+j
+(Ti )k
+
+j
+
+j
+
+(16)
+
+j
+j
+(Fi )k (Ti )k ) ⊂ U i ,
+
+(17)
+
+j
+(ξi )k
+
+In the following, we denote with
+⊂ IRn the k − th PI
+region for the dynamical evolution of the subsystem Σi under
+the action of the state-feedback law
+ui (t) = (Fi )k xi (t), ∀t ≥ 0,
+
+1 k
+
+j
+j
+(Ai + Bi (Fi )k )(Ti )k
+
+⊂ (Ti )k ⊆ (Xc )ij
+
+j
+j
+∈ (Ti )k−1 ∩ (Ti )k
+
+j
+αmin ≤ dist(xi , (Ti−1 )k ) ≤ αmax , ∀xi
+
+(18)
+j
+∈ (Ti )k
+
+(19)
+
+j
+(ξi )k , i = 1, . . . , L
+
+with
+denoting the equilibrium point selected
+at the k − th iteration.
+j
+Notice that (ξi )k , i = 1, . . . , L denote the equilibrium points
+selected at each k − th iteration, while the cost indexes are
+i
+∞h
+J∞i (t) := ∑ kri (t + h|t)−rif k2R i +kui (t + h|t)k2R i ,
+x
+u
+(20)
+h=0
+i = 1, . . . , L,
+
+(9)
+
+where the apex j accounts for the j − th road link.
+For each vehicle i, or each link j and for each admissible
+direction of travel, a tube of admissible state trajectories is
+off-line determined compatibly with the platoon configuration. This translates in computing families of overlapped
+positively invariant in charge to achieve an inner convex
+j
+approximation of the link-free region O f ree . The need of the
+overlapped feature relies on viability arguments: in fact such
+a property guarantees that an admissible switching between
+two regions can be activated and, as a consequence, the
+vehicle can move towards its target. Then during the on-line
+phase, starting from admissible state conditions, leader and
+followers are driven through the URN by exploiting the routing decisions provided by the DQL as set-points to be tracked
+as best as possible. To this end, the off-line computations are
+of relevance and must be properly defined. First of all, the
+PI regions must take of safe distances amongst the vehicles,
+therefore they have to be derived a level-by-level procedure.
+Specifically, first the PI leader is derived without adding any
+distance constraint, then the direct follower (second agent)
+computes its PI under a distance requirement w.r.t. the leader
+region, and so on until the leaf node. This reasoning can be
+formally translated as follows.
+
+with Rxi > 0 and Rui ≥ 0 symmetric state and input weighting
+matrices, respectively.
+j
+The overlapping property of the families {(Ti )k } is ensured
+under the following reasoning.
+j
+j
+Given the PI region (Ti )k centered at the equilibrium (ξi )k , at
+j
+j
+each iteration k the new equilibrium point is (ξi )k+1 ∈ (Ti )k ,
+is chosen such that
+j
+
+j
+
+(ξi )k+1 := arg max k(ξi )k − xi k2
+j
+x∈(Ti )k
+
+(21)
+
+s.t. ∃ūi ∈ U i , xi = (In − Ai )−1 Bi ūi
+j
+
+As a consequence, the PI region (Ti )k+1 computed w.r.t.
+j
+(ξi )k+1 satisfies
+j
+j
+(Ti )k ∩ (Ti )k+1 6= 0/
+(22)
+As the on-line phase is concerned, this must guarantee
+that there always exist a control action capable to move
+566
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:13 UTC from IEEE Xplore. Restrictions apply.
+
+Proof - The recursive feasibility property of the DRHC
+Algorithm is proved by investigating the admissibility at each
+time instant of the optimization problem (23)-(24).
+Assume that an optimal solution there exists for the generic
+j
+agent Σi at the current time instant t and xi (t) ∈ (Ti )k . At
+the next time instant t + 1, an admissible solution there
+also exists thanks to the fact that, by construction, the state
+j
+trajectory xi (·) under the action of ui (·) = Fi )k xi (·) keep
+j
+confined into the PI region (Ti )k . Conversely, the optimal
+∗
+j
+command input uij (t|t) leads the vehicle towards (Ti )k+1 .
+The same reasoning applies to all the other agents.
+The asymptotic stability property of the closed-loop trajectories follows from the same arguments because, according
+o the routing decision zi (t), the vehicle position converges to
+rif : the velocity components vi (t) will settle down as t → ∞.
+2
+
+the platoon amongst overlapped regions. The next results
+provides a solution to this requirement.
+j
+j
+Proposition 1: Let (Ti )k and (Ti )k+1 be two PI sets comi
+plying with (22). Let z (t) be the current set-point. Let
+j
+j
+j
+xi (t) ∈ (Ti )k , x̃i := xi − (ξi )k+1 and ũ := u − (wi )k+1 be the
+current state, the shifted state and the shifted input with
+j
+j
+respect to the equilibrium ((ξi )k+1 , (wi )k+1 ), respectively.
+Then, the tracking one-step MPC problem
+ũi (t) := arg min kPro jri (Ai x̃i (t) + Bi ũi ) − z̃i (t)k2
+
+j
+
+(23)
+
+((Pi )k+1 )−1
+
+s.t.
+j
+
+Ai x̃i (t) + Bi ũ ∈ (Ti )k+1 , ui ∈ U i ,
+j
+
+(24)
+j
+
+with (Pi )k+1 the shaping positive definite matrix of (Ti )k+1 ,
+has a solution at each time instant t.
+j
+Proof - By construction both xi (t) and (ξi )k+1 are feasible
+initial conditions for steering the state trajectory xi (·) to
+j
+j
+(Ti )k built with respect to the equilibrium (ξi )k . Therefore, by linearity it is ensured that the constrained tracking
+j
+problem xi (t) → (ξi )k+1 , formulated as the one-step MPC
+optimization (23)-(24), has always a feasible solution when
+implemented in a receding horizon fashion.
+2
+
+IV. S IMULATIONS
+In this section, the effectiveness of the proposed DRHC
+Algorithm is evaluated by considering a team of three
+vehicles. All the simulations have been carried out on a
+MacOs PC equipped with a Intel Core i5 processor with the
+MATLAB 2020a and SUMO 1.11.0 [18] environments. A
+co-simulation framework, has been developed starting from
+the utilities given by TraCI4MATLAB Interface [23].
+Initially, the URN of Fig. 2 is recast as a computable graph
+as shown in Fig. 8. Then, the following operating scenario
+is considered.
+
+C. The distributed RHC algorithm
+The above developments lead to the following computable
+algorithm based on the availability of an URN characterized
+in terms admissible directions of travel for each road link.
+DRHC-Algorithm - Vehicle i − th
+
+250
+
+Input: αmin , αmax , xi (0), xif ;
+∗
+Output: ui (t|t);
+
+200
+
+150
+
+100
+
+Initializationj
+j
+1: Compute the leader pair {(T1 )k , (F1 )k } as the solution
+of the optimization (11)-(14);
+j
+j
+2: Compute the follower pairs {(Ti )k , (Fi )k } by solving the
+optimization (15)-(19);
+3: Determine the equilibrium points by means of (21);
+4: k ← k + 1; goto Step 1;
+On-line phase 1: Acquire xi (t);
+2: Generate the routing decision zi (t) by the combined
+action of the Path Planning and Reference Generator
+units;
+3: Solve the optimization (23)-(24);
+∗
+4: Apply uij (t|t);
+5: t ← t + 1 and goto Step 1;
+
+50
+
+0
+
+-50
+
+-100
+0
+
+100
+
+200
+
+300
+
+400
+
+500
+
+600
+
+700
+
+800
+
+900
+
+1000
+
+Fig. 8. Mapping of the urban road network of Fig. 2. Polyhedral bullets
+account for link junctions.
+
+Operating scenario - Given the URN defined by Fig. 8,
+the platoon starts from the initial position (red star) to reach
+the target (green star), see Fig. 9, by keeping safe distances
+amongst all the involved vehicles.
+2
+All the relevant results are collected in Figs 9-11. First,
+Fig. 9 accounts for the off-line computed sequences of
+j
+overlapped PI regions {(Ti )k } which represents the domain
+of attraction of the proposed algorithm. In particular, there
+we have reported only the subset of PI families accordingly
+to the routing decisions obtained via the use of the DQL
+algorithm. As expected, the proposed strategy satisfied at
+each time instant all the prescribed constraints, see Figs. 1011. Finally, Fig. 11 shows the capability of the strategy to
+accomplish the mission (RNMP problem prescriptions) by
+avoiding any collision among vehicles.
+
+Recursive feasibility and asymptotic stability of the DRHC
+Algorithm are stated in the following proposition.
+Proposition 2: Let xi (0) and xif , i = 1, . . . , L, initial and
+final conditions be given. Then, the DRHC Algorithm always satisfies the prescribed constraints, complies with the
+requirements of the RNMP problem and ensures that the
+regulated state trajectories are asymptotically stable.
+567
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:13 UTC from IEEE Xplore. Restrictions apply.
+
+R EFERENCES
+[1] K. Lin, C. Li, Y. Li, C. Savaglio and G. Fortino, “Distributed
+Learning for Vehicle Routing Decision in Software Defined Internet
+of Vehicles”, IEEE Trans. on Intell. Transport. Sys., Vol. 22, No. 6,
+pp. 3730-3741, 2020.
+[2] M. Mesbahi and M. Egerstedt, “Graph theoretic methods in multiagent
+networks”, Princeton University Press, 2010.
+[3] K.-K. Oh, M.-C. Park, and H.-S. Ahn, “A survey of multi-agent
+formation control”, Automatica, Vol. 53, pp. 424-440, 2015.
+[4] K. Hengster-Movrić, S. Bogdan and I. Draganjac, “Multi-agent formation control based on bell-shaped potential functions”, J. Intell. Robot.
+Syst., Vol. 58, No. 2, pp. 165-189, 2010.
+[5] W. Dong, “Robust formation control of multiple wheeled mobile
+robots”, J. Intell. Robot. Syst., Vol. 62, No. 3, pp. 547-565, 2011.
+[6] J. Ghommam, H. Mehrjerdi, M. Saad, F. Mnif, “Formation path
+following control of unicycle-type mobile robots”, Robot. Auton. Syst.,
+Vol. 58, No. 5, pp. 727-736, 2010.
+[7] W. B. Dunbar and D. S. Caveney, “Distributed receding horizon
+control of vehicle platoons: Stability and string stability”, IEEE Trans.
+Aut. Contr., Vol. 57, No. 3, pp. 620-633, 2012.
+[8] P. Wang and B. Ding, “Distributed RHC for tracking and formation of
+nonholonomic multi-vehicle systems”, IEEE Trans. Aut. Contr., Vol.
+59, No. 6, pp. 1439-1453, 2014.
+[9] H. Li, Y. Shi and W. Yan, “Distributed receding horizon control
+of constrained nonlinear vehicle formations with guaranteed γ-gain
+stability”, Automatica, Vol. 68, pp. 148-154, 2016.
+[10] R. Van Parys and G. Pipeleers, “Distributed MPC for multi-vehicle
+systems moving in formation”, Rob. and Aut. Sys., Vol. 97, pp. 144152, 2017.
+[11] G. Franzè, W. Lucia and F. Tedesco, “A distributed model predictive
+control scheme for leader-follower multi-agent systems”, Int. J. of
+Contr., Vol. 91, No. 2, pp. 369-382, 2018.
+[12] M. Chen and Y. Hao, “Label-less learning for emotion cognition”,
+IEEE Trans. Neural Netw. Learn. Syst., Vol. 31, No. 7, pp. 2430-2440,
+2020.
+[13] K. Lin, Y. Li, J. Deng, P. Pace and G. Fortino, "Clustering-LearningBased Long-Term Predictive Localization in 5G-Envisioned Internet
+of Connected Vehicles", IEEE Trans. Intell. Transp. Syst. Vol. 22, No.
+8, pp. 5232-5246, 2020.
+[14] R. Hult et al. "Optimal coordination of automated vehicles at intersections: Theory and experiments.", IEEE Transactions on Control
+Systems Technology 27.6 2510-2525, 2018
+[15] R. Sutton and A. Barto, "Reinforcement Learning: An Introduction",
+A Bradford Book, The MIT Press, 2015
+[16] G. Bono et al. "Solving multi-agent routing problems using deep attention mechanisms.", IEEE Transactions on Intelligent Transportation
+Systems, (2020)
+[17] M. Ulmer et al. "On modeling stochastic dynamic vehicle routing
+problems.", EURO Journal on Transportation and Logistics, 2020
+[18] P. Alvarez Lopez, M. Behrisch, L. Bieker-Walz, J. Erdmann, Y.
+Flötteröd, R. Hilbrich, L. Lücken, J. Rummel, P. Wagner, E. Wießner
+"Microscopic Traffic Simulation using SUMO", IEEE Intelligent Transportation Systems Conference (ITSC), 2018
+[19] J. Fan, Z. Wang, Y. Xie, Z. Yang, "A theoretical analysis of deep
+Q-learning", in Learning for Dynamics and Control Systems, 2020
+[20] S. Russell and P. Norvig, "Artificial intelligence: a modern approach.",
+2002
+[21] M. Mangeruga et al. "An Underwater Pathfinding Algorithm for
+Optimised Planning of Survey Dives", Remote Sensing, 2020
+[22] F. Blanchini and S. Miani,“Set-Theoretic Methods in Control”,
+Birkäuser, Boston, 2008.
+[23] A. F. Acosta, J. E. Espinosa, and J. Espinosa, “TraCI4matlab: Enabling the Integration of the SUMO Road Traffic Simulator and Matlab
+Through a Software Re-engineering Process,” in Modeling Mobility
+with Open Data, pp. 155- 170, Springer, 2015
+
+Fig. 9. Sequences of overlapped positively invariant regions complying
+with road constraints (8). The stars correspond to the starting (red) and the
+ending (green) points
+
+Fig. 10.
+
+Command inputs (solid lines) and constraints (dashed red line).
+
+Fig. 11. Platoon planar trajectories along a road link portion. The red
+line is the Leader trajectory, the green and the yellow are the followers
+trajectories.
+
+V. C ONCLUSIONS
+In this paper, a distributed control architecture, based on
+the joint and cooperative use of DRL and MPC techniques,
+has been developed to address the routing decision and
+path planning problem for multi-vehicle platoons. As one
+of its main merits, the resulting control scheme is capable to
+identify admissible paths by avoiding undesired stop-and-go
+behaviors of each involved vehicle. The simulation section is
+instrumental to show the capability of the proposed approach
+to properly take advantage of the routing decisions provided
+by the DQL unit in order to better comply with the path
+problem prescriptions.
+568
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:01:13 UTC from IEEE Xplore. Restrictions apply.
+
+

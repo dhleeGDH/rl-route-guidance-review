@@ -1,0 +1,1016 @@
+2026 12th International Conference on Control, Automation and Robotics
+
+2026 12th International Conference on Control, Automation and Robotics (ICCAR) | 979-8-3195-2935-0/26/$31.00 ©2026 IEEE | DOI: 10.1109/ICCAR69571.2026.11549565
+
+Resilient Multi-Agent Deep Reinforcement Learning
+for Routing Control via Traffic Cost Fields
+Yifan Dong
+
+Huachun Tan*
+
+Xincheng Zhou
+
+School of Mechanical Engineering
+Beijing Institute of Technology
+Beijing, China
+yifandong1618@163.com
+
+School of Interdisciplinary Science
+Beijing Institute of Technology
+Beijing, China
+Beijing Institute of Technology, Zhuhai
+tanhc@bit.edu.cn
+*Corresponding author
+
+School of Information and Electronics
+Beijing Institute of Technology
+Beijing, China
+zhouxc26@bit.edu.cn
+
+Peifeng Li
+
+Yanan Zhao*
+
+School of Information and Electronics
+Beijing Institute of Technology
+Beijing, China
+peifengli@bit.edu.cn
+
+School of Mechanical Engineering
+Beijing Institute of Technology
+Beijing, China
+Beijing Institute of Technology, Zhuhai
+zyn@bit.edu.cn
+*Corresponding author
+choices, whereas the system-optimal objective minimizes the
+total network travel time [1]. The resulting gap motivates
+routing control policies that steer a fraction of vehicles to
+improve overall efficiency and robustness under disturbances
+and partial compliance.
+A dominant baseline in practice is shortest-path routing
+on road graphs, where Dijkstra-style algorithms compute
+minimum-cost paths with respect to static or time-varying
+edge costs [2], [3]. When real-time traffic information is
+available, dynamic rerouting can reduce travel time in nonstationary networks, but purely myopic replanning may cause
+oscillations, herding effects, and brittle behavior when costs
+evolve endogenously with network loading and disruptions
+[4]. Effective large-scale routing control must therefore jointly
+account for endogenous congestion dynamics, disturbancerelated risk, and the feedback between individual decisions
+and network states.
+Beyond myopic replanning, recent studies have explored
+game-theoretic and learning-based formulations for sequential route choice under congestion, including Markov routing
+games and multi-agent reinforcement learning for decentralized adaptive navigation [5]–[7]. System-optimal routing under
+uncertainty and partial compliance has also been investigated
+with RL and hybrid approaches, while non-compliance effects
+and scalable sequential recommendation/assignment frameworks highlight the practical challenges of robustness and
+scalability [8]–[10]. These developments collectively indicate
+the need for routing controllers that remain scalable on real
+road graphs, operate in closed loop with traffic states, and
+explicitly encode resilience under disturbances.
+Motivated by these gaps, our paper studies resilient routing
+control in an urban road network modeled as a directed graph
+
+Abstract—Urban road networks frequently experience recurrent congestion and non-recurrent disruptions, where individually optimal routing can degrade system-level efficiency under
+mixed compliance. Naive shortest-path guidance can be overly
+myopic in coupled traffic systems. As congestion is shaped by
+collective route choices, it may over-react to momentary link costs
+and trigger herding-like oscillations. This motivates routing controllers with decentralized execution that scale to many vehicles
+while better accounting for congestion externalities. We propose
+a routing framework centered on Traffic Cost Fields (TCF),
+which maintain factorized edge-wise signals as an interpretable
+interface between traffic states and routing decisions. A sharedparameter multi-agent actor–critic policy is trained with Proximal Policy Optimization (PPO) to make periodic intersectionlevel next-hop decisions from masked local observations, enabling
+decentralized execution at scale. Experiments on an abstracted
+road graph extracted from Shenzhen show improved average and
+tail travel-time performance over shortest-path baselines across
+multiple demand levels.
+Index Terms—Routing control, Transportation, Reinforcement
+learning, Path planning
+
+I. I NTRODUCTION
+Urban traffic networks are increasingly exposed to recurrent
+congestion and non-recurrent disruptions such as incidents,
+temporary capacity drops, and demand surges. Conventional
+routing services typically optimize individual travel times, yet
+large-scale adoption of individually optimal guidance may
+amplify congestion and degrade network-level performance.
+This tension is naturally captured by traffic game theory:
+under the Wardrop user-equilibrium principle, each traveler
+selects a route that minimizes personal cost given others’
+This work was partly supported by the National Key Research and Development Program of China under Grants 2023YFB2504704-02 and Key R&D
+Program of Shandong Province, China under Grants 2023CXPT032.
+
+979-8-3195-2935-0/26/$31.00 ©2026 IEEE
+
+1
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:58:42 UTC from IEEE Xplore. Restrictions apply.
+
+under mixed traffic consisting of uncontrollable background
+vehicles and a fraction of controllable agents. We propose a
+closed-loop framework that performs periodic next-hop replanning at intersections after a warm-up stage, using edge-wise
+Traffic Cost Fields (TCF) as an interpretable interface between
+traffic states and routing decisions. A shared-parameter multiagent actor–critic policy is trained on-policy to enable scalable
+decentralized execution from local observations. Experimental
+evaluation is conducted in a graph-based urban traffic simulator constructed from real road networks extracted from
+OpenStreetMap. In addition to evaluating efficiency under
+multiple demand levels, we explicitly consider a low controllable penetration rate (𭟋 = 5%), which represents a realistic
+partial compliance scenario. Such low compliance settings
+are particularly challenging, as decentralized routing signals
+may be diluted by dominant background traffic. Therefore,
+we emphasize stability and robustness of the closed-loop
+routing process under limited controllability, and analyze how
+the learned controller avoids oscillatory behaviors commonly
+observed in myopic rerouting schemes.
+This paper makes three main contributions:
+(i) TCF-based resilient routing interface: factorized and interpretable Traffic Cost Fields that support explicit efficiency–
+resilience trade-offs in routing control.
+(ii) Scalable MARL routing controller: a periodic next-hop
+controller with feasibility constraints and shared parameters
+for mixed traffic on real road graphs.
+(iii) Evaluation under disturbances: systematic evaluation
+across demand levels, a low control penetration rate (5%), and
+disruptions, demonstrating improved network efficiency and
+resilience over dynamic shortest-path and heuristic baselines.
+
+and incorporate a marginal-cost shaping term in the learning
+reward (Sec. IV-D) to better align decentralized decisions with
+network-level efficiency.
+The following assumptions are adopted:
+• The edge-level traffic states required to construct ze (t) are
+available to the controller via infrastructure-side sensing
+or estimation.
+• Routing decisions are made at intersections. Within each
+road segment, the graph-based simulator governs vehicle
+progression and interactions.
+• Observation and communication delays are neglected
+unless explicitly evaluated.
+Stability under Low Penetration Rates: In lowpenetration settings (e.g.,𭟋 = 5%), controllable agents represent only a small fraction of total traffic. In such cases, stability
+of the closed-loop routing process becomes critical. Because
+the majority of vehicles remain uncontrolled, the routing
+controller must avoid inducing excessive flow concentration
+or oscillatory shifts in response to transient cost fluctuations.
+The proposed TCF factorization and marginal-cost shaping are
+designed to mitigate such instability by smoothing congestion
+amplification and internalizing externalities locally, thereby
+promoting stable decentralized adjustments rather than abrupt
+global rerouting waves.
+III. M ETHODOLOGY
+This section presents the proposed approach for networklevel routing control on urban road graphs. We adopt a
+closed-loop routing scheme over periodic decision epochs
+with an initial warm-up stage of duration Twarm to establish
+representative traffic conditions. After warm-up, at each epoch
+tk = Twarm + k∆T , the controller observes the current traffic
+cost fields {ce (tk )}e∈E and issues next-hop decisions for
+eligible vehicles at intersections; the graph-based simulator
+then advances traffic dynamics and refreshes edge-level states
+and costs for the next epoch. The periodic next-hop policy is
+learned within this simulator using a shared multi-agent deep
+reinforcement learning controller.
+
+II. P ROBLEM F ORMULATION
+We consider a mixed traffic population consisting of uncontrollable background vehicles and controllable agents. Let
+π ∈ (0, 1) denote the control penetration rate, i.e., the
+fraction of vehicles that are controllable agents (the rest are
+uncontrollable background vehicles). Unless otherwise stated,
+we use 𭟋 = 5% in our experiments. Each vehicle i is assigned
+an origin–destination (OD) pair (oi , di ) with oi , di ∈ V .The
+objective is to learn network-level routing control policies that
+improve overall system performance under dynamic congestion and external disturbances, including edge-level incidents,
+temporary capacity perturbations, and demand fluctuations.
+Let ne (t) denote the instantaneous occupancy (vehicle
+count) on edge e at time t, which is a component of the
+edge traffic state ze (t). Since the traversal cost ce (t) generally
+increases with edge loading, individual routing choices induce
+congestion externalities on other vehicles. Consequently, decentralized self-interested routing under the perceived costs
+{ce (t)}e∈E may approach a Wardrop-type user equilibrium,
+which is not necessarily optimal from a system perspective.
+We therefore evaluate and optimize a system-level surrogate
+objective
+X
+J(t) ≜
+ne (t) cphys
+(t)
+(1)
+e
+
+A. Traffic Cost Fields
+We construct a dynamic traffic cost field on the directed
+road graph to map edge-level traffic states into traversal costs
+used by routing decisions. For each directed edge e ∈ E, the
+simulator provides an instantaneous occupancy ne (t), i.e., the
+number of vehicles currently on e at time t. Given the static
+edge attributes, including length ℓe , free-flow speed ve0 , freeflow travel time t0e , and nominal capacity Ce , we compute an
+online cost representation by combining a speed–density based
+travel-time estimate with a congestion delay term modeled by
+the Bureau of Public Roads (BPR) function [11]. The resulting
+edge-wise fields are updated online and queried by the routing
+controller at decision epochs.
+To construct the field update from simulator occupancy, we
+map edge loading to a volume-to-capacity (v/c) proxy ρe (t)
+and clamp it to ensure numerical stability under extreme loads.
+
+e∈E
+
+2
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:58:42 UTC from IEEE Xplore. Restrictions apply.
+
+𝑡𝑡 = 0
+
+Specifically, given the occupancy count ne (t), time step ∆t,
+and nominal capacity Ce , we define:
+
+ρe (t) = min
+
+3600 ne (t)
+, ρmax
+max(∆t, ϵt ) max(Ce , ϵc )
+
+𝑇𝑇𝑤𝑤𝑤𝑤𝑤𝑤𝑤𝑤
+
+𝑡𝑡 = 0
+𝑡𝑡 ≤ 𝑇𝑇𝑤𝑤𝑤𝑤𝑤𝑤𝑤𝑤
+𝑡𝑡 = 𝑡𝑡𝑘𝑘
+
+
+(2)
+
+……
+
+𝑡𝑡𝑘𝑘
+
+𝑡𝑡𝑘𝑘 +△ 𝑇𝑇
+
+𝑡𝑡 = 𝑡𝑡𝑘𝑘 +△ 𝑇𝑇
+
+where the factor 3600 converts the proxy flow estimate from
+seconds to hours to match the unit of Ce , ϵt > 0 and ϵc > 0
+are small constants for numerical stability, and ρmax bounds
+the effective load used by the field model.
+We then estimate the effective speed using a Greenshieldstype speed–density relation [12]:
+
+A
+
+……
+
+ve (t) = max
+
+
+max(1 − ρe (t), 0)
+
+Visual Encoding
+higher cost edge
+
+(3)
+
+masked edge
+
+ℓe
+ve (t)
+
+non-eligible vehicle
+
+(4)
+
+This travel-time estimate serves as the physical baseline cost
+and ensures that the field reacts smoothly to local loading
+through a well-established speed–density mechanism.
+To capture the nonlinear amplification of congestion beyond
+the linear travel-time response, we compute a Bureau of Public
+Roads (BPR) delay term and cap it for stability:
+
+
+dBPR
+(t) = min max t0e α ρe (t)β , 0 , δmax t0e
+(5)
+e
+
+E
+
+𝑚𝑚𝑚𝑚𝑚𝑚𝑚𝑚(𝐹𝐹, 𝐸𝐸)
+
+F
+
+i4
+
+i2
+
+H
+
+i5
+
+G
+
+I
+
+J
+
+K
+
+L
+
+routing formulations studied in dynamic routing and learningbased routing control [13]. At runtime, the environment maintains per-edge occupancy and updates edge-level traffic states,
+from which the traffic cost fields {ce (t)}e∈E are refreshed.
+Routing control is executed under a periodic decision protocol. After a warm-up period of duration Twarm , controllable agents are activated and decisions are made at epochs
+tk = Twarm + k∆T . At each epoch, we select an eligible
+subset of vehicles that are expected to reach an intersection
+within the next replanning window [tk , tk + ∆T ), defined as
+
+where κ > 0 is a scaling coefficient and clip(x, a, b) ≜
+min max(x, a), b clamps x into [a, b].
+In the current implementation, the travel-time estimate t̂e (t)
+serves as the base traversal cost for baseline routing:
+= t̂e (t)
+
+𝑂𝑂𝑂𝑂𝑂𝑂(𝐹𝐹) = {(𝐹𝐹 → 𝐼𝐼), (𝐹𝐹 → 𝐺𝐺)}
+
+Fig. 1. Graph-based multi-agent routing environment under the periodic
+decision protocol. After warm-up (Twarm ), routing decisions are made at
+epochs tk with replanning interval ∆T . At each epoch, vehicles satisfying
+τi (tk ) ≤ ∆T form the eligible set Itk (circled) and choose next hops from
+the outgoing edge set Out(vki ) with infeasible edges masked. Blue edges
+indicate higher traversal cost.
+
+where α and β control the curvature of congestion growth
+and δmax limits the maximum extra delay relative to free-flow
+time. In parallel, we construct a risk surrogate by mapping the
+normalized load to a probability-like score in [0, 1]:
+!
+
+
+2
+ρ
+(t)
+e
+pacc
+,1
+, 0, 1
+(6)
+e (t) = clip κ min
+ρmax
+
+cbase
+(t)
+e
+
+D
+
+eligible vehicle
+
+The travel time is then computed as:
+t̂e (t) =
+
+C
+i3
+
+normal edge
+
+vmin , ve0
+
+i1
+
+B
+
+Itk ≜ { i | τi (tk ) ≤ ∆T }
+
+(8)
+
+where τi (tk ) denotes the predicted time for vehicle i to reach
+its next intersection measured from tk .
+For each i ∈ Itk located at node vki , the controller chooses a
+feasible next-hop edge from Out(vki ), where Out(v) denotes
+the set of outgoing directed edges from node v. Vehicles
+outside Itk continue their ongoing traversal until they become
+eligible for decision making, which limits unnecessary rerouting and improves stability under heavy traffic.
+The environment supports mixed traffic with uncontrollable background vehicles and controllable agents, enabling
+systematic evaluation across different demand intensities and
+the control penetration rate (default 𭟋 = 5%), which is a
+standard setting for system-level route guidance under partial
+adoption [14].
+
+(7)
+
+The scalar edge cost queried by baseline routing is defined
+as ce (t) ≡ cbase
+(t) = t̂e (t), while the
+e
+ congestion-delay
+acc
+and risk components dBPR
+(t),
+p
+(t)
+are maintained as
+e
+e
+separate edge-wise fields and incorporated by the DRL module
+through state features and reward shaping. This factorized
+design preserves interpretability and avoids conflating heterogeneous effects into a single scalar, enabling the learned
+controller to trade off efficiency, congestion sensitivity, and
+resilience.
+B. Graph-Based Multi-Agent Environment
+We develop a graph-based multi-agent environment for
+routing control that captures the feedback between route
+choices and network conditions (Fig. 1). Vehicles evolve on
+the directed road graph by alternating between edge traversal
+and intersection decisions, which is consistent with sequential
+
+C. Multi-Agent Actor–Critic for Next-Hop Routing
+At each decision epoch, an eligible agent observes a local
+state and outputs a masked categorical distribution over feasible outgoing edges. The policy is optimized on-policy using
+
+3
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:58:42 UTC from IEEE Xplore. Restrictions apply.
+
+over Out(vki ). After an edge is selected, the vehicle traverses
+the chosen road segment with its travel time updated according
+to the traffic cost fields, and the controller acts again only
+when the vehicle reaches the next intersection. If the selected
+move becomes infeasible due to a temporary closure or
+disconnection, we fall back to the feasible outgoing edge with
+the minimum current base cost.
+
+Proximal Policy Optimization with Generalized Advantage Estimation, while execution remains decentralized with per-agent
+observations. The full definitions of the observation/action
+interface and training configuration are provided in Section
+IV.
+IV. TCF-DRL F RAMEWORK
+Section IV presents the simulator instantiation and the
+learning interface (state, action, and reward), together with the
+PPO training configuration.
+
+D. Reward Design
+Rewards are defined at decision epochs to encourage efficient and resilient next-hop routing. When agent i ∈ Itk
+selects an outgoing edge eik at epoch tk , we assign a perdecision reward as the negative shaped physical cost of the
+selected edge:
+1
+(tk )
+(11)
+rki = − c̃phys
+i
+srl ek
+where srl > 0 is a scaling constant used to keep reward
+magnitudes stable across scenarios.
+The physical cost is constructed from factorized traffic-field
+components:
+
+A. Road Network Construction
+The road network is constructed using OSMnx and represented as a directed graph G = (V, E), which is compatible
+with NetworkX processing. Raw OpenStreetMap data are
+simplified into intersection nodes and directed road segments,
+followed by standard cleaning steps. These steps include the
+removal of isolated components and the consolidation of
+redundant geometries. For each directed edge e ∈ E, static
+attributes are computed from GIS tags and geometry, including
+edge length le , free-flow speed ve0 , free-flow travel time t0e ,
+lane count, and a nominal capacity Ce . These attributes define
+the static inputs for the traffic cost field in Section III-B and
+remain fixed throughout an episode [15], [16].
+
+cphys
+(t) = t̂e (t) + λbpr dBPR
+(t) + λacc pacc
+e
+e
+e (t)
+
+where t̂e (t) is the travel-time estimate, dBPR
+(t) is the capped
+e
+BPR delay term, and pacc
+e (t) is the risk surrogate defined
+in (6). The weights λbpr ≥ 0 and λacc ≥ 0 control sensitivity
+to congestion-induced delay amplification and disturbancerelated risk, respectively.
+To mitigate congestion externalities under mixed traffic, we
+further apply a marginal-cost shaping term:
+
+B. State Space
+At each decision epoch tk , each controllable agent i ∈ Itk
+receives a local observation oik constructed at its current
+intersection node vki . Let Out(vki ) denote the feasible outgoing
+edges. We represent the observation as an edge-wise feature
+set together with a compact context vector and an action mask:
+
+
+oik = {fe (tk )}e∈Out(vki ) , sik , mik
+(9)
+
+c̃phys
+(t) ≜ cphys
+(t) + η ne (t) ∆cphys
+(t)
+e
+e
+e
+
+(13)
+
+where ne (t) is the edge occupancy and η ≥ 0 controls the
+strength of externality internalization (η = 0 recovers the
+(t) is
+original private-cost reward). In implementation, ∆cphys
+e
+computed by a one-step local finite difference with respect to
+occupancy, i.e., evaluating cphys
+(·, t) at ne (t) and ne (t) − 1
+e
+(clipped at zero). This shaping encourages equilibrium behaviors that better align decentralized decisions with the system
+objective in (1).
+Hyperparameter Sensitivity and Trade-offs: The shaping
+strength η governs the degree of congestion externality internalization. When η = 0, the controller optimizes purely private
+edge costs, which may result in decentralized behaviors similar
+to user-equilibrium routing. As η increases, the policy progressively accounts for marginal congestion impacts, encouraging
+more system-efficient flow distributions. However, excessively
+large values of η may over-penalize occupied edges and
+reduce exploration diversity. In practice, η is selected within
+a moderate range to balance stability and responsiveness.
+Similarly, the weights λbpr ≥ 0 and λacc ≥ 0 regulate sensitivity to nonlinear congestion amplification and disturbancerelated risk, respectively. Increasing λbpr emphasizes congestion avoidance through stronger nonlinear delay amplification,
+while increasing λacc promotes risk-averse routing behavior.
+These parameters primarily influence the efficiency–resilience
+trade-off rather than altering the qualitative structure of the
+
+where each fe (tk ) aggregates static edge attributes and dynamic traffic cost field features on edge e, including the
+(tk ), travel-time estimate t̂e (tk ),
+composite physical cost cphys
+e
+load and risk indicators, and a routing-hint score. The hint is
+computed once when the vehicle is spawned: for its OD pair
+(oi , di ), we precompute top-K candidate shortest paths under
+free-flow costs and store them in the vehicle state; subsequent
+decisions reuse this fixed hint and do not rerun Dijkstra. The
+context vector sik comprises goal and global features, including
+destination features, normalized time, local out-degree, and
+simple network statistics. The Boolean mask mik enforces
+feasibility over Out(vki ) during action selection.
+C. Action Space
+Routing control is applied only at intersections and is formulated as a high-level next-hop choice rather than continuous
+vehicle actuation. For each eligible agent i ∈ Itk currently
+at node vki , the controller selects the next road segment by
+choosing one outgoing directed edge:
+aik ∈ Out(vki )
+
+(12)
+
+(10)
+
+where Out(v) denotes the set of feasible outgoing edges from
+node v. The actor outputs a masked categorical distribution
+
+4
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:58:42 UTC from IEEE Xplore. Restrictions apply.
+
+Initialization
+Map-to-Graph Preprocessing
+
+Graph-based Simulator
+States: masked TCF features
+
+Decision Epoch 𝒕𝒌 = 𝑻𝒘𝒂𝒓𝒎 + 𝒌∆𝑻
+
+𝑜𝑘𝑖
+𝑟𝑘𝑖
+
+Rollout
+Buffer
+
+Traffic Cost Fields
+BPR
+
+OSMnx
+
+PPO
+
+Reward
+Raw Map
+
+𝒛𝑒 𝑡𝑘
+
+Topology Graph
+Warm-up
+
+Greenshields
+Factorized Fields
+
+𝑡 ≤ 𝑇𝑤𝑎𝑟𝑚
+
+{𝑡𝑒Ƹ 𝑡𝑘 , 𝑑𝑒𝐵𝑃𝑅 𝑡𝑘 , 𝑝eacc 𝑡𝑘 }
+
+Risk Surrogate
+
+Populate directed graph 𝐺=(𝑉,𝐸)
+NetworkX with static edge attributes and
+scenario configurations
+
+Compose
+𝑝ℎ𝑦𝑠
+
+{𝑐𝑒
+Establish
+Representative Traffic
+
+~phys
+
+, 𝑐e
+
+𝒓𝒊𝒌
+
+𝟏 ~𝒑𝒉𝒚𝒔
+=−
+𝒄
+(𝒕𝒌 )
+𝒔𝒓𝒍 𝒆𝒊𝒌
+Policy
+(actor–critic)
+
+}
+
+Route Choices
+
+PolicyNet
+
+On Selected Edge 𝑒𝑘𝑖
+
+Action: next-hop edge selection
+
+Update
+
+ValueNet
+
+Fig. 2. TCF-centric closed-loop routing framework in a graph-based urban traffic simulator. The road network is extracted from raw maps and converted
+into a directed graph with static edge attributes and scenario configurations. After a warm-up stage that establishes representative traffic conditions, routing
+decisions are made at periodic epochs tk = Twarm + k∆T . At each epoch, the simulator refreshes edge states ze (tk ) and updates factorized Traffic Cost
+Fields (TCF), including the travel-time estimate t̂e (tk ), capped congestion delay dBPR
+(tk ), and risk surrogate pacc
+e
+e (tk ), which are composed into physical
+(tk ). Each agent forms states from masked local TCF features and selects a next-hop outgoing edge. The reward is
+(tk ) and shaped costs c̃phys
+costs cphys
+e
+e
+obtained by reading out the shaped cost on the selected edge, and the resulting on-policy transitions are stored in a rollout buffer to update the shared PPO
+actor–critic. The closed-loop feedback between route choices and edge loading is captured through periodic state refresh and field updates.
+
+learned policy. The factorized TCF formulation allows these
+components to be adjusted independently without destabilizing
+the learning process.
+Reward accumulation and performance metrics are computed only after the warm-up stage and after controllable
+agents are activated. An episode terminates when all controllable agents reach their destinations or when the simulation
+horizon is reached.
+
+TABLE I
+E XPERIMENTAL SETUP AND SELECTED HYPERPARAMETERS
+Item
+Map region
+Graph
+Time step
+Warm-up
+Simulation horizon
+Demand levels
+Control penetration rate 𭟋
+BPR
+Risk κ
+lr
+γ
+λ
+ϵ
+cent
+cv
+H
+B
+E
+Episode count
+
+E. PPO Training Configuration
+We train the shared actor–critic model using Proximal
+Policy Optimization (PPO) under the periodic decision protocol [17]. Parameter sharing is applied across all controllable
+agents to improve sample efficiency and scalability, with
+decisions conditioned on each agent’s local observation. Advantages are computed using generalized advantage estimation
+(GAE) [18], and the actor is updated via the clipped surrogate objective with clipping parameter ϵ. Training alternates
+between collecting rollouts from the simulator with mixed
+background traffic and controllable agents and performing
+multiple epochs of minibatch updates to the actor and critic.
+Unless explicitly varied in ablations, PPO hyperparameters
+(learning rate lr, discount factor γ, GAE parameter λ, clipping
+parameter ϵ, entropy regularization coefficient cent , value loss
+coefficient cv , rollout horizon H, minibatch size B, and the
+number of update epochs E) are held fixed across scenarios,
+and a complete list is reported in the experimental section
+together with sensitivity analyses where relevant.
+
+Value
+∼ 2 km × 2 km
+|V | = 293, |E| = 581 (directed)
+5.0 s
+300 s
+3600 s
+λbg ∈ {8000, 16000, 24000} veh/h
+5%
+(α, β) = (0.15, 4.0)
+0.05
+2 × 10−4
+0.99
+0.95
+0.2
+0.02
+0.5
+720
+64
+6
+50
+
+directed edges (Table I). Traffic evolves in a graph-based
+simulator with time step ∆t = 5.0 s over a fixed horizon
+T = 3600 s. A warm-up stage of duration Twarm = 300 s is
+applied before activating controllable agents, and all metrics
+are computed after warm-up. To test robustness under different
+congestion intensities, we vary the background traffic injection
+rate λbg ∈ {8000, 16000, 24000} veh/h while keeping the
+OD distribution and scenario configurations consistent across
+compared methods. Unless otherwise stated, we set the control
+penetration rate to 𭟋 = 5% for all compared methods. The
+TCF parameters and PPO hyperparameters follow Table I.
+
+V. E XPERIMENTAL E VALUATION
+A. Setup
+We evaluate the proposed TCF-DRL routing framework
+on a real-world urban road network extracted from OpenStreetMap, covering an approximately 2 km × 2 km region
+in Futian District, Shenzhen. The map is simplified into a
+directed road graph with |V | = 293 nodes and |E| = 581
+
+B. Demand Levels and Baselines
+We evaluate robustness under three congestion regimes by
+varying the background traffic injection rate while keeping
+the OD distribution fixed. All methods operate under the
+
+5
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:58:42 UTC from IEEE Xplore. Restrictions apply.
+
+ratio satisfies v/c ≥ 1 when aggregated over the post-warm-up
+evaluation window.
+Table II summarizes the comparison under three demand
+levels. Overall, Travel Time Shortest Path First with Rerouting
+(SPFWR) provides modest improvements over Travel Time
+Shortest Path First (SPF) by adapting decisions to updated
+link travel-time estimates, although the gains are limited
+under light-to-moderate demand. Across all three regimes,
+the proposed TCF-DRL controller consistently attains lower
+avg tt and avg delay than both SPF and SPFWR, and achieves
+improved tail performance in p90 tt, most notably under
+the low and medium demand settings. Under high demand
+(λbg =24000 veh/h), SPFWR reduces network saturation relative to SPF and yields a lower avg tt, while TCF-DRL
+remains competitive and maintains the best avg tt and p90 tt
+among the compared methods. In terms of oversat, TCF-DRL
+is comparable to the shortest-path baselines across regimes,
+suggesting that the learned controller primarily improves
+travel-time efficiency and tail robustness without relying on
+aggressive network-wide load shedding.
+
+bg = 8000 veh/h
+
+-4000
+
+bg = 16000 veh/h
+bg = 24000 veh/h
+
+-6000
+
+Reward
+
+-8000
+-10000
+-12000
+-14000
+-16000
+-18000
+
+0
+
+10
+
+20
+
+Episode
+
+30
+
+40
+
+50
+
+Fig. 3. Training episodic return under three background demand levels λbg .
+Solid curves show a smoothed fit of the per-episode returns, and the shaded
+bands visualize the deviation from the initial return in each setting (relativeto-initial envelope).
+
+same periodic intersection-level decision protocol and share
+identical TCF updates; they differ only in how the next hop
+is selected at intersections after warm-up. We consider two
+shortest-path baselines. Travel Time Shortest Path First (SPF)
+computes a free-flow shortest path at departure and follows
+it without replanning. Travel Time Shortest Path First with
+Rerouting (SPFWR) updates guidance at every intersection by
+recomputing the shortest path using the current link travel-time
+estimate as edge weights, yielding a purely myopic rerouting
+strategy. Our method replaces this heuristic next-hop rule with
+a learned PPO policy that maps masked local TCF features to
+next-hop actions.
+Relation to Traditional Dynamic Traffic Assignment
+(DTA): Classical dynamic traffic assignment (DTA) methods
+typically solve centralized optimization or equilibrium formulations over the entire network, often requiring iterative global
+flow updates and network-wide fixed-point computations. Such
+approaches may become computationally expensive in largescale networks or under rapidly evolving traffic conditions.
+In contrast, the proposed framework performs decentralized
+next-hop decisions with shared parameters and masked local
+observations. Instead of solving a network-wide assignment
+problem at each iteration, TCF-DRL learns closed-loop adaptation directly through interaction with traffic dynamics. While
+SPFWR can be viewed as a reactive myopic approximation
+to dynamic assignment, the proposed MARL-based controller
+internalizes congestion externalities through reward shaping
+and factorized cost fields, offering improved scalability and
+adaptability in large urban networks.
+
+D. Stability under Low Compliance
+To further interpret the behavior under 5%, we analyze
+qualitative stability characteristics of the learned controller.
+Unlike SPFWR, which recomputes shortest paths myopically
+at each intersection and may trigger synchronized rerouting
+waves, TCF-DRL operates through masked next-hop decisions
+using factorized local cost signals.
+The capped BPR delay term and occupancy-based marginal
+shaping prevent abrupt cost discontinuities, thereby reducing the likelihood of large-scale oscillations. Empirically,
+Fig. 3 shows monotonic training convergence across demand
+regimes, and Table II indicates no divergence in oversaturation
+ratios. These observations suggest that the closed-loop routing
+dynamics remain stable even when controllable agents represent only a small fraction of total traffic.
+E. Reward Trends
+Fig. 3 illustrates training dynamics under three background
+demand levels. Across all regimes, the fitted return curves
+increase and then stabilize, suggesting that PPO optimization
+remains numerically stable under the proposed TCF-based
+shaping.
+VI. C ONCLUSIONS
+This paper proposed a Traffic Cost Field (TCF)-centric
+closed-loop routing framework for mixed urban traffic
+networks, where controllable vehicles perform periodic
+intersection-level next-hop decisions after a warm-up stage.
+By factorizing edge-level travel time, nonlinear congestion
+delay, and disturbance risk into interpretable traffic fields,
+and training a shared-parameter PPO-based multi-agent actor–critic controller over masked local observations, the proposed method enables scalable decentralized execution on realworld road graphs.
+
+C. Comparative Evaluation
+We evaluate travel-time efficiency, tail robustness, and
+network saturation over trips departing after warm-up. We
+report the average travel time (avg tt), the 90th-percentile
+travel time (p90 tt), and the average delay relative to freeflow (avg delay). To characterize network-wide saturation, we
+additionally report the oversaturation ratio (oversat), computed
+as the share of active directed edges whose volume-to-capacity
+
+6
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:58:42 UTC from IEEE Xplore. Restrictions apply.
+
+TABLE II
+P ERFORMANCE COMPARISON UNDER THREE DEMAND
+
+Demand λbg (veh/h)
+8000
+16000
+24000
+
+Method
+SPF
+SPFWR
+TCF-DRL (Ours)
+SPF
+SPFWR
+TCF-DRL (Ours)
+SPF
+SPFWR
+TCF-DRL (Ours)
+
+avg tt (s)
+1077.9
+1061.5
+963.4
+1115.9
+1110.2
+1003.6
+1135.7
+1115.0
+995.0
+
+Experimental results on a Shenzhen urban network demonstrate consistent improvements in average travel time, tail
+travel-time robustness, and delay reduction across multiple
+background demand regimes when compared with shortestpath baselines. Notably, under a low compliance setting (5%),
+the proposed controller maintains stable closed-loop behavior
+without inducing oscillatory rerouting patterns. The capped
+congestion amplification and marginal-cost shaping mechanisms contribute to smoothing decentralized adaptations and
+mitigating congestion externalities.
+Compared with traditional centralized dynamic traffic assignment approaches, the proposed MARL-based routing controller offers improved scalability and adaptability, as it avoids
+repeated network-wide assignment computations while retaining system-level efficiency considerations through reward
+shaping.
+Future work will further investigate theoretical stability
+guarantees under varying penetration rates, extend disturbance
+modeling, and conduct systematic hyperparameter sensitivity
+analyses to better characterize efficiency–resilience trade-offs.
+
+p90 tt (s)
+2040.0
+2045.0
+1955.0
+2105.0
+2095.0
+2025.0
+2140.0
+2120.0
+2010.0
+
+LEVELS
+
+avg delay (s)
+887.4
+874.2
+853.3
+930.4
+929.1
+894.5
+944.0
+932.1
+891.5
+
+oversat
+0.046
+0.057
+0.042
+0.085
+0.085
+0.102
+0.163
+0.139
+0.143
+
+[8] H. Yun, E.-j. Kim, S. W. Ham, and D.-K. Kim, “Navigating the noncompliance effects on system optimal route guidance using reinforcement learning,” Transportation Research Part C: Emerging Technologies, vol. 165, p. 104721, Aug. 2024.
+[9] L. Wang, P. Duan, C. Lyu, and Z. Ma, “Reinforcement Learningbased Sequential Route Recommendation for System-Optimal Traffic
+Assignment,” May 2025.
+[10] L. Wang, P. Duan, C. Lyu, Z. Wang, Z. He, N. Zheng, and Z. Ma,
+“Scalable and Reliable Multi-agent Reinforcement Learning for Traffic
+Assignment,” Communications in Transportation Research, vol. 5, p.
+100225, Dec. 2025.
+[11] U. B. of Public Roads. Office of Planning. Urban Planning Division,
+Traffic assignment manual for application with a large, high speed
+computer. US Department of Commerce, 1964.
+[12] B. D. Greenshields, J. R. Bibbins, W. S. Channing, and H. H. Miller,
+“A study of traffic capacity,” in Proceedings of the Highway Research
+Board, vol. 14, Washington, DC, 1935, pp. 448–477. [Online]. Available:
+https://onlinepubs.trb.org/Onlinepubs/hrbproceedings/14/14P1-023.pdf
+[13] S. Kim, M. Lewis, and C. White, “Optimal vehicle routing with real-time
+traffic information,” IEEE Transactions on Intelligent Transportation
+Systems, vol. 6, no. 2, pp. 178–188, Jun. 2005.
+[14] Z. Ke, Q. Zou, J. Liu, and S. Qian, “Real-time system optimal traffic
+routing under uncertainties — Can physics models boost reinforcement
+learning?” Transportation Research Part C: Emerging Technologies, vol.
+173, p. 105040, Apr. 2025.
+[15] G. Boeing, “OSMnx: New methods for acquiring, constructing, analyzing, and visualizing complex street networks,” Computers, Environment
+and Urban Systems, vol. 65, pp. 126–139, Sep. 2017.
+[16] A. A. Hagberg, D. A. Schult, and P. J. Swart, “Exploring Network
+Structure, Dynamics, and Function using NetworkX,” Python in Science
+Conference, May 2008.
+[17] J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov,
+“Proximal Policy Optimization Algorithms,” Aug. 2017.
+[18] J. Schulman, P. Moritz, S. Levine, M. Jordan, and P. Abbeel, “HighDimensional Continuous Control Using Generalized Advantage Estimation,” Oct. 2018.
+
+R EFERENCES
+[1] J. G. Wardrop, “ROAD PAPER. SOME THEORETICAL ASPECTS OF
+ROAD TRAFFIC RESEARCH.” Proceedings of the Institution of Civil
+Engineers, vol. 1, no. 3, pp. 325–362, May 1952.
+[2] E. W. Dijkstra, “A note on two problems in connexion with graphs,”
+Numerische Mathematik, vol. 1, pp. 269–271, 1959.
+[3] D. Verma, D. Messon, M. Rastogi, and A. Singh, “Comparative Study
+Of Various Approaches Of Dijkstra Algorithm,” in 2021 International
+Conference on Computing, Communication, and Intelligent Systems
+(ICCCIS), Feb. 2021, pp. 328–336.
+[4] G. Kim, Y. S. Ong, T. Cheong, and P. S. Tan, “Solving the Dynamic
+Vehicle Routing Problem Under Traffic Congestion,” IEEE Transactions
+on Intelligent Transportation Systems, vol. 17, no. 8, pp. 2367–2380,
+Aug. 2016.
+[5] B. Zhou, “A reinforcement learning scheme for the equilibrium of the
+in-vehicle route choice problem based on congestion game,” Applied
+Mathematics and Computation, vol. 371, p. 124895, Apr. 2020.
+[6] Z. Shou, X. Chen, Y. Fu, and X. Di, “Multi-agent reinforcement
+learning for Markov routing games: A new modeling paradigm for
+dynamic traffic assignment,” Transportation Research Part C: Emerging
+Technologies, vol. 137, p. 103560, Apr. 2022.
+[7] F. Arasteh, S. SheikhGarGar, and M. Papagelis, “Network-aware multiagent reinforcement learning for the vehicle navigation problem,” in
+Proceedings of the 30th International Conference on Advances in
+Geographic Information Systems.
+Seattle Washington: ACM, Nov.
+2022, pp. 1–4.
+
+7
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:58:42 UTC from IEEE Xplore. Restrictions apply.
+
+

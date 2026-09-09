@@ -1,0 +1,529 @@
+2025 IEEE Global Communications Conference Selected Areas in Communications: Cloud/Edge Computing and Networking
+
+GLOBECOM 2025 - 2025 IEEE Global Communications Conference | 979-8-3315-7781-0/25/$31.00 ©2025 IEEE | DOI: 10.1109/GLOBECOM59602.2025.11432339
+
+Multi-Objective Route Optimization via Dueling
+DQN for Teleoperated Driving
+Iskander Zellagui, Sidi-Mohammed Senouci, Inès El Korbi, Shajjad Hossain
+Université Bourgogne Europe, DRIVE UR 1859, 58000 Nevers, France
+Iskander.Zellagui@ube.fr, Sidi-Mohammed.Senouci@ube.fr, Ines.El-Korbi@ube.fr, Shajjad.Hossain@ube.fr
+Abstract—This paper presents a new approach to route
+optimization for teleoperated driving systems, addressing the
+multi-objective challenge of simultaneously minimizing travel
+distance, network latency, and maximizing available bandwidth.
+We model a real-world urban environment as a graph with
+stochastic network parameters and employ a Dueling Deep QNetwork (Dueling DQN) architecture, chosen for its ability to
+decouple state value and action advantage estimation, making
+it effective for routing problems requiring evaluation of both
+position quality and transition decisions.
+Our approach achieves the highest combined performance score
+(1.3956), representing 3.4% and 4.3% improvements over Lowest Latency (1.3815) and Shortest Path (1.3380) algorithms
+respectively. This demonstrates effective multi-objective tradeoff management: 56.9% KPI compliance (30ms latency, 20Mbps
+bandwidth) with minimal distance overhead (40 vs 30 spatial units). Single-objective approaches fail to balance requirements—Shortest Path achieves only 22.6% KPI compliance,
+while Highest Bandwidth produces impractically long routes (120
+spatial units) despite 99.2% KPI rate.
+Results demonstrate our Dueling DQN’s effectiveness in dynamically balancing competing objectives, providing intelligent adaptation to changing network conditions—a capability traditional
+single-objective optimization approaches cannot achieve.
+Index Terms—Teleoperated Driving, Reinforcement Learning,
+Dueling DQN, Multi-Objective Optimization, Route Optimization, Digital Twin, 6G Networks
+
+changes effectively. Furthermore, the multi-objective nature
+of teleoperated driving that requires simultaneously balancing
+physical distance constraints with network metrics, creates
+a complex optimization space that RL can navigate more
+efficiently.
+Our framework simultaneously optimizes three critical objectives: minimizing physical travel distance, latency, and
+maximizing available bandwidth. We formulate this problem
+as a Markov Decision Process (MDP) where states represent
+the vehicle’s current position and network conditions, actions
+correspond to selecting the next road segment, transitions
+capture the stochastic nature of network parameters as the
+vehicle moves, and rewards are designed as a weighted combination of distance, bandwidth, and latency metrics. This MDP
+formulation enables our reinforcement learning approach to
+learn policies that adapt to changing network conditions while
+making appropriate trade-offs between competing objectives.
+Our key contributions include:
+1) A comprehensive system model that transforms realworld urban environments into a computational representation with time-varying network metrics for RLbased optimization.
+2) A Dueling DQN architecture designed specifically for
+multi-objective route planning in teleoperated driving,
+featuring action masking to enforce graph connectivity
+constraints.
+3) Integration with a digital twin framework that replicates
+the inter-dependencies between physical infrastructure
+and telecommunications networks
+4) Extensive performance evaluation comparing our approach against classical routing algorithms (shortest
+path, lowest latency, and highest bandwidth)
+
+I. I NTRODUCTION
+Teleoperated driving serves as a critical bridge technology for autonomous vehicle systems. Effective teleoperation
+requires Ultra-Reliable Low-Latency Connectivity (URLLC)
+for real-time control signals and Enhanced Mobile Broadband
+(eMBB) for transmitting high-definition video feeds to the remote operator. These requirements create a multi-objective optimization problem where routes must balance physical travel
+distance with network performance metrics. The emergence of
+6G network technologies offers unprecedented capabilities for
+teleoperated driving, but effectively utilizing these networks
+requires intelligent route planning strategies that consider both
+physical road constraints and dynamic network conditions.
+In this paper, we propose a new multi-objective route optimization framework based on reinforcement learning (RL),
+specifically utilizing a Dueling Deep Q-Network (Dueling
+DQN) architecture. This approach is particularly well-suited
+for teleoperated driving applications due to the inherent dynamicity of telecommunications environments, where bandwidth and latency parameters change over time, where traditional static optimization methods struggle to address these
+
+This work represents a key contribution to the 6GTwin
+project [1], which aims to develop comprehensive digital twin
+solutions for 6G networks. Within this framework, our multiobjective route optimization serves as a functional model that
+enhances the capabilities of the Network Digital Twin (NDT)
+1
+architecture. By integrating network metrics with physical
+infrastructure modeling, our approach aligns with the project’s
+goal of creating intelligent, adaptive networking solutions
+1 An NDT is a dynamic, bidirectional digital representation of a physical
+network. It integrates real-time data from network components-such as base
+stations, user devices, and core infrastructure-into a virtual environment.
+
+1123
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:18 UTC from IEEE Xplore. Restrictions apply.
+
+2025 IEEE Global Communications Conference Selected Areas in Communications: Cloud/Edge Computing and Networking
+
+that respond to the dynamic requirements of next-generation
+applications such as teleoperated driving.
+The remainder of this paper is organized as follows: Section
+II examines related work; Section III details our methodology
+for transforming urban environments into graph-based models;
+Section IV explains our proposed solution; Section V provides
+performance evaluation, and Section VII concludes with future
+research directions.
+II. R ELATED W ORK
+The integration of network metrics into traffic routing
+represents a complex multi-objective optimization problem
+spanning several research domains. Teleoperated driving has
+gained significant attention as a robust fallback solution for
+automated vehicles. Zhang et al. [2] proposed a Predicted
+Trajectory Guidance Control framework compensating for
+communication delays, while Majstorović et al. [3] presented
+a dynamic collaborative path planning approach for remote
+assistance of automated vehicles. Schippers et al. [4] investigated performance requirements for predictive QoS in teleoperated driving applications, proposing Radio Environmental
+Maps for data rate prediction. Route optimization started off
+as a problem with a single objective such as minimizing
+distance or travel time. Regragui and Moussa [5] proposed
+a real-time path planning strategy addressing communication overhead in vehicular networks. Classical path planning
+techniques include cell decomposition methods employing
+graph-based algorithms like Dijkstra and A* [6]. Wang et al.
+[7] proposed a dynamic fuzzy routing approach addressing
+latency and bandwidth guarantees simultaneously in SoftwareDefined Networks, highlighting the complex relationship between competing metrics.
+Recently, Reinforcement learning has emerged as a powerful approach for solving complex routing problems. The
+Dueling Deep Q-Network architecture [8] separates state
+value and advantage estimation, enabling more efficient policy
+evaluation in complex decision-making domains. Zhang et
+al. [9] explored applying reinforcement learning to robot
+path planning by modeling it as a Markov decision process
+with Q-learning algorithms, while Arulkumaran et al. [10]
+provided a comprehensive survey of deep reinforcement learning applications. Researchers have identified challenges in
+applying RL to path planning, including high computational
+resource consumption and reduced convergence rates with
+increased state spaces [11], [12]. Jaramillo-Martı́nez et al.
+[13] demonstrated the importance of careful reward function
+engineering in balancing multiple objectives.
+Digital twin technology has gained traction for modeling
+the dynamic relationship between physical infrastructure and
+network performance [4], though its integration with route
+optimization algorithms for next-generation networks remains
+an open research area.
+While existing literature addresses various aspects of teleoperated driving, multi-objective optimization, and reinforcement learning for routing problems, there remains a significant
+gap in integrating these domains to create a comprehensive
+
+solution that balances physical and network-related objectives.
+Our work advances the state of the art by developing a
+system model that transforms real-world urban environments
+into a computational representation suitable for reinforcement
+learning; proposing a Dueling DQN architecture specifically
+designed for multi-objective route planning; integrating a
+digital twin framework that simulates the interdependencies
+between physical and network infrastructure; and providing
+extensive performance evaluation against classical routing algorithms. In contrast to previous work, our approach considers
+both the physical aspects of route planning and the network
+requirements as equally important optimization objectives,
+creating a more holistic solution for connected vehicle applications.
+III. M ETHODOLOGY
+This section presents our system model for multi-objective
+route optimization in teleoperated driving. We transform
+a real-world urban environment into a computational
+representation suitable for reinforcement learning, integrating
+network metrics essential for teleoperation. Studies by LucasEstan et al. [14] and network characteristics documented
+in [15], show the latency ranging from 10ms to 50ms and
+bandwidth from 10Mbps to 100Mbps. These parameters are
+incorporated into our model using 5G base station locations
+to create a realistic representation of network conditions
+across the urban environment.
+A. Physical Environment Description
+We model the urban environment as a directed graph G =
+(V, E) where intersections form nodes and road segments form
+edges, chosen because this representation naturally discretizes
+the continuous routing problem into a finite state-action space
+suitable for reinforcement learning. Graph-based modeling enables efficient action masking through connectivity constraints
+and provides computational tractability for multi-objective
+optimization. We selected Nevers, France as our test environment, converting its road network from OpenStreetMap data
+[16].
+To manage computational complexity while maintaining
+representational fidelity, we applied clustering to reduce the
+original 329 nodes and 593 edges to 50 nodes and 228
+edges, preserving the fundamental optimization challenges.
+The clustering transformation was designed to ensure appropriate connectivity for our reinforcement learning method,
+targeting an average node degree of 4.0 to create a Manhattanlike grid structure. For each edge in this clustered graph, we
+preserved the network metrics by identifying and mapping
+the closest corresponding edge from the original network,
+thereby maintaining realistic network characteristics despite
+the structural simplification.
+We incorporated network metrics into our graph by leveraging 5G base station deployment data from the OpenCelliD
+dataset [17]. Each edge in our model includes three key
+attributes:
+
+1124
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:18 UTC from IEEE Xplore. Restrictions apply.
+
+2025 IEEE Global Communications Conference Selected Areas in Communications: Cloud/Edge Computing and Networking
+
+1) Physical distance (d(e)): The geometric length of each
+road segment measured in meters.
+2) Expected latency (l(e, τ )): The network latency at time
+τ , modeled using a normal distribution with parameters
+derived from proximity to the nearest 5G base station.
+Values range from 10ms to 50ms [15].
+3) Anticipated bandwidth (b(e, τ )): The available bandwidth at time τ , modeled similarily using a normal
+distribution with values between 10Mbps and 100Mbps
+[15].
+For both latency and bandwidth, we generated values following normal distributions over a 1800-second time horizon,
+providing a more realistic representation of network performance variability than deterministic values. Given Nevers’
+characteristics as a small urban area with relatively low traffic
+density, we assumed that congestion effects would be minimal
+compared to network-induced latency variations.
+Based on established teleoperation standards, we defined
+the Key Performance Indicators (KPIs) for the minimum
+viable conditions as: Latency ≤ 30ms, bandwidth ≥ 20Mbps
+[14], [15].
+
+1) Minimize Total Distance:
+min D(P ) =
+
+X
+
+d(e)
+
+(1)
+
+e∈P
+
+2) Minimize End-to-End Latency:
+X
+min L(P, τ ) =
+l(e, τ )
+
+(2)
+
+e∈P
+
+3) Maximize Minimum Bandwidth:
+max B(P, τ ) = min{b(e, τ )} for all e ∈ P
+
+(3)
+
+This multi-objective nature, combined with stochastic network metrics, makes the problem particularly suitable for
+reinforcement learning approaches that can adapt to dynamic
+conditions while balancing competing objectives.
+IV. E XPERIMENTAL S ETUP
+This section outlines our reinforcement learning approach
+to multi-objective route optimization for teleoperated driving.
+We employ a DDQN architecture designed to balance the
+competing objectives of distance minimization, latency reduction, and bandwidth maximization.
+
+B. Integration with 6GTwin project
+The multi-objective route optimization framework proposed
+in this paper is designed as a functional component within
+the broader 6GTwin Network Digital Twin (NDT) architecture. Figure 1 illustrates the comprehensive NDT architecture
+developed for the 6GTwin project [1].
+
+Fig. 1. 6GTwin Network Digital Twin Architecture. Our multi-objective
+route optimization framework is positioned as a functional model within this
+architecture, leveraging data from both physical and network layers to provide
+optimized routing for teleoperated vehicles.
+
+A. Markov Decision Process and State-Reward Formulation
+To formalize our multi-objective route optimization problem, we represent it as an MDP with a comprehensive state
+representation and carefully balanced reward function:
+1) MDP Framework: The optimal route selection for
+teleoperated driving is modeled as MDP M = (S, A, R),
+illustrated in Figure 2. The state space S encodes vehicle
+position, destination, network conditions, and path metrics (14
+dimensions total). The action space A consists of selecting
+adjacent nodes with masking to prevent invalid moves.
+
+Fig. 2. MDP formulation with concrete routing example showing state transitions, actions, and multi-objective rewards in teleoperated driving scenario.
+
+The multi-objective reward function balances competing
+objectives:
+
+C. Problem Formulation
+Building upon the graph-based environment model, we
+formalize the multi-objective route optimization as finding
+a path P = (v1 , v2 , . . . , vn ) through the directed graph
+G that optimally balances three competing objectives while
+respecting the graph’s connectivity constraints and operational
+requirements: L(P, τ ) ≤ 30 ms and B(P, τ ) ≥ 20 Mbps.
+
+R(s, a) = wd · Rd (s, a) + wb · Rb (s, a) + wl · Rl (s, a) (4)
+where Rd = −d(e)/dmax , Rb = (b(e, τ ) − bmin )/(bmax −
+bmin ), and Rl = −l(e, τ )/lmax represent normalized distance, bandwidth, and latency components. Optimal weights
+wd = 0.5, wb = wl = 0.25 prioritize distance while
+balancing network metrics, with additional bonuses/penalties
+
+1125
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:18 UTC from IEEE Xplore. Restrictions apply.
+
+2025 IEEE Global Communications Conference Selected Areas in Communications: Cloud/Edge Computing and Networking
+
+for target achievement (+10.0), loop prevention (-5.0), and
+invalid actions (-10.0).
+The agent learns policy π ∗ maximizing expected cumulative
+reward through Dueling DQN’s action-value function Q(s, a),
+converging toward optimal multi-objective solutions via experience replay.
+B. Dueling DQN Framework
+The core of our approach is a specialized Dueling DQN
+architecture that decouples state value and action advantage
+estimation through two parallel streams, as illustrated in
+Figure 3. This separation allows the network to evaluate state
+value V(s) independently from action advantages A(s,a), making it particularly effective for routing problems where both
+position quality and transition decisions must be considered.
+
+A. Evaluation Framework
+We evaluated our approach against three classical routing
+algorithms: Shortest Path (distance optimization), Lowest Latency, and Highest Bandwidth. The assessment used 2,500
+random scenarios with key metrics including success rate,
+path length, distance, bandwidth, latency, and KPI respect rate
+(paths meeting minimum viable thresholds of ≤ 30ms latency
+and ≥ 20M bps bandwidth).
+B. Training Overview
+Our agent was trained for 5,000 episodes on the Nevers city
+graph with random source-destination pairs. Figure 4 shows
+the training progression, with rapid improvement during the
+initial 500 episodes followed by stabilization. The success rate
+reached nearly 100% after a few hundred episodes.
+
+Fig. 4. Training metrics: (top-left) rewards with moving average, (top-right)
+losses, (bottom-left) evaluation rewards, (bottom-right) success rates.
+
+Fig. 3. Dueling DQN algorithm flowchart showing dual-stream architecture
+and action selection process with exploration-exploitation balance.
+
+Path quality metrics (Figure 5) show significant improvements, with path length decreasing from approximately 30 to
+4-5 nodes, distance reducing from over 400 to about 50 units,
+bandwidth increasing to near 60, and latency decreasing from
+over 600 to under 100.
+
+The architecture combines shared feature extraction with
+parallel value and advantage streams, aggregated as Q(s,a)
+= V(s) + (A(s,a) - mean(A(s,a))). Our implementation incorporates action masking for graph connectivity constraints,
+preventing invalid moves to non-adjacent or previously visited
+nodes during both training and inference.
+Training employed 5,000 episodes with random sourcedestination pairs using key hyperparameters: replay buffer
+(20,000 transitions), batch size (128), target network updates
+every 100 steps, discount factor =0.99, -greedy exploration
+(1.0→0.01, decay 0.9991), Adam optimizer (1e-4), and Huber
+loss. This regimen enabled effective learning of routing policies balancing distance, bandwidth, and latency optimization.
+V. R ESULTS AND D ISCUSSION
+This section focuses on the performance evaluation of
+our Dueling DQN approach compared to classical routing
+algorithms.
+
+Fig. 5. Path quality metrics: length (top-left), distance (top-right), bandwidth
+(bottom-left), latency (bottom-right).
+
+1126
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:18 UTC from IEEE Xplore. Restrictions apply.
+
+2025 IEEE Global Communications Conference Selected Areas in Communications: Cloud/Edge Computing and Networking
+
+C. Comparative Performance Analysis
+The KPI respect rate is a critical metric for teleoperated
+driving applications, measuring the percentage of generated
+paths that simultaneously satisfy both minimum bandwidth
+( 20 Mbps) and maximum latency ( 30 ms) requirements.
+Figure 6 shows that our RL agent achieved a 56.9% KPI
+respect rate, significantly outperforming the Shortest Path
+algorithm (22.6%) and performing comparably to the Lowest
+Latency algorithm (50.2%). The Highest Bandwidth algorithm
+achieved 99.2% but at the cost of significantly longer routes.
+
+Fig. 7. Combined performance metric (normalized KPI respect rate + normalized inverse distance) demonstrating overall routing effectiveness across
+multiple objectives.
+
+Fig. 6. KPI respect rate comparison (latency ≤ 50ms, bandwidth ≥
+15M bps).
+
+To better evaluate the multi-dimensional performance of
+each algorithm, We developed a unified metric combining
+KPI satisfaction and route efficiency to compare different
+routing approaches. This metric provides a holistic view of
+each algorithm’s ability to simultaneously satisfy telecommunications requirements while maintaining route efficiency.
+Figure 7 presents this combined performance analysis, where
+higher values indicate better overall performance across both
+dimensions, calculated as: Figure 7 presents this combined
+performance analysis, where higher values indicate better
+overall performance across both dimensions, calculated as
+follows:
+1/avg dist
+max(1/dist all)
+score = norm kpi rate + norm inv
+
+norm inv dist
+combined
+
+=
+
+(5)
+dist
+
+(6)
+
+Our RL agent achieves the highest combined score
+(1.3956), demonstrating superior balance between network
+performance and route efficiency. The Lowest Latency algorithm follows closely (1.3815), while the Shortest Path
+algorithm (1.3380) performs well primarily due to its distance
+optimization. Most notably, the Highest Bandwidth algorithm
+scores lowest (0.9448) despite its excellent KPI respect rate, as
+its route inefficiency significantly impacts its practical utility
+for teleoperated driving applications.
+D. Key Findings
+Our analysis revealed four critical insights:
+
+Fig. 8. Distance vs. KPI respect rate analysis showing algorithm positioning
+in the optimization space. The green area represents the ideal region.
+
+1. Balanced Distance: While Shortest Path achieved the
+lowest average Euclidean distance (30 spatial units within our
+normalized graph representation), our agent generated paths
+with only marginal increases (40 units) while significantly improving network performance. These spatial units correspond
+to the relative distances between intersections in our clustered
+graph representation of Nevers.
+2. Effective Trade-offs: The RL agent achieved competitive bandwidth performance while reducing path distance
+by approximately 67% compared to the Highest Bandwidth
+algorithm’s paths (120 units).
+3. Adaptive Capability: The RL agent demonstrated
+particularly strong performance in scenarios with high
+network variability, where static algorithms often failed to
+adapt.
+Our approach achieved the second best KPI respect rate
+after the specialized Highest Bandwidth algorithm while significantly outperforming it in distance optimization, demonstrating the effectiveness of reinforcement learning for multiobjective optimization in complex, dynamic environments.
+
+1127
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:18 UTC from IEEE Xplore. Restrictions apply.
+
+2025 IEEE Global Communications Conference Selected Areas in Communications: Cloud/Edge Computing and Networking
+
+VI. L IMITATIONS AND F UTURE W ORK
+
+be held responsible for them.
+
+Our proposed framework operates under several key limitations that must be acknowledged for practical deployment.
+The primary limitation lies in our network parameter generation methodology, where latency and bandwidth values
+are synthetically generated using normal distributions rather
+than utilizing real-time network measurements. This synthetic
+approach may not fully capture the complex temporal patterns present in actual network deployments. Additionally,
+deployment feasibility presents challenges regarding real-time
+integration of dynamic network data, as our system assumes
+instantaneous availability of network metrics across the entire
+road network, which would require continuous data feeds from
+network infrastructure providers in practice.
+Future work will focus on incorporating empirical network
+measurements from actual 5G/6G deployments to validate our
+approach under real network conditions. We plan to extend our
+framework to multi-agent reinforcement learning where multiple teleoperated vehicles share real-time network performance
+data, investigate dynamic infrastructure augmentation such as
+aerial base stations, and address realistic traffic conditions
+including congestion patterns. These developments will enable
+practical deployment of intelligent routing systems for nextgeneration teleoperated driving applications.
+VII. C ONCLUSION
+This research introduces a comprehensive multi-objective
+route optimization framework for teleoperated driving,
+demonstrating the effectiveness of reinforcement learning in
+balancing competing objectives of distance minimization, latency reduction, and bandwidth maximization. Our Dueling
+DQN architecture achieved the highest combined performance
+score (1.3956), representing 3.4% and 4.3% improvements
+over Lowest Latency (1.3815) and Shortest Path (1.3380)
+algorithms respectively, while maintaining effective multiobjective trade-off management with 56.9% KPI compliance
+and minimal distance overhead. The key insight revealed by
+our work is that maximizing a single metric leads to impractical routing solutions, while our reinforcement learning
+approach provides balanced routing strategies that adapt to
+dynamic network conditions. These findings establish a robust foundation for intelligent routing in teleoperated driving
+systems, opening new avenues for research in next-generation
+vehicular networks.
+
+R EFERENCES
+[1] 6G-TWIN Consortium, “Integrating network digital twinning into
+future ai-based 6g systems,” 2025, accessed: 2025-05-02. [Online].
+Available: https://6g-twin.eu/
+[2] Q. Zhang, Z. Xu, Y. Wang, L. Yang, X. Song, and Z. Huang, “Predicted
+trajectory guidance control framework of teleoperated ground vehicles
+compensating for delays,” 2022.
+[3] D. Majstorović and F. Diermeyer, “Dynamic collaborative path planning
+for remote assistance of highly-automated vehicles,” arXiv preprint
+arXiv:2308.15167, 2023.
+[4] H. Schippers, C. Schuler, B. Sliwa, and C. Wietfeld, “System modeling
+and performance evaluation of predictive qos for future tele-operated
+driving,” in 2022 Annual IEEE International Systems Conference
+(SysCon), 2022.
+[5] Y. Regragui and N. Moussa, “Real-time path planning strategy in
+a cooperative intelligent transportation system,” Simulation Modelling
+Practice and Theory, vol. 119, p. 102710, 2022.
+[6] F. Salama, A. Abdel-Raheem, and S. Nassar, “Cell decomposition
+methods for mobile robot path planning: A survey,” Journal of Robotics
+and Automation, vol. 7, no. 2, pp. 85–100, 2021.
+[7] Y. Wang, Z. Liu, and Q. Wu, “Dfrdrl: Dynamic fuzzy routing using
+deep reinforcement learning for sdn,” Computer Networks, vol. 235, p.
+110138, 2024.
+[8] Z. Wang, T. Schaul, M. Hessel, H. Hasselt, M. Lanctot, and N. Freitas,
+“Dueling network architectures for deep reinforcement learning,” in
+Proceedings of The 33rd International Conference on Machine Learning, 2016.
+[9] X. Zhang, H. Duan, and C. Jin, “Reinforcement learning for robot path
+planning with obstacles,” Robotics and Autonomous Systems, vol. 60,
+no. 2, pp. 292–303, 2012.
+[10] K. Arulkumaran, M. P. Deisenroth, M. Brundage, and A. A. Bharath,
+“Deep reinforcement learning: A brief survey,” IEEE Signal Processing
+Magazine, vol. 34, no. 6, pp. 26–38, 2017.
+[11] Z. Zhou, X. Li, and R. N. Zare, “Optimizing chemical reactions with
+deep reinforcement learning,” ACS Central Science, vol. 3, no. 12, pp.
+1337–1344, 2018.
+[12] E. Low, P. Huang, and M. Kamel, “Challenges in deep reinforcement
+learning for large-scale path planning,” IEEE Transactions on Neural
+Networks and Learning Systems, vol. 34, no. 4, pp. 1821–1834, 2023.
+[13] J. Jaramillo-Martı́nez, F. Martı́nez, and E. Caicedo, “Deep reinforcement
+learning for smooth path planning with minimal turns,” Robotics and
+Autonomous Systems, vol. 175, p. 104603, 2024.
+[14] M. Lucas-Estañ, B. Coll-Perales, M. Khan, S. Avedisov, O. Altintas,
+J. Gozalvez, and M. Sepulcre, “Support of teleoperated driving with
+5g networks,” in 2023 IEEE 98th Vehicular Technology Conference
+(VTC2023-Fall). IEEE, 2023, pp. 1–5.
+[15] A. ., P. Pydimarri, P. Rajalakshmi, S. V. Srikanth, and M. Prasad, “Tihanv2x: A comprehensive dataset for dynamic c-v2x communication within
+the indian context,” 2024. [Online]. Available: https://dx.doi.org/10.
+21227/f2kd-9g03
+[16] OpenStreetMap contributors, “OpenStreetMap.” [Online]. Available:
+https://www.openstreetmap.org
+[17] OpenCelliD contributors, “OpenCelliD France Cell Tower Dataset,”
+france dataset downloaded. [Online]. Available: https://www.opencellid.
+org/downloads
+
+ACKNOWLEDGMENT
+The 6G-TWIN project has received funding from the Smart
+Networks and Services Joint Undertaking (SNS JU) under the
+European Union’s Horizon Europe research and innovation
+programme under Grant Agreement No 101136314.
+Co-funded by the European Union. Views and opinions
+expressed are however those of the author(s) only and do
+not necessarily reflect those of the European Union or Smart
+Networks and Services Joint Undertaking.
+Neither the European Union nor the granting authority can
+
+1128
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 14:03:18 UTC from IEEE Xplore. Restrictions apply.
+
+

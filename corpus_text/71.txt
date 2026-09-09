@@ -1,0 +1,811 @@
+2025 IEEE 3rd International Conference on Image Processing and Computer Applications (ICIPCA)
+
+Research on Emergency Rescue Path Optimization
+Method Based on Deep Reinforcement Learning
+Xiaodong Huanga, Huadong Shi, Lixi Zhang
+
+2025 IEEE 3rd International Conference on Image Processing and Computer Applications (ICIPCA) | 979-8-3315-2284-1/25/$31.00 ©2025 IEEE | DOI: 10.1109/ICIPCA65645.2025.11139059
+
+Officers College of PAP of Training Base, Guangzhou, Guangdong, china
+a
+812656592@qq.com
+pursuing multiple goals at once [13].
+
+Abstract—This paper presents the first attempt at an
+emergency rescue path optimisation method using deep
+reinforcement learning for urban industrial emergencies,
+focusing on production safety accident-induced congestion. We
+design a Prioritised Experience Replay Deep Q-Network
+(PERDQN) with an attention mechanism and efficiently model
+complex urban arterial road networks as a Markov Decision
+Process. Our approach bases the traffic wave theory alongside
+BPR functions to evaluate the impact of congestion at different
+levels of control and assess the overall impact under various
+traffic control mechanisms. Results of experiments on the Third
+Ring Road of Beijing show that the proposed method reduces
+emergency vehicle arrival time by 27.3% compared to
+traditional algorithms, and 12.8% over standard DQN. The
+congestion alleviation effectiveness of the method is claimed to
+be superior in scenarios with more severe traffic, thereby
+confirming that the method is optimally robust to changing
+conditions of traffic.
+
+This research develops an advanced path planning
+technique employing the Markov decision process for
+modelling urban roads while taking industrial accidentinduced congestion and vehicle queues into account [14]. In
+our case, the PERDQN algorithm is used to optimise rescue
+paths concerning various traffic management strategies [15].
+The novelty of the work is examining models for urban
+arterial roads, which are generally known for their
+complicated structures, considering both network travel
+efficiency and network effects by evaluating vehicle queuing
+and arrival times using traffic wave theory and the BPR
+function [16].
+II. CONGESTED ROAD ENVIRONMENT MODELING
+A. Urban Road Network Model
+The complexity of urban road networks surrounding
+industrial zones necessitates a systematic abstraction
+approach to effectively model the intricate traffic dynamics
+during production safety emergency situations. In this
+research, we adopt a node-segment model to characterize the
+urban arterial road network structure, which serves as the
+foundation for subsequent reinforcement learning-based
+route optimization. Urban arterial roads typically comprise
+multiple components including main roads, side roads, and
+various intersections that provide connectivity within the
+network.
+
+Keywords—Deep Reinforcement Learning, Emergency
+Rescue, Path Optimization, Traffic Congestion, Attention
+Mechanism, Prioritized Experience Replay
+
+I. INTRODUCTION
+Urban transportation networks are crucial in emergency
+response; however, production safety accidents in industrial
+areas cause severe congestion that can greatly delay
+emergency vehicles, resulting in disastrous consequences
+[1,2]. The intricate structure of the urban road network and
+the constantly changing traffic conditions pose obstacles to
+reaching the emergency vehicles within the required time [3].
+Other types of path planning make use of the shortest path
+algorithms, like Dijkstra or A*, which do not consider realtime traffic information or factors such as accidents and
+traffic congestion modelling [4]. The use of distance metrics
+devoid of the flow of vehicle traffic yield default routes that
+are well below the target level [5]. These methods face
+challenges in representing post-accident networks [6].
+
+In our formulation, the road network is represented as a
+directed weighted graph G = ( N , E , W ) , where N
+represents the set of nodes corresponding to intersections and
+connection points, E denotes the set of edges representing
+road segments, and W indicates the weight matrix
+capturing travel costs between connected nodes. Specifically,
+the node model is defined as:
+
+Heuristic approaches such as ant colony, genetic, and
+particle swarm optimisations consider the volume of traffic
+and capacity of the roads as weighting elements [7]. However,
+the ever-changing and irregular nature of emergencies
+presents challenging issues [8] alongside the necessity of
+extensively adjusting parameters with specialised knowledge
+of the field [9]. Techniques that use graphs and depend on
+time networks capture the essence of time better but are rigid
+and depend on old data which might not capture the actual
+events of an emergency and undergo drastic changes [10] and
+lack flexibility [11]. Solutions offered by Deep
+Reinforcement Learning (DRL) are encouraging as such
+systems can learn the best programmatic plan to follow
+during the interactions within a given environment [12],
+enabling the system to adapt to specified conditions while
+
+979-8-3315-2284-1/25/$31.00 ©2025 IEEE
+
+1990
+
+N=
+N iji 1,2,...,
+=
+=
+m ; j 1,2,..., n (1)
+where N ij represents the j -th node on the
+
+i -th road,
+
+m indicates the number of main roads and side roads in the
+road network, and n denotes the number of joint points on
+separated roads. The segment model is formulated as:
+(2)
+Seg = Seg=
+iji 1,2,..., m −1;
+=j 1,2,..., n −1
+where Seg ij
+nodes
+
+N ij
+
+represents the road segment between
+and
+
+N i , j +1
+
+,
+
+denoted
+
+as
+
+June 28-30, 2025 Shenyang, China
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:25 UTC from IEEE Xplore. Restrictions apply.
+
+Seg
+=
+| N i , j +1 − N ij | . The length of this segment is given
+ij
+
+i −1
+
+sk =
+N ij
+∑ nl + j | node =
+
+by | Seg ij | . This model particularly emphasizes the distinct
+
+(3)
+
+l =1
+
+characteristics of urban arterial roads, including the physical
+separation between opposite direction main roads by
+continuous barriers, and the periodic joint roads connecting
+main roads and side roads in the same direction, as shown in
+Fig. 1.
+
+where nl is the number of nodes at the l -th lane. The
+
+action space A = 1, 2,3,... indicates the potential next road
+nodes that the emergency vehicle can proceed to, based on
+the connectivity of the road network.
+
+The transition probability T ( s, a, s′) defines the
+likelihood of the emergency vehicle moving from the current
+state s to the next state $s'$ by taking action a . For
+deterministic road networks, this probability equals 1 for
+valid transitions and 0 otherwise. The reward function
+R ( s, a, s′) is formulated as:
+ij
+Rij =
+−α (α1tija + α 2teai ) + β ( β1ql + β 2ldif
+) (4)
+
+tija represents the travel time from state si to
+
+where
+
+s j , teai denotes the estimated arrival time to the accident
+site from si , ql indicates the cumulative vehicle queue
+
+Fig. 1. Node-Segment Model for Urban Arterial Road Network.
+
+length, and
+
+The illustration represents the simplification of an urban
+arterial road system in conjunction with a node-segment
+model. Roads in direction 1 are marked using blue lines
+whereas direction 2 is marked using red lines. Solid lines are
+used to describe main roads while dashed lines are used for
+side roads. Intersections and connection points in the network
+are denoted as nodes (M1_x, S1_x, M2_x, S2_x). Alongside
+main and side roads that run parallel to each other in one
+direction, dotted lines mark their connection. Green barriers
+represent physical separation between opposing traffic flows.
+This model includes essential features of urban arterial roads
+such as intersections, joint points, road segments that
+determine the routing decisions of emergency vehicles.
+
+distance
+
+ij
+ldif
+= l j − li reflects the difference in shortest
+
+to
+
+the
+
+accident
+
+point.
+
+The
+
+parameters
+
+α , α1 , α 2 , β , β1 , β 2 control the relative importance of
+
+time efficiency versus road network impact, allowing for
+balanced optimization of emergency response metrics. This
+comprehensive reward function enables the reinforcement
+learning algorithm to identify paths that minimize both
+arrival time and congestion impact.
+C. Traffic Congestion Impact Assessment
+Accurate evaluation of traffic congestion effects is critical
+for emergency rescue path planning in urban arterial roads.
+We employ a dual-theoretical framework combining traffic
+wave theory and the Bureau of Public Roads (BPR) function
+to comprehensively assess vehicle queue length and travel
+time under various traffic control schemes. Traffic wave
+theory provides insights into congestion propagation
+dynamics following accidents, where the shockwave speed is
+determined by:
+
+Different segments of the road have different traveling
+efficiencies for emergency vehicles and are subjected to the
+current traffic conditions. Each segment is described by a
+function (w_{ij}(t)). The foundation of formulating the
+Markov Decision Process to design an algorithm for guiding
+the reinforcement learning in optimising emergency rescue
+paths in congested city environments is this node-segment
+model.
+
+vs =
+
+B. Markov Decision Process Modeling
+To effectively formulate the emergency vehicle path
+planning problem in congested urban environments, we
+transform it into a Markov Decision Process (MDP)
+framework, which provides a mathematical foundation for
+sequential decision-making under uncertainty. The MDP is
+defined as a tuple 〈 S , A, T , R〉 , where each component is
+carefully designed to capture the dynamics of emergency
+rescue operations on urban arterial roads.
+
+q2 − q1
+k2 − k1
+
+(5)
+
+where q1 , q2 represent traffic flows and k1 , k2
+denote traffic densities before and after the accident point.
+Using this theoretical foundation, we calculate the queue
+length by integrating the wave propagation over time since
+accident occurrence.
+For travel time estimation on congested segments, we
+implement the modified BPR function:
+
+The state space=
+S s=
+1, 2,... represents the
+k |k
+current position of the emergency vehicle, corresponding to
+specific road nodes in the network. The mapping from node
+N ij to state s can be represented as:
+
+β
+
+v 
+ta t0 1 + α    (6)
+=
+ c  
+
+
+1991
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:25 UTC from IEEE Xplore. Restrictions apply.
+
+different traffic control schemes as shown in Table I. Each
+scheme influences the spatial distribution of congestion and
+consequently affects the optimal rescue path. By quantifying
+these effects, we enable the reinforcement learning algorithm
+to make decisions that balance arrival speed with minimal
+network disruption.
+
+where ta represents actual travel time, t0 is free-flow
+travel time, v is traffic volume, c denotes road capacity,
+while α and β are calibration parameters adjusted for
+urban arterial road characteristics.
+The impact assessment varies significantly under
+
+TABLE I CONGESTION IMPACT ASSESSMENT UNDER DIFFERENT TRAFFIC CONTROL SCHEMES FOLLOWING INDUSTRIAL ACCIDENTS
+Traffic Control Scheme
+
+Traffic Flow Parameters Queue Length Estimation
+
+Reverse
+Main
+Control (RMC)
+
+km = 78
+vm = 25
+
+Road
+
+Reverse Side Road Control
+(RSC)
+Prograde
+Main
+Control (PMC)
+
+Road
+
+pcu/km,
+km/h
+
+k s = 76
+vs = 18
+
+pcu/km,
+km/h
+
+km = 82
+vm = 15
+
+pcu/km,
+km/h
+
+Combined Control Scheme Variable by segment
+
+Minimal on main road, extended 15-30% increase in free- High main road traffic volume, available
+on side road (250-380m)
+flow time
+side road capacity
+Significant on affected direction 45-70% increase in free- Dense urban areas with few alternative
+(500-750m)
+flow time
+routes
+Balanced
+network
+
+distribution
+
+The algorithm operates on the fundamental principle of
+temporal difference (TD) learning, where the state-action
+value function is iteratively updated to minimize the
+discrepancy between estimated and target values. The
+optimization objective is defined as:
+
+III. PATH OPTIMIZATION METHOD BASED ON DEEP
+REINFORCEMENT LEARNING
+
+) E[(r + γ ⋅ max a′ Q( s′, a′;θ − ) − Q( s, a;θ )) 2 ] (7)
+L(θ=
+
+A. Prioritized Experience Replay Deep Q-Network
+
+where θ represents the network parameters, θ
+denotes the target network parameters, and γ is the
+discount factor. The innovation of PERDQN lies in its
+prioritized sampling mechanism, which assigns higher
+probability to experiences with larger TD errors:
+−
+
+Neural Network
+
+Hidden Layer 2
+64 ReLU
+
+Output Layer
+Q-values for
+Actions
+
+=
+pi | δ i | +ε (8)
+
+Prioritized Experience Replay
+Experience Memory
+
+Priority Calculation
+
+Prioritized Sampling
+
+Importance Sampling
+
+across 30-50% increase in total Complex intersections with multiple
+network travel time
+approach routes
+
+representation, two fully-connected hidden layers with 128
+and 64 neurons respectively using ReLU activation functions,
+and an output layer that produces Q-values for each possible
+action at the current state.
+
+This comprehensive assessment framework enables
+adaptive path selection based on real-time traffic conditions
+and control measures, ultimately improving the effectiveness
+of emergency rescue operations in congested urban
+environments.
+
+Hidden Layer 1
+128 ReLU
+
+Applicability Scenario
+
+Moderate on main road (320- 25-40% increase in free- Industrial zones with multiple access
+450m), minimal on side road
+flow time
+roads, low alternative route traffic
+
+The table presents the evaluation metrics across various
+control strategies implemented during emergency response
+on urban arterial roads.
+
+Input Layer
+Current State
+
+Travel Time Impact
+
+where pi represents the priority of experience
+
+TD Error
+
+i , with
+
+δ i being the TD error and ε a small positive constant
+
+ensuring non-zero sampling probability. This prioritization
+significantly improves learning efficiency by focusing on the
+most informative experiences. To counteract the sampling
+bias introduced by prioritization, importance sampling
+weights are incorporated in the loss function:
+
+Loss Function
+L(θ) with IS weights
+
+Fig. 2. PERDQN Architecture for Emergency Rescue Path Planning
+
+=
+wi (1/ N ⋅1/ P (i )) β (9)
+
+The Prioritized Experience Replay Deep Q-Network
+(PERDQN)
+algorithm
+enhances
+traditional
+deep
+reinforcement learning by incorporating an efficient
+experience utilization mechanism to accelerate convergence
+and improve decision quality for emergency rescue path
+planning. The core of PERDQN is a neural network
+architecture that approximates the optimal state-action value
+function Q ( s, a;θ ) , as shown in Fig. 2. This architecture
+consists of an input layer that processes the current node state
+
+where β controls the degree of bias correction.
+Through this mechanism, PERDQN achieves superior
+performance over traditional DQN in emergency path
+planning, demonstrating faster convergence and more robust
+decision-making under dynamic traffic conditions.
+The algorithm's PERDQN components and their
+interconnections are depicted in the diagram together with its
+
+1992
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:25 UTC from IEEE Xplore. Restrictions apply.
+
+structure. The neural network architecture has an input layer
+which captures the current state, two hidden layers of 128 and
+64 neurons configured with ReLU activations, followed by
+an output layer that generates the Q-values for all available
+actions. The prioritised experience replay mechanism helps
+learning in an asynchronous manner by having greater
+assignment of lower sampling probabilities to TD errors,
+which is the target Q-value minus the predicted Q-value. This
+structure facilitates improved learning of optimal rescue
+routes in highly populated urban street networks.
+
+intentionally set lower than standard DQN to ensure stable
+convergence with prioritized sampling, while the higher
+capacity replay buffer accommodates the diverse experiences
+needed for effective learning in complex urban environments.
+TABLE II EXPERIMENTAL PARAMETER SETTINGS
+
+B. Introduction of Attention Mechanism
+We refine the PERDQN framework by embedding an
+attention mechanism to improve the perception capabilities
+of important road nodes in emergency path planning. This
+mechanism allocates importance weights concerning the
+optimal path relevance on different road nodes. With the
+implementation of a spatial attention layer that computes
+attention coefficients αijα_{ij} αij for connected nodes, the
+model can pay attention to important regions and disregard
+less relevant information. The results of the experiments
+show that this architecture performs 17.3% better in
+accurately locating optimal rescue routes during industrial
+accident-induced congestion, especially in complex urbanindustrial interfaces with numerous other viable paths. The
+value of the attention mechanism is particularly striking when
+algorithmic solutions are sought to be implemented in
+congested urban environments with high traffic densities and
+congestion in different parts of the region.
+
+Parameter
+
+PERDQN
+
+Dijkstra
+
+Description
+
+0.0005
+
+Standard
+DQN
+0.001
+
+Learning
+Rate
+
+N/A
+
+Discount
+Factor (γ)
+
+0.95
+
+0.95
+
+N/A
+
+Replay
+Buffer Size
+
+100,000
+
+50,000
+
+N/A
+
+Priority
+Exponent
+(α)
+IS Weight
+Exponent
+(β)
+Traffic
+Density
+
+0.6
+
+N/A
+
+N/A
+
+0.4→1.0
+
+N/A
+
+N/A
+
+85 veh/km
+
+85 veh/km
+
+85
+veh/km
+
+Congestion
+Level
+
+0.75-0.85
+
+0.75-0.85
+
+0.750.85
+
+Step size for
+neural network
+optimization
+Future reward
+discount
+parameter
+Experience
+memory
+capacity
+Controls
+prioritization
+strength
+Importance
+sampling bias
+correction
+Vehicles
+per
+kilometer
+on
+main roads
+Volume-tocapacity ratio
+range
+
+B. Comparative Analysis of Different Methods
+Comparative analysis demonstrates that the PERDQN
+algorithm significantly outperforms both traditional shortest
+path algorithms and standard DQN in emergency rescue
+scenarios. As shown in Figure 3, our method achieves a 27.3%
+reduction in average arrival time compared to Dijkstra's
+algorithm and a 12.8% improvement over standard DQN
+across varying congestion levels. Most notably, the
+performance advantage widens as congestion severity
+increases, highlighting PERDQN's superior adaptability to
+dynamic traffic conditions. The attention mechanism
+integration proves particularly effective at complex
+intersections, where the algorithm demonstrates a 34.2%
+improvement in optimal decision-making compared to nonattention variants.
+
+C. Decision Optimization under Multiple Control Schemes
+Our research focuses on optimal decision making for
+different control strategies applied during emergencies. The
+four control strategies we examine include: Reverse Main
+Road Control (RMC), Reverse Side Road Control (RSC),
+Prograde Main Road Control (PMC), and Combined Control
+Schemes. Through comprehensive simulations, it has been
+determined that RSC is the most effective technique with a
+performance increase of 23.4% in arrival times compared to
+static routing given moderate levels of congestion. On the
+other hand, RMC is the most advantageous when looking at
+severe congestion scenarios since it offers routes around the
+significant bottleneck areas. All vehicles are guaranteed the
+best routing in real-time, particularly emergency vehicles,
+through the traffic management control system, all thanks to
+the PERDQN algorithm with attention which provides a
+high-level context for selecting appropriate strategies based
+on the control in use and traffic conditions.
+
+C. Results Discussion
+These findings affirm that the method we employed
+optimally balances minimisation of arrival times with other
+important traffic impact considerations, resulting in effective
+yet sustainable paths for the broader road network. The
+PERDQN with attention mechanism shows particular
+strength in high congestion scenarios (0.75-0.80 ratio) where
+traditional methods struggle, highlighting the algorithm’s
+capability to circumvent severely congested areas with heavy
+traffic. The statistical analysis performed validates the
+significance of the aforementioned improvements in
+performance (p < 0.01) for all levels of congestion analysed.
+Although our method works remarkably well in highly
+complex urban areas, we did notice slightly less pronounced
+benefits in low congestion situations, which indicates that
+some simpler approaches may suffice in free-flowing traffic
+conditions.
+
+IV. EXPERIMENTAL VERIFICATION AND ANALYSIS
+A. Experimental Environment and Parameter Settings
+To validate the effectiveness of our proposed PERDQN
+approach for emergency rescue path optimization, we
+conducted comprehensive experiments using real-world
+urban arterial roads as test environments. We selected
+Beijing's Third Ring Road network around major industrial
+zones as our primary testbed due to its complex structure of
+main and side roads connecting industrial facilities with
+numerous intersections. Traffic flow parameters were
+calibrated using real-world traffic data collected during peak
+hours (7:00-9:00 AM and 5:00-7:00 PM), with congestion
+scenarios simulated based on historical accident records. The
+algorithm hyperparameters were fine-tuned through
+preliminary experiments to achieve optimal performance, as
+shown in Table II. The PERDQN learning rate was
+
+1993
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:25 UTC from IEEE Xplore. Restrictions apply.
+
+REFERENCES
+[1]
+
+[2]
+[3]
+[4]
+
+Fig. 3. Performance Comparison of Path Planning Methods.
+
+[5]
+
+The graph shows the average arrival time (minutes) of
+emergency vehicles plotted against congestion level
+(volume-to-capacity ratio) for four different path planning
+approaches. The PERDQN with attention mechanism (red
+line) consistently outperforms other methods, with the
+performance gap widening as congestion increases.
+Traditional Dijkstra's algorithm (blue line) shows the worst
+performance under high congestion scenarios, while standard
+DQN (orange line) and basic PERDQN (green line) offer
+intermediate performance. The results demonstrate that the
+proposed approach maintains effective emergency response
+times even as traffic conditions deteriorate.
+
+[6]
+
+[7]
+[8]
+
+[9]
+
+V. CONCLUSION AND PROSPECTS
+This research introduces a novel emergency rescue path
+optimization method based on deep reinforcement learning
+that significantly improves response times to production
+safety accidents in congested urban-industrial environments.
+The PERDQN algorithm with attention mechanism
+demonstrates superior performance over traditional
+approaches, achieving a 27.3% reduction in arrival time
+while minimizing network-wide traffic impact. Despite these
+advancements, limitations exist in computational efficiency
+for real-time implementation and adaptation to extremely
+large-scale road networks. Future research should focus on
+extending this methodology to longer-distance urban
+corridors spanning multiple districts, incorporating multiobjective optimization for scenarios with multiple
+simultaneous rescue points, and integrating real-time traffic
+prediction models to anticipate congestion development.
+Additionally, exploring transfer learning techniques could
+enable rapid adaptation to unfamiliar urban environments
+without extensive retraining, potentially creating a
+generalizable framework applicable across diverse urban
+settings globally.
+
+[10]
+[11]
+
+[12]
+[13]
+[14]
+[15]
+
+[16]
+
+L. Yan, P. Wang, J. Yang, Y. Hu, Y. Han, and J. Yao, "Refined path
+planning for emergency rescue vehicles on congested urban arterial
+roads via reinforcement learning approach," Journal of Advanced
+Transportation, vol. 2021, 8772688, 2021.
+X. Li, X. Liang, X. Wang, et al., "Deep reinforcement learning for
+optimal rescue path planning in uncertain and complex urban pluvial
+flood scenarios," Applied Soft Computing, vol. 144, 110543, 2023.
+S. Xu, Y. Gu, X. Li, et al., "Indoor emergency path planning based on
+the Q-learning optimization algorithm," ISPRS International Journal of
+Geo-Information, vol. 11, no. 1, 66, 2022.
+J. Yang, P. Wang, W. Yuan, et al., "Automatic generation of optimal
+road trajectory for the rescue vehicle in case of emergency on mountain
+freeway using reinforcement learning approach," IET Intelligent
+Transport Systems, vol. 15, no. 9, pp. 1142-1152, 2021.
+X. Y. Li and X. Wang, "Rescue path planning for urban flood: A deep
+reinforcement learning–based approach," Risk Analysis, 2024.
+H. Zhan, Y. Zhang, J. Huang, et al., "A reinforcement learning-based
+evolutionary algorithm for the unmanned aerial vehicles maritime
+search and rescue path planning problem considering multiple rescue
+centers," Memetic Computing, vol. 16, no. 3, pp. 373-386, 2024.
+J. Zhang, H. Xu, D. Liu, et al., "Advancing Dynamic Emergency Route
+Optimization with a Composite Network Deep Reinforcement
+Learning Model," Systems, vol. 13, no. 2, 2025.
+Y. Wang, X. Chen, and L. Wang, "Deep reinforcement learning-based
+rescue resource distribution scheduling of storm surge inundation
+emergency logistics," IEEE Transactions on Industrial Informatics, vol.
+19, no. 10, pp. 10004-10013, 2023.
+L. Li, Q. He, R. Luo, et al., "Emergency vehicle rescue route
+optimization based on deep reinforcement learning in highway
+network," in Eighth International Conference on Traffic Engineering
+and Transportation System (ICTETS 2024), SPIE, vol. 13421, pp.
+1606-1613, 2024.
+J. Zhao, Z. Gan, J. Liang, et al., "Path planning research of a UAV base
+station searching for disaster victims' location information based on
+deep reinforcement learning," Entropy, vol. 24, no. 12, 1767, 2022.
+N. K. Thakre, D. Nimma, A. V. Turukmane, et al., "Dynamic Path
+Planning for Autonomous Robots in Forest Fire Scenarios Using
+Hybrid Deep Reinforcement Learning and Particle Swarm
+Optimization," International Journal of Advanced Computer Science &
+Applications, vol. 15, no. 9, 2024.
+W. Qiu, X. Shao, H. Masui, et al., "Optimizing Drone Energy Use for
+Emergency Communications in Disasters via Deep Reinforcement
+Learning," Future Internet, vol. 16, no. 7, 245, 2024.
+L. Zhao, X. Liu, and T. Shang, "Maximizing coverage in UAV-based
+emergency communication networks using deep reinforcement
+learning," Signal Processing, vol. 230, 109844, 2025.
+Z. Feng, C. Wang, J. An, et al., "Emergency fire escape path planning
+model based on improved DDPG algorithm," Journal of Building
+Engineering, vol. 95, 110090, 2024.
+C. Wang, D. Deng, L. Xu, et al., "Resource scheduling based on deep
+reinforcement learning in UAV assisted emergency communication
+networks," IEEE Transactions on Communications, vol. 70, no. 6, pp.
+3834-3848, 2022.
+Y. Shen, X. Wang, H. Wang, et al., "A dynamic task assignment model
+for aviation emergency rescue based on multi-agent reinforcement
+learning," Journal of Safety Science and Resilience, vol. 4, no. 3, pp.
+284-293, 2023.
+
+1994
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:56:25 UTC from IEEE Xplore. Restrictions apply.
+
+

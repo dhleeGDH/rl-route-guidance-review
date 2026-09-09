@@ -1,0 +1,884 @@
+2023 20th International Conference on Ubiquitous Robots (UR)
+June 25-28, 2023. Hawaii Convention Center, Honolulu, Hawaii
+
+Robust Route Planning with Distributional Reinforcement Learning in
+a Stochastic Road Network Environment
+
+2023 20th International Conference on Ubiquitous Robots (UR) | 979-8-3503-3517-0/23/$31.00 ©2023 IEEE | DOI: 10.1109/UR57808.2023.10202222
+
+Xi Lin1 , Paul Szenher1 , John D. Martin2 , Brendan Englot1
+Abstract— Route planning is essential to mobile robot navigation problems. In recent years, deep reinforcement learning
+(DRL) has been applied to learning optimal planning policies
+in stochastic environments without prior knowledge. However,
+existing works focus on learning policies that maximize the
+expected return, the performance of which can vary greatly
+when the level of stochasticity in the environment is high. In this
+work, we propose a distributional reinforcement learning based
+framework that learns return distributions which explicitly
+reflect environmental stochasticity. Policies based on the secondorder stochastic dominance (SSD) relation can be used to make
+adjustable route decisions according to user preference on
+performance robustness. Our proposed method is evaluated
+in a simulated road network environment, and experimental
+results show that our method is able to plan the shortest routes
+that minimize stochasticity in travel time when robustness
+is preferred, while other state-of-the-art DRL methods are
+agnostic to environmental stochasticity.
+
+I. I NTRODUCTION
+Endowing mobile robots with the ability to autonomously
+navigate has been viewed as a major challenge to realizing
+their full potential as autonomous embodied systems [1], [2].
+In an autonomous navigation task, a mobile robot is typically
+asked to navigate collision-free from a start point to a goal
+point, sometimes without an accurate or complete prior map,
+and it is challenging to efficiently plan routes without prior
+knowledge.
+Reinforcement Learning (RL) offers a way for embodied
+systems to acquire high-performance policies to operate in
+stochastic environments through trial-and-error learning [3].
+Given no prior information describing the environment, a RL
+agent can learn by directly interacting with the environment.
+Deep Reinforcement Learning (DRL) combines RL with
+deep neural network architectures, and has been widely used
+to solve practical problems with high-dimensional sensory
+inputs in recent years. One of the earliest examples, DQN
+[4], was able to play Atari 2600 games to superhuman levels.
+DRL methods have also shown the ability to learn desired
+route planning policies in unknown stochastic environments,
+which can be efficiently executed via neural network inference at run-time.
+Existing DRL based route planners select the route that
+maximizes the expectation of accumulated rewards (e.g.,
+the blue path in Figure 1), which may be associated with
+1 Xi Lin, Paul Szenher and Brendan Englot are with the
+Department of Mechanical Engineering, Stevens Institute of
+Technology, 1 Castle Point Terrace, Hoboken, NJ 07030, USA
+
+{xlin26,pszenher,benglot}@stevens.edu
+2 John D. Martin is with the Department of Computing Science, University of Alberta, 116 St. and 85 Ave., Edmonton, Alberta T6G 2R377,
+Canada jmartin8@ualberta.ca
+
+979-8-3503-3517-0/23/$31.00 ©2023 IEEE
+
+Fig. 1: Example routes in a simulated urban environment. Green,
+magenta and black blocks represent the start, goal, and a crosswalk
+with stochastic delay. The blue line is the shortest length route.
+
+high variance and suffer from unstable performance across
+trials when the operating environment is highly stochastic.
+A possible solution is Distributional Reinforcement Learning (Distributional RL) [5], which aims at learning return
+distributions and enables various policies beyond expectation
+maximization. Recent works in this area (described below)
+have used Distributional RL to learn mobile robot controllers
+that can achieve safe navigation performance by avoiding
+actions with highly uncertain outcomes.
+In this paper, we propose a route planning framework
+that learns environmental stochastitcity with distributional
+RL, and is capable of selecting a robust route with
+execution policies based on the second-order stochastic
+dominance (SSD) relation. The performance of our
+framework is demonstrated in simulated urban road
+network environments where travel time stochasticity
+exists in certain states. While state-of-the-art RL methods
+are agnostic to travel time stochasticity, our framework
+could plan routes that circumvent those states when
+robustness is preferred (e.g., the red path in Figure
+1). The code of our approach is available at https:
+//github.com/RobustFieldAutonomyLab/
+Stochastic_Road_Network.
+The rest of this paper is organized as follows: Section
+II introduces related works about RL based route planners
+and distributional RL based mobile robot controllers; Section
+III introduces the RL problem setup; Section IV introduces
+our proposed robust learning and execution framework based
+287
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:29:28 UTC from IEEE Xplore. Restrictions apply.
+
+on distributional RL; Section V introduces the road network
+environments we build for studying the robust route planning
+problem; Section VI shows route planning experiment results
+and analysis; Section VII concludes the paper and comments
+on plans for future work.
+II. R ELATED W ORK
+Deep reinforcement learning (DRL) has been used to
+develop solutions to route planning problems in unknown
+stochastic environments. Qian et al. [6] considered the charging station navigation problem for electric vehicles in an
+urban environment with unknown uncertainty in traffic conditions, price and waiting time at different charging stations,
+and proposed a DRL based planner that could select a goal
+station and route that minimize travel time and charging cost.
+Zhang et al. [7] also worked on the route planning problem
+for electric vehicles, but with an emphasis on the power
+management issue; they used reinforcement learning to train
+a route planner that could efficiently plan paths that minimize
+overall energy consumption. Geng et al. [8] proposed a
+DRL based route planner that minimizes travel time by
+predicting pedestrian flows in congested environments; the
+proposed planner outperforms A* when congestion occurs.
+Koh et al. [9] proposed a DRL based real-time navigation system operating in complex city maps with varying
+traffic conditions; the system re-plans the route for the
+ego vehicle given its surrounding instant traffic information,
+achieving better performance in travel time than dynamicDijkstra and dynamic-A*. Basso et al. [10] studied dynamic
+route planning for electric delivery service vehicles where
+customer requests and energy consumption are stochastic,
+proposing a DRL based solution that learns to anticipate
+future customer requests and energy consumption, planning
+routes for delivery and battery charging that minimize energy
+consumption and prevent battery depletion.
+Distributional reinforcement learning (Distributional RL)
+has recently been used to learn risk-aware control policies
+in mobile robot navigation tasks. Choi et al. [11] focused on
+the indoor navigation of a mobile ground robot, and trained
+a distributional RL agent that could learn the collision risk of
+control commands (linear and angular velocity); the proposed
+method outperforms traditional RL in the collision avoidance
+success rate. Kamran et al. [12] designed a distributional RL
+based autonomous vehicle controller for automated merging
+and crossing at occluded intersections, where other vehicles’
+behaviors are uncertain; the proposed method exhibits adjustable performance that balances travel time and driving
+comfort according to user preference at run-time. Liu et
+al. [13] proposed an adaptive risk-aware control policy for
+a micro drone navigation task; the algorithm automatically
+adjusts the threshold of Conditional Value at Risk (CVaR)
+according to the level of environmental uncertainty during
+the learning of a distributional RL agent, which shows robust
+navigation performance without human effort in parameter
+tuning. Given that distributional RL has been proven to
+be effective in learning risk-aware policies, we use it to
+
+develop a high-level route planning framework that is robust
+to uncertainties in the environment.
+III. P ROBLEM S ETTING
+Using the standard problem setting for RL, the interaction
+between the agent and the environment is formalized as a
+Markov Decision Process (S, A, P, R, γ), where S, A, and
+are the set of states and actions. At each time step t, the
+agent receives an observation of the current state st ∈ S,
+and decides an action at ∈ A. It causes the environment
+transition to the state st+1 ∼ P(·|st , at ) , and the agent
+receives an observation of st+1 , as well as a reward rt+1 =
+R(st+1 , at+1 ). A common way to find an optimal policy in
+RL is to maximize the expected future return Qπ .
+Qπ (s, a) = Eπ [
+
+∞
+X
+
+γ k rt+k+1 |st = s, at = a].
+
+(1)
+
+k=0
+
+It’s also known as the action-value function, which starts
+with a state-action pair (st , at ) and follows the policy π
+thereafter. Discount factor γ ∈ [0, 1) controls the effect of
+future rewards.
+Qπ (s, a) = E[R(s, a)] + γE[Qπ (s′ , a′ )]
+′
+
+(2)
+′
+
+T Q(s, a) := E[R(s, a)] + γE[max
+Q(s , a )]
+′
+a
+
+(3)
+
+The relation between Qπ and its successors satisfies the
+Bellman equation (2), where s′ ∼ P(·|s, a), and a′ ∼
+π(·|s′ ). An optimal policy could be solved using the Bellman
+optimality operator (3).
+D
+
+Z π (s, a) = R(s, a) + γZ π (s′ , a′ )
+
+(4)
+
+D
+
+T Z(s, a) := R(s, a) + γZ π (s′ , argmaxa′ E[Z(s′ , a′ )]) (5)
+Instead of the expected return, Distributional RL algorithms [5] focus on the return distribution, which satisfies
+the distributional Bellman equation (4), where Z π (s, a) is
+a random variable that satisfies Qπ (s, a) = E[Z π (s, a)].
+Similarly, the distributional Bellman optimality equation
+(5) is used in this case. This permits the estimation of a
+collection of outcomes that could result from the stochasticity
+inherent in the agent’s domain. For instance, if the reward
+encodes a robot’s transition time, then its return distribution
+reflects the spread in total travel times that result from taking
+different routes whose random traffic conditions vary.
+IV. ROBUST L EARNING AND E XECUTION F RAMEWORK
+Our proposed robust learning and execution framework is
+illustrated in Figure 2. In the learning process, the agent
+interacts with the environment according to the behavior
+policy πβ , and updates the return distribution Z(s, a; θ) with
+the learning policy πα . During the execution process, the
+agent decides the action to take with the learned return
+distributions Z(s, a; θ) and the execution policy πψ .
+Consider an example when the learning and execution
+policies are the same. In this case, the robot would learn
+for some period of time, stop using its behavior policy, then
+start using its execution policy. In settings where robustness
+288
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:29:28 UTC from IEEE Xplore. Restrictions apply.
+
+Learning
+
+Training
+Environment
+
+𝑎𝑡 =
+𝜋𝛽 (𝑍(𝑠,⋅; 𝜃))
+
+The SSD relation is defined using distribution functions
+and compared over the set of their realizable values. Consider
+two expected returns, G and G′ , respectively induced by
+actions a and a′ . We say that G stochastically dominates G′
+(2)
+in
+R z the second order when their integrated CDFs, F (z) :=
+F
+(x)dx,
+satisfy
+the
+following
+equation,
+and
+we
+denote
+−∞
+the relation G ⪰(2) G′ :
+
+𝑆𝑡+1
+𝑅𝑡+1
+𝑅𝑡
+
+𝜃 ← update with
+samples and 𝜋𝛼
+
+𝑆𝑡
+
+𝑍(𝑠, 𝑎; 𝜃)
+
+(2)
+
+𝑆𝑡
+
+𝑆𝑡+1
+
+Execution
+Environment
+
+Execution
+Fig. 2: Robust Learning and Execution framework.
+
+is desired, however, it can be beneficial to use a distinct
+execution policy to impose additional robustness preferences
+on decisions.
+A. Learning
+We use QR-DQN [14] to learn return distribution Z(s, a),
+which is approximated with a uniform distribution of N
+Diracs, Zθ (s, a), where θi is the value corresponding to the
+quantile τ̂i = (τi−1 + τi )/2 for 1 ≤ i ≤ N .
+Zθ (s, a) =
+
+N
+1 X
+δθ (s,a)
+N i=1 i
+
+ρκτ (u) = |τ − δ{u<0} |(Lκ (u)/κ),
+ 1 2
+if |u| ≤ κ
+2u ,
+where Lκ (u) =
+κ(|u| − 12 κ), otherwise
+
+(6)
+
+(7)
+
+During each training step, {θi (s, a)} are optimized by performing stochastic gradient decent on the quantile regression
+loss LQR , which is computed with quantile TD error δij and
+quantile Huber loss ρκτ .
+δij = r + γθj (s′ , πα (s′ )) − θi (s, a)
+LQR =
+
+N
+X
+
+Ej [ρκτ̂i (δij )]
+
+(2)
+
+G ⪰(2) G′ ⇐⇒ FG (z) ≤ FG′ (z), ∀ z ∈ R.
+
+𝑎𝑡 =
+𝜋𝜓 (𝑍(𝑠,⋅; 𝜃))
+
+(8)
+(9)
+
+(11)
+
+The function F (2) defines the frontier of what is known as the
+dispersion space, whose volume reflects the degree to which
+a random variable differs from its expected value. Outcomes
+that are disperse have more uncertainty and are less robust
+when it comes to realizing consistent outcomes. Indeed, a
+fundamental result from expected utility theory states that
+rational risk-averse agents prefer outcome G to G′ when
+G ⪰(2) G′ [18].
+We consider the SSD policy as an execution policy, which
+is based on the SSD relation. In settings where there is
+not an exact tie among the actions offering the largest
+expected returns, the SSD policy will be equivalent to the
+standard greedy policy. Otherwise, the SSD policy selects
+the action that is second-order stochastically dominant. Here
+we also introduce a relaxation to the SSD policy that permits
+uncertainty to be considered even when there is not an exact
+tie. The Thresholded SSD policy looks at the action gap
+between the top two optimal actions. When this is less than
+a certain threshold they will be considered equivalent, and
+the tie will be broken with a comparison of their second
+central moments, which eliminates the difference in expected
+values and is consistent with the exact SSD policy—namely,
+the action that induces the smaller second central moment
+will be preferred. Details of the SSD and Thresholded SSD
+policies are shown in Algorithm 1.
+Algorithm 1 SSD and Thresholded SSD policy
+Require: use thres , ssd thres
+for all a ∈ APdo
+N
+Qa = N1 i=1 θi (s, a)
+// Identify top-2 actions with largest Q values
+a1 = argmaxa {Qa }, a2 = argmaxa {Qa \Qa1 }
+if use thres is true then
+// Thresholded SSD
+if Qa1 − Qa2 > ssd thres then
+return a1
+else
+PN
+Va = N1 i=1 (θi (s, a) − Qa )2 , a ∈ {a1 , a2 }
+return argmina Va
+else
+// Exact SSD
+if Qa1 > Qa2 then
+return a1
+else
+PN
+Va = N1 i=1 θi (s, a)2 , a ∈ {a1 , a2 }
+return argmina Va
+
+i=1
+
+We use the greedy policy as the learning policy in optimization.
+πα (s) = argmaxa Ez∼Zθ (s,a) [z]
+(10)
+B. Execution
+In stochastic environments where a robot can experience
+multiple and potentially negative outcomes, it can be beneficial to impose an additional preference over outcomes so they
+are robust. Robustness here is specified with the dispersion
+of a given return distribution, and in the past it has been
+measured with statistics of the return distribution such as
+the variance [15] or Conditional Value at Risk (CVaR) [16].
+Martin et al. [17] showed that policies based on the secondorder stochastic dominance (SSD) relation are aggregations
+of CVaR policies, and these can lead to optimal behaviors
+that favor robustness when multiple solutions exist.
+289
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:29:28 UTC from IEEE Xplore. Restrictions apply.
+
+Fig. 3: Left: CARLA Town01 map and the extracted graph. Discrete states and actions are shown as green dots and black arrow-head
+lines. Right: an observation sample. A learning system observes an occupancy image whose pixels correspond to the presence of a
+LIDAR return within a specific block of space. The image is overlaid on top of the corresponding 3D scene.
+
+V. T HE S TOCHASTIC ROAD N ETWORK E NVIRONMENT
+To examine the performance of the proposed framework
+on the urban driving route planning problem, we develop a
+simulation environment called the Stochastic Road Network
+Environment. The environment is built upon map topology
+and simulated sensory data originating from the CARLA
+autonomous vehicle simulator [19]. We select two maps from
+CARLA (0.9.6 version), Town01 and Town02.
+Each map in the proposed environment is procedurally
+generated. Starting from the continuous OpenDRIVE maps
+provided alongside CARLA, maps are extracted through a
+discretization process that produces a graph approximating
+the route-level topology of the original CARLA maps. The
+waypoint topology is initially represented in the OpenDRIVE
+road description format [20]—an industry-standard description language of road networks for use in autonomous vehicle
+simulation. The generation procedure produces maps with
+an offline data pre-processing script, which communicates
+with the CARLA simulator and generates static map graphs
+and observational data. For instance, the graph extracted
+for the CARLA Town01 road network is visualized in
+Figure 3. Given the extensibility of the CARLA simulator
+framework, the proposed environment generation method can
+be extended to cover any custom-made CARLA maps that
+include an underlying OpenDRIVE map graph.
+A. State and Action Space
+Each map in the proposed environment is a discrete and
+directed road network graph, where the state space is the set
+of all vertices in the graph representing all possible locations
+that the robot could visit.
+The available actions at each state are determined by a discrete map of candidate state transitions, which correspond to
+edges in the graph. The dimension of the action space in the
+map is the largest number of available actions in any state.
+At states where the graph topology does not allow for use of
+the full action space (i.e., in the case of a straightaway, where
+there is only one valid direction of travel) the remainder of
+
+the action space corresponds to the loopback action, whereby
+the agent re-transitions into its current state. State transitions
+are fully deterministic, meaning every state-action pair yields
+a transition to a deterministic subsequent state.
+B. Observation
+The CARLA simulator provides access to an array of
+rich sensor data-types. In this work, rich 3D LIDAR data is
+extracted from the CARLA simulator and post-processed into
+a form more amenable to usage with reinforcement learning
+methods.
+First, raw returns from a 32-beam, 360◦ FoV simulated 3D
+LIDAR are extracted at each state location in the original
+CARLA environment. Next, this data is collected into a
+simple occupancy-map format on a per-state-basis, whereby
+the number of LIDAR returns per grid-cell are counted and
+stored in a 3D grid structure. This grid structure posesses a
+dimensionality of 255×255×3, and a size of 50 m×50 m×
+8.4 m, with individual voxels of size 0.2m × 0.2m × 2.7m.
+Finally, a single 2D slice of this grid structure (255 × 255)
+is extracted for use as the environment observation at each
+environment state. The final observation is binarized, yielding a 2-dimensional matrix of size 255 × 255. Each cell is
+populated with a value of 1 if a non-zero number of LIDAR
+returns were present within the corresponding occupancy
+voxel, and 0 otherwise. A representation of the resulting
+observation format is shown in Figure 3.
+When the learning agent reaches a state, it perceives the
+corresponding observation matrix at that location. In this paper, we are focused on studying how route planning policies
+are affected by the environmental stochasticity induced by
+crosswalks where a vehicle may need to stop for pedestrians.
+Thus, observation noise is not modeled, and observation
+data is non-stochastic, with each binary matrix representing
+a static, unchanging observation returned from a specified
+state. Subsequent revisiting of a given state will always yield
+the same observation.
+290
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:29:28 UTC from IEEE Xplore. Restrictions apply.
+
+(a) Town01
+
+(b) Town02
+
+(a) Town01
+
+(b) Town02
+
+Fig. 4: Learning performance of Deep RL algorithms (Baselines
+Study). Each solid line shows the variation of mean path returns
+during evaluations, and the bandwidth indicates the standard error
+of path returns over 30 trials. Black lines indicate the discounted
+return of the shortest path in each map.
+
+Fig. 5: Sensitivity curves of Deep RL algorithms (Baselines
+Study). Each point in a curve represents the mean value of area
+under the learning curve over the corresponding five experiments,
+and the vertical bar at each point reflects the standard error. The
+points with maximum mean value are marked by stars.
+
+C. Reward
+
+A. Baselines Study
+
+Rewards are designed to reflect the travel time cost of
+passing states, and they are summarized in Equation (12). As
+most vertices are generated with fixed distances to neighbouring vertices, a fixed base action reward is present at all states
+to reflect the normal travel time cost, yielding a deterministic
+reward of −rbase . In addition to this fixed action reward,
+there exist three categories of reward modifiers: goal states,
+crosswalk states, and loopback actions.
+Goal states, denoted as SG , are destinations of the agent,
+and reaching a goal state results in the end of a route and an
+additional reward +rbase . Hence, the total reward of reaching
+a goal state is 0.
+Crosswalk states, denoted as SC , are the sole source
+of stochasticity within the environment, where travel time
+varies. We impose an additional reward sampled from a
+zero-mean truncated Gaussian distribution with a standard
+deviation of 1 and threshold bounds of −rbase to +rbase .
+Thus the total reward of reaching a crosswalk state range
+from −2rbase to 0.
+Loopback actions are actions which result in the agent
+remaining in its current state. Loopback actions may incur
+an additional penalty rloopback , resulting in an effective
+loopback action reward of −(rbase + rloopback ).
+
+0,
+if st ∈ SG
+
+
+
+N (−rbase , 1) & rt ∈ [−2rbase , 0], if st ∈ SC
+rt =
+−(rbase + rloopback ),
+if st = st−1
+
+
+
+−rbase ,
+otherwise
+(12)
+
+We select four state-of-the-art Deep RL methods, which
+are A2C [21], PPO [22], DQN [23], and Quantile-Regression
+DQN (QR-DQN) [14], and investigate their performance on
+the Stochastic Road Network Environment. In each map,
+a start state, a pair of goal states (permitting the goal to
+be reached from either side of a two-way street), and a
+crosswalk state (designed to lie within the shortest path of
+the map) are provided. The base reward rbase = 1, and
+the penalty on the loopback actions rloopback = 0. Agents
+equipped with the selected methods are trained to learn
+route planning policies from the start state to a goal state,
+which are represented by end-to-end multilayer perceptron
+(MLP) models with the same structure introduced below.
+We evaluate a trained agent after every 10,000 steps of
+learning in the training environment. An evaluation occurs in
+a separate environment instance, where the agent starts from
+the same start state and stops when reaching a goal state or
+1000 steps. The curves of discounted return (γ = 0.99) over
+the trajectories executed during evaluation, shown in Figure
+4, can be used to analyze the learning performance of an
+agent.
+We use implementations of A2C, PPO, DQN and QRDQN from the Stable-Baselines3 project [24], and the variable names of hyperparameters used hereafter are the same
+as in the Stable-Baselines3 code.
+Hyperparameter selection: Several hyperparameters
+were tuned for our experiments, described in detail below.
+For A2C, n step = 64. This means the agent collects 64
+on-policy transitions before updating the policy. All collected
+transitions are used to perform a one-step optimization to
+update the current policy, and then they are subsequently
+abandoned.
+For PPO, n step = 2048, batch size = 64, and n epochs =
+1. Thus the agent acts for 2048 steps with the current policy,
+and then the policy is updated by performing a one-step
+optimization with 64 samples randomly selected from 2048
+collected transitions. Similar to the A2C agent, all n step
+transitions are abandoned after every policy update.
+For DQN, buffer size = 2048, batch size = 64, and gradient step = 1. In contrast to A2C and PPO, DQN is off-policy,
+and we use the default ϵ-greedy policy for exploration.
+
+VI. E XPERIMENTAL E VALUATION
+Using the Stochastic Road Network Environment, we
+study the route planning performance of our proposed framework, as well as that of state-of-the-art RL algorithms for
+comparison. Specifically, in section VI-A, we investigate
+the effect of different learning rates on the performance of
+selected state-of-the-art methods, and report our hyperparameter selection. In section VI-B, we apply the proposed
+framework to the route planning task, and compare its
+performance with others.
+
+291
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:29:28 UTC from IEEE Xplore. Restrictions apply.
+
+During training, it keeps a buffer of transitions obtained with
+previous policies and updates the current policy with minibatches from its replay buffer. The chosen hyperparameters
+indicate that a one-step optimization with 64 samples from
+the buffer containing 2048 previous transitions is performed
+to update the current policy. In this way, DQN is comparably
+parameterized with A2C and PPO.
+For QR-DQN, we chose n quantiles = 4, meaning 4
+atoms are used to represent the return distribution of a
+given action. We also set exploration fraction = 0.02 and
+exploration final eps = 0.1, meaning that the exploration rate
+of the ϵ-greedy policy starts at 1 and decreases linearly to
+0.1 during the initial 2% of total training time steps, then
+stays at 0.1 thereafter; buffer size = 2048, batch size = 64,
+gradient step = 1.
+Policy network structure: The route planning policy
+is represented by a fully-connected multi-layer perceptron
+(MLP) with four layers. The input layer takes a vector
+of the size 65,025 obtained by flattening the observation
+matrix. Next, there are two sequential hidden layers, each of
+which has 64 neurons. For A2C, PPO and DQN, the output
+layer gives estimated Q value of actions; for QR-DQN, the
+output layer gives gives quantile points reflecting the return
+distribution of actions. The action that maximizes estimated
+Q value or expected value of the return distribution is chosen
+as the final output.
+We study the effect of different learning rates on the performance of the agents in each map. The range of examined
+learning rates is from 1 × 10−6 to 1 × 10−3 . For each agent
+and learning rate value, five trials with different random seeds
+are run, and the mean area under the learning curves over
+the trials is computed and used as a metric for evaluating the
+learning performance at each learning rate – the results are
+shown in Figure 5. The learning rates corresponding to the
+maximum mean area under the curve values are marked by
+stars, and summarized in Table I. Then for each agent in each
+map, we run another 25 trials with different random seeds,
+and plot the general performance over 30 trials in Figure 4.
+Town01
+Town02
+
+A2C
+9 × 10−5
+8 × 10−5
+
+PPO
+2 × 10−4
+3 × 10−4
+
+DQN
+1 × 10−4
+5 × 10−6
+
+QR-DQN
+6 × 10−4
+6 × 10−5
+
+TABLE I: Best learning rates of Deep RL agents in Baselines Study
+
+Four agents learn planning policies that lead to the shortest
+path within about 5 × 105 steps of experience in most trials
+in Town01, and about 2×105 steps in Town02. In both maps,
+A2C and PPO achieve the best learning performance when
+the learning rate is around 1 × 10−4 , while that of DQN and
+QR-DQN are not significantly affected by the learning rate.
+As the expected reward of a crosswalk state is −rbase , which
+is the same as other states with a deterministic reward, agents
+learning greedy policies are agnostic to its stochasticity.
+B. Robust Route Planning under Uncertainty
+Based on the results of Section VI-A, the learning rate
+we choose for each agent is shown in Table II, and other
+
+(b) Town02
+
+(a) Town01
+
+Fig. 6: Learning performance of evaluated algorithms (Robust
+Route Planning). Noisy Path denotes the shortest path, which
+passes through the crosswalk state. In the Town01 plot, Robust Path
+denotes the second shortest path, which circumvents the crosswalk
+state. In the Town02 plot, an additional Robust Path is also shown,
+which is actually the third shortest path.
+
+hyperparameters remain the same as those in Section VIA. We also include the proposed Robust Learning and Execution framework into the experiment, with three execution
+policies: (1) Greedy (default policy in QR-DQN); (2) SSD;
+(3) Thresholded SSD (denoted as T-SSD in figures). For the
+Thresholded SSD policy, we choose ssd thres = 5 · rbase .
+A2C
+1 × 10−4
+
+PPO
+1 × 10−4
+
+DQN
+1 × 10−4
+
+QR-DQN
+5 × 10−4
+
+TABLE II: Learning rates of Deep RL agents in Robust Route
+Planning Study
+
+We use the same start state, goal states and crosswalk
+state as those used in the baselines study. The base reward
+rbase = 3. As we are concerned with the effect of crosswalk
+stochasticity on route planning, a positive penalty on the
+loopback actions rloopback = 18 is used. In this experiment,
+we use a Convolutional Neural Network (CNN) model for the
+planning policies. Similar to the baselines study, evaluation is
+performed in a separate environment after every 10,000 steps
+of learning. We run 30 trials with different seeds for each
+map, and plot the overall performance of each algorithm in
+Figure 6. We also plot the planned route of each algorithm
+during the final evaluation in Figure 7 and Figure 8.
+Policy network structure: The route planning policy
+is represented by a Convolutional Neural Network (CNN)
+model with the following structure. The input is the observation matrix, of size 255 × 255 × 1. The first hidden layer
+convolves 16 filters of the size 8 × 8 with stride 4 with
+the input, followed by a rectifier. The second hidden layer
+convolves 32 filters of the size 4 × 4 with stride 2, followed
+by a rectifier. The third hidden layer convolves 64 filters of
+the size 4 × 4 with stride 2, followed by a rectifier. The
+fourth hidden layer convolves 64 filters of the size 3 × 3
+with stride 1, followed by a rectifier. Two sequential fullyconnected layers, each of which has 64 neurons, follow that.
+Similarly, the output layer gives the estimated Q values of
+actions (A2C, PPO and DQN) or quantile points reflecting
+the return distribution of actions (QR-DQN). Note that for
+a QR-DQN agent, the output action is determined by its
+execution policy.
+It can be seen that the results over the two maps are
+similar. We note that when equipped with the Thresholded
+292
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:29:28 UTC from IEEE Xplore. Restrictions apply.
+
+Fig. 7: Planned routes of evaluated algorithms during the final evaluation in Town01 (Robust Route Planning). We also zoom in
+on the area where the Noisy path and the Robust Path diverge (Red rectangle box), and draw the critical state and its actions in red. In
+the action return distributions, red crosses mark learned quantiles, the central vertical bar marks the mean, and the distance between the
+central bar and a lateral short bar equals the variance.
+
+Fig. 8: Planned routes of evaluated algorithms during the final evaluation in Town02 (Robust Route Planning). QR-DQN (T-SSD)
+plans the second shortest path (Robust Path 1) in 25 trials, and it selects the third shortest path (Robust Path 2) in 5 trials. The action
+return distributions of critical states 1 and 2 come from a trial that chooses Robust Path 1.
+
+SSD policy, our proposed framework is the only one that
+learns to execute a high-quality robust route, which avoids
+travel time stochasticity and is still short in length. In
+Town02, the second and the third shortest paths are both
+free of stochasticity, and very close in length, thus it is
+relatively slow for the algorithm to learn to move from the
+third shortest path to the second second path. We denote the
+second and the third shortest path in Town02 as Robust Path
+1 and Robust Path 2, respectively.
+For our Town01 results (shown in Figure 7), besides
+
+the planned paths, we also show the return distributions
+of actions (learned by QR-DQN) at the critical state after
+which the Noisy path and the Robust Path diverge. It can be
+seen that the action leading to the Noisy path has a higher
+expected return but a greater variance, hence the Thresholded
+SSD policy favors the other action with less variance, while
+the expected return is still within the SSD threshold.
+For our Town02 results (shown in Figure 8), we draw
+the action return distributions for two critical states. Critical
+1 decides whether to take the Robust Path 2 or the
+state ⃝
+293
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:29:28 UTC from IEEE Xplore. Restrictions apply.
+
+2 decides whether to take
+Noisy Path, and critical state ⃝
+Robust Path 1 or the other two. It could be seen that at
+1 the difference in variances is large, hence
+critical state ⃝,
+the proposed framework quickly learns to avoid taking the
+2 is more distant from
+Noisy path. However, critical state ⃝
+and less affected by the crosswalk state, and the variance
+of the final learned distributions of both actions are quite
+close and small. Hence, this explains why the learning curve
+of QR-DQN (T-SSD) in Figure 6b converges slowly from
+Robust Path 2 to Robust Path 1.
+The Greedy policy is agnostic to environment stochasticity,
+so it takes the Noisy Path in all trials. Because there are no
+exact ties in expectation, the SSD policy exhibits identical
+behavior to Greedy. As the Thresholded SSD policy plans a
+robust path at the price of a longer expected travel time, the
+user may select the stricter SSD policy if robustness is less
+preferred. DQN also learns a greedy policy that selects the
+shortest paths in both maps.
+However, A2C and PPO fail to learn a route to the goal
+in both maps, and it can be seen that they become stuck
+in loops. It is likely because they are on-policy algorithms,
+which may converge to a local optimal solution before
+sufficient exploration. Additionally, the penalty on the loopback action also leads to bias towards the other action and
+contributes to A2C and PPO converging to locally optimal
+solutions.
+VII. C ONCLUSION
+This paper introduces the Robust Learning and Execution
+framework for the route planning problem of mobile robots
+in unknonwn and stochastic environments. The framework
+learns environmental stochasticity with QR-DQN, and could
+use different execution policies according to user preferences
+on route robustness. We use the SSD policy, which is based
+on the second-order stochastic dominance (SSD) relation,
+to determine robust actions during execution, and we introduce a relaxation, the Thresholded SSD policy, that allows
+further preferences on robustness. Experimental results on a
+simulated road network environment show that our proposed
+framework could achieve adjustable performance with different execution policies: (1) Due to no strict tie in expected
+returns, the SSD policy selects routes that minimize expected
+travel time but with higher stochasticity; (2) When equipped
+with the Thresholded SSD policy, our framework could select
+short robust routes with minimum stochasticity in travel time,
+at the cost of higher expected travel time.
+ACKNOWLEDGMENTS
+This research was supported by the Office of Naval
+Research, grant N00014-20-1-2570.
+R EFERENCES
+[1] N. Roy, I. Posner, T. Barfoot, P. Beaudoin, Y. Bengio, J. Bohg,
+O. Brock, I. Depatie, D. Fox, D. Koditschek, et al., From machine
+learning to robotics: Challenges and opportunities for embodied intelligence, arXiv preprint, arXiv:2110.15245.
+[2] E. Yurtsever, J. Lambert, A. Carballo, K. Takeda, A survey of
+autonomous driving: Common practices and emerging technologies,
+IEEE access 8 (2020) 58443–58469.
+
+[3] R. S. Sutton, A. G. Barto, Reinforcement learning: An introduction,
+MIT press, 2018.
+[4] V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G.
+Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski,
+et al., Human-level control through deep reinforcement learning,
+Nature 518 (7540) (2015) 529–533.
+[5] M. G. Bellemare, W. Dabney, R. Munos, A distributional perspective
+on reinforcement learning, in: International Conference on Machine
+Learning, PMLR, 2017, pp. 449–458.
+[6] T. Qian, C. Shao, X. Wang, M. Shahidehpour, Deep reinforcement
+learning for ev charging navigation by coordinating smart grid and
+intelligent transportation system, IEEE transactions on smart grid
+11 (2) (2019) 1714–1723.
+[7] Q. Zhang, K. Wu, Y. Shi, Route planning and power management for
+phevs with reinforcement learning, IEEE Transactions on Vehicular
+Technology 69 (5) (2020) 4751–4762.
+[8] Y. Geng, E. Liu, R. Wang, Y. Liu, W. Rao, S. Feng, Z. Dong, Z. Fu,
+Y. Chen, Deep reinforcement learning based dynamic route planning
+for minimizing travel time, in: 2021 IEEE International Conference on
+Communications Workshops (ICC Workshops), IEEE, 2021, pp. 1–6.
+[9] S. Koh, B. Zhou, H. Fang, P. Yang, Z. Yang, Q. Yang, L. Guan,
+Z. Ji, Real-time deep reinforcement learning based vehicle navigation,
+Applied Soft Computing 96 (2020) 106694.
+[10] R. Basso, B. Kulcsár, I. Sanchez-Diaz, X. Qu, Dynamic stochastic
+electric vehicle routing with safe reinforcement learning, Transportation research part E: logistics and transportation review 157 (2022)
+102496.
+[11] J. Choi, C. Dance, J.-e. Kim, S. Hwang, K.-s. Park, Risk-conditioned
+distributional soft actor-critic for risk-sensitive navigation, in: 2021
+IEEE International Conference on Robotics and Automation (ICRA),
+IEEE, 2021, pp. 8337–8344.
+[12] D. Kamran, T. Engelgeh, M. Busch, J. Fischer, C. Stiller, Minimizing
+safety interference for safe and comfortable automated driving with
+distributional reinforcement learning, in: 2021 IEEE/RSJ International
+Conference on Intelligent Robots and Systems (IROS), IEEE, 2021,
+pp. 1236–1243.
+[13] C. Liu, E.-J. van Kampen, G. C. de Croon, Adaptive risk tendency:
+Nano drone navigation in cluttered environments with distributional
+reinforcement learning, arXiv preprint arXiv:2203.14749 (2022).
+[14] W. Dabney, M. Rowland, M. Bellemare, R. Munos, Distributional
+reinforcement learning with quantile regression, in: Proceedings of
+the AAAI Conference on Artificial Intelligence, Vol. 32, 2018.
+[15] A. Tamar, D. Di Castro, S. Mannor, Temporal difference methods
+for the variance of the reward to go, in: International Conference on
+Machine Learning, PMLR, 2013, pp. 495–503.
+[16] R. Keramati, C. Dann, A. Tamkin, E. Brunskill, Being optimistic to
+be conservative: Quickly learning a cvar policy, in: Proceedings of
+the AAAI Conference on Artificial Intelligence, Vol. 34, 2020, pp.
+4436–4443.
+[17] J. Martin, M. Lyskawinski, X. Li, B. Englot, Stochastically dominant
+distributional reinforcement learning, in: International Conference on
+Machine Learning, PMLR, 2020, pp. 6745–6754.
+[18] D. Dentcheva, A. Ruszczyński, Inverse stochastic dominance constraints and rank dependent expected utility theory, Mathematical
+Programming 108 (2) (2006) 297–311.
+[19] A. Dosovitskiy, G. Ros, F. Codevilla, A. Lopez, V. Koltun, Carla:
+An open urban driving simulator, in: Conference on robot learning,
+PMLR, 2017, pp. 1–16.
+[20] M. Dupuis, M. Strobl, H. Grezlikowski, Opendrive 2010 and beyond–
+status and future of the de facto standard for the description of road
+networks, in: Proc. of the Driving Simulation Conference Europe,
+2010, pp. 231–242.
+[21] V. Mnih, A. P. Badia, M. Mirza, A. Graves, T. P. Lillicrap, T. Harley,
+D. Silver, K. Kavukcuoglu, Asynchronous methods for deep reinforcement learning (2016). arXiv:1602.01783.
+[22] J. Schulman, F. Wolski, P. Dhariwal, A. Radford, O. Klimov, Proximal
+policy optimization algorithms (2017). arXiv:1707.06347.
+[23] V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou,
+D. Wierstra, M. Riedmiller, Playing atari with deep reinforcement
+learning (2013). arXiv:1312.5602.
+[24] A. Raffin, A. Hill, A. Gleave, A. Kanervisto, M. Ernestus, N. Dormann, Stable-baselines3: Reliable reinforcement learning implementations, Journal of Machine Learning Research 22 (268) (2021) 1–8.
+URL http://jmlr.org/papers/v22/20-1364.html
+
+294
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:29:28 UTC from IEEE Xplore. Restrictions apply.
+
+

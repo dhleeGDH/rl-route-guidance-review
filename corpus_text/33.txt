@@ -1,0 +1,871 @@
+2025 IEEE International Conference on Artificial Intelligence in Engineering and Technology (IICAIET)
+
+2025 IEEE International Conference on Artificial Intelligence in Engineering and Technology (IICAIET) | 979-8-3315-5451-4/25/$31.00 ©2025 IEEE | DOI: 10.1109/IICAIET67254.2025.11265506
+
+Deep Q-Learning-based Route Optimization for
+Traffic Network
+Siti Nor Atiqah Moharam 1, Matthew Laurentius Bansing 1, Kit Guan Lim
+Helen Sin Ee Chuo 1, Kenneth Tze Kin Teo 3,*
+
+2,*
+
+, Min Keng Tan 1,
+
+1,2,3
+
+Modelling, Simulation & Computing Laboratory
+Faculty of Engineering
+Universiti Malaysia Sabah
+Kota Kinabalu, Malaysia
+* Email: limkitguan@ums.edu.my 2, kenteo@ums.edu.my
+Abstract — This paper presents a Deep Q-Learning (DQL)
+approach to enhance traffic rerouting in urban vehicular
+networks. The objective is to develop a dynamic route planning
+system that adapts to real-time traffic conditions using AI-based
+decision-making. Traffic congestion in Malaysia cities highlights
+the limitations of static route planning that lacks responsiveness
+to fluctuating travel demand and localized congestion. This
+study addresses the need for intelligent rerouting by
+manipulating learning-based models while controlling key
+traffic variables such as speed, acceleration, vehicle position,
+and travel time. The aim is to develop and evaluate an intelligent
+rerouting system that is capable of minimizing traffic delays and
+improving vehicular flow efficiency. This is achieved by
+integrating Simulation of Urban Mobility (SUMO) with
+MATLAB via Python Traffic Control Interface (TraCI) and
+User Datagram Protocol (UDP) sockets that enable real-time
+monitoring and data exchange. A deep Q-Learning agent was
+trained to make rerouting decisions based on live vehicle state
+inputs and traffic conditions, then the agent’s reward function
+was designed to reduce congestion. Quantitative evaluations
+show that DQL-based rerouting achieves 22% reduction in
+average travel time compared to conventional shortest-path
+routing. The proposed method demonstrates the potential of
+Deep Reinforcement Learning to solve complex travel problems.
+This work contributes toward intelligent transportation systems
+in smart cities which enable adaptive and scalable traffic control
+framework.
+
+3
+
+Conventional routing systems are limited in handling realtime parameters such as vehicle speed, acceleration, position,
+and travel time which are essential factors for dynamic traffic
+rerouting [14]. At the same time the systems also failed to
+account for local contextual factors of Malaysia’s road
+geometries and driving behaviors [10]. Most existing
+solutions still depend on rigid algorithms like Dijkstra’s
+method [13] or heuristic approaches [11] that cannot adapt to
+changing traffic conditions. This technological gap becomes
+even more critical with the emergence of autonomous vehicles
+[26] and their potential to transform mixed traffic
+environments [9]. The absence of localized modeling features
+limits the ability to accurately evaluate vehicles interactions
+under Malaysian road conditions.
+This study develops and evaluates a Deep Q-Learning
+(DQL) model for dynamic traffic rerouting in a simulated
+Malaysian urban network that address the critical need for
+adaptive solutions in the country’s congested transportation
+systems. The DQL agent is trained in live vehicle parameters
+which selects less congested routes to reduce average delay
+and improve traffic flow. Simulations are conducted on a
+SUMO modeled segment of road network based in Sandakan,
+incorporating local features such as left-hand driving and
+common congestion scenarios. Vehicle behavior is simulated
+using Krauss and Intelligent Driver Model (IDM) of carfollowing models in a fully virtual and sensor-free
+environment, aiming to test the theoretical limits of the DQL
+approach under controlled experimentation, thus maintaining
+its relevance to future vehicle scenarios.
+
+Keywords — Deep Q-Learning, Traffic Route Planning,
+Simulation of Urban Mobility
+
+I. I NTRODUCTION
+
+This paper is structured as follows: Section I presents a
+review of traffic rerouting strategies. Section II outlines the
+simulation framework and algorithm design. Section III
+discusses the setup of the simulation environment and Deep
+Q-Learning algorithm used for rerouting. Section IV presents
+the experimental results with comparative analysis while
+Section V concludes the findings. The structure aims to
+provide a comprehensive understanding of how intelligent
+rerouting is modeled, implemented, and evaluated within a
+Malaysian urban traffic context. Furthermore, this
+organization highlights the progressive flow from theoretical
+foundations to practical implementation and validation, while
+emphasizing the significance of adapting global simulation
+tools to capture localized traffic dynamics for more realistic
+outcomes in real-world.
+
+Malaysia continues to face severe traffic congestion that
+incurred annual productivity losses exceeding RM 15 billion,
+due to high vehicle ownership which limit public
+transportation use, and caused by underdeveloped
+infrastructure [1]. In 2023, vehicle registration outnumbered
+the population and intensified strain on urban traffic systems.
+In cities like Kuala Lumpur and Kota Kinabalu, drivers spend
+over 150 hours annually in congestion [3]. Traditional traffic
+control systems which rely on static models and manual
+interventions are struggling to adapt to the dynamic nature of
+modern road networks. While global simulation like SUMO
+is widely used, they are lacking built-in features to support
+Malaysia -specific road behaviors such as heterogeneous
+traffic flow with high percentage of motorcycles, frequent lane
+discipline violations or unique junction and road designs [2].
+
+*Corresponding Author: Kenneth Tze Kin Teo and Kit Guan Lim
+
+979-8-3315-5451-4/25/$31.00 ©2025 IEEE
+
+609
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:23 UTC from IEEE Xplore. Restrictions apply.
+
+II. REVIEW OF TRAFFIC ROUTE PLANNING
+
+Deep Q-Learning (DQL) is built on Q-Learning by
+integrating deep neural networks to generalize over large state
+spaces which support real-time policy learning. As shown in
+[4], DQL significantly improved route optimization and traffic
+flow efficiency. [27] has implemented Dueling Deep Q
+Networks (DQNs) with traffic state prediction in softwaredefined networks that achieved robustness under fluctuating
+demand. [20] demonstrated that convolutional neural network
+(CNN)-enhanced DQL produced more stable and accurate
+decisions. Although deep reinforcement learning (DRL)
+methods demand higher computational resources and
+complex reward shaping, they excel in managing uncertainty
+and adapting to dynamic traffic conditions, which make them
+more suitable for large-scale intelligent transportation
+systems.
+
+Effective traffic route planning plays a crucial role in
+reducing travel times and managing urban environments. Over
+the years, routing strategies have evolved from traditional
+shortest-path algorithms to intelligent AI-driven methods
+capable of responding to real-time traffic conditions. This
+review categorizes recent advancements into three key
+groups: (1) Conventional rerouting using static algorithms,
+(2) Q-Learning (QL)-based rerouting, and (3) Deep QLearning (DQL)-based rerouting. Table I summarizes the key
+characteristics, benefits, and drawbacks of these approaches to
+justify the selection of DQL for this study.
+Conventional routing algorithms such as Dijkstra’s
+algorithm [13] operates on predefined static costs and
+generates shortest paths without considering real-time traffic
+variation. Although they are computationally efficient, the
+lack of responsiveness to sudden congestion changes makes
+them unsuitable for dynamic environments. For example, [24]
+demonstrated Dijkstra’s integration with Google Maps for
+route optimization which proved to be efficient but inflexible.
+Similarly rule-based systems reviewed in [6] and [8] revealed
+limitations that make them less effective during peak hours
+and under unpredictable congestion scenarios.
+
+In essence, the reviewed literature highlights a clear
+transition from static, rule-based routing methods to dynamic
+and learning-based strategies. Conventional algorithms are
+efficient but limited by their rigidity. Q-learning introduces
+adaptability but is constrained by scalability. DQL emerges as
+the most effective approach, capable of delivering real-time
+and adaptive routing decisions in complex environments.
+Table I reflects this trend and emphasizes the growing
+consensus around DRL as the most promising direction for
+future routing systems.
+
+To overcome these limitations, researchers have explored
+Q-Learning which enables agents to learn routing policies
+from interaction with traffic environment. [3] have applied QLearning to improve route decisions and responsiveness while
+[15] used intersection-based Q-Learning to optimize traffic
+distribution and reduce delays. [12] further enhanced QLearning using Genetic Algorithms (GA) to accelerate
+learning and policy exploration. However, scalability remains
+a challenge due to the growing state-action space in complex
+networks while [16] reported that reinforcement learning (RL)
+models suffer in dense traffic conditions unless
+approximations are applied.
+
+TABLE I.
+Category
+
+Conventional
+
+EVOLUTION OF ROUTING STRATEGIES IN TRAFFIC MANAGEMENT
+
+Key Element
+
+- Computationally efficient (O (n log n))
+- Static; Ignores real-time traffic dynamics
+
+Rule-Based Routing
+
+- Simple implementation
+- Lacks adaptability in real-time
+
+Basic Q-Learning
+GA-Assisted Q-Learning
+Intersection Based Q-Learning
+Deep Q-Network (DQN)
+Deep
+Q – Learning
+
+Review
+
+Dijkstra’s Algorithm
+
+PSO/GA Optimization
+
+Q – Learning
+
+In summary, the present study addresses this research gap
+by implementing a DQL-based rerouting model customized
+for Malaysian road networks. By integrating SUMO’s
+simulation capabilities with MATLAB’s decision-making
+layer, the system captures real-time vehicle dynamics and
+adapts routing decisions accordingly. This hybrid architecture
+aims to deliver a scalable and responsive solution for
+intelligent traffic management while our approach provides a
+practical solution for establishing benchmarks for future
+Vehicle-to-Everything (V2X) implementations [9].
+
+Dueling DQN
+CNN – Integrated DQL
+
+- Handles fixed signal timing
+- Poor adaptability during peak hours
+- Adapts through environmental feedback
+- Slow convergence and require manual state design
+
+Literature
+[13], [14]
+[6], [8], [12]
+[11], [12], [17]
+[3], [21], [22], [23]
+
+- Accelerates policy exploration
+- Scalability issues in large networks
+
+[12], [21]
+
+- Balances of traffic flow
+- Suffering from State explosion
+
+[3], [15]
+
+- Handles high-dimensional data
+- Robust in dynamic environments
+- Improves learning stability
+- Works under high demand fluctuations
+- Learns spatial-temporal features
+- Computationally intensive
+
+[4], [5], [7]
+[5], [6], [18], [27]
+[8], [19], [20]
+
+Remarks: DRL shows the highest adaptability and efficiency in dynamic traffic routing.
+
+610
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:23 UTC from IEEE Xplore. Restrictions apply.
+
+III. M ETHODOLOGY OF TRAFFIC REROUTING
+
+A. Traffic Rerouting Simulation Environment
+The rerouting strategies evaluated in this study involve
+two methods which focus on Dijkstra’s algorithm and DQL.
+The Dijkstra is employed to compute the shortest path for each
+vehicle before simulations begin. The algorithm uses static
+edge weights based on road length or pre-assigned travel
+costs. These computed routes are directly assigned to vehicle
+in the SUMO route file (.rou.xml) or dynamically injected
+during runtime via Python-TraCI commands such as
+Vehicle.setRoute(). This method ensures each vehicle follows
+the most efficient path in terms of distance but does not
+account for real-time traffic conditions like congestion or
+queue length. Once the simulation starts, no rerouting will
+occur even if the vehicle encounters delay which makes this
+method predictable but inflexible under dynamic scenario.
+
+This section describes the proposed methodology for
+implementing intelligent traffic rerouting using Deep
+Q-Learning (DQL) in a simulated urban network. As shown
+in Fig. 1, the system integrates SUMO microscopic traffic
+simulator with Python-Traffic Control Interface (TraCI) and
+MATLAB, where DQL agents are used to learn optimal route
+strategies based on dynamic traffic conditions. The
+architecture incorporates a feedback loop for continuous
+performance evaluation and route adaptation.
+The simulated platforms use SUMO, which is selected for
+its open-source nature and support for real-time microscopic
+traffic modeling. A real-world road network was extracted
+from Java OpenStreetMap (JOSM) to maintain realistic
+junction topologies, lane structures, and traffic densities.
+Python-TraCI enables live vehicle monitoring and interaction
+while User Datagram Protocol (UDP) communication sends
+selected vehicle data to MATLAB, where route decisions are
+computed and transmitted back to SUMO for execution.
+
+Vehicle movement in SUMO follows the Krauss carfollowing model that simulates acceleration and safe spacing.
+The model updates vehicle speed based on (2):
+
+A hybrid rerouting system is employed that begins with
+Dijkstra’s algorithm for static shortest path assignment. This
+serves as the baseline before the DQL agent refines route
+choices based on updated traffic feedback. The detailed
+process is illustrated in Fig. 2, that shows both the initial
+estimation by Dijkstra and the learning cycle of DQL agent
+including state input, Q-value update, reward computation,
+and policy generation.
+
+𝑣 (𝑡 + ∆𝑡) = min (𝑣 (𝑡) + 𝛼 ∙ ∆𝑡, 𝑣𝑚𝑎𝑥 ,
+
+Performance is evaluated using several metrics. Time
+travel in (1) is related with the congestion level shown in (3):
+𝐶=
+
+𝑖 =1 𝑇 𝑖
+
+𝑉𝑚𝑎𝑥
+
+To quantify, a fuel consumption index in (4) is defined:
+(4)
+
+𝐹 = ∑𝑛𝑖=1 𝑓(𝑣𝑖 )
+
+(1)
+
+𝑛
+
+(3)
+
+𝑉𝑐𝑢𝑟𝑟𝑒𝑛𝑡
+
+where 𝐶 is the congestion level, 𝑉𝑐𝑢𝑟𝑟𝑒𝑛𝑡 is the current
+number of vehicles on the road segment, and 𝑉𝑚𝑎𝑥 is the
+maximum capacity of the segment.
+
+Performance is evaluated based on Travel Time as shown
+in (1)
+∑𝑛
+
+(2)
+
+)
+
+where 𝑣(𝑡) is the current speed, 𝛼 is acceleration, 𝑣𝑚𝑎𝑥 is
+max speed, and 𝑑 is the safe distance [2].
+
+Two case studies were conducted using a real-world road
+network where the first case employs conventional rerouting
+based on fixed shortest paths. Meanwhile, the second case
+utilizes a DQL-based approach that learns optimal routing
+policies. The objective is to evaluate their performance in
+terms of average travel time, delay, fuel consumption, 𝐶𝑂2
+emissions, and operational cost of both conditions.
+
+𝑇𝑎𝑣𝑔 =
+
+𝑑
+∆𝑡
+
+where 𝐹 is the total consumption and 𝑓(𝑣𝑖 ) is the fuel
+consumption of Vehicle I that depends on its speed (𝑣𝑖 ) and
+driving conditions. All metrics are considered for rerouting
+results.
+
+where 𝑇𝑎𝑣𝑔 is the average travel time, 𝑇𝑖 is the travel time of
+Vehicle I from its origin to its destination, and 𝑛 is the total
+number of vehicles in the simulation.
+
+State
+
+Q-Neural Network
+
+SUMO
+simulation
+
+Python
+-TraCI
+
+DQL
+Optimization
+
+Action to
+SUMO
+
+SUMO Simulation
+Action Selection (Policy)
+Epsilon-greedy strategy
+
+Dijkstra’s Algorithm
+
+Reward Calculation
+
+Initial Route Estimation
+
+Feedback
+
+Traffic State Detection
+(Speed, Delay, Position)
+
+Experience Replay Buffer
+Deep Q-Learning Agent
+
+Generate Static Shortest
+Path & Assign Vehicle
+Python-TraCI
+
+Fig. 1. Overall system architecture with feedback.
+Fig. 2. Hybrid routing framework.
+
+611
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:23 UTC from IEEE Xplore. Restrictions apply.
+
+Updated Route
+(Optimized Rerouting Decision)
+
+Q-Value Update
+
+B. Deep Q-Learning Algorithm for Dynamic Rerouting
+This section presents the Deep Q-Learning (DQL)
+algorithm developed to enhance traffic rerouting in dynamic
+environments. The agent receives state input from SUMO
+such as vehicle speed, delay and responds by rerouting
+vehicles to minimize travel time.
+
+IV. RESULTS AND DISCUSSION
+This section presents a detailed evaluation of the proposed
+Deep Q-Learning (DQL)-based routing strategy against
+conventional methods. The analysis is structured across
+operational, environmental, and economic dimensions that are
+supported by simulations which are visualized in Fig. 3,
+Fig. 4, and Table III. Each figure highlights the algorithm’s
+performance improvements and discusses their significance in
+the context of intelligent traffic systems. All results presented
+in this paper were obtained through simulations using SUMO
+and MATLAB, as SUMO is a widely recognized microscopic
+traffic simulator capable of producing accurate vehicle-level
+data [1].
+
+The control logic of the system is shown in Fig. 2 which
+provides an overview of the agent’s decision-making flow. It
+begins with route initialization using Dijkstra’s algorithm.
+Once the simulation begins, the DQL agent continuously
+monitors traffic conditions, computes Q-values using a neural
+network and selects actions using balance exploration and
+exploitation. After rerouting a vehicle, the agent receives a
+reward and updates its policy through Q-Learning [25].
+
+Fig. 3(a) illustrates the average speed comparison between
+conventional routing and the DQL strategy. The DQL agent
+achieves 6.3% improvement in average speed from
+42.5km/h to 45.2 km/h. This improvement reflects the agent’s
+ability to make real-time route adjustments in response to
+dynamic traffic conditions. The increased speed is not a result
+of aggressive driving but rather due to reduced congestion and
+fewer stop-and-go patterns as learned through reinforcement
+feedback on the systems. This performance boost
+demonstrates the DQL algorithm’s capacity to optimize
+vehicle trajectories for smoother flows and reduced delays. In
+contrast, conventional methods that depend on static route
+assumptions and lack flexibility to respond to evolving traffic
+patterns, lead to reduced travel efficiency.
+
+The core of the DQL framework is the Q-value update
+function based on the Bellman equation in (5):
+𝑄(𝑠, 𝑎) ← 𝑄(𝑠, 𝑎) + 𝛼[𝑟 + 𝛾 𝑚𝑎𝑥
+⏟ 𝑄(𝑠 ′ , 𝑎 ′ ) − 𝑄(𝑠, 𝑎) ]
+𝑎′
+
+(5)
+
+where 𝑠 is the current state, 𝑎 is the action, 𝑟 is the reward, 𝛼
+is the learning rate, and 𝛾 is the discount factor. The next state
+is denoted as 𝑠 ′ and 𝑎′ is the next action. The reward function
+is designed to penalize delays and promote actions that reduce
+travel time and congestion.
+The agent is fully connected to neural network with two
+hidden layers of 64 Rectified Linear Unit (ReLU)-activated
+neurons. The learning objective minimizes the error between
+predicted and target Q-values. The loss function used to train
+the network is (6):
+𝐿 (𝜃) = 𝔼[(𝑟 + 𝛾 max𝑎′ 𝑄( 𝑠 ′ , 𝑠 ′ ; 𝜃 − ) − 𝑄(𝑠, 𝑎; 𝜃)) 2 ]
+
+(6)
+
+A target network is updated every 200 steps to stabilize
+learning. Experiences replay buffer stores past state-action
+transitions to break correlations during trainings. The
+exploration rate follows and the exponential decay strategy
+used to learn the optimal paths are shown in (7):
+(7)
+
+𝜖 = max (𝜖𝑚𝑖𝑛 , 𝜖 ∙ 𝜖𝑑𝑒𝑐𝑎𝑦 )
+
+Table II summarizes the training hyperparameters,
+including learning rate, batch size, and training episodes. The
+model is considered converged when the average Q-values
+stabilize within ±5% across a sliding window. All this
+simulation setup enables intelligent rerouting in dynamic
+traffic environments.
+TABLE II.
+
+(a) Speed Profile Comparison
+
+HYPERPARAMETERS FOR DQL REROUTING ALGORITHM
+
+Parameters
+Hidden Layers
+Neurons per Layer
+Activation Function
+Convergence Threshold
+Learning Rate (α)
+Discount Factor (γ)
+Exploration (ϵ)
+Exploration decay
+Target Update Frequency
+Batch size
+Training episodes
+
+Value
+2
+64
+ReLU
+±5% Q-Value variation
+0.1
+0.95
+0→1
+0.98
+200
+
+(b) Cumulative Fuel Consumption
+Fig. 3. Comparative performance metrics of routing strategies.
+
+64
+1000 − 10000
+
+612
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:23 UTC from IEEE Xplore. Restrictions apply.
+
+The environmental benefits of the proposed system are
+evident in Fig. 3(b) and Fig. 4(a), where DQL routing achieves
+a 10% reduction in fuel consumption from 1850 mL to
+1650 mL, which also resulted in a proportional 10% decrease
+in 𝐶𝑂2 emission from 4273 g to 3811 g. These outcomes are
+directly linked to improved driving stability as the DQL agent
+learns to avoid high-traffic areas and maintains optimal
+cruising speeds. Fig. 4(b) presents the economic implications
+where the DQL approach reduces routing costs by 11% from
+RM 45.20 to RM 28.50. These savings originate from lower
+fuel usage, reduced idle time, and potentially less-wear-andtear on vehicle components. Table III consolidates these
+grains which demonstrate that DQL not only enhances
+sustainability but also offers tangible cost-efficiency benefits.
+
+and high-dimensional state space which may enhance the
+robustness of traffic routing systems.
+The proposed DQL strategy consistently outperforms
+conventional routing method across all key metrics as shown
+in Table III. These improvements are the result of a robust
+learning framework that adapts to traffic dynamics and
+balances multiple routing objectives. The results validate the
+use of DRL, especially in traffic route planning that
+demonstrates its effectiveness in optimizing not just travel
+efficiency, but also environmental and economic outcomes.
+This positions DQL as a critical enabler in the development of
+smart, adaptive, and sustainable urban transportation systems.
+
+The consistent improvements across all measured
+parameters align well with RL theory. The DQL agent
+optimizes a reward function that encourages behaviors such as
+maintaining efficient speeds, reducing fuel consumption, and
+minimizing travel delays. This reward-driven lea rning
+framework allows the agent to shift from initial exploration to
+informed route exploitation as evident in the steady
+improvements in fuel and emission metrics over time. The
+proportional relationships between fuel consumption,
+emissions, and cost also validate the agent’s ability to
+generalize efficient routing behaviors across multiple
+objectives as an essential trait in real-world of RL. The
+simulation results demonstrate clear and actionable
+implications for modern traffic route planning strategies. The
+observed improvement in average speed under the DQL
+framework directly contributes to reducing vehicle queue
+times and overall travel delays which are the two critical Key
+Performance Indicators (KPIs) in urban mobility systems.
+These reductions translate into smoother traffic flow and
+improved road network throughput which are essential for
+enhancing commuter experience and public transport
+efficiency. Beyond operational metrics, the significant
+decreases in fuel consumption and 𝐶𝑂2 emissions align with
+broader goals of sustainable urban development and climateconscious transportation planning.
+
+(a) 𝐶𝑂2 Emissions Impact Per Route Comparison
+
+The DQL agent’s ability to learn from dynamic traffic
+conditions and reroute vehicles in real-time allows it to bypass
+congested segments and mitigate the impact of unpredictable
+traffic patterns. This adaptive behavior results in fewer
+acceleration-deceleration cycles that not only reduce fuel
+waste but also minimizes mechanical wear on vehicles,
+contributing to long-term economic savings. DQL
+complements the goals of intelligent transportation systems
+(ITS) by supporting data -driven and decentralized decisionmaking. It can be seamlessly integrated into existing control
+centers or vehicle-to-infrastructure (V2I) communication that
+enable real-time feedback and continuous optimization of
+traffic conditions. [28] minimized average delay for signalized
+traffic network under oversaturated condition using
+decentralized genetic algorithm (DGA), which can be a
+reference study for decentralized decision-making.
+
+(b) Economic Impact Analysis
+Fig. 4. Environmental and economics impact analysis.
+TABLE III.
+
+While this study demonstrates the efficacy of DQL,
+emerging DRL methods such as Asynchronous Advantage
+Actor-Critic (A3C) [29], Proximal Policy Optimization (PPO)
+[30] and Deep Deterministic Policy Gradient (DDPG) [31]
+have shown promising in tackling continuous action spaces
+and improving convergence in complex traffic environments.
+These algorithms offer advanced learning mechanisms that
+can better handle stochastic policies, temporal dependencies,
+
+ROUTE PERFORMANCE COMPARISON
+
+Metric
+
+Conventional
+
+DQL
+
+Improvement
+
+Avg. Speed (km/h)
+
+42.50
+
+45.20
+
++6.3%
+
+Travel Time (s)
+
+425
+
+381
+
+-10.35%
+
+Delay Time (s)
+
+221
+
+189
+
+-14.48%
+
+Queue Length (m)
+
+168
+
+139
+
+-17.26%
+
+Fuel Consumption
+(mL)
+
+1850
+
+1650
+
+-10.81%
+
+𝑪𝑶𝟐 Emissions (g)
+
+4273
+
+3811
+
+-10.81%
+
+Cost (RM)
+
+28.50
+
+25.20
+
+-11%
+
+613
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:23 UTC from IEEE Xplore. Restrictions apply.
+
+[15] T.F. Awolusi, B.C. Finbarrs-Ezema, I.M. Chukwudulue, and M. Azab,
+“Application of Artificial Intelligence (AI) in Civil Engineering,”
+in New Advances in Soft Computing in Civil Engineering, pp. 15–46,
+2024. doi: 10.1007/978-3-031-48291-6_2.
+[16] M.A. Gökçe, E. Öner, and G. Işık, “Traffic Signal Optimization with
+Particle
+Swarm
+Optimization
+for
+Signalized
+Roundabouts,” Simulation, vol. 91, no. 5, pp. 456–466, 2015.
+doi: 10.1177/0037549715581473.
+[17] R. Kumar, N. Kori, and V.K. Chaurasiya, “Real-Time Data Sharing,
+Path Planning and Route Optimization in Urban Traffic
+Management,” Multimedia Tools and Applications, vol. 82, no. 23,
+pp. 36343–36361, 2023. doi: 10.1007/s11042-023-15148-9.
+[18] J. Han, X. Wang, and G. Wang, “Modeling the Car-Following
+Behavior with Consideration of Driver, Vehicle, and Environment
+Factors: A Historical Review,” Sustainability, vol. 14, no. 13, p. 8179,
+2022. doi: 10.3390/su14138179.
+[19] Y. Qin, H. Wang, and D. Ni, “Lighthill-Whitham-Richards Model for
+Traffic Flow Mixed with Cooperative Adaptive Cruise Control
+Vehicles,” Transportation Science, vol. 55, no. 4, pp. 883–907, 2021.
+doi: 10.1287/trsc.2021.1057.
+[20] P. Wang, G. Yu, X. Wu, H. Qin, and Y. Wang, “An Extended CarFollowing Model to Describe Connected Traffic Dynamics under
+Cyberattacks,” Physica A: Statistical Mechanics and Its Applications,
+vol. 492, pp. 2154–2165, 2018. doi: 10.1016/j.physa.2017.12.013.
+[21] M. Abdoos and A.L. Bazzan, “Hierarchical Traffic Signal
+Optimization using Reinforcement Learning and Traffic Prediction
+with Long-Short Term Memory,” Expert Systems with Applications,
+vol. 171, pp. 114580, 2021. doi: 10.1016/j.eswa.2021.114580.
+[22] H. Jiang, Y. Chen, J. Li, S. Chen, and X. Wang, “A General ScenarioAgnostic Reinforcement Learning for Traffic Signal Control,” IEEE
+Transactions on Intelligent Transportation Systems, vol. 25, no. 9,
+pp. 11330–11344, 2024. doi: 10.1109/TITS.2024.3377106.
+[23] Y.K. Chin, L.K. Lee, N. Bolong, S.S. Yang, and K.T.K. Teo,
+“Exploring Q-learning Optimization in Traffic Signal Timing Plan
+Management”, in 3rd International Conference on Computational
+Intelligence, Communication Systems and Networks (CICSyN), 2011.
+doi: 10.1109/CICSyN.2011.64.
+[24] S. Suardinata, R. Rusmi, and M.A. Lubis, “Determining Travel Time
+and Fastest Route using Dijkstra Algorithm and Google Map”.
+Sistemasi. No. 11, pp. 496. 2022. doi: 10.32520/stmsi.v11i2.1836.
+[25] Y. Zolfpour-Arokhlo, A. Selamat, S. Z. Mohd Hashim, and H.
+Afkhami, “Modeling of Route Planning System based on Q ValueBased Dynamic Programming with Multi-Agent Reinforcement
+Learning Algorithms,” Engineering Applications of Artificial
+Intelligence,
+vol.
+29,
+pp.
+163–177,
+2014.
+doi:
+10.1016/j.engappai.2014.01.001.
+[26] Q. Lu, T. Tettamanti, D. Horcher, and I. Varga, “The Impact of
+Autonomous Vehicles on Urban Traffic Network Capacity: An
+Experimental Analysis by Microscopic Traffic Simulation,”
+Transportation Letters, vol. 12, no. 8, pp. 540 –549, 2020. doi:
+10.1080/19427867.2019.1683837.
+[27] C. Li, X. Yue, Z. Liu, G. Ma, H. Zhang, Y. Zhou, and J. Zhu, “A
+Modified Dueling DQN Algorithm for Robot Path Planning
+Incorporating Priority Experience Replay and Artificial Potential
+Fields”. Applied Intelligence, no. 55, pp. 366, 2025. doi:
+10.1007/s10489-024-06149-8.
+[28] M.K. Tan, H.S.E. Chuo, R.K.Y. Chin, K.B. Yeo, and K.T.K. Teo,
+“Optimization of Traffic Network Signal Timing using Decentralized
+Genetic Algorithm”, in IEEE 2nd International Conference on
+Automatic Control and Intelligent Systems (I2CACIS), 2017. doi:
+10.1109/I2CACIS.2017.8239034.
+[29] Y. Wang and P. Hu, “Deep Reinforcement Learning-Based MultiObject Adaptive Route Planning for Traveling Recommender
+Systems,” in IEEE Access, vol. 11, pp. 120258 –120269, 2023.
+doi: 10.1109/ACCESS.2023.3327273.
+[30] J. Liang, H. Miao, K. Li, J. Tan, X. Wang, R. Luo, and Y. Jiang, “A
+Review of Multi-Agent Reinforcement Learning Algorithms”.
+Electronics vol. 14, no. 4, pp. 820, 2025. doi:
+10.3390/electronics14040820.
+[31] Y. Zhang, L. Qiu, Y. Xu, X. Wang, S. Wang, A. Paul, and Z. Wu,
+“Multi-Path Routing Algorithm based on Deep Reinforcement
+Learning for SDN”. Applied Sciences, vol. 13, no. 22, pp. 12520, 2023
+doi: 10.3390/app132212520.
+
+V. CONCLUSION
+The simulation results demonstrated that Deep QLearning (DQL) significantly outperformed conventional
+fixed-path-based rerouting in reducing average travel time and
+vehicle delay. The DQL model adapted effectively to dynamic
+traffic conditions. These findings validate the effectiveness of
+reinforcement learning in intelligent traffic management.
+Future work is the integration of real-time traffic sensor data
+and edge computing infrastructure is proposed to enable
+deployment in live urban environments. This will bridge the
+gap between simulation-based validation and real-world
+implementation that will advance the applicability of adaptive
+routing systems in smart city contexts.
+ACKNOWLEDGMENT
+The author would like to acknowledge Universiti Malaysia
+Sabah (UMS) for supporting this research study.
+REFERENCES
+[1]
+[2]
+
+[3]
+[4]
+
+[5]
+[6]
+
+[7]
+
+[8]
+
+[9]
+
+[10]
+
+[11]
+
+[12]
+[13]
+
+[14]
+
+Kementerian Pengangkutan Malaysia, Statistik Pengangkutan
+Malaysia 2018, Putrajaya, Malaysia, 2019.
+M. Greguric, M. Vujic, C. Alexopoulos, and M. Miletic, “Application
+of Deep Reinforcement Learning in Traffic Signal Control: An
+overview and impact of open traffic data,” Applied Science, vol. 10,
+no. 11, pp. 4011, 2020. doi: 10.3390/app10114011.
+J. Zeng, J. Hu, and Y. Zhang, “Adaptive Traffic Signal Control with
+Deep Recurrent Q-Learning,” in IEEE Intelligent Vehicles Symposium
+(IV), pp. 1215–1220, 2018. doi: 10.1109/IVS.2018.8500414.
+Y. Geng, E. Liu, R. Wang, Y. Liu, W. Rao, S. Feng, Z. Dong, Z. Fu,
+and Y. Chen, “Deep Reinforcement Learning Based Dynamic Route
+Planning for Minimizing Travel Time,” in IEEE ICC Workshops,
+pp. 1–6, 2021. doi: 10.1109/ICCWorkshops50388.2021.9473555.
+J. Li, Y. Chen, X. Zhao, and J. Huang, “An Improved DQN Path
+Planning Algorithm,” The Journal of Supercomputing, vol. 78, no. 1,
+pp. 616–639, 2021. doi: 10.1008/s11227-021-03878-2.
+D. Shi, J. Ding, S.M. Errapotu, H. Yue, W. Xu, X. Zhou, and M. Pan,
+“Deep Q-Network Based Route Scheduling for Transportation
+Network Company Vehicles,” in IEEE GLOBECOM, 2018. doi:
+10.1109/GLOCOM.2018.8647546.
+F. Tan, P. Yan, and X. Guan, “Deep Reinforcement Learning: From QLearning to Deep Q-Learning,” in Neural Information Processing,
+pp. 475–483, 2017. doi: 10.1007/978-3-319-70093-9_50.
+V.S.R. Kosuru and A.K. Venkitaraman, “Developing a Deep QLearning and Neural Network Framework for Trajectory Planning,
+“European Journal of Engineering and Technology Research, vol. 7,
+no. 6, pp. 148–157, 2022. doi: 10.24018/ejeng.2022.7.6.2944.
+M. Treiber, A. Hennecke, and D. Helbing, “Congested Traffic States
+in Empirical Observations and Microscopic Simulations,” Physical
+Review E, vol. 62, no. 2, pp. 1805 –1824, 2000. doi:
+10.1103/PhysRevE.62.1805.
+B. Wu and D. Wang, “Traffic Signal Networks Control Optimize with
+PSO Algorithm,” in 12 th International Conference on Natural
+Computation, Fuzzy Systems and Knowledge Discovery (ICNCFSKD), pp. 230–234, 2016. doi: 10.1109/FSKD.2016.7603179.
+M.K. Tan, H.S.E. Chuo, R.K.Y. Chin, K.B. Yeo, and K.T.K. Teo,
+“Optimization of Urban Traffic Network Signalization using Genetic
+Algorithm,” in IEEE Conference on Open Systems (ICOS), pp. 87–92,
+2016. doi: 10.1109/ICOS.2016.7881994.
+D. Delling, P. Sanders, D. Schultes, and D. Wagner, “Engineering
+Route Planning Algorithms,” in Algorithmics of Large and Complex
+Networks, pp. 117–139, 2009. doi: 10.1007/978-3-540-68552-4_9.
+D.D. Utomo, M. Aurelia, S.M. Tanasia, N. Nurhasanah, and A.T.
+Handoyo, “Implementation of Dijkstra Algorithm in Vehicle Routing
+to Improve Traffic Issues in Urban Areas,” in IEEE ICON-SONICS,
+2023. doi: 10.1109/ICON-SONICS59898.2923.10435225.
+C. Gu, A. Feng, G. Wang, and X. Liu, “Robot Path Planning of
+Improved Adaptive Ant Colony System Algorithm based on
+Dijkstra,” Journal of Robotics, vol. 2022, pp. 1–11, 2022.
+doi: 10.1155/2022/9229155.
+
+614
+Authorized licensed use limited to: Sejong Univ. Downloaded on June 06,2026 at 00:28:23 UTC from IEEE Xplore. Restrictions apply.
+
+

@@ -1,0 +1,1199 @@
+426
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 73, NO. 1, JANUARY 2024
+
+Self-Organized Routing for Autonomous Vehicles via
+Deep Reinforcement Learning
+Huaxin Pei , Jiawei Zhang , Yi Zhang , Senior Member, IEEE, Huile Xu , and Li Li , Fellow, IEEE
+
+Abstract—Routing for autonomous vehicles with global traffic
+information and sufficient direct cooperation among vehicles has
+been widely studied to relieve traffic congestion in recent years.
+However, the assembly rate of Vehicle-to-Everything (V2X) equipment in practical traffic systems is currently and could be at a low
+level in near future. Accordingly, autonomous vehicles can only
+access localized traffic information, and direct cooperation among
+them cannot always be guaranteed. Thus, how to optimize the
+routing choices in such scenarios is worthy of particular attention.
+In this article, we propose a self-organized routing strategy based on
+deep reinforcement learning (DRL). Under the condition of limited
+traffic information, the proposed self-organized mechanism well
+organizes localized traffic conditions through vehicle-level routing
+decisions, which are able to achieve network-wide benefits gains.
+In the specified DRL, we propose a novel reward mechanism to
+harmonize indirect interactions among vehicles by jointly learning
+individual and overall efficiency, even if each vehicle is modified
+to make individual decisions independently, rather than only focusing on individual interests as in the greedy strategy. Numerical
+experiments demonstrate that the proposed self-organized strategy
+is promising to resolve the routing problem from the perspective of
+individual decision-making with limited traffic information.
+Index Terms—Routing, self-organized, deep reinforcement
+learning, autonomous vehicle.
+
+I. INTRODUCTION
+HE development of autonomous vehicles brings new potential for traffic congestion relief [1], [2], [3], [4], [5]. At
+the microscopic level, closer spacing between vehicles and better
+passing sequence at conflict areas help improve link capacity and
+intersection throughput, which has been well discussed in recent
+
+T
+
+Manuscript received 31 March 2022; revised 4 November 2022 and 16
+January 2023; accepted 23 August 2023. Date of publication 8 September 2023;
+date of current version 17 January 2024. This work was supported in part by
+the National Key Research and Development Program of China under Grant
+2020AAA0108104 and in part by the National Natural Science Foundation of
+China under Grant 52272420. The review of this article was coordinated by Prof.
+Kumudu Munasinghe. (Corresponding author: Li Li.)
+Huaxin Pei and Jiawei Zhang are with the Department of Automation,
+Tsinghua University, Beijing 100084, China (e-mail: phx17@tsinghua.org.cn;
+zhangjw20@mails.tsinghua.edu.cn).
+Yi Zhang is with the Department of Automation, BNRist, Tsinghua University,
+Beijing 100084, China, also with Tsinghua-Berkeley Shenzhen Institute, Shenzhen, Guangdong 518055, China, and also with Jiangsu Province Collaborative
+Innovation Center of Modern Urban Traffic Technologies, Nanjing, Jiangsu
+210096, China (e-mail: zhyi@tsinghua.edu.cn).
+Huile Xu is with the National Laboratory of Pattern Recognition, Institute
+of Automation, Chinese Academy of Sciences, Beijing 100190, China (e-mail:
+huile.xu@ia.ac.cn).
+Li Li is with the Department of Automation, BNRist, Tsinghua University,
+Beijing 100084, China (e-mail: li-li@tsinghua.edu.cn).
+Digital Object Identifier 10.1109/TVT.2023.3311198
+
+Fig. 1. Autonomous vehicles only have localized traffic information, and
+direct cooperation between individual vehicles cannot always be guaranteed.
+
+years [6], [7], [8]. At the macroscopic level, the “controllable”
+route choice of autonomous vehicles offers more possibilities
+for traffic management [9], [10], [11]. In this article, we are
+interested in the macro-level route choice problem, which aims
+to alleviate traffic congestion by providing vehicles with optimal
+routes from their origins to predetermined destinations [12],
+[13], [14]. Routing for autonomous vehicles has been receiving
+increasing attention in the field of traffic control. Most existing
+route planning methods for autonomous vehicles have practical
+and inexplicit requirements, i.e., the global traffic information
+is timely accessible for each vehicle and adequate direct interactions between vehicles are always guaranteed. However,
+the application of V2X communication technology currently
+faces several technical challenges. On the one hand, the negative
+impacts of communication delay and packet loss on vehicle
+movements cannot be ignored, especially for vehicles moving at
+high speed. On the other hand, the interconnection between V2X
+devices of different manufacturers, models and communication
+modules has not been well realized [15], [16], [17]. As a result,
+in practical traffic systems, the assembly rate and performance
+of V2X equipment are currently at a low level and will possibly
+remain limited for quite a period in the future. Resultantly, the
+capability of vehicles in practice gets hindered with respect to the
+information collection, storage, and processing. For example, in
+Fig. 1, the red vehicle needs to move towards its destination, but
+it can only access the traffic information in a small area nearby.
+Thus, only localized traffic information is practically available
+to autonomous vehicles herein. Moreover, not all vehicles are
+equipped with V2X communication devices, and consequently,
+direct cooperation between individual vehicles cannot always
+
+0018-9545 © 2023 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+PEI et al.: SELF-ORGANIZED ROUTING FOR AUTONOMOUS VEHICLES VIA DEEP REINFORCEMENT LEARNING
+
+be guaranteed, even in small areas. In such cases, most of
+the existing routing algorithms are intractable to implement,
+which motivates novel methods for the routing of autonomous
+vehicles under localized information access and unassured direct
+cooperation between vehicles, as we address in this article.
+To break these limitations, one remedy could be to treat each
+vehicle as an independent individual and then optimize its own
+routing decision based on the limited traffic information that
+can be perceived within a localized small area. Accordingly,
+we propose a self-organized routing strategy for autonomous
+vehicles by leveraging the DRL framework to well organize the
+localized traffic state through individual decision-making and
+then achieve overall efficiency gains. The agent in DRL learns a
+good mapping of traffic states to route choices via extensive trialand-error interactions between the agent and the complex traffic
+system [18], [19], [20], rather than relying on the simplified
+estimation of traffic dynamics.
+In our constructed self-organized mechanism, each vehicle
+adaptively chooses the optimal successor link when it approaches one intersection node, and further routing choices
+are made until subsequent intersection nodes are reached. As
+shown in Fig. 1, the red vehicle only needs to determine the
+upcoming link at the current time step. This mechanism can
+enjoy the following merits. On the one hand, the individual
+decision of each vehicle is based on the latest traffic information
+at the current time step, i.e., the self-organized mechanism is
+time-adaptive. On the other hand, each vehicle makes a localized
+routing decision to choose the optimal successor link at one
+single time step, so that the vehicles can flexibly respond to
+the changes of localized traffic demands, i.e., the self-organized
+mechanism is decision-flexible.
+To attain overall efficiency based on self-organized routing,
+a novel reward mechanism of DRL is established by jointly
+considering the travel time of each individual vehicle and the
+average travel time of all vehicles within its perceived range. It
+avoids selfish routing from the excessive pursuit of individual
+efficiency [21] and improves overall benefits guided by modest
+route decisions incorporating global interests. Thus, the proposed reward mechanism enables harmonizing indirect interactions among vehicles, even if each vehicle makes decisions in
+an independent manner. In addition, the travel time involved
+in the designed long-term reward refers to the actual travel
+time obtained by the interactions between the agent and the
+environment, rather than the estimated travel time. Therefore, the
+routing strategy optimized under the guidance of the proposed
+reward function can be better adapted to the practical conditions
+of the traffic systems, which provides a basis for ensuring the performance in applications. Numerical experiments have demonstrated that the proposed self-organized strategy is promising to
+resolve the routing problem of autonomous vehicles from the
+perspective of individual decision-making.
+The main contributions of this article include: (a) we propose
+a self-organized routing mechanism for autonomous vehicles
+to address the current limits of localized information access
+and the inability of direct cooperation among all vehicles; (b)
+the designed reward mechanism enables harmonizing indirect
+interactions among vehicles to achieve overall benefits, even if
+each vehicle plans routes individually; (c) the routing policy
+
+427
+
+is optimized via extensive trial-and-error interactions between
+the agent and the environment rather than heavily relying on
+the estimation of traffic flow, which enables the trained policy
+to better meet the practical conditions underlying the traffic
+systems.
+The rest of this article is organized as follows. Section II
+introduces the related works. The self-organized routing mechanism is presented in Section III. Section IV introduces the
+proposed DRL-based strategy for self-organized routing. The
+training process and testing results are extensively evaluated in
+Section V through numerical experiments. Brief conclusions and
+promising future works are outlined in Section VI.
+
+II. RELATED WORK
+In this section, we give a brief review of the related works on
+determining the traveling routes of autonomous vehicles through
+traffic networks.
+With the rapid development of autonomous driving technology, how to plan driving routes for autonomous vehicles has
+received increasing attention in recent years. Many studies [22],
+[23], [24], [25], [26] discuss the routing problem of autonomous
+vehicles under the popular framework of traffic assignment that
+allocates each origin-destination traffic flow value to various
+alternative routes from a particular origin to the corresponding
+destination. Then, optimization-based assignment approaches
+are used to achieve either user-equilibrium [27], [28] or systemoptimum [29]. For instance, Guo et al. [22] formulate an optimal control problem with equilibrium constraints, where the
+route choice of autonomous vehicles is modeled by the systemoptimal principle and the link dynamics are described by a
+traffic flow model based on double queue. Wang et al. [23]
+build a user-equilibrium model for connected and automated
+vehicles by leveraging their capability of acquiring accurate
+traffic information, where the Bureau of Public Roads (BPR)
+function is utilized to estimate link travel cost in the constructed
+traffic assignment model, as used in many similar studies,
+e.g., [24], [30]. These studies focus on rather static and global
+network-wide routing, and their ability to flexibly respond to
+the changes in localized traffic demands needs to be enhanced.
+The optimization model of traffic assignment heavily relies on
+the simplified estimation model of link dynamics that cannot
+accurately portray the characteristics of vehicle movements.
+Moreover, these models challenge the availability of sufficient
+global traffic information for vehicles. Correspondingly, a few
+latest studies have attempted to resolve the routing problem of
+autonomous vehicles from different technical perspectives [31],
+[32], [33], [34], [35]. In [31], [32], [33], the routing algorithms
+are designed based on the detailed motion information of vehicles without relying on the estimation of link dynamics, but they
+still assume global traffic information for the network-wide routing. In [34] and [35], the localized traffic information is utilized
+to realize adaptive routing for vehicles, where the estimation of
+link dynamics and sufficient direct interactions between vehicles
+are required.
+In fact, underlying these aforementioned route planning methods, there exist practical and inexplicit requirements, i.e., the
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+428
+
+Fig. 2.
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 73, NO. 1, JANUARY 2024
+
+Illustration of the proposed self-organized routing mechanism, which is time-adaptive and decision-flexible.
+
+global traffic information acquisition and adequate direct cooperation among vehicles are always guaranteed, which poses a
+great challenge to the information collection, storage, and processing capacities of autonoumous vehicles at the current stage.
+III. SELF-ORGANIZED ROUTING MECHANISM
+In this section, a self-organized mechanism is introduced for
+autonomous vehicles, addressing the current limits of localized
+information access and the inability of direct cooperation among
+all vehicles.
+A. Traffic Network Description
+As shown in Fig. 2, we study the problem of routing for
+autonomous vehicles in a typical urban traffic network, i.e.,
+grid network. Each vehicle moving in this traffic network has
+a specific origin-destination. Due to the limited capability of
+information collection, storage, and processing, each vehicle
+can only access localized traffic information in determining the
+route. Without loss of generality, we assume that vehicles have
+access to traffic information within a range of four downstream
+intersections, i.e., the red area shown in Fig. 2. In addition, direct
+cooperation between vehicles cannot always be guaranteed even
+in such localized areas, since not all vehicles are equipped with
+V2X communication devices. Thus, how to optimize the routing
+choices under localized information access and unassured direct
+cooperation between vehicles is worthy of particular attention.
+B. Self-Organized Routing Mechanism Design
+Considering the practical traffic systems, we propose a selforganized routing mechanism, which turns to treat each vehicle
+as an independent individual and then optimize its own routing
+decision based on the limited traffic information that can be perceived within a localized small area. It is worth mentioning that
+each vehicle should jointly consider its individual efficiency and
+
+the overall benefits of its perceived range when making its own
+routing decisions, which can well organize the corresponding
+localized traffic conditions and ultimately improve the efficiency
+of the entire traffic network. Thus, we name it self-organized
+routing.
+In our constructed self-organized routing mechanism, we
+prescribe that each vehicle adaptively chooses the optimal successor link when it approaches one intersection node, and further
+routing choices are made only when later intersection nodes are
+reached. Moreover, the candidate links need to be in the directions approaching the destination, which requires the vehicles
+not to choose long routes. As shown in Fig. 2, the routing choice
+of the red vehicle in Step 1, Step 2, or Step 3 includes traveling
+to the right (Route 1) or to the downside (Route 2) since the
+destination is toward the lower right side of the vehicle. The red
+vehicle in Step 1 needs to make its first decision based on the
+traffic information within the red area. Assuming that the vehicle
+selects Route 2 in Step 1, it will proceed to Step 2, where the
+vehicle has two optional choices. Similarly, the red vehicle will
+then go to Step 3 if it chooses Route 1 in Step 2. Finally, the
+vehicle will only have one optional route after Step 3 and reach
+its destination.
+The above descriptions indicate that each individual vehicle
+in a grid urban traffic network actually tackles similar basic
+traffic network and optional routes within its perceived range
+in deciding the routing, e.g., the red area in Fig. 2, where each
+vehicle has access to traffic information within a small grid network with four intersections and has two optional routes within
+its perceived range. Thus, under the proposed self-organized
+mechanism, we focus on addressing the routing of each vehicle
+in the basic traffic networks, and the traffic conditions in these
+basic traffic networks can jointly reflect the traffic condition of
+the entire traffic network. As a result, it is possible to optimize
+these basic traffic networks so that different localized regions
+of the entire traffic network can get optimized, thus achieving
+overall benefit gains. This characteristic ensures that the learned
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+PEI et al.: SELF-ORGANIZED ROUTING FOR AUTONOMOUS VEHICLES VIA DEEP REINFORCEMENT LEARNING
+
+policy trained in such basic traffic networks is applicable to all
+autonomous vehicles in the entire traffic network. In addition,
+the proposed self-organized routing mechanism also enjoys the
+following merits:
+1) Time-Adaptive Property: Each vehicle dynamically
+makes routing choices in different time steps so that the
+traffic information utilized by the vehicle in each decision is
+up-to-date, thereby coping well with the strong time-varying
+nature of traffic state and then improving the performance of
+route choice.
+2) Decision-Flexible Property: Each vehicle makes only localized routing decision to choose the optimal successor link at
+a single time step so that the vehicle can flexibly respond to the
+changes in localized traffic demands. This property overcomes
+the limitations of many existing algorithms focusing on static
+and global network-wide routing.
+IV. DRL BASED SELF-ORGANIZED ROUTING STRATEGY
+In this section, under the proposed self-organized mechanism,
+a DRL-based routing strategy is constructed to well organize
+the localized traffic conditions via the optimization of the basic traffic network, which can ultimately achieve the benefit
+improvement of the entire traffic network. As described in
+Section III-B, the basic traffic network refers to the small network within the perceived range of each vehicle. We formulate
+the routing problem in the basic traffic network as a Markov
+decision process (MDP) in Section IV-A and then introduce the
+DRL model for addressing the formulated MDP in Section IV-B.
+A. Problem Formulation for Routing in Basic Traffic Network
+In this article, our goal is to find a policy that can make
+routing decisions for continuously arriving vehicles, ultimately
+achieving overall efficiency improvement. In such a case, the
+routing problem is a sequential decision problem, and the transitions of the traffic state within the basic traffic network can
+be determined by the most recent state and routing action, i.e.,
+the routing problem satisfies the Markov property [36], [37].
+As a result, we formulate the routing problem of a group of
+vehicles in the basic traffic network as an MDP in terms of a tuple
+S, A, R, T, γ [38], [39]. The tuple is composed of state space
+S, action space A, reward function R, state transition model
+T , and a discount factor γ ∈ [0, 1]. With an episodic task of M
+vehicles continuously arriving, routing, and then leaving, the
+goal of optimizing this MDP is to alleviate the traffic congestion
+caused by the determination of driving routes of vehicles. The
+agent learns a policy π(at | st ) to make appropriate routing
+choices at for different vehicles based on observations st to
+maximize the expected discounted sum of rewards, i.e.,
+Rt =
+
+M
++t−1
+
+γ τ −t rτ ,
+
+(1)
+
+τ =t
+
+where rτ represents the reward at time τ . The action-value
+function Qπ (s, a) is the expected return following a policy π,
+i.e.,
+Qπ (s, a) = E [Rt | st = s, at = a, π] .
+
+(2)
+
+429
+
+The objective of MDP is to find the optimal policy π ∗ by
+maximizing the action-value function, i.e.,
+Q∗ (s, a) = max Qπ (s, a).
+π
+
+(3)
+
+The state space, action space, and reward function of the
+formulated MDP are defined as follows.
+1) State Space: When the vehicle reaches the entrance of the
+basic traffic network at time t, the state st needs to describe the
+traffic state of each link within the basic traffic network.
+In our method, we decompose the links of the traffic network
+into different cells, and the vehicles can make routing choices
+by observing the traffic density within each cell, as shown in
+Fig. 3(a). We specify that the number of cells on different links
+is the same and the length of each cell needs to be determined
+according to the length of the link, thus adapting to different
+lengths of links. This cell-based link model has the following two
+advantages. Compared with the method that directly considers
+the location of each vehicle, the cell-based link model can
+decrease the size of state space and reduce the adverse impacts
+caused by inaccurate location information of the surrounding
+vehicles, especially under conditions where direct interaction
+between vehicles cannot always be guaranteed. Compared with
+the method that takes the whole link as the basic unit, the
+cell-based link model can describe the traffic state of the network
+more accurately so that the agent can carry out more fine-grained
+decisions.
+After link decomposition, we describe the traffic density of
+each cell using one-hot encoding technique to further reduce
+the size of state space. Specifically, we divide the traffic density
+of one cell into a density intervals and define an a-dimensional
+one-hot encoding vector Di to denote the traffic density of cell
+i. When the traffic density of cell i is in the kth range, Dik is set
+to 1, and other elements of Di are set to 0. Therefore, the state
+st is defined as
+
+
+(4)
+st = D1 , D2 , . . ., DN ,
+where N denotes the number of cells in the basic traffic network,
+and st is the input of the DRL model.
+Further, we incorporate the domain knowledge of traffic flow
+dynamics into the interval division of traffic density in each
+cell, which facilitates enhancing the accuracy of traffic density
+description when implementing one-hot encoding. According
+to the traffic fundamental diagram shown in Fig. 3(b), one can
+notice that the relationship between the actual traffic density and
+critical density nc has a large impact on traffic efficiency [40],
+and more details on the calculation of the critical density can
+refer to [33], [41], [42]. Therefore, we incorporate the information of critical density into state space design to dynamically
+determine the interval division of traffic density in each cell.
+Specifically, as shown in Fig. 3(c), we take (b · nc ) as the
+upper bound and evenly divide [0, b · nc ) into (a − 1) density
+intervals, which correspond to the 1th ∼ (a − 1)th dimensions
+of Di , respectively. In addition, we define [b · nc , +∞) as an
+independent density interval corresponding to the ath dimension
+of Di to indicate whether the traffic is in a very congested state
+or not. Note that the values of a and b need to simultaneously
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+430
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 73, NO. 1, JANUARY 2024
+
+Fig. 3. Illustration of state design. (a) shows the decomposed links into different cells. (b) presents the fundamental diagram of each cell, and the critical density
+is highlighted. (c) illustrates the method of using one-hot encoding vector to describe the traffic state by incorporating the information of critical density.
+
+consider the size of state space and the accuracy of density
+description, in order to keep a good balance between training
+difficulty and the performance of the learned policy.
+2) Action Space: Action at is the driving route assigned to
+the newly arrived vehicle based on the observed state st . As
+described in Section III-B, the proposed self-organized routing
+mechanism prescribes that each vehicle only determines the
+optimal successor link. In our method, we define that each
+candidate link is considered as an action, and the number of
+actions contained in the action set A is equal to the number of
+candidate links. For example, there are two candidate routes for
+vehicles in the basic traffic network in Fig. 2. Thus, the action
+space is then defined as
+
+
+(5)
+A = a1 , a2 ,
+where a1 and a2 denote that the agent chooses Route 1 and Route
+2, respectively.
+3) Reward Function: Reward rt is the feedback given by the
+environment after the agent takes an action at . It is a key part
+of MDP because the reward function R implicitly characterizes
+the learning goal of the agent.
+In our method, the reward function is designed to encode the
+target of self-organized routing to decrease the average travel
+time of vehicles within the basic traffic network, thus ultimately
+improving the efficiency of the entire traffic network. However,
+the impact of an individual vehicle’s route choice on the average
+travel time through the traffic network is excessively delayed,
+and the agent cannot get an immediate return, which leads to
+great difficulty in the training process.
+In order to help the agent learn the optimal policy successfully,
+we design the reward function by jointly deploying short-term
+and long-term rewards. In our proposed reward function, the
+involved short-term rewards reveal the efficiency of individual
+vehicles and can be obtained immediately when the agent takes
+an action. The long-term reward considers the overall efficiency,
+and the environment return is received at the end of each episode.
+To this end, we define the reward rt in the commonly used linear
+
+combination [20], i.e.,
+rt = rs + [repisode ]M ,
+
+(6)
+
+where rs is the short-term reward, and repisode denotes the longterm reward of each period. [·]M indicates that the long-term
+reward is non-zero after the agent completes the routing task
+of M vehicles in each period; otherwise, the long-term reward
+is zero. In the following, the well-designed rs and repisode are
+introduced in detail.
+The short-term goal of the reward function needs to guide the
+vehicle to select the link with the shortest estimated travel time
+among all the candidate links, avoiding increasing the travel time
+of the current vehicle by selecting the congested links. In our
+method, we use the BPR function to estimate the travel time of
+each link. This function illustrates the relationship between the
+free-flow travel time and the actual travel time [30], [43], [44],
+i.e.,
+
+
+f
+xi (t)
+est
+free
+1+e
+,
+(7)
+Ti (t) = Ti
+Ci
+where Tiest (t) denotes the estimated travel time of link i at time t,
+and Tifree denotes the free flow travel time of link i. xi (t) denotes
+the accumulated number of vehicles in link i at time t. Ci is
+the capacity of link i, which can be calculated according to the
+average gap between vehicles and the physical characteristics
+of the link [30], [33]. e and f are the parameters of the model.
+Based on the estimated travel time of candidate links, we then
+define the short-term reward as
+rs = α ·
+
+est
+(t)
+maxi Tiest (t) − Troute
+,
+maxi Tiest (t) − mini Tiest (t)
+
+(8)
+
+est
+where Troute
+(t) is the estimated travel time of the link chosen by
+the agent at time t and α is a scaling coefficient. However, this
+greedy allocation of driving routes based on the estimated link
+travel time at the current time has two limitations as follows.
+On the one hand, due to the uncertainty in the traffic system,
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+PEI et al.: SELF-ORGANIZED ROUTING FOR AUTONOMOUS VEHICLES VIA DEEP REINFORCEMENT LEARNING
+
+there may be a large difference between the estimated and the
+actual travel times, which leads to the chosen route not always
+having the shortest travel time for the current vehicle. On the
+other hand, the greedy strategy makes a decision in favor of the
+individual based only on the current traffic information, where
+the future traffic state and the overall benefits are not considered.
+In this sense, the action taken by the agent can be too selfish
+and consequently affect the overall efficiency [21]. Thus, the
+long-term goal is essential for the reward function to harmonize
+indirect cooperation between different individuals in our tasks.
+The long-term goal in the reward function needs to guide
+the agent to make each decision that should be beneficial to
+decrease the average travel time of all vehicles in the basic
+traffic network. The advantages of designing long-term goals
+in the reward function include the following two points. Firstly,
+the long-term reward is the result of system operation rather
+than relying on the estimation of link travel time, which not
+only helps improve the performance of the proposed routing
+strategy but also satisfies the practical conditions underlying the
+current traffic systems. Secondly, long-term rewards can harmonize indirect interactions among individual vehicles, thereby
+improving overall benefits albeit with independent individual
+decisions. However, the excessively delayed impact of routing
+decisions on the average travel time of all vehicles leads to great
+difficulty in the training process. To mitigate this obstacle, we
+use the average performance of M routing tasks to reflect the
+long-term goal of our reward function. Specifically, the learning
+process of the agent is formulated into a periodic mission, and M
+vehicles complete the routing tasks in each period. This allows
+the routing policy to be evaluated in a timely manner and retains
+the characteristics of delayed feedback.
+As described in Section III, each vehicle can obtain the traffic
+information within the range of two downstream links, and only
+decides the optimal successor link to enter next. In our method,
+we specify that a vehicle is considered to pass the basic traffic
+network when it leaves the second downstream link, and the
+time spent in this process is regarded as the travel time of the
+corresponding vehicle through the current basic traffic network.
+For each vehicle, the first downstream link is determined by the
+routing policy, while the second downstream link is randomly
+chosen by considering the destination of the corresponding
+vehicle. Analogously, we define the long-term reward as a linear
+mapping of the average travel time of M vehicles, such that
+repisode = p
+
+M
+
+
+Titravel /M + q,
+
+(9)
+
+i=1
+
+where Titravel is the actual travel time of vehicle i. p and q are
+the scaling coefficients to map the long-term reward repisode to
+an appropriate range considering the short-term reward rs .
+B. DRL Model for Self-Organized Routing
+To address the above MDP, the traditional approach (e.g.,
+dynamic programming [6], [45], [46]) can suffer from significant challenges because it relies on the complete knowledge
+of the environment model, which is unclear in the MDP of
+
+431
+
+routing. Fortunately, reinforcement learning (RL) can be flexibly applied to search for the optimal policy π ∗ (the optimal
+mapping from state to action) without the complete environment
+model by maximizing the cumulative reward through continuous
+interaction between the agent and the environment. However,
+limited by computational and storage resources, traditional RL
+is prohibited in solving problems with high-dimensional inputs
+and delayed rewards like in the routing tasks. With the aid of
+deep neural network (DNN), DRL has shown great potential
+to handle such high-dimensional and yet coupled nonlinear
+decision problems.
+Solving the problem formulated in Section IV-A with DRL
+faces the following challenges: a) the reward of the MDP is
+sparse, and most randomly selected experiences contribute little
+to the routing policy training; b) the environment is dynamic,
+and many random factors can interfere with the training process,
+such as the arrival time and turning actions of vehicles. To deal
+with the above challenges, we adopt the Double Dueling DeepQ-Network to train the routing policy, which is derived from
+the original Deep-Q-Network (DQN), and its effectiveness in
+improving the performance of DQN has been verified in many
+applications [20], [47].
+The original DQN model adopts DNN to approximate the
+action-value function of MDP. Experience replay and target
+network are two popular techniques to improve the algorithm
+performance [19]. As shown in Fig. 4, during training, DQN
+takes the current state st as the input and then outputs the Q
+value of each state-action pair when a new vehicle arrives at
+the entrance of the traffic network, where the agent chooses a
+route (i.e., at ) for the vehicle according to the ε−greedy strategy.
+Then, the state of the traffic network is updated from st to st+1 ,
+and the agent can get the reward feedback rt of action at from the
+environment. In this way, a complete transition (st , at , rt , st+1 )
+is attained. To remove the correlations of transitions, DQN stores
+each transition in a dataset, i.e., Experience Memory Pool in
+Fig. 4, and then the evaluation network gets trained by experience replay. These transitions sampled from the Experience
+Memory Pool are used to calculate the following loss function
+(i.e., temporal difference (TD) error), and the stochastic gradient
+descent is performed to optimize the parameters θ of DNN, i.e.,
+⎡
+
+
+
+L(θ) = E ⎣ rt +γ maxQ̂ st+1 , at+1 ; θ̂ −Q (st , at ; θ)
+at+1
+
+2
+
+⎤
+⎦,
+
+(10)
+where Q(θ) and Q̂(θ̂) denote the evaluation network and target network, respectively, which have the same structure. The
+parameters θ̂ of the target network are updated by copying the
+parameters θ of the evaluation network at regular steps.
+However, the above-mentioned challenges make it difficult for
+the original DQN to converge to a good policy in an efficient and
+stable manner. First, to cope with the challenges posed by reward
+sparsity, we deploy the Prioritized Experience Replay technique
+to select valuable transitions in the Experience Memory Pool
+instead of uniform sampling [48]. Its main idea is to make
+transitions with higher TD errors have a higher probability to
+be sampled. This technique accelerates the training process of
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+432
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 73, NO. 1, JANUARY 2024
+
+Fig. 4.
+
+Architecture of the proposed self-organized routing with deep reinforcement learning.
+
+DQN and converges into a better policy. Second, the target Q
+value of the original DQN is calculated by the greedy idea, which
+helps quickly bring the Q value closer to the optimization target
+but leads to over-estimation [49]. To solve this problem, we use
+Double DQN to decouple the action selection in target Q value
+and the calculation of target Q value [50]. In Double DQN, (10)
+is replaced by
+
+
+L(θ) = E
+
+TABLE I
+LAYOUT OF THE DESIGNED ROUTING DQN
+
+rt + γ Q̂ st+1 , argmaxQ(st+1 , at+1 ); θ̂
+
+
+at+1
+
+−Q (st , at ; θ))2 .
+
+(11)
+
+Third, to have a better policy evaluation, we adopt Dueling
+DQN [51] to optimize the structure of the Q-network, which
+is composed of two parts, i.e., state value function V(st ; θ) and
+action advantage function A(st , at ; θ). In this case, the Q value
+can be calculated as
+Q(st , at ; θ) = V (st ; θ)
+
++
+
+A(st , at ; θ) −
+
+1 
+A (s, a ; θ) ,
+|A| 
+a ∈A
+
+(12)
+where |A| denotes the dimension of the action space. At this
+point, Double Dueling DQN with Prioritized Experience Replay
+is established to learn a promising routing policy for autonomous
+vehicles.
+For the routing task, Table I presents the details on the architecture of DQN to approximate Q function. A two-layer fully
+connected neural network with a dueling structure is designed
+to tackle the current routing state and output the state value
+and the advantage value of each action. Then, the Q value
+
+of each state-action pair can be calculated according to (12).
+In addition, we have also tried other algorithms with a more
+complex and deeper architecture, but the experimental results
+show that these methods lead to an increase in computation
+time and cannot contribute much to the routing performance.
+Therefore, the architecture of the designed DQN is a good way to
+balance computational complexity and algorithm performance.
+The DRL-based self-organized routing strategy is now constructed in Section IV-A and Section IV-B. With the help of
+DRL, the obtained routing policy enables harmonizing indirect
+interactions among individual vehicles to improve the traffic
+condition within each basic traffic network so that different localized regions of the entire traffic network can be optimized, and
+then together to overall benefit gains. The design of state space,
+reward mechanism, and training algorithm jointly contribute to
+maintaining a good trade-off between the training difficulty and
+the performance of the learned policy.
+V. NUMERICAL EXPERIMENTS
+In this section, numerical experiments are conducted from
+different aspects to evaluate our proposed self-organized routing.
+Section V-A presents the training process and testing results of
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+PEI et al.: SELF-ORGANIZED ROUTING FOR AUTONOMOUS VEHICLES VIA DEEP REINFORCEMENT LEARNING
+
+Fig. 5. Cumulative reward in the training process under the proposed reward
+function.
+
+the basic traffic network, and Section V-B evaluates the reward
+mechanism of our method. In Section V-C, the learned routing
+policy is deployed in a large-scale traffic network to verify
+the algorithm performance. As commonly used in the traffic
+studies [33], [52], [53], [54], the Cell Transmission Model is
+utilized to describe how vehicle flow travels in the traffic network
+in the following experiments. More detailed setups about vehicle
+flow dynamics can be found in [33]. All numerical experiments
+in this article are carried out with Python, which allows the
+creation of a simulation platform to accurately and flexibly
+describe the road network structure, the vehicle flow dynamics
+model, and the vehicle routing strategy.
+A. Training and Testing Results in Basic Traffic Network
+According to the designed self-organized routing mechanism,
+we train the routing policy in the basic traffic network shown in
+Fig. 2. The length of each link l between two adjacent conflict
+areas is set as 1 km, and the maximum speed limit vmax of each
+link is set as 50 km/h. The headway ha between autonomous
+vehicles is set as 1 s. Similar to the previous studies [40], [45],
+we assume that vehicles arrive in a Poisson Process at each input
+link. In this experiment, the arrival rate λ of vehicles at each
+input link is set as 1000veh/link/h. We adopt a 20-dimensional
+one-hot encoding vector to denote the traffic state in each cell,
+i.e., the parameter a in the state space design in Section IV-A1)
+is equal to 20. Another parameter b related to the division of
+density intervals is set as 2. In the designed reward function, as
+suggested in [30], parameters e and f in (7) are set as 1 and 2,
+respectively. The scaling coefficient α in the short-term reward
+(8) is set as 0.2. The scaling coefficients p and q to map the
+long-term reward (9) to an appropriate range are set as −6 and
+2820, respectively. The number of vehicles considered in each
+episode is set as 300, and the frame skip technique is adopted to
+improve the training performance [55], [56].
+1) Training Results: Fig. 5 presents the cumulative reward
+value of each episode in the training process under the proposed
+reward function. We calculate the rolling mean value of the
+
+Fig. 6.
+
+433
+
+Average travel time of vehicles in the training process.
+
+cumulative reward for a clearer presentation, and the size of
+the rolling window is set as 20. According to Fig. 5, we can
+find that the cumulative reward increases significantly after 2000
+episodes and eventually converges to a stable value around 5000
+episodes. It indicates that the agent has learned a good routing
+policy for autonomous vehicles according to the designed reward
+mechanism.
+As described in Section IV-A, the proposed reward function
+aims to reduce the travel time of vehicles passing through the
+basic traffic network. Thus, we also count the average travel
+time of vehicles in the training process, as shown in Fig. 6, and
+the rolling mean value is also presented. Fig. 6 demonstrates
+that the average travel time of vehicles decreases sharply after
+2000 episodes. Specifically, the value of the average travel time
+of vehicles is reduced from 473 s to 458 s in the basic traffic
+network. This result verifies the effectiveness of our method in
+the tackled basic traffic network, which shows great potential
+to improve traffic efficiency, particularly for a large-scale traffic
+network as later presented in Section V-C.
+2) Testing Results: To verify the performance of the learned
+routing policy, we compare it with the other two routing strategies, i.e., random routing strategy and greedy routing strategy,
+on the average travel time of vehicles in the basic traffic network.
+The random routing strategy specifies that each vehicle chooses
+a traveling route randomly among the optional routes when it
+reaches the entrance of the traffic network, regardless of the
+impact of the traffic state within the traffic network on routing
+decisions. As mentioned in Section IV-A, vehicles under greedy
+routing select one route with the shortest estimated travel time
+when they need to make a routing decision, and the estimated
+travel time can be calculated according to (7) using BPR function. In this experiment, the average arrival rate of vehicles varies
+from 600veh/link/h to 1400veh/link/h. We simulate a 20-minutes
+continuous traffic process to collect the average travel time
+through the basic traffic network. For each setting, 10 runs are
+conducted and the average results are reported in Fig. 7.
+The results in Fig. 7 show that the greedy routing strategy
+has a better performance in decreasing the average travel time
+of vehicles than the random routing strategy, and this can be
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+434
+
+Fig. 7.
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 73, NO. 1, JANUARY 2024
+
+Testing results of the learned policy in the basic traffic network.
+
+due to the reason that the greedy routing strategy can obtain the
+estimated travel time according to the real-time traffic states
+and then select the route with the shortest estimated travel
+time. This result indicates that appropriate consideration of the
+traffic state can help improve traffic efficiency when making
+routing decisions, and random selection can lead to inferior
+performance, even in a symmetrical traffic network.
+In Fig. 7, the learned routing policy in our strategy significantly outperforms the greedy routing strategy under various
+arrival rates. This result indicates that the proposed DRL-based
+routing model has learned a better policy and thus can optimize
+the routing decisions based on the obtained limited traffic information. Such effectiveness can be traced to the following
+reasons: a) The greedy strategy only emphasizes individual
+efficiency without considering the overall efficiency and thus
+leads to selfish routing decisions, while our proposed routing
+strategy considers both individual and overall benefits, which
+jointly promote the improvement of traffic efficiency in the traffic
+network. b) The performance of the greedy routing strategy is
+determined by the estimation model that cannot accurately and
+explicitly describe the link travel time in the complex traffic
+system. In contrast, the rewards of our DRL-based routing
+strategy are the result of system operation rather than relying on
+the estimation model. In particular, our strategy is not restricted
+to the existing assumptions that are currently inconsistent with
+the practical traffic system and thus has been delicately designed
+to better utilize limited traffic state information at hand in making
+decisions.
+B. Evaluation on the Reward Functions
+In this experiment, we evaluate the reward mechanism of our
+method by comparing the impacts of different reward functions
+on training performance. Three types of rewards are considered,
+i.e., reward rs alone, reward repisode alone, and the proposed
+reward mechanism (rs + repisode ). rs alone is the short-term
+reward and only emphasizes the individual efficiency, and repisode
+is the long-term reward and describes the overall efficiency.
+
+Fig. 8. Average travel time of vehicles in the training process under different
+reward functions.
+
+The performance of the learned policy can be evaluated by the
+average travel time of vehicles, as shown in Fig. 8. It can be
+seen from Fig. 8 that, the joint optimization of short-term and
+long-term returns in the proposed reward function gives the best
+performance in decreasing the average travel time of vehicles.
+Emphasizing the short-term reward alone brings a trivial contribution to the decrease in average travel time. Specifically, the
+average travel time under the reward rs alone is only reduced by
+about 2 s. Compared with rs alone, the average travel time under
+repisode alone can be effectively reduced, which demonstrates
+the significance of the designed long-term reward function in
+optimizing overall efficiency. However, only using the long-term
+reward fails to catch up sufficient explorations on the intermediate dynamic information during the training process, and thus
+can tend to converge to a local optimal policy. Therefore, the
+well-designed reward mechanism can successfully exploit the
+timely dynamics during the training and also explore overall
+benefits, which together assist to guarantee an optimized routing
+policy from the learning.
+
+C. Testing Results in Large-Scale Traffic Network
+To verify the performance of the proposed self-organized
+routing strategy in a general traffic network, we implement the
+testing experiment in a large-scale 5 × 5 grid network shown in
+Fig. 9, which contains 25 intersections.
+In this experiment, we also compare the proposed strategy
+with the random routing strategy and the greedy routing strategy,
+introduced in Section V-A. For comparison purposes, the vehicles traveling between 4 × 4 representative origin-destination
+pairs are evaluated, where the origins are marked in green and
+the destinations are marked in red in Fig. 9. Here, each vehicle
+coming from the green entrance will randomly choose a red exit
+as its destination. The arrival rate at each input link varies from
+600veh/link/h to 1400veh/link/h, and we simulate a 40-minutes
+continuous traffic process for the numerical results.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+PEI et al.: SELF-ORGANIZED ROUTING FOR AUTONOMOUS VEHICLES VIA DEEP REINFORCEMENT LEARNING
+
+435
+
+Fig. 10. Comparison results of different routing strategies in terms of traffic
+throughput.
+
+Fig. 9.
+mance.
+
+Large-scale traffic network scenario used to test the routing perfor-
+
+TABLE II
+COMPARISON RESULTS OF DIFFERENT STRATEGIES IN TERMS OF AVERAGE
+TRAVEL TIME IN LARGE-SCALE TRAFFIC NETWORK
+
+Fig. 11. Kernal density plot of vehicle travel time under different routing
+strategies. The arrival rate is set as 1000veh/link/h in this experiment.
+
+To present more valid evaluations, the comparison results are
+highlighted from three aspects in this experiment. Firstly, the
+average travel time of vehicles passing through the large-scale
+traffic network under various arrival rates is listed in Table II,
+where the average performance of 10 runs is reported. Secondly,
+we also count the traffic throughput between these 4 × 4 origindestination pairs, which refers to the total number of vehicles that
+have passed the traffic network from the corresponding 4 origins
+to the corresponding 4 destinations, and the results are shown
+in Fig. 10. Thirdly, the distribution of vehicle travel time is an
+important metric reflecting the stability of routing performance,
+so we also conduct an experiment to explore the distributions of
+
+vehicle travel time under different routing strategies, as shown in
+Fig. 11, where the arrival rate of vehicles is set as 1000veh/link/h.
+It can be found in Table II that the proposed self-organized
+routing strategy distinctively decreases the average travel time
+of vehicles passing through the large-scale traffic network under
+various traffic demand settings, compared to the random routing
+and the greedy routing strategies. In terms of traffic throughput
+in Fig. 10, our proposed strategy also effectively improves
+the traffic throughput, especially with large traffic demands.
+These two types of results validate the promising performance
+of the proposed strategy in improving overall benefits. As for
+the stability of routing performance, Fig. 11 illustrates that the
+general distribution of vehicle travel time resulted from the
+proposed strategy has not changed significantly, compared to
+those from the random routing and the greedy routing strategies.
+Yet importantly, the travel time of vehicles under the proposed
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+436
+
+IEEE TRANSACTIONS ON VEHICULAR TECHNOLOGY, VOL. 73, NO. 1, JANUARY 2024
+
+strategy has decreased in overall ranges. This finding assures
+the overall stability of the proposed strategy so that extreme
+conditions can be prevented, such as the cases where parts of
+the vehicles have very short travel time while many others have
+very long travel time, and a seemly good average result is then
+insufficient to reveal solid evaluations herein.
+Two key conclusions can be obtained from the above interesting findings in the application to the large-scale traffic networks:
+a) The routing policy trained in the basic traffic network can be
+deployed in a general traffic network without a re-training process; b) The proposed DRL-based routing strategy can achieve
+overall benefits gains through individual decisions using limited
+traffic information. Therefore, the designed self-organized routing strategy can effectively tackle the routing problem, which is
+of particular significance in situations where only limited traffic
+information is available and direct interactions between vehicles
+cannot always be guaranteed.
+VI. CONCLUSION
+In this article, a novel strategy is constructed to tackle the
+route planning problem with localized temporal-spatial traffic
+information, namely self-organized routing. Through modeling
+the basic traffic networks that all individual vehicles typically
+tackle in deciding the routing during driving, the self-organized
+mechanism is established for such basic traffic networks and is
+equipped in each individual vehicle. Correspondingly, a DRLbased algorithm is proposed together with a well-designed reward mechanism to learn an optimal policy for the decisionmaking of routing, where not only the short-term reward is
+utilized to exploit immediate traffic dynamics in intermediate
+time steps but also the long-term reward reflecting the overall
+performance is also utilized. Thus, the proposed strategy is
+capable of gaining overall benefits by well organizing localized traffic conditions through individual decisions and indirect
+interactions among individuals. In numerical experiments, the
+training and testing results verify that the proposed strategy
+can well resolve the routing problem using localized traffic
+information and improve the overall efficiency under various
+experiment settings.
+For further research, it would be interesting to investigate
+the self-organized routing with more randomized geometric
+structures and mixed traffics, where some modifications to the
+state space design are required.
+REFERENCES
+[1] H. Pei, J. Zhang, Y. Zhang, X. Pei, S. Feng, and L. Li, “Fault-tolerant
+cooperative driving at signal-free intersections,” IEEE Trans. Intell. Veh.,
+vol. 8, no. 1, pp. 121–134, Jan. 2023.
+[2] R. Valiente, B. Toghi, R. Pedarsani, and Y. P. Fallah, “Robustness and
+adaptability of reinforcement learning-based cooperative autonomous
+driving in mixed-autonomy traffic,” IEEE Open J. Intell. Transp. Syst.,
+vol. 3, pp. 397–410, 2022.
+[3] Y. Hu, C. Chen, J. He, and B. Yang, “Eco-platooning for cooperative
+automated vehicles under mixed traffic flow,” IEEE Trans. Intell. Transp.
+Syst., vol. 22, no. 4, pp. 2023–2034, Apr. 2021.
+[4] L. Cui, Z. Chen, A. Wang, J. Hu, and B. B. Park, “Development of a robust
+cooperative adaptive cruise control with dynamic topology,” IEEE Trans.
+Intell. Transp. Syst., vol. 23, no. 5, pp. 4279–4290, May 2022.
+
+[5] C. Xu, W. Zhao, J. Liu, C. Wang, and C. Lv, “An integrated decisionmaking framework for highway autonomous driving using combined
+learning and rule-based algorithm,” IEEE Trans. Veh. Technol., vol. 71,
+no. 4, pp. 3621–3632, Apr. 2022.
+[6] H. Pei, S. Feng, Y. Zhang, and D. Yao, “A cooperative driving strategy for
+merging at on-ramps based on dynamic programming,” IEEE Trans. Veh.
+Technol., vol. 68, no. 12, pp. 11646–11656, Dec. 2019.
+[7] H. Pei, Y. Zhang, Q. Tao, S. Feng, and L. Li, “Distributed cooperative
+driving in multi-intersection road networks,” IEEE Trans. Veh. Technol.,
+vol. 70, no. 6, pp. 5390–5403, Jun. 2021.
+[8] C. Liu, C. W. Lin, S. Shiraishi, and M. Tomizuka, “Distributed conflict
+resolution for connected autonomous vehicles,” IEEE Trans. Intell. Veh.,
+vol. 3, no. 1, pp. 18–29, Mar. 2018.
+[9] Y. Yao, Z. Peng, and B. Xiao, “Parallel hyper-heuristic algorithm for multiobjective route planning in a smart city,” IEEE Trans. Veh. Technol., vol. 67,
+no. 11, pp. 10307–10318, Nov. 2018.
+[10] S. Wollenstein-Betech, M. Salazar, A. Houshmand, M. Pavone, I. C.
+Paschalidis, and C. G. Cassandras, “Routing and rebalancing intermodal
+autonomous mobility-on-demand systems in mixed traffic,” IEEE Trans.
+Intell. Transp. Syst., vol. 23, no. 8, pp. 12263–12275, Aug. 2022.
+[11] Q. Zhang, K. Wu, and Y. Shi, “Route planning and power management for
+PHEVs with reinforcement learning,” IEEE Trans. Veh. Technol., vol. 69,
+no. 5, pp. 4751–4762, May 2020.
+[12] J. Li et al., “A traffic prediction enabled double rewarded value iteration
+network for route planning,” IEEE Trans. Veh. Technol., vol. 68, no. 5,
+pp. 4170–4181, May 2019.
+[13] C. Menelaou, S. Timotheou, P. Kolios, C. G. Panayiotou, and M. M.
+Polycarpou, “Minimizing traffic congestion through continuous-time route
+reservations with travel time predictions,” IEEE Trans. Intell. Veh., vol. 4,
+no. 1, pp. 141–153, Mar. 2019.
+[14] Y. Fu, C. Li, F. R. Yu, T. H. Luan, and Y. Zhang, “Hybrid autonomous driving guidance strategy combining deep reinforcement learning and expert
+system,” IEEE Trans. Intell. Transp. Syst., vol. 23, no. 8, pp. 11273–11286,
+Aug. 2022.
+[15] S. Gyawali, S. Xu, Y. Qian, and R. Q. Hu, “Challenges and solutions for
+cellular based V2X communications,” IEEE Commun. Surv. Tut., vol. 23,
+no. 1, pp. 222–255, First Quarter 2021.
+[16] K. Abboud, H. A. Omar, and W. Zhuang, “Interworking of DSRC and
+cellular network technologies for V2X communications: A survey,” IEEE
+Trans. Veh. Technol., vol. 65, no. 12, pp. 9457–9470, Dec. 2016.
+[17] M. Lucas-Estañ et al., “An analytical latency model and evaluation of
+the capacity of 5G NR to support V2X services using V2N2V communications,” IEEE Trans. Veh. Technol., vol. 72, no. 2, pp. 2293–2306,
+Feb. 2023.
+[18] R. S. Sutton and A. G. Barto, Reinforcement Learning: An Introduction.
+Cambridge, MA, USA: MIT Press, 2018.
+[19] V. Mnih et al., “Playing atari with deep reinforcement learning,” 2013,
+arXiv:1312.5602.
+[20] J. Zhang, Z. Li, L. Li, Y. Li, and H. Dong, “A bi-level cooperative operation
+approach for AGV based automated valet parking,” Transp. Res. Part C:
+Emerg. Technol., vol. 128, 2021, Art. no. 103140.
+[21] T. Roughgarden and É. Tardos, “How bad is selfish routing?,” J. ACM,
+vol. 49, no. 2, pp. 236–259, 2002.
+[22] Q. Guo, X. J. Ban, and H. A. Aziz, “Mixed traffic flow of human driven
+vehicles and automated vehicles on dynamic transportation networks,”
+Transp. Res. Part C: Emerg. Technol., vol. 128, 2021, Art. no. 103159.
+[23] J. Wang, S. Peeta, and X. He, “Multiclass traffic assignment model
+for mixed traffic flow of human-driven vehicles and connected and
+autonomous vehicles,” Transp. Res. Part B: Methodol., vol. 126,
+pp. 139–168, 2019.
+[24] K. Zhang and Y. M. Nie, “Mitigating the impact of selfish routing: An
+optimal-ratio control scheme (ORCS) inspired by autonomous driving,”
+Transp. Res. Part C: Emerg. Technol., vol. 87, pp. 75–90, 2018.
+[25] M. H. Mansourianfar, Z. Gu, S. T. Waller, and M. Saberi, “Joint routing
+and pricing control in congested mixed autonomy networks,” Transp. Res.
+Part C: Emerg. Technol., vol. 131, 2021, Art. no. 103338.
+[26] A. Hajbabaie and R. F. Benekohal, “A program for simultaneous network
+signal timing optimization and traffic assignment,” IEEE Trans. Intell.
+Transp. Syst., vol. 16, no. 5, pp. 2573–2586, Oct. 2015.
+[27] J. G. Wardrop, “Road paper. Some theoretical aspects of road traffic research,” Proc. Inst. Civil Engineers, vol. 1, no. 3, pp. 325–362,
+1952.
+[28] M. S. Daskin, “Urban transportation networks: Equilibrium analysis with
+mathematical programming methods,” Transp. Sci., vol. 19, pp. 463–466,
+1985.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+PEI et al.: SELF-ORGANIZED ROUTING FOR AUTONOMOUS VEHICLES VIA DEEP REINFORCEMENT LEARNING
+
+[29] P. Kachroo and N. Shlayan, “Dynamic traffic assignment: A survey of
+mathematical models and techniques,” in Advances in Dynamic Network
+Modeling in Complex Transportation Systems. Berlin, Germany: Springer,
+2013, pp. 1–25.
+[30] S. Bahrami and M. J. Roorda, “Optimal traffic management policies for
+mixed human and automated traffic flows,” Transp. Res. Part A: Policy
+Pract., vol. 135, pp. 130–143, 2020.
+[31] Y. An, M. Li, X. Lin, F. He, and H. Yang, “Space-time routing in dedicated
+automated vehicle zones,” Transp. Res. Part C: Emerg. Technol., vol. 120,
+2020, Art. no. 102777.
+[32] X. Lin, M. Li, Z.-J. M. Shen, Y. Yin, and F. He, “Rhythmic control of
+automated traffic-Part II: Grid network rhythm and online routing,” Transp.
+Sci., vol. 55, no. 5, pp. 988–1009, 2021.
+[33] D. A. Lazar, E. Bıyık, D. Sadigh, and R. Pedarsani, “Learning how to
+dynamically route autonomous vehicles on shared roads,” Transp. Res.
+Part C: Emerg. Technol., vol. 130, 2021, Art. no. 103258.
+[34] A. Mostafizi, C. Koll, and H. Wang, “A decentralized and coordinated
+routing algorithm for connected and autonomous vehicles,” IEEE Trans.
+Intell. Transp. Syst., vol. 23, no. 8, pp. 11505–11517, Aug. 2022.
+[35] C. Mao and Z. Shen, “A reinforcement learning framework for the adaptive
+routing problem in stochastic time-dependent network,” Transp. Res. Part
+C: Emerg. Technol., vol. 93, pp. 179–197, 2018.
+[36] B. R. Kiran et al., “Deep reinforcement learning for autonomous driving:
+A survey,” IEEE Trans. Intell. Transp. Syst., vol. 23, no. 6, pp. 4909–4926,
+Jun. 2022.
+[37] M. van Otterlo, Reinforcement Learning: State-of-The-Art. Berlin, Germany: Springer, 2012.
+[38] J. Kober, J. A. Bagnell, and J. Peters, “Reinforcement learning in robotics:
+A survey,” Int. J. Robot. Res., vol. 32, no. 11, pp. 1238–1274, 2013.
+[39] R. S. Sutton et al. Introduction to Reinforcement Learning. Cambridge,
+U.K: MIT Press, 1998.
+[40] J. Zhang, H. Pei, X. J. Ban, and L. Li, “Analysis of cooperative driving
+strategies at road network level with macroscopic fundamental diagram,”
+Transp. Res. Part C: Emerg. Technol., vol. 135, 2022, Art. no. 103503.
+[41] D. A. Lazar, S. Coogan, and R. Pedarsani, “Routing for traffic networks
+with mixed autonomy,” IEEE Trans. Autom. Control, vol. 66, no. 6,
+pp. 2664–2676, Jun. 2021.
+[42] E. Bıyık, D. A. Lazar, D. Sadigh, and R. Pedarsani, “The green choice:
+Learning and influencing human decisions on shared roads,” in Proc. IEEE
+58th Conf. Decis. Control, 2019, pp. 347–354.
+[43] Z. Chen, F. He, Y. Yin, and Y. Du, “Optimal design of autonomous vehicle
+zones in transportation networks,” Transp. Res. Part B: Methodol., vol. 99,
+pp. 44–61, 2017.
+[44] G. Sharon, M. W. Levin, J. P. Hanna, T. Rambha, S. D. Boyles, and P. Stone,
+“Network-wide adaptive tolling for connected and automated vehicles,”
+Transp. Res. Part C: Emerg. Technol., vol. 84, pp. 142–157, 2017.
+[45] H. Pei, Y. Zhang, Y. Zhang, and S. Feng, “Optimal cooperative driving at
+signal-free intersections with polynomial-time complexity,” IEEE Trans.
+Intell. Transp. Syst., vol. 23, no. 8, pp. 12908–12920, Aug. 2022.
+[46] E. V. Denardo, Dynamic Programming: Models and Applications. New
+York, NY, USA: Dover, 2003.
+[47] M. Hessel et al., “Rainbow: Combining improvements in deep reinforcement learning,” in Proc. 32th AAAI Conf. Artif. Intell., 2018,
+pp. 3215–3222.
+[48] T. Schaul, J. Quan, I. Antonoglou, and D. Silver, “Prioritized experience
+replay,” 2015, arXiv:1511.05952.
+[49] H. Hasselt, “Double Q-learning,” in Proc. Adv. Neural Inf. Process. Syst.,
+2010, pp. 2613–2621.
+[50] H. V. Hasselt, A. Guez, and D. Silver, “Deep reinforcement learning with double Q-learning,” in Proc. AAAI Conf. Artif. Intell., 2016,
+pp. 2094–2100.
+[51] Z. Wang, T. Schaul, M. Hessel, H. Hasselt, M. Lanctot, and N. Freitas,
+“Dueling network architectures for deep reinforcement learning,” in Proc.
+Int. Conf. Mach. Learn., 2016, pp. 1995–2003.
+[52] M. Mehrabipour, L. Hajibabai, and A. Hajbabaie, “A decomposition
+scheme for parallelization of system optimal dynamic traffic assignment
+on urban networks with multiple origins and destinations,” Comput.-Aided
+Civil Infrastructure Eng., vol. 34, no. 10, pp. 915–931, 2019.
+[53] C. F. Daganzo, “The cell transmission model: A dynamic representation
+of highway traffic consistent with the hydrodynamic theory,” Transp. Res.
+Part B: Methodol., vol. 28, no. 4, pp. 269–287, 1994.
+[54] H. Tarhini and D. R. Bish, “Routing strategies under demand uncertainty,”
+Netw. Spatial Econ., vol. 16, no. 2, pp. 665–685, 2016.
+[55] A. Braylan, M. Hollenbeck, E. Meyerson, and R. Miikkulainen, “Frame
+skip is a powerful parameter for learning to play Atari,” in Proc. 29th AAAI
+Conf. Artif. Intell., 2015, pp. 10–11.
+
+437
+
+[56] A. Srinivas, S. Sharma, and B. Ravindran, “Dynamic frame skip deep Q
+network,” 2016, arXiv:1605.05365.
+
+Huaxin Pei received the B.S. degree from the University of Electronic Science and Technology of China,
+Chengdu, China, in 2017, and the Ph.D. degree in
+control science and engineering with the Department
+of Automation, Tsinghua University, Beijing, China,
+in 2023. His research interests include intelligent
+system testing, autonomous driving, cooperative driving, and intelligent vehicle-infrastructure cooperative
+systems.
+
+Jiawei Zhang received the B.S. degree in 2020 from
+Tsinghua University, Beijing, China, where he is
+currently working toward the Ph.D. degree with the
+Department of Automation. His research interests
+include autonomous driving, intelligent vehicles, and
+reinforcement learning.
+
+Yi Zhang (Senior Member, IEEE) received the B.S.
+and M.S. degrees from Tsinghua University, Beijing,
+China, in 1986 and 1988, respectively, and the Ph.D.
+degree from the University of Strathclyde, Glasgow,
+U.K., in 1995. He is currently a Professor with the
+Control Science and Engineering, Tsinghua University. His current research interests focuses on intelligent transportation systems. His active research
+interests include intelligent vehicle-infrastructure cooperative systems, analysis of urban transportation
+systems, urban road network management, traffic data
+fusion and dissemination, urban traffic control and management, advanced
+control theory and applications, advanced detection and measurement, and
+systems engineering.
+
+Huile Xu received the B.S. degree from Chongqing
+University, Chongqing, China, in 2016, and the Ph.D.
+degree from Tsinghua University, Beijing, China, in
+2021. From 2019 to 2020, he was a Visiting Ph.D.
+Student with the Division of Systems Engineering,
+Boston University, Boston, MA, USA, and the Center
+for Information and Systems Engineering, Boston
+University. He is currently a Postdoctoral Researcher
+with the Institute of Automation, Chinese Academy
+of Sciences, Beijing,China. His research interests
+include cooperative driving, intelligent vehicles, and
+optimal control.
+
+Li Li (Fellow, IEEE) is currently a Professor with
+the Department of Automation, Tsinghua University,
+Beijing, China, where he was involved in artificial
+intelligence, intelligent control and sensing, intelligent transportation systems, and intelligent vehicles.
+He has authored more than 170 SCI-indexed international journal papers and more than 50 international
+conference papers as the first or corresponding author. Dr. Li was a Member of the Editorial Advisory
+Board for Transportation Research Part C: Emerging
+Technologies, a Member of the Editorial Board of
+Transport Reviews, and ACTA Automatica Sinica. He is also an Associate
+Editor for IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS
+and IEEE TRANSACTIONS ON INTELLIGENT VEHICLES.
+
+Authorized licensed use limited to: Sejong Univ. Downloaded on July 07,2026 at 13:54:43 UTC from IEEE Xplore. Restrictions apply.
+
+

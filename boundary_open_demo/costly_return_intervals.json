@@ -1,0 +1,46 @@
+{
+ "resamples": 10000,
+ "seed": 7,
+ "convention": "Section V-A",
+ "seeds": 10,
+ "episodes": 3000,
+ "max_steps": 120,
+ "cells": {
+  "closed_time_min@--": {
+   "mean": 99.9,
+   "lo": 99.7,
+   "hi": 100.0,
+   "n": 10
+  },
+  "open_time_min@--": {
+   "mean": 0.0,
+   "lo": 0.0,
+   "hi": 0.0,
+   "n": 10
+  },
+  "costly_return_time_min@1.0": {
+   "mean": 46.25,
+   "lo": 39.05,
+   "hi": 54.3,
+   "n": 10
+  },
+  "costly_return_time_min@3.0": {
+   "mean": 5.0,
+   "lo": 2.0,
+   "hi": 8.0,
+   "n": 10
+  },
+  "costly_return_time_min@5.0": {
+   "mean": 3.05,
+   "lo": 0.0,
+   "hi": 6.8,
+   "n": 10
+  },
+  "costly_return_aligned@1.0": {
+   "mean": 82.85,
+   "lo": 75.8,
+   "hi": 89.9,
+   "n": 10
+  }
+ }
+}

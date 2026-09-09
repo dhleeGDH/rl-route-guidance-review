@@ -1,0 +1,29 @@
+{
+ "claim": "coincidence of Eq. (5)-(6) under a discounted return",
+ "condition": "gamma > 1 - Delta / ((K - k_min)*R_g + (K-1)*beta*Phi_max)",
+ "phi_max": 8,
+ "k_min": 3,
+ "K": 10,
+ "beta": 1.0,
+ "R_g": 10.0,
+ "delta": 2.0,
+ "denominator": 142.0,
+ "gamma_star": 0.9859,
+ "learner_gamma": 0.99,
+ "condition_satisfied_at_learner_gamma": true,
+ "grid_check": {
+  "pairs": 396,
+  "boundary": "closed",
+  "note": "greedy route under each reward from every OD pair at graph distance >= 3 on the 5x5 grid",
+  "same_route_pct": {
+   "1.0": 100.0,
+   "0.995": 100.0,
+   "0.99": 100.0,
+   "0.98": 100.0,
+   "0.95": 100.0,
+   "0.90": 100.0
+  }
+ },
+ "K_note": "the longest route entering the comparison; the route defining Delta runs two transitions past the longest completing route of the evaluation set (cold review 2026-09-05)",
+ "K_longest_completing_route": 8
+}

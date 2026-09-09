@@ -17,7 +17,10 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+# Rewrapped only when this file is the program. Importers that print first find the buffer
+# closed underneath them otherwise, which is the failure residual_exit_vi.py records.
+if __name__ == "__main__":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 from env import ACTIONS, N_SIDE, perimeter_links   # noqa: E402
 from train import make_eval_od                      # noqa: E402
@@ -38,7 +41,22 @@ def in_grid(r, c):
     return 0 <= r < N and 0 <= c < N
 
 
-def solve(dst_link, boundary, reward, iters=4000, tol=1e-10):
+def solve(dst_link, boundary, reward, iters=4000, tol=1e-10,
+          r_goal=None, r_exit=None, beta=None, gamma=1.0, n=None):
+    """The three weights default to the published aligned reward. A caller passing them can ask
+    the same computation what a single-term variant prefers, which is what an arrival-term arm
+    needs before its learned figure can be read as a learner falling short."""
+    R_GOAL_ = R_GOAL if r_goal is None else r_goal
+    R_EXIT_ = R_EXIT if r_exit is None else r_exit
+    BETA_ = BETA if beta is None else beta
+    # Round 352: the lattice side was a module global read by solve(), arrives() and in_grid(),
+    # so a caller sweeping the interior depth would have solved one lattice and acted on another.
+    # It is a parameter of both functions now, the module value remaining the default.
+    N = N_SIDE if n is None else n
+
+    def in_grid(r, c):
+        return 0 <= r < N and 0 <= c < N
+
     (dr, dc), _ = dst_link
 
     def phi(r, c):
@@ -55,14 +73,14 @@ def solve(dst_link, boundary, reward, iters=4000, tol=1e-10):
                 for a, (ar, ac) in enumerate(ACTIONS):
                     nr, nc = r + ar, c + ac
                     if in_grid(nr, nc):
-                        rw = -E_COST + (BETA * (phi(r, c) - phi(nr, nc))
+                        rw = -E_COST + (BETA_ * (phi(r, c) - phi(nr, nc))
                                         if reward == "aligned" else 0.0)
-                        best = max(best, rw + V[nr, nc])
+                        best = max(best, rw + gamma * V[nr, nc])
                     elif ((r, c), a) == dst_link:
-                        rw = -1.0 + (R_GOAL + BETA * phi(r, c) if reward == "aligned" else 0.0)
+                        rw = -1.0 + (R_GOAL_ + BETA_ * phi(r, c) if reward == "aligned" else 0.0)
                         best = max(best, rw)
                     elif ((r, c), a) in open_links:
-                        rw = -1.0 - (R_EXIT if reward == "aligned" else 0.0)
+                        rw = -1.0 - (R_EXIT_ if reward == "aligned" else 0.0)
                         best = max(best, rw)
                 nv[r, c] = best
         if np.max(np.abs(nv - V)) < tol:
@@ -72,20 +90,36 @@ def solve(dst_link, boundary, reward, iters=4000, tol=1e-10):
     return V, phi, open_links
 
 
-def arrives(o, dst_link, V, phi, open_links, reward):
+def arrives(o, dst_link, V, phi, open_links, reward,
+            r_goal=None, r_exit=None, beta=None, gamma=1.0, n=None):
+    """The greedy policy of V, read under the same weights V was solved with.
+
+    Round 61: the three weights were module constants here while solve() took them as
+    arguments, and gamma is threaded through both for the same reason, so a caller asking for a single-term reward got a value function under its own
+    weights and a greedy policy under the published ones. Every default caller is unaffected,
+    since the defaults are the module constants.
+    """
+    R_GOAL_ = R_GOAL if r_goal is None else r_goal
+    R_EXIT_ = R_EXIT if r_exit is None else r_exit
+    BETA_ = BETA if beta is None else beta
+    N = N_SIDE if n is None else n
+
+    def in_grid(r, c):
+        return 0 <= r < N and 0 <= c < N
+
     r, c = o
     for _ in range(4 * N * N):
         best, arg = NEG, None
         for a, (ar, ac) in enumerate(ACTIONS):
             nr, nc = r + ar, c + ac
             if in_grid(nr, nc):
-                rw = -E_COST + (BETA * (phi(r, c) - phi(nr, nc)) if reward == "aligned" else 0.0)
-                q, tgt = rw + V[nr, nc], (nr, nc)
+                rw = -E_COST + (BETA_ * (phi(r, c) - phi(nr, nc)) if reward == "aligned" else 0.0)
+                q, tgt = rw + gamma * V[nr, nc], (nr, nc)
             elif ((r, c), a) == dst_link:
-                rw = -1.0 + (R_GOAL + BETA * phi(r, c) if reward == "aligned" else 0.0)
+                rw = -1.0 + (R_GOAL_ + BETA_ * phi(r, c) if reward == "aligned" else 0.0)
                 q, tgt = rw, "ARR"
             elif ((r, c), a) in open_links:
-                rw = -1.0 - (R_EXIT if reward == "aligned" else 0.0)
+                rw = -1.0 - (R_EXIT_ if reward == "aligned" else 0.0)
                 q, tgt = rw, "EXIT"
             else:
                 continue
