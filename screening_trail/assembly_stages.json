@@ -1,0 +1,17 @@
+{
+ "route_13": 86,
+ "route_2": 1084,
+ "both": 15,
+ "identified": 1170,
+ "pooled": 1155,
+ "excluded_title_abstract": 1052,
+ "screened_in": 103,
+ "not_obtained": 3,
+ "obtained": 100,
+ "excluded_full_text": 6,
+ "versions_merged": 3,
+ "full_text_recorded": 91,
+ "abstract_only": 3,
+ "corpus": 94,
+ "arm_13_label": "Database and citation searching"
+}

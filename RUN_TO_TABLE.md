@@ -164,9 +164,9 @@ the same four ablation cells at 3000 episodes as bare per-seed lists.
 
 | Figure | Carries | Source |
 |---|---|---|
-| Fig. 1, screening flow | stage counts | `repo_v11/screening_trail/`. The drawing script, `plot_screening_flow.py`, is not in the published tree; the counts it draws are |
+| Fig. 1, the assembly of the corpus | every count in the figure | `screening_trail/assembly_stages.json`, written and checked by `screening_trail/assembly_stages.py`, and drawn by `screening_trail/plot_assembly.py`. The record asserts every stage as a difference of the stage above it and Supplementary Table S-6 prints the same fifteen values |
 | Fig. 2, experiment design | schematic | `repo_v11/boundary_open_demo/plot_experiment_design.py` |
-| Fig. 3, the family-by-field grid | every cell | `study_record_corpus_v9_coded.csv`. The drawing script, `plot_family_merged.py`, is a manuscript build script and is not deposited; every cell it draws is a tally over the deposited record |
+| Fig. 3, the family-by-field grid | every cell | `plot_family_merged.py` at the top level. **The counts are literals inside that script, not a tally computed from the record**; it asserts the three totals the manuscript states and nothing else. Each cell is checkable against `study_record_corpus_v9_coded.csv`, and `scripts/countcheck.py` of the development repository is what holds the two in step |
 | Fig. 4, the six evaluation networks | schematic | `repo_v11/benchmark_network/plot_networks.py`, over `networks/` |
 | Fig. 5, the reward-condition curves | a measured trace | `repo_v11/boundary_open_demo/plot_reward_condition.py` |
 

@@ -6,7 +6,7 @@ BENCH = os.environ.get('BENCHMARK_DIR',
 if not os.path.exists(os.path.join(BENCH, "benchmark_demo.py")):
     sys.exit("benchmark_demo.py not found in %s.\n"
              "The environment module is published in benchmark_network/ of the repository "
-             "at tag v1.6.0; set BENCHMARK_DIR to that directory." % BENCH)
+             "at tag v1.7.0; set BENCHMARK_DIR to that directory." % BENCH)
 sys.path.insert(0, BENCH)
 import torch; torch.set_num_threads(1)
 import benchmark_demo as B

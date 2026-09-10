@@ -1,17 +1,50 @@
-# v1.6.0: the material behind every printed value
+# v1.7.0: the figure generators
 
-Supersedes v1.5.0 of the same concept record, DOI 10.5281/zenodo.21523970, which always resolves to
-the newest version. Cited as tag v1.6.0 in Section V and in Supplementary Section S-VI of the
+Supersedes v1.6.0 of the same concept record, DOI 10.5281/zenodo.21523970, which always resolves to
+the newest version. Cited as tag v1.7.0 in Section V and in Supplementary Section S-VI of the
 manuscript.
+
+v1.6.0 was tagged on GitHub and its Zenodo upload was held by an access failure, so no version DOI
+was minted for it. This version supersedes it on the record and carries everything it held.
+
+## What is new in v1.7.0
+
+**The generator of Fig. 1 (`screening_trail/`).** Three files: `assembly_stages.py` holds the
+fifteen stage counts as constants and asserts every stage as a difference of the stage above it,
+`assembly_stages.json` is the record it writes, and `plot_assembly.py` draws the figure from that
+record and writes nothing of its own. Supplementary Table S-6 prints the same fifteen values, and
+the development repository's `check_flow_stages.py` holds the two in step. Up to v1.6.0 none of the
+three was published and the figure's counts could be read only off the page.
+
+**The generator of Fig. 3 (`plot_family_merged.py`).** The script that draws the family-by-field
+grid. Its counts are literals inside it rather than a tally computed from the study record, which
+`RUN_TO_TABLE.md` now states in the Fig. 3 row rather than leaving a reader to infer; the script
+asserts the three totals the manuscript states, and every cell is checkable against
+`study_record_corpus_v9_coded.csv`.
+
+**Fig. 1 is redrawn.** The figure v1.6.0 described was the PRISMA 2020 flow diagram in everything
+but its three stage bands, box for box and phrase for phrase. This review is neither registered nor
+PRISMA-compliant, so the resemblance claimed a protocol it does not run. The figure is now two
+bands and four levels: the two routes side by side and unequal, the pool decomposed as the record
+decomposes it, one reading band split left and right with the records leaving stated inside it, and
+the corpus split by how each study was read. The counts are unchanged; `assembly_stages.json` is
+the same record under a new name.
+
+**Both scripts resolve their output inside this package.** `plot_assembly.py` and
+`plot_family_merged.py` wrote into a working-tree path that does not exist here. Each now writes
+beside itself when no manuscript tree is found, which is the treatment `fulltext_scan.py` and the
+`eval_substrate/` scripts already had.
+
+**The two `sioux30` runners name tag v1.7.0** as the source of `benchmark_demo.py`.
+
+## What v1.6.0 added
 
 Supplementary Section S-VI states that every result reported in the study is recomputed from the
 archived tag. Of the versions up to v1.5.0 that was true of most values and not of all: the scripts
 and outputs behind Table S-22, behind the discounted column of Table V, behind the learner sweep,
 behind the retrained published implementation and behind several controls existed only in the
-author's working tree. This version deposits them. It also deposits the discount-consistent shaping
-variant, which several printed cells now report.
-
-## What is new
+author's working tree. v1.6.0 deposited them, and the discount-consistent shaping
+variant with them.
 
 **The discount-consistent shaping variant (`m2c/`).** The shaping term of the destination-aligned
 reward is multiplied by `(1 - gamma)`, which makes the increment consistent with the learner's
