@@ -12,7 +12,7 @@ idx,title,category,platform_names,evidence_source
 10,XRouting: Explainable Vehicle Rerouting for Urban Road Congestion Avoidance using Deep Reinforcement Learning,named-platform,SUMO;OpenAI Gym/Gymnasium,fulltext-pdf
 11,RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles,named-platform,SUMO,fulltext-pdf
 12,Congestion-Aware Path Planning With Vehicle-Road Cooperation in AIoV,not-addressed,,fulltext-pdf
-13,Reinforcement learning of route choice considering traveler's preference,unclear,,abstract
+13,Reinforcement learning of route choice considering traveler's preference,custom-described,MATLAB,"full-text (T-1999: ""MATLAB software is used to solve the reinforcement learning model""; the Nguyen-Dupuis network is simulated in it)"
 14,Reinforcement Learning Method with Dynamic Learning Rate for Real-Time Route Guidance Based on SUMO,named-platform,SUMO,fulltext-pdf
 15,Model-Based Deep Reinforcement Learning for Energy Efficient Routing of a Connected and Automated Vehicle,named-platform,SUMO,fulltext-pdf
 16,Reinforcement Learning-based Sequential Route Recommendation for System-Optimal Traffic Assignment,not-addressed,,fulltext-pdf
@@ -38,7 +38,7 @@ idx,title,category,platform_names,evidence_source
 37,Real-time system optimal traffic routing under uncertainties - Can physics models boost reinforcement learning?,custom-described,synthetic road network (unnamed platform),fulltext-pdf
 38,Network-Constrained Policy Optimization for Adaptive Multi-agent Vehicle Routing,named-platform,SUMO,fulltext-pdf
 39,A Data-Driven Reinforcement Learning Based Multi-Objective Route Recommendation System,not-addressed,,fulltext-pdf
-40,Emergency vehicle rescue route optimization based on deep reinforcement learning in highway network,unclear,,abstract
+40,Emergency vehicle rescue route optimization based on deep reinforcement learning in highway network,custom-described,synthetic highway node graph (unnamed platform),"full-text (T-1999: ""to simulate a realistic emergency traffic environment, we constructed a road network node graph for the experiment""; ""Using random seeds to control the amount and length of edges"")"
 41,Autonomous Vehicle Routing Optimization in a Competitive Environment: A Reinforcement Learning Application,named-platform,NetLogo,fulltext-pdf
 42,Multi-objective route recommendation method based on Q-learning algorithm,not-addressed,,fulltext-pdf
 43,Agent-Based Route Planning with Deep Q Learning,named-platform,SUMO,fulltext-pdf

@@ -1,0 +1,1935 @@
+Transportation Letters
+The International Journal of Transportation Research
+
+ISSN: 1942-7867 (Print) 1942-7875 (Online) Journal homepage: www.tandfonline.com/journals/ytrl20
+
+Reinforcement learning of route choice
+considering traveler’s preference
+Xueqin Long, Jianxu Mao, Zhongbao Qiao, Peng Li & Wei He
+To cite this article: Xueqin Long, Jianxu Mao, Zhongbao Qiao, Peng Li & Wei He (2024)
+Reinforcement learning of route choice considering traveler’s preference, Transportation
+Letters, 16:7, 658-671, DOI: 10.1080/19427867.2023.2231689
+To link to this article: https://doi.org/10.1080/19427867.2023.2231689
+
+Published online: 10 Jul 2023.
+
+Submit your article to this journal
+
+Article views: 365
+
+View related articles
+
+View Crossmark data
+
+Citing articles: 4 View citing articles
+
+Full Terms & Conditions of access and use can be found at
+https://www.tandfonline.com/action/journalInformation?journalCode=ytrl20
+
+TRANSPORTATION LETTERS
+2024, VOL. 16, NO. 7, 658–671
+https://doi.org/10.1080/19427867.2023.2231689
+
+Reinforcement learning of route choice considering traveler’s preference
+Xueqin Long, Jianxu Mao, Zhongbao Qiao, Peng Li and Wei He
+Collage of Transportation, Chang’an University, Xi’an, Shaan Xi Province, China
+ABSTRACT
+
+ARTICLE HISTORY
+
+Travelers always perform some preference during the decision-making process. The preference will affect
+the decision results and can be improved by continuously learning. In order to understand the influence of
+individual preference on travel behavior choice , two individual preferences, including indifference pre­
+ference and compulsive preference are considered in the paper. Two updating mechanisms of compulsive
+preference are proposed to obtain the choosing probability of all alternatives. Reinforcement learning
+models are established integrating the gain stimulating and loss stimulating considering expected utility.
+Nguyen Dupuis network is adopted for numerical simulation to study the updating process. Simulation
+results denote that the equilibrium state is much more efficient when preference learning mechanism is
+considered comparing with the traditional stochastic user equilibrium model, and can decrease the total
+travel time greatly, which can be applied for urban traffic management. Personalized traffic guidance is the
+effective solution to traffic congestion in the future
+
+Received 24 April 2022
+Accepted 27 June 2023
+
+Introduction
+Route choice modeling is the fundamental and critical component
+in transportation systems analysis and planning. Generally, factors
+that influencing travelers’ route choice behavior includes travel
+attributes, road preference, and socio-economic attributes (Sun
+et al. 2014). Various behavior mechanisms of route choice have
+been proposed (Mahmassani and Chang 1987; Sun, Cheng, and Ma
+2018; Zhang and Yang 2015), and equilibrium assignment is the
+traditional and classic model which is based on utility maximization
+theory (Beckmann, Mcguire, and Winster 1956).
+However, utility maximization mechanism has been criticized
+for ignoring the difference of travelers’ individual preference and
+cognition (Simon 1972). Then, bounded rationality has been widely
+adopted for behavior analysis (Mahmassani and Chang 1987).
+Numerous practical cases show that travelers’ route choice behavior
+exhibits significant bounded rationality, which means travelers may
+not necessarily choose the route with the minimum cost (Li et al.
+2019).
+Bounded rationality considering travelers’ limit capability of
+finding the best alternative, which is due to travelers’ individual
+preferences. The subjective intentions, reference point, individual
+habits, the attitudes toward risk, and the learning abilities all can
+summarized as the preference. Travelers’ preferences may change
+depending on various factors, such as the travel purpose, the
+departure time, the travel mode, and travel time. Due to the differ­
+ent preferences, travelers’ understanding and requirements for the
+optimal path may also vary from person to person. Therefore, the
+route choice behavior may not entirely the same for all drivers.
+Traffic assignment is always applied to study the route choice
+model. Table 1 lists the characteristic of some commonly adopted
+models.
+The traditional traffic assignment models do not consider tra­
+velers’ preferences, which assume that all travelers are uniformly
+fully rational. The current study about subjective preferences most
+focuses on static travel behavior and cannot describe travelers’
+
+CONTACT Xueqin Long
+
+xqlong@chd.edu.cn
+
+KEYWORDS
+
+Route choice; reinforcement
+learning; generalized travel
+time; indifference threshold;
+compulsive preference
+
+route choice and equilibrium process. Travelers’ preferences and
+decision-making process are not considered simultaneously in the
+traditional traffic assignment models. Therefore, it is necessary to
+analyze the micro-mechanism of route choice behavior based on
+reasonable assumptions, and to improve and expand traditional
+route choice models. Additionally, the mechanism of learning,
+strengthening, and feedback of subjective preferences are not
+reflected during the learning process.
+The article establishes a reinforced learning (RL) model incor­
+porating two kinds of preferences, describes the day-to-day learning
+process of route choice. The learning model considers both indif­
+ference band and compulsive preference. Indifference band denotes
+the similar perceptive utility for the two different routes, and
+compulsive preference denotes the loyalty and exclusion of some
+alternatives. The two kinds of preference comprehensively describe
+travelers’ psychological states when choosing paths.
+Regret has been introduced into the dynamic reinforcement
+learning model, and the stimulation has been generated by all the
+historical experience, not only the current trip. The learning model
+establishes the relationship between psychological preferences and
+route choice behavior by introducing perceived stimulation, which
+explains the influence of travelers’ preferences on route choice
+behavior at each trip considering the regret or joyful when they
+are faced with loss or gain. The reinforcement learning model
+reveals the mechanism of learning, strengthening, and feedback of
+subjective preferences.
+The remaining text is organized as follows. Section 2 sum­
+marizes the literature review about route choice and travelers’
+preference. In Section 3, RL model of route choice model both
+considering the indifference band and fixed compulsory preference
+is proposed to describe the behavior evolution process of route
+choice. Section 4 assumes several simulation scenarios to study
+the learning process and equilibrium flow. Section 5 discusses the
+traffic flow evolution results of different simulation scenarios.
+Section 6 summarizes the paper and puts forward some suggestions
+for the future work.
+
+Collage of transportation, Chang’an University, Xi’an, Shaan Xi Province 710064, China
+
+© 2023 Informa UK Limited, trading as Taylor & Francis Group
+
+TRANSPORTATION LETTERS
+
+659
+
+Table 1. Comparison of the traffic assignment models.
+Methods
+Static traffic equilibrium
+
+Models
+Travelers preference Equilibrium process
+Assignment criterion
+User equilibrium/system optimal
+Not considered
+Not considered
+Maximum utility
+All travelers are completely rational and have no individual preference. All travelers choose the shortest route. The equilibrium can only
+denote the result, and individual learning procedure is not reflected.
+
+Dynamic traffic
+assignment
+
+Proportional-switch adjustment/stochastic day-to-day
+Not considered
+Considered
+Maximum utility
+dynamics
+The learning procedure is denoted by dynamic adjustment. The inflow and outflow of a certain route is calculated by travel time saving.
+However, the individual switching behavior has been not involved.
+
+Bounded rationality
+
+Bounded rationality user equilibrium
+
+Inertial user equilibrium
+
+Bush–Mosteller learning model
+
+Literature review
+Travelers’ preference
+Preference involved in bounded rationality includes mispercep­
+tions, prevailing choice set, satisfactory principle and choice pre­
+ference, and so on, which always exhibits as choosing the same
+alternatives repeatedly, sticking to or excluding some fixed choices
+(Di et al. 2017). Preference is mostly dominated by the individual’s
+habit strength, sensitivity of gain and loss, and difference of refer­
+ence point.
+Indifference band is generally used for quantifying the preference
+in the current research, which is a well-known and ubiquitous
+mechanism derived from the perspective of bounded rationality.
+The consideration means that, if the travel cost difference between
+current choice and the best alternatives is less than the indifference
+band, travelers will not change his/her choice and stick to the current
+strategy. Indifference band has been widely applied in discrete mod­
+els of route choice (Diana and Ceccato 2019; Sun, Cheng, and Ma
+2018; Yu, Han, and Ochieng 2020) and traffic equilibrium models
+(David et al. 2018; Guo, Wang, and Wang 2022).
+There are several estimation methods have been proposed to
+determine the width of indifference band. The quantification of
+indifference band varied: 10 min (Mahmassani and Chang 1985),
+5–10 min, or 17%–22% (Srinivasan and Mahmassani 1999), and
+5%–20% (Di et al. 2017). Some researchers discovered that indif­
+ference band existed due to switching inertia and flow patterns (van
+Essen et al. 2015; Zhang and Yang 2015). Additionally, indifference
+band may be a function of average travel time, travel time differ­
+ence, and travelers’ individual characteristics (Carrion and
+Levinson 2019; Zhu and Levinson 2012).
+Preference is also widely expressed as inertia. Inertia is charac­
+terized as travelers sticking to previous choice and do not necessa­
+rily minimizing their travel time, which is usually considered as
+a major exogenous stochastic variable. Thorhauge, Swait, and
+Cherchi (2020) found that inertia was influenced by gender, pre­
+sence of children in the household as well as work type, and higher
+inertia levels would lead to higher rescheduling penalties and lower
+willing to shift departure time. Zhang and Yang (2015) defined
+three levels of inertia (those are fully non-inertial, partially inertial,
+and fully inertial), incorporated inertia into the traffic assignment
+as an exogenous stochastic factor, and proposed a model of inertial
+
+Considered
+Not considered
+Not take the shortest paths
+Only the static route choice behavior for one trip is described. When the travel
+gains between two routes exceeds the indifference band, travelers will
+choose the shortest route.
+Considered
+Not considered
+Consider a subset of feasible
+paths
+Travelers have special preference for some certain routes, therefore they have
+different alternative-sets. They will make choice from the alternative-sets
+not all routes.
+Not considered
+Considered
+Maximum utility
+The dynamic route choice switching behavior has been driven and updated by
+gains and loss at last time. Travelers are all completely rational, and the
+gains and loss are denoted by travel time saving.
+
+user equilibrium. Gao et al. (2022) applied a joint random para­
+meter logit model to reveal the significant interactions of inertia
+with level-of-service and found that personal characteristics and
+travel contexts both affect the inertia of different transport modes.
+Batista and Leclercq (2020) integrating reference points with user
+equilibrium models.
+Traveler’s subjective preference has been widely accepted in the
+field of route choice. However, preference was usually considered as
+an exogenous variable, which has been considered as specific values
+through assumptions. The internal mechanism of preference related
+to travel behavior has not been revealed clearly. Only one kind of
+preference has been considered in current studies, such as indiffer­
+ence band, inertia, and loyalty. Additionally, the inertia behavior of
+excluding some fixed choices was rarely involved. The description of
+travel preference cannot reflect the authentic travel behavior.
+Reinforced learning (RL)
+Travelers’ preference may be strengthened or improved by RL
+according to the current information and previous experience
+(Busemeyer and Townsend 1993; Erev and Barron 2005). RL is
+the dominant method to describe behavior under uncertainty,
+which is usually described by statistical models.
+Reinforced learning model is used to describe the day-to-day
+route choice behavior. Zhang et al. (2018) studied the interactive
+learning mechanism among travelers considering friends’ travel
+information. Qin et al. (2019) established a stochastic, dynamic
+model to reproduce the repeated decision-making process based
+on decision field theory. Zhou et al. (2020) introduced the Bush–
+Mosteller (B-M) RL scheme to model the route choice behaviors of
+the travelers. The above researches focused on how behavior learn­
+ing affects the equilibrium flow. Meanwhile, RL was also adopted
+on travel mode choice in a long time (Marek 2018).
+Additionally, some other learning modes have been proposed
+and applied to travel behavior study. Ma and Pace (2017) estab­
+lished a four-strategy learning model, including reinforcement
+learning, extended reinforcement learning, joint strategy fictitious
+play , and Bayesian learning. Xiong, Zhou, and Zhang (2018)
+established a new learning model considering the attributes of
+paths and modes. Yu and Gao (2019) proposed two kinds of routing
+policy, including one-step prediction (day-to-day) and full-
+
+660
+
+X. LONG ET AL.
+
+trajectory prediction (predict next K days simultaneously). Penalty
+function was incorporated into the traditional stochastic learning
+mode to improve the Bayes’ Rule and update the route choice
+probabilities (Ozbay, Datta, and Kachroo 2001). Fakhrmoosavi
+et al. (2019) proposed an adaptive learning approach. Sometimes,
+long-term learning process may be a function of all previous out­
+comes, and learning rate was calibrated by Mixed Logit models (Elia
+and Shiftan 2010).
+The current learning model only considers objective gains and
+losses during the evolution process, without reflecting travelers’
+subjective preferences. At the same time, fixed values has been
+applied as the indicators of measuring gains and losses. However,
+the reference point (that is the expected returns) will change with
+the learning process. As elaborated above, little attention has been
+paid on how do the expected utility, previous experience, learning
+ability affect traveler’s day-to-day route choice behavior. Then RL
+mechanism cannot be clearly revealed because of the one-sidedness
+of individual preference.
+Travelers’ route choice mechanism is the premise of route gui­
+dance. However, the current traffic guidance strategies consider the
+travelers are completely rational and the same guidance alternatives
+have been recommended to different travelers, which cannot
+achieve the goal of resource’s optimal allocation.
+Overall, the article introduces two kinds of subjective prefer­
+ences, namely the indifference preference and compulsive prefer­
+ence, to construct a route choice model. Updating the route choice
+probability through exclusivity and loyalty preferences, which more
+comprehensively reveal the impact of subjective preferences on
+travel behavior. Integrating subjective preferences into RL model,
+the article establishes revenue and loss stimulation models through
+continuously updating expected returns based on historical returns
+considering subjective preferences. This study establishes an inter­
+nal logical relationship between objective gains/losses and subjec­
+tive preferences, further revealing the inherent impact of subjective
+preferences on travelers’ dynamic decision-making behavior. In
+practice, the research establishes the relationship between micro
+behavioral preferences and macro traffic flow, which provides
+a theoretical basis for travel guidance.
+
+2010), and 0:5 (Asensio and Matas 2008), respectively. Then, the
+fixed value γ = 0.7 is adopted in the article considering the average
+value of above studies.
+The generalized travel time Tkτ consists of the following three
+parts:
+① ετk . ετk represents the standard deviation of predicted travel time
+of route k in the τth trip. ετk is expressed by the standard deviation
+between the actual travel time and the travel time released by ATIS
+in the previous τ − 1 trips.
+
+j
+
+whereIk represents the travel time of route k released by Advanced
+Technical Information System
+j
+(ATIS) in the jth trip. tk is the actual travel time of route k in the
+jth trip, which can be calculated by Bureau of Public Road (BPR)
+function.
+②Ikτ . ATIS can only release the predicted travel time distribution
+according to the average and standard deviation of the previous
+actual travel time. In this paper, Ikτ is considered to be a random
+variable and is subject to normal distribution, that is,
+�
+Ikτ , NðEτk 1 ; σ τk 1 Þ2 . Then,
+
+where σ τk 1 and Eτk 1 represent the standard deviation and mean
+value of the actual travel time of route k in the previous τ-1 trips,
+respectively.
+③ eτk . eτk represents the predicted average travel time of route k in
+the τth trip, which is related with the average actual travel time of
+previous trips and the predicted travel time released by ATIS at
+current trip. Therefore, eτk can be denoted as:
+
+Reinforcement learning of route choice
+Travel time
+Travel time has significant uncertainty, which is related to historical
+travel time, as well as its mean and variance value. Travel time of
+this paper considers the impact of time uncertainty and reliability
+requirements on route choice.
+Generalized travel time
+The elements involved in the traffic system are usually uncertain.
+Therefore, some scholars assume that travelers may make decisions
+considering the weight of travel time’s mean value and standard
+deviation (Hollander 2006). The mean–standard deviation function
+is introduced to define the generalized travel time under uncertain
+conditions, which is denoted as:
+where eτk and ετk represent the mean value and standard deviation of
+the predicted travel time of route k in the τth trip, respectively. γτk is
+the weight of standard deviation of the predicted travel time, which
+transforms the uncertainty into travel time. Some scholars (Asensio
+and Matas 2008; Hollander 2006; Li, Hensher, and Rose 2010)
+estimated γ through a large number of experiments. For these
+studies,γ ¼ 0:7 (Hollander 2006), 0:8 (Li, Hensher, and Rose
+
+When τ = 1, there is no previous experience for travelers to refer.
+τ
+Therefore, it is considered that Ikτ ¼ t0;k , Ti;k
+¼ Ikτ ¼ t0;k , where t0;k
+represents the free-flow travel time of route k.
+Expected travel time
+In the day-to-day route choice behavior, alternative will also be
+constantly adjusted according to the travel experience, which is
+decided by expected travel time to a large extent. In long-term
+dynamic travel progress, the expected travel time is influenced by
+the reliability requirements and will be continuously updated with
+historical experience. Therefore, the expected travel time is not
+a fixed value.
+The travel time reliability δ is introduced, which is defined
+as the probability reaching the determined destination within
+a specified time. Then the expected travel time of alternative
+k for decision-maker i at the (τ-1)th trip Aτi;k 1 can be
+expressed as:
+
+That is, the expected travel time is the δth quantile of the predicted
+travel time of route k.
+
+TRANSPORTATION LETTERS
+
+Traveler’s preference
+Different from previous research, two individual preferences are
+discussed in this paper, including indifference preference and com­
+pulsive preference. Sometimes, travelers will not switch to the short­
+est route if the benefit of switching is within the indifference band,
+because the optimal route has the similar perceptive utility to the old
+one. On the contrary, some travelers may have a compulsive pre­
+ference for one or several alternatives, including liking or disliking
+extremely. If the traveler prefers a certain route particularly, the route
+always has a high probability of being selected. Otherwise, if the
+traveler excludes a certain alternative for some reasons, the selected
+probability of the option will be much smaller than other routes.
+Compulsive preference
+Compulsive preference includes travelers’ loyalty and exclusion of
+some alternatives. wτi;k indicates the loyalty of traveler i to route k in
+τ
+is introduced to represent the aversion degree of
+the τth trip. ri;k
+traveler i to alternative k in the τth trip.
+Two cases are proposed considering the different generation
+mechanism of preference:
+τ
+Case 1: wτi;k and ri;k
+are both exogenous variables, which are
+determined before travelers make choices and will not change
+during the choice process, so they can be taken as constants in
+advance.
+τ
+are both endogenous variables. The values
+Case 2: wτi;k and ri;k
+relate to the benefit obtained from route k in the previous trips for
+traveler i. Greater benefit will induce stronger loyalty to the certain
+route.
+For case 2, when τ ¼ 1, preferences of all travelers are deter­
+mined by the free-flow travel time.
+
+661
+
+indifference band and its negative value, traveler will make
+a route choice according to their loyalty.
+Assuming that the route-set is K between the same origin and
+destination, the initial selection probability of route k in the τth trip
+0;τ
+for traveler i is p0;τ
+i;k , then pi;k can be expressed as:
+
+Considering the two kinds of preference, the modified probability
+p1;τ
+i;k of traveler i choosing route k in the τth trip is:
+
+Reinforcement learning
+
+For case 2, when τ > 1, traveler’s loyalty is determined by the
+preference of last trip. φτi;k 1 indicates the preference of traveler i to
+route k at the (τ-1)th trip.
+
+Travelers’ route choice duration a long time is usually a process
+of continuous adaptation and adjustment under certain internal
+and external influences. The adjustment and adaptation beha­
+vior can be cansidered as learning process, which means that
+travers can update the route selection probability according to
+the received information and previous experience through the
+RL process.
+Travelers can accumulate and enrich their travel experience
+through continuous learning. Due to the changes of traveler’s
+personal experience and external environment, the subjective pre­
+ference is further strengthened and also reflected in the adjustment
+of the decision results.
+
+For both case 1 and case 2, the loyalty and repulsion to route k meet
+the following conditions:
+
+Learning stimulation
+Decision-makers’ learning intensity is always represented by learn­
+ing stimulation based on expected utility of historical chosen alter­
+native. The degree of learning stimulation varies with the gains and
+losses. When the decision-maker is faced with gains, the stimulation
+degree is measured in terms of the maximum profit; when the
+decision-maker is faced with losses, the minimum regret is used
+to describe the stimulation degree (Di et al. 2013). Therefore, if the
+decision-maker i chooses the alternative k in the (τ-1)th trip, the
+stimulation Lτi;k 1 of the strategy is:
+
+Indifference preference
+Assuming the existence of a non-negative indifference band, define
+θi is the indifference band of traveler i. When the traveler decides
+which one to choose, actual travel time of the shortest route at the
+last trip is always taken as the reference point. Define the switching
+gain as the travel time difference between the current route and the
+shortest route of the last trip.
+If the switching gain is less than the negative indifference band,
+traveler will choose the current route again. If the switching gain is
+greater than the indifference band, traveler will choose the shortest
+route of the last trip. If the switching gain is between to the
+
+τ 1
+where ti;k
+are actual travel time of alternative k for decision-maker i at
+the (τ-1)th trip. The continuous differentiable function proposed by
+Chorus
+� (2010) is�used to represent the regret value of the decision.
+�τ 1
+�
+max�ti;h
+Aτi;k 1 � represents the maximum profit between all other
+h2K
+
+662
+
+X. LONG ET AL.
+
+the minimum regret of option k compared with all the other alter­
+natives. Lτi;k 1;þ and Lτi;k 1; represent the gain stimulation and the loss
+stimulation of option k to decision-maker i in the (τ-1)th trip,
+respectively.
+
+Step 5: Calculating the final chosen probability p2;τ
+i;k (formula
+1;τ
+(15)) based on compulsive preference pi;k and stimula­
+τ;
+tion Sτ;þ
+i;k and Si;k .
+Step 6: Aggregating the final chosen probability p2;τ
+i;k and obtain
+the final flow of each section qτk (formula (16)).
+Step 7: Repeating the above process for the next iteration. τ = τ + 1.
+
+Cumulative stimulation
+The gains and losses of route k during all the previous trips are
+taken into consideration in this paper. Since the later travel experi­
+ence has a greater influence on the current decision-making com­
+paring with earlier travel experience, then the exponential
+smoothing method is used to describe the influence’s declining
+trend. The cumulative stimulation Sτi;k of route k to traveler i in
+the τth trip is:
+
+MATLAB software is used to solve the reinforcement learning
+model, and the recommended computer configuration for numer­
+ical simulation analysis is as follow: Intel Core i7 or higher CPU,
+with a frequency of at least 3.5 GHz. A solid-state drive as the
+system disk and software installation disk, with a capacity of at
+least 256GB will be recommended. 16 GB or higher DDR4 memory.
+It is recommended to use graphics cards with a minimum of 8 GB
+of video memory. 64-bit Windows 10 operating system is suggested.
+
+τ 1
+alternatives and option k. min½ lnð1 þ expðti;h
+h2K
+
+Aτi;k 1 ÞÞ� indicates
+
+where β represents the smoothing coefficient. The larger β means
+traveler has a more profound perception of the nearby travel
+experience.
+τ;
+The gain stimulation Sτ;þ
+i;k and loss stimulationSi;k can be
+expressed as:
+
+Final chosen probability and traffic flow
+In the τth trip, traveler i will update the choice probability of route
+k according to the previous stimulation. The final chosen probabil­
+ity of route k for traveler i is:
+
+Assume number of travelers is N, then the volume of route k at
+the τth trip can be decribed as:
+
+0;τ
+when τ = 1,Aτi;k ¼ t0;k , Sτi;k 1 ¼ 0, then p1;τ
+i;k ¼ pi;k .
+
+Solving procedure
+The solving methods can be described as follow:
+Step 1: τ = 1. Calculating the indifference preference p0;τ
+i;k . For
+case 1 (compulsive preference are both exogenous vari­
+ables), θi and wτi;k are all constant given beforehand. For
+case 2 (compulsive preference are both endogenous
+variables), wτi;k can be obtained by formula (6–8) on
+the basis of travel time tkτ .
+Step 2: Calculating the original chosen probability p0;τ
+i;k and
+1;τ
+modified probability pi;k applying formula (10–11) for
+both case 1 and case 2.
+Step 3: Calculating the stimulation Lτi;k 1 . The stimulation Lτi;k 1 is
+caculated through formula (12) combing expected travel
+τ 1
+time Aτi;k 1 and the travel time ti;h
+.
+Step 4: Calculating the gain stimulation Sτ;þ
+loss
+i;k and
+stimulationSτ;
+using
+formula
+(14).
+i;k
+
+Numerical simulation
+The classic Nguyen Dupuis road network is used for simulation, and
+the basic parameters involved in the road network are shown in
+Figure 1. The road network consists of 13 nodes and 19 sections. The
+values in brackets in Figure 1 are the free-flow travel time t0 (h) and
+capacity C (pcu/h) of the links. There are four OD pairs in the road
+network, including 1–2, 1–3, 4–2, and 4–3. The total travel demand
+(pcu) of each OD pair is: D12 = 100, D13 = 200, D42 = 150, D43 = 150.
+Referring to probability theory, the cumulative probability of
+85% is usually used to describe the samples’ distribution pattern.
+Then, the expected travel time of route k is the predicted travel time
+corresponding to 85% cumulative probability. δ = 85% will be
+adopted during numerical analysis.
+Several different scenarios are designed to study the evolution
+process of network volume. Various parameters’ influence on the
+flow distribution will be analyzed deeply. Define the stable state as
+the flow of each route does not change and finally keep steady,
+which can be considered as the equilibrium state.
+τ
+(1) Case 1: the preference wτi;k and ri;k
+are both exogenous
+variables.
+Simulation parameters of the basic scenario are set as follows:
+Indifference band θk �is considered to follow the normal distri­
+bution N 0:2 � t0;k ; 0:01 , that is because the indifference threshold
+θ is generally 20% of the travel time according to the relevant
+research (Di et al. 2017; Srinivasan and Mahmassani 1999). The
+smoothing coefficient β = 0.7, and the route preference wτi;k is ran­
+domly valued within 0–0.5.
+The average change rate of all sections’ flow has been taken as
+the evaluating indicator of network flow evolution.Then the traffic
+flow evolution process is analyzed when a certain parameter
+changes and others parameters keep fixed.
+① Indifference band θ changes (scenario 1)
+The average rate of the network flow change is shown in
+Figure 2(a) when EðθÞ is valued between 0:1 � t0;k ~0:4 � t0;k .
+② Smoothing coefficient β changes (scenario 2)
+The average rate of flow change is shown in Figure 2(b) when β
+is valued within 0.5–0.9 and the other parameters remain
+unchanged.
+Figure 2(a) indicates that network flow reaches the initial
+basic stable state after about 100 iterations. The average rate of
+flow changing almost keeps unchanged and fluctuates slightly
+after about 150 iterations. When the iteration exceeds 200, the
+network reaches the final equilibrium state. In the first 20
+iterations, change rate of the network flow decreases rapidly
+and fluctuates greatly, indicating that travelers’ constantly
+
+TRANSPORTATION LETTERS
+
+Figure 1. Nguyen Dupuis network.
+
+(a). Scenario 1
+
+(b). Scenario 2
+Figure 2. Average rate of flow change under different parameters.
+
+663
+
+664
+
+X. LONG ET AL.
+
+Table 2. Equilibrium flow of all sections under different paremeters.
+Scenario 1
+
+Scenario 2
+
+β ¼ 0:7
+
+EðθÞ ¼ 0:2 � t0;k
+
+E ð θÞ
+Section
+1–5
+1–12
+4–5
+4–9
+5–6
+5–9
+6–7
+6–10
+7–8
+7–11
+8–2
+9–10
+9–13
+10–11
+11–2
+11–3
+12–6
+12–8
+13–3
+
+0:1 � t0;k
+155
+145
+190
+110
+178
+167
+188
+85
+56
+133
+106
+77
+200
+162
+144
+150
+95
+50
+200
+
+0:2 � t0;k
+164
+136
+198
+102
+194
+168
+196
+85
+62
+134
+111
+71
+199
+156
+139
+151
+87
+49
+199
+
+β
+0:3 � t0;k
+172
+128
+192
+108
+192
+172
+185
+85
+70
+117
+120
+96
+184
+181
+130
+166
+78
+50
+184
+
+0:4 � t0;k
+165
+135
+209
+91
+207
+167
+202
+91
+61
+141
+110
+77
+181
+168
+140
+169
+86
+49
+181
+
+changing their decisions. Larger indifference band induces
+more stable evolution process corresponding to less average
+rate of flow change. However, the convergence speed of the
+network flow is almost independent of the indifference band.
+The variation trend of network flow when parameter β changes
+showing in Figure 2(b) is similar to that showing in Figure 2(a).
+The equilibrium flow of all sections is shown in Table 2.
+Remarks: μ and σ denote the mean and standard deviation of
+each section’s flow under different scenarios, respectively.
+It can be seen that, the equilibrium flow for each section is
+different in the horizontal perspective corresponding to
+a different indifference band and smoothing coefficient.
+Defining the route overlap coefficient as the number of routes that
+the section belongs to, then the equilibrium flow of the sections with
+high route overlap coefficient and low capacity is small, such as sec­
+tions 6-10, 7–8, 9–10, and 12-6 (route overlaps coefficient is 6, 3, 6, and
+5, respectively). Some sections with smaller flow are analyzed deeply.
+
+Figure 3. Average rate of flow change under different preference levels.
+
+μ
+164
+136
+197
+103
+193
+169
+193
+87
+62
+131
+112
+80
+191
+167
+138
+159
+87
+50
+191
+
+σ
+6.98
+6.98
+8.54
+8.54
+11.87
+2.38
+7.72
+3.00
+5.80
+10.14
+5.91
+10.87
+9.90
+10.69
+5.91
+9.90
+6.95
+0.58
+9.90
+
+0.5
+167
+133
+203
+97
+211
+159
+189
+102
+53
+136
+106
+77
+179
+179
+144
+171
+80
+53
+179
+
+0.6
+153
+147
+196
+104
+184
+165
+195
+85
+65
+132
+116
+81
+188
+166
+134
+162
+96
+51
+188
+
+0.8
+156
+144
+202
+98
+193
+165
+197
+91
+60
+138
+109
+76
+187
+167
+141
+163
+95
+49
+187
+
+0.9
+171
+129
+195
+105
+185
+181
+185
+79
+62
+124
+112
+91
+195
+170
+138
+155
+79
+50
+195
+
+μ
+162
+138
+199
+101
+193
+168
+192
+89
+60
+133
+111
+81
+187
+171
+139
+163
+88
+51
+187
+
+σ
+8.62
+8.62
+4.08
+4.08
+12.50
+9.43
+5.51
+9.81
+5.10
+6.19
+4.27
+6.85
+6.55
+5.92
+4.27
+6.55
+9.26
+1.71
+6.55
+
+③ Important sections analysis when travel preference wτi;k
+changes (special scenarios of scenario 1 and scenario 2)
+Taking sections 6–10, 7–8, 9–10, and 12-6 as examples, it is
+assumed that the preference of the four sections is ws , and ps
+means the proportion of travelers with preference ws . The average
+rate of network flow change is shown in Figure 3 when preference
+of other sections is the same as the basic scenario under the con­
+straints of β ¼ 0:7, EðθÞ ¼ 0:2 � t0;k .
+It can be seen that, the network flow can converge quickly and
+reach a stable state after about 100 iterations through improving the
+preference level and the corresponding travelers’ proportion. The
+convergence speed of network flow is almost independent of ps
+and ws .
+The flow changes for sections 6–10, 7–8, 9–10, and 12-6 under
+different preference levels are shown in Figure 4.
+Figure 4 shows that the flow fluctuates greatly during the first 50
+iterations. Then, the flow reaches the second stage with slight
+
+TRANSPORTATION LETTERS
+
+665
+
+Figure 4. Traffic flow for sections with high preference level.
+
+fluctuation. Flow of the four sections keeps constantly after about
+200 iterations. The four sections have high probability to be chosen
+at initial several iterations because of higher preference level, which
+will lead to longer travel time and negative profit for travelers.
+A loss stimulation will be performed on travelers and the preference
+level may decrease. The decision-making results are constantly
+adjusted and closer to the equilibrium solution.
+④ Comparison
+It can be found from Figures 3 and 4, preference of sections 6-10,
+7–8, 9–1 and 12-6 will affect the route choice behavior to a large
+extent. Then, scenario 3 and scenario 4 that only focuced on the
+
+preference of important sections have been proposed to analyze.
+The four scenarios and the corresponding parameters of each
+scenario are shown in Table 3. The average flow of each section
+under different scenarios when the network evolution reaches
+equilibrium are shown in Figure 5.
+The parameters slightly influenced the average equilibrium flow
+of most sections under the four scenarios. Flow for each section
+under scenario 1 is almost the same as scenario 2. The results
+denote that, the network can reach a similar equilibrium state
+how matter the indifference band and smoothing coefficient
+
+Table 3. Simulation sceanrios of case 1.
+Parameters
+Scenarios
+Scenario 1
+Scenario 2
+Scenario 3
+
+E ðθÞ
+0:1 � t0;k ~0:4 � t0;k
+0:2 � t0;k
+0:2 � t0;k
+
+β
+0.7
+0.6~0.9
+0.7
+
+Scenario 4
+
+0:2 � t0;k
+
+0.7
+
+w
+All sections: random value within [0,0.5]
+All sections: random value within [0,0.5]
+Sections: 6–10, 7–8, 9–1 and 12–6
+
+ps : 0.1~0.4
+ws : 0.6
+
+Other sections: random value within [0,0.5]
+Sections: 6–10, 7–8, 9–1 and 12–6
+
+ps : 0.1
+ws : 0.6–0.9
+
+Other sections: random value within [0,0.5]
+
+250
+
+Traffic flow (pcu/h)
+
+200
+
+scenario 1
+scenario 2
+scenario 3
+scenario 4
+
+150
+100
+50
+0
+
+sections
+Figure 5. Average flow of all sections under different scenarios.
+
+666
+
+X. LONG ET AL.
+
+Table 4. Average flow of all sections under different scenarios of case 2.
+Scenario 5
+
+Scenario 6
+
+β ¼ 0:7
+
+E ðθÞ=0:2 � t0
+
+E ðθÞ
+Section
+1–5
+1–12
+4–5
+4–9
+5–6
+5–9
+6–7
+6–10
+7–8
+7–11
+8–2
+9–10
+9–13
+10–11
+11–2
+11–3
+12–6
+12–8
+13–3
+
+0:1 � t0
+157
+143
+155
+145
+139
+173
+172
+47
+62
+110
+125
+71
+247
+118
+125
+103
+80
+63
+247
+
+0:2 � t0
+150
+150
+154
+146
+131
+173
+169
+45
+54
+115
+121
+72
+247
+117
+129
+103
+83
+67
+247
+
+β
+0:3 � t0
+155
+145
+155
+145
+137
+173
+170
+42
+63
+107
+133
+71
+247
+113
+117
+103
+75
+70
+247
+
+0:4 � t0
+151
+149
+155
+145
+133
+173
+166
+38
+60
+106
+138
+71
+247
+109
+112
+103
+71
+78
+247
+
+μ
+153
+147
+155
+145
+135
+173
+169
+43
+60
+110
+129
+71
+247
+114
+121
+103
+77
+70
+247
+
+change. That is, the indifference band and smoothing coefficient
+only affect the equilibrium process but not the final equilibrium
+results.
+For scenario 3 and scenario 4, equilibrium flow of the four
+sections with higher preference level (sections 6-10, 7–8, 9–10,
+and 12-6) are not always higher than other scenarios. On the
+contrary, the equilibrium flow of section 6-10 is far less than
+scenarios 1 and 2, while sections 9–10 and 12-6 have the similar
+equilibrium flow under four scenarios. For sections 4-9, 8-2, 9–13,
+and 13-3, the equilibrium flow under scenarios 3 and 4 are larger
+than scenario 1 and scenario 2. Additionally, from the topological
+structure of the road network, it can be found that the OD pairs that
+sections 4-9, 8-2, 9–13, and 13-3 belongs to are no more than 2, and
+the number of travelers is relatively larger. Comparing with sce­
+nario 1 and scenario 2, parameter of preference and its probability
+affect the equilibrium flow of the sections with a higher overlap
+coefficient considerably. That is because the in-trip gain stimulation
+is the critical factor influencing equilibrium flow.
+Combing with the results of flow convergence process, the three
+parameters (indifference band, smoothing coefficient, and compul­
+sive preference) will affect the equilibrium flow at different degrees.
+However, the convergence speed is almost independent of the three
+parameters.
+τ
+(2) Case 2: the preference wτi;k and ri;k
+are both endogenous
+variables.
+Similar to case 1, θ is considered
+to be subject to the normal
+�
+distribution N 0:2 � t0;k ; 0:01 , and the smoothing coefficient β =
+0.7 in the basic simulation scenario.
+① The indifference band θ changes (scenario 5)
+The mean value of θ varies within 0:1 � t0;k ~0:4 � t0;k , and other
+parameters remain unchanged.
+② The smoothing coefficient β changes (scenario 6)
+When β is valued within 0.5–0.9 and the other parameters
+remain unchanged,flow of each section under different parameters
+are shown in Table 4.
+
+σ
+2.86
+2.86
+0.43
+0.43
+3.16
+0.00
+2.17
+3.39
+3.49
+3.50
+6.65
+0.43
+0.00
+3.56
+6.65
+0.00
+4.60
+5.50
+0.00
+
+0.5
+151
+149
+155
+145
+134
+172
+166
+18
+45
+121
+144
+70
+247
+88
+106
+103
+50
+99
+247
+
+0.6
+141
+159
+155
+145
+124
+172
+164
+21
+42
+122
+140
+70
+247
+91
+110
+103
+61
+98
+247
+
+0.8
+155
+145
+155
+145
+137
+173
+184
+48
+72
+112
+122
+71
+247
+119
+128
+103
+95
+50
+247
+
+0.9
+156
+144
+155
+145
+138
+173
+184
+48
+69
+115
+119
+71
+247
+119
+131
+103
+94
+50
+247
+
+μ
+151
+149
+155
+145
+133
+173
+175
+34
+57
+118
+131
+71
+247
+104
+119
+103
+75
+74
+247
+
+σ
+5.93
+5.93
+0.00
+0.00
+5.54
+0.50
+9.53
+14.29
+13.58
+4.15
+10.89
+0.50
+0.00
+14.79
+10.89
+0.00
+19.89
+24.25
+0.00
+
+Remarks: μ and σ denote the mean and standard deviation of
+each section’s flow, respectively.
+Relatively, β has a greater influence on the stable flow compared
+with EðθÞ, which can be found from the standard deviation of each
+section’s flow. Both EðθÞ and β significantly affect some sections’
+flow, such as the sections 6-10, 7–8, 10–11, 11-2, 12-6, and 12–8.
+The average rate of network flow change for case 2 is shown in
+Figure 6.
+The flow converge faster than that of case 1 when consider­
+ing the compulsive preference as endogenous variables for case
+2, and there are no violent fluctuations occur. Travelers’ switch­
+ing behaviors are more moderate during preference updating
+process. And, travelers are more tolerant to travel time and the
+equilibrium point with optimal travel time can be easily
+reached.
+(3) Case 3: SUE (stochastic user equilibrium) model
+Assuming the travel time perceived by the traveler comprises the
+fixed-term and random error term, then the perceived travel time
+~tk can be expressed as:
+
+where the fixed term tk is the actual travel time of route k, and uk
+is the random error term. Assuming that uk is independently and
+identically subject to Gumbel distribution. Then, the chosen prob­
+ability of each route can be expressed as Logit model.
+In this paper, method of successive average (MSA) is used to obtain
+the equilibrium solution. The specific steps are expressed as follows:
+Step ①: Initialization. Let the number of iterations n = 0, and the
+termination error ε ¼ 0:001. According to the given traffic demand,
+considering the free-flow travel time as perceived travel time, gen­
+ðnÞ
+erates the initial feasible fm according to BPR function (where m is
+the road section number).
+Step ②: Calculate the auxiliary flow. BPR function is used to
+ðnÞ
+ðnÞ
+calculate the actual travel time tr of route r according to fm , and
+
+TRANSPORTATION LETTERS
+
+667
+
+(a).Scenario 5
+
+(b). Scenario 6
+Figure 6. Average rate of flow change for case 2.
+
+ðnÞ
+
+the auxiliary flow yr
+following equation:
+
+of route r is calculated according to the
+④:
+Convergence
+judgment.
+Setting
+0qffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffi 1
+ðnþ1Þ
+ðnÞ 2
+fm Þ
+ð fm
+A, if g � ε, then fmðnþ1Þ is the optimal solu­
+g ¼ max@
+ðnÞ
+Step
+
+fm
+
+where DR means the traffic demand between OD pair R. α is the
+perceived error of travel time. α approaching to 0 indicates that
+there is a large perception error; α approaching to 1 indicates that
+the traveler’s perception error is very small, and the random term
+ðnÞ
+tends to 0. The auxiliary flow qm of each section can be obtained by
+accumulation of the route’s flow. That is:
+
+Step ③: Flow update. The MSA algorithm is used to update the
+section’s flow.
+
+tion, and ends the iteration; otherwise, let n = n +1, return to step ②.
+Taking α ¼ 0:11 as example, convergence speed and equilibrium
+flow of network are shown in Figures 7 and 8, respectively
+We can see from Figure 8, there is slight difference between the
+equilibrium flow for most sections when perception error decreases
+gradually (that is α increasing). Moreover, the sections with scon­
+verignificant changes for traffic flow can be divided into two cate­
+gories. The flow of sections 13-3, 9–13, and 8-2 increases with α,
+while the flow of sections 9–10, 10–11, 11-3, 5–6, and 6-10
+decreases with the increase of α. Therefore, it can be inferred that,
+flow of the sections with large overlap coefficient decreases with the
+
+668
+
+X. LONG ET AL.
+
+Figure 7. Average rate of flow change for all sections of case 3.
+
+Traffic flow
+300
+α=0.1
+
+α=0.2
+
+α=0.3
+
+α=0.4
+
+α=0.5
+
+α=0.6
+
+α=0.7
+
+α=0.8
+
+α=0.9
+
+α=1
+
+Traffic flow(pcu/h)
+
+250
+200
+150
+100
+50
+0
+1-5
+
+1-12
+
+4-5
+
+4-9
+
+5-6
+
+5-9
+
+6-7
+
+6-10
+
+7-8
+
+7-11
+
+sections
+
+(a)
+Traffic flow
+350
+α=0.1
+
+α=0.2
+
+α=0.3
+
+α=0.4
+
+α=0.5
+
+α=0.6
+
+α=0.7
+
+α=0.8
+
+α=0.9
+
+α=1
+
+Traffic flow(pcu/h)
+
+300
+250
+200
+150
+100
+50
+0
+8-2
+
+9-10
+
+9-13
+
+10-11
+
+11-2
+
+11-3
+
+12-6
+
+12-8
+
+13-3
+
+sections
+
+(b)
+Figure 8. Flow of all sections under different values of α.
+
+TRANSPORTATION LETTERS
+
+669
+
+Traffic flow(pcu/h)
+
+300
+
+case 1
+
+case 2
+
+case 3
+
+200
+100
+0
+1-5 1-12 4-5
+
+4-9
+
+5-6
+
+5-9
+
+6-7 6-10 7-8 7-11 8-2 9-10 9-13 10-11 11-2 11-3 12-6 12-8 13-3
+sections
+
+Figure 9. Flow of all sections under different cases.
+
+Table 5. Average total travel time under different scenarios.
+Case 1
+Scenarios
+Total travel time (h)
+
+Scenario 1
+615.9
+
+Scenario 2
+616.7
+
+Case 2
+Scenario 3
+616.8
+
+decrease of perception error, while flow of the sections with small
+overlap coefficient increases.
+
+Discussion
+① Stable flow comparison. Average stable flow of each section
+under different cases is shown in Figure 9.
+Section’s flow under case 3 is greatly different from case 1 and
+case 2. The results denote that network volume can reach
+a relatively consistent stable state no matter the updating pattern
+of preference, and whether considering the compulsive preference
+and indifference threshold is the key factor determining the equili­
+brium state.
+② Convergence speed comparison. According to the previous
+analysis, the convergence speed of case 3 is higher than that in case
+1 and case 2, and the convergence speed in case 1 and case 2 are
+similar. The results mean that, the system converges slowly when
+individual preference is considered. For cases 1 and 2, different
+indifference bands and smoothing coeficients will adjust the switch­
+ing behavior constantly, then all the sections’ flows change greatly,
+therefore much more itrations are needed for equilibrium.
+③ Average total travel time comparison. The average total travel
+time of the network in each case is shown in Table 5.
+The total travel time for case 3 is the longest among all the
+simulation scenarios. Therefore, the network can converge and
+reach the equilibrium state rapidly under the SUE allocation
+principle (case 3), but the unreasonable flow allocation leads to
+long total travel time. When the preference is considered and
+constantly updated according to the gains and losses (case 2),
+we can obtain the least total travel time and highest travel
+efficiency.
+For the SUE model, travelers always pursue the maximum
+utility, then all travelers will choose the route with minimum
+travel time. Under the strict route choosing criterion, each tra­
+veler has only one feasible route, then the assignment proposal is
+unique. However, travelers may choose the satisfactory route not
+necessarily the shortest path when travelers’ preference is con­
+sidered because of the different tolerance threshold. That is, all
+travelers may have several feasible satisfactory routes to choose.
+Some travelers will be allocated according to the traffic state of
+each section, which can more evenly distribute the traffic to all
+sections.
+
+Scenario 4
+618.7
+
+Scenario 5
+614.5
+
+Case 3
+Scenario 6
+614.2
+
+SUE
+684. 8
+
+Conclusions
+The paper introduces learning stimulation and builds a route
+choice reinforcement learning model considering traveler’s pre­
+ferences. Two mechanisms of preference updating including
+fixed preference and updating preference according to gains
+or losses are proposed. The learning model introduces gain
+stimulation and loss stimulation simultaneously, and updates
+the preferences based on the expected utility, previous experi­
+ence and forecasted information. Taking Nguyen Dupuis net­
+work as an example, convergence process and travel efficiency
+of the stable state corresponding to different scenarios are
+simulated considering variation of preference level and indif­
+ference threshold. The efficiency and adaptability of the models
+are analyzed through comparing with SUE model. The conclu­
+sions are concluded as follows:
+(1) For case 1, flow of the sections with high preference level
+fluctuates greatly during the initial iterations (scenario 3 and
+scenario 4). There is no significant difference on the final
+equilibrium flow under case 1 no matter the preference level.
+It shows that the preference level only influences the flow
+allocation at the initial iterations, and the equilibrium flow
+depends on the gain and loss stimulation during the deci­
+sion-making process. Additionally, some sections with
+lower overlap coefficient will be chosen with higher prob­
+ability because of the gain stimulation originating from
+high-preference routes.
+(2) The system convergence process of case 2 is gentler than
+case 1, and almost no large fluctuation occurs. Therefore,
+reinforcement learning model based on preference updating
+can ensure the system stability.
+(3) For case 3 (SUE), equilibrium flow of the sections with highoverlap coefficient decreases with the decrease of perception
+error, and sections with low-overlap coefficient denote the
+contrary tendency.
+(4) The system has the lowest travel efficiency for case 3 com­
+paring with case 1 and case 2, while allocation pattern of case
+2 can achieve the highest travel efficiency. It indicates that
+the reinforcement learning mode of preference updating is
+helpful to improve the overall operation efficiency and
+volume’ rational allocation.
+
+670
+
+X. LONG ET AL.
+
+The paper introduces a new behavior mechanism, that the route
+probability is affected both by internal preferences and external
+benefits, which further explains the route choice behavior motiva­
+tion. Two kinds of preference (indifference band and compulsive
+preference) are taken into account in the learning model, which
+supplements the research on traveler preference. The learning
+mechanism makes up for the defect that the expected utility and
+past experience are not considered in the current methods.
+Travelers’ heterogeneity is of great significance for optimizing
+the allocation of traffic resources.The results can be adopted to
+urban traffic management. For traffic managers, route guidance
+algorithm should consider the heterogeneity preference and rein­
+forcement learning ability of travelers, then the optimal route with
+the highest operation efficiency will be recommended to travelers.
+The route guidance considering the travelers’ external and internal
+heterogeneity can effectively reduce the total travel time. One
+person one program will be the topical subject of traffic guidance
+in the future.
+However, the travel preference considered in the paper is
+still one-sided to some extent. Due to the different socioeco­
+nomic characteristic and travel attributes, traveler’s preference
+varies from time to time. Therefore, the travel preferences of
+different travel groups and trip purposes should be considered
+to build the reinforcement learning model of route choice,
+based on the heterogeneity preference, which can more accu­
+rately reveal the behavior evolution mechanism of travelers.
+
+Acknowledgments
+This work was supported by the National Key Research and Development
+Program (2019YFB1600500); Science Program of Shaanxi Province
+(2021JQ-276).
+
+Disclosure statement
+No potential conflict of interest was reported by the authors.
+
+Funding
+The work was supported by the Science program of Shaanxi Province
+[2021JQ-276].
+
+Data availability statement
+No data, models, or code were generated or used during the study.
+
+References
+Asensio, J., and A. Matas. 2008. “Commuters’ Valuation of Travel Time
+Variability Transportation Research Part E.” Transportation Research Part
+E: Logistics & Transportation Review 44 (6): 1074–1085. https://doi.org/10.
+1016/j.tre.2007.12.002.
+Batista, S. F. A., and L. Leclercq. 2020. “The Reference Point in Dynamic
+Prospect-Based User Equilibrium: A Simulation Study.” Transportation
+Letters – International Journal of Transportation Research 12 (8): 513–527.
+https://doi.org/10.1080/19427867.2019.1651563.
+Beckmann, M., C. B. Mcguire, and C. B. Winster. 1956. Stuides in the Economics
+of Transportation. New Heaven, CT: Yale University Press.
+Busemeyer, J. R., and J. T. Townsend. 1993. “Decision Field Theory: A
+Dynamic-Cognitive Approach to Decision Making in an Uncertain
+Environment.” Psychological Review 100 (3): 432–459. https://doi.org/10.
+1037/0033-295X.100.3.432.
+Carrion, C., and D. Levinson. 2019. ““Route Choice Dynamics After a Link
+Restoration.” Transportmetrica B.” Transport Dynamics 7 (1): 1155–1174.
+https://doi.org/10.1080/21680566.2019.1587647.
+Chorus, C. G. 2010. “A New Model of Random Regret Minimization.” European
+Journal of Transport & Infrastructure Research 10 (2): 181–196.
+
+David, P., K. Thomas, G. Carlo, and A. Otto. 2018. “Stochastic User Equilibrium
+with a Bounded Choice Model.” Transportation Research Part B 114: 254–28.
+https://doi.org/10.1016/j.trb.2018.05.004.
+Diana, M., and R. Ceccato. 2019. “A Multimodal Perspective in the Study of Car
+Sharing Switching Intentions.” Transportation Letters – International Journal
+of Transportation Research 14 (4): 317–323. https://doi.org/10.1080/
+19427867.2019.1707351.
+Di, X., H. X. Liu, J. S. Pang, and X. G. Ban. 2013. “Boundedly Rational User
+Equilibria (BRUE): Mathematical Formulation and Solution Sets.”
+Transportation Research Part B: Methodological 57: 300–313. https://doi.
+org/10.1016/j.trb.2013.06.008.
+Di, X., H. Liu, S. Zhu, and D. Levinson. 2017. “Indifference Bands for Boundedly
+Rational Route Switching.” Transportation 44 (5): 1169–1194. https://doi.
+org/10.1007/s11116-016-9699-1.
+Elia, E. B., and Y. Shiftan. 2010. “Which Road Do I Take? A Learning-Based
+Model of Route-Choice Behavior with Real-Time Information.”
+Transportation Research Part A: Policy & Practice 44 (4): 249–264. https://
+doi.org/10.1016/j.tra.2010.01.007.
+Erev, I., and G. Barron. 2005. “On Adaptation, Maximization, and
+Reinforcement Learning Among Cognitive Strategies.” Psychological Review
+112 (4): 912–930. https://doi.org/10.1037/0033-295X.112.4.912.
+Fakhrmoosavi, F., A. Zockaie, K. Abdelghany, and H. Hashemi. 2019. “An
+Iterative Learning Approach for Network Contraction: Path Finding
+Problem in Stochastic Time-Varying Networks.” Computer-Aided Civil and
+Infrastructure Engineering 34 (10): 859–876. https://doi.org/10.1111/mice.
+12460.
+Gao, K., M. H. Shao, K. W. Axhausen, L. J. Sun, H. Tu, and Y. Wang. 2022.
+“Inertia Effects of Past Behavior in Commuting Modal Shift Behavior:
+Interactions, Variations and Implications for Demand Estimation.”
+Transportation 49 (4): 1063–1097. https://doi.org/10.1007/s11116-02110203-6.
+Guo, Z. H., D. Z. W. Wang, and D. W. Wang. 2022. “Managing Mixed Traffic
+with Autonomous Vehicles – a Day-To-Day Routing Allocation Scheme.”
+Transportation Research Part C: Emerging Technologies 140 (103726): 1–20.
+https://doi.org/10.1016/j.trc.2022.103726.
+Hollander, Y. 2006. “Direct versus Indirect Models for the Effects of
+Unreliability.” Transportation Research Part A: Policy & Practice 40 (9):
+699–711. https://doi.org/10.1016/j.tra.2005.12.007 .
+Li, T., H. Z. Guan, J. Q. Ma, G. H. Zhang, and K. K. Liang. 2019. “Modeling
+Travel Mode Choice Behavior with Bounded Rationality Using Markov Logic
+Networks.” Transportation Letters- the International Journal of
+Transportation Research 11 (6): 303–310. https://doi.org/10.1080/19427867.
+2017.1342945.
+Li, Z., D. A. Hensher, and J. M. Rose. 2010. “Willingness to Pay for Travel Time
+Reliability in Passenger Transport: A Review and Some New Empirical
+Evidence.” Transportation Research Part E: Logistics & Transportation
+Review 46 (3): 384–403. https://doi.org/10.1016/j.tre.2009.12.005.
+Mahmassani, H., and G. Chang. 1987. “On Boundedly Rational User
+Equilibrium in Transportation Systems.” Transportation Science 21 (2):
+89–99. https://doi.org/10.1287/trsc.21.2.89.
+Mahmassani, H. S., and G. L. Chang. 1985. “Dynamic Aspects of
+Departure-Time Choice Behavior in a Commuting System: Theoretical
+Framework and Experimental Analysis.” Transportation Research Record
+1037 (12): 88–101.
+Ma, T. Y., and R. D. Pace. 2017. “Comparing Paradigms for Strategy Learning of
+Route Choice with Traffic Information Under Uncertainty.” Expert Systems
+with Applications 88:352–367. https://doi.org/10.1016/j.eswa.2017.07.008.
+Marek, E. M. 2018. “Social Learning Under the Labeling Effect: Exploring
+travelers’ Behavior in Social Dilemmas.” Transportation Research Part F:
+Traffic Psychology and Behavior 58:511–527. https://doi.org/10.1016/j.trf.
+2018.06.015.
+Ozbay, K., A. Datta, and P. Kachroo. 2001. “Modeling Route Choice Behavior
+Using Stochastic Learning Automata.” Transportation Research Board 1752
+(1): 7–11. https://doi.org/10.3141/1752-06 .
+Qin, H. M., J. Q. Gao, Y. J. Wu, and H. Yan. 2019. “Analysis on Context Change
+and Repetitive Travel Mode Choices Based on a Dynamic, Computational
+Model.” Transport Policy 79:155–164. https://doi.org/10.1016/j.tranpol.2019.
+04.003.
+Simon, H. A. 1972. “Theories of Bounded Rationality.” Decision and
+Organization 1(1): 161–176.
+Srinivasan, K., and H. Mahmassani. 1999. “Role of Congestion and Information
+in Trip-Makers’ Dynamic Decision Processes: Experimental Investigation.”
+Transportation Research Record 1676 (1): 44–52. https://doi.org/10.3141/
+1676-06.
+Sun, C., L. Cheng, and J. Ma. 2018. “Travel Time Reliability with Boundedly
+Rational Travelers.” Transportmetrica A: Transport Science 14 (3): 210–229.
+https://doi.org/10.1080/23249935.2017.1368733.
+
+TRANSPORTATION LETTERS
+
+Sun, D., C. Zhang, L. H. Zhang, F. X. Chen, and Z. R. Peng. 2014. “Urban Travel
+Behavior Analyses and Route Prediction Based on Floating Car Data.”
+Transportation Letters – International Journal of Transportation Research
+6 (3): 118–125. https://doi.org/10.1179/1942787514Y.0000000017.
+Thorhauge, M., J. Swait, and E. Cherchi. 2020. “The Habit-Driven Life:
+Accounting for Inertia in Departure Time Choices for Commuting Trips.”
+Transportation Research Part A: Policy & Practice 133:272–289. https://doi.
+org/10.1016/j.tra.2020.01.023.
+van Essen, M., H. Rakha, J. Vreeswijk, L. Wismans, and E. van Berkum 2015.
+“Day-To-Day Route Choice Modeling Incorporating Inertial Behavior.” In
+Proceedings of the 14th International Conference on Travel Behavior
+Research, 1–18. Windsor, UK: International Association for Travel
+Behavior Research (IATBR).
+Xiong, C. F., X. S. Zhou, and L. Zhang. 2018. “AgBM-DTALite: An Integrated
+Modelling System of Agent-Based Travel Behavior and Transportation
+Network Dynamics.” Travel Behavior and Society 12:141–150. https://doi.
+org/10.1016/j.tbs.2017.04.004.
+Yu, X. L., and S. Gao. 2019. “Learning Routing Policies in a Disrupted,
+Congestible Network with Real-Time Information: An Experimental
+
+671
+
+Approach.” Transportation Research Part C: Emerging Technologies
+106:205–219. https://doi.org/10.1016/j.trc.2019.07.014.
+Yu, Y., K. Han, and W. Ochieng. 2020. “Day-To-Day Dynamic Traffic
+Assignment with Imperfect Information, Bounded Rationality and
+Information Sharing.” Transportation Research Part C: Emerging
+Technologies 114:59–83. https://doi.org/10.1016/j.trc.2020.02.004 .
+Zhang, C., T. L. Liu, H. J. Huang, and J. Chen. 2018. “A Cumulative Prospect
+Theory Approach to commuters’ Day-To-Day Route-Choice Modeling with
+friends’ Travel Information.” Transportation Research Part C: Emerging
+Technologies 86:527–548. https://doi.org/10.1016/j.trc.2017.12.005.
+Zhang, J. L., and H. Yang. 2015. “Route Choice Inertia and Network Equilibrium.”
+Transportation Research Part C: Emerging Technologies 57:42–54. https://doi.org/
+10.1016/j.trc.2015.06.005.
+Zhou, B., Q. K. Song, Z. J. Zhao, and etc. 2020. “A Reinforcement Learning
+Scheme for the Equilibrium of the In-Vehicle Route Choice Problem Based
+on Congestion Game.” Applied Mathematics and Computation 371 (124895):
+1–18. https://doi.org/10.1016/j.amc.2019.124895.
+Zhu, S., and D. Levinson. 2012. “Disruptions to Transportation Networks:
+A Review.” In Network Reliability in Practice, 5–20. New York: Springer.
+https://doi.org/10.1007/978-1-4614-0947-2_2.
+
+

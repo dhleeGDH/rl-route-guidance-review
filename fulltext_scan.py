@@ -2,7 +2,7 @@
 """fulltext_scan.py : the three fields of the manuscript that require reading a full text.
 
 Every rule is printed at the top of a run, so a reader can reproduce a count by hand.
-The scan covers the 91 studies recorded as full-text in the archived study record. It writes one
+The scan covers the 93 studies recorded as full-text in the study record. It writes one
 row per study; the body counts are tallies of those columns.
 
     PDF_DIR=/path/to/full_texts python3 fulltext_scan.py [--out fulltext_scan]
@@ -50,7 +50,7 @@ NODECOUNT = r"([0-9][0-9,]{0,6})\s+(?:nodes|intersections)\b"
 
 RULES = """
 RULES AS APPLIED
-  denominator        the 91 studies recorded as full-text in study_record_corpus_v9_coded.csv
+  denominator        the 93 studies recorded as full-text in study_record_corpus_v9_coded.csv
   text               pdftotext -layout, first 40 pages
   measure region     from the first heading matching RESULT|EXPERIMENT|EVALUATION|CASE STUDY|
                      NUMERICAL|SIMULATION to the end of the text

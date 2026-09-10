@@ -1,0 +1,49 @@
+idx 13 = [1098], printed [64]. X. Long, J. Mao, Z. Qiao, P. Li, W. He, "Reinforcement learning of
+route choice considering traveler's preference," Transp. Lett., vol. 16, no. 7, pp. 658-671, 2023.
+
+FULL TEXT ADDED 2026-09-10 (T-1991). The study was recorded from an abstract alone until now.
+The PDF reached handoff/corpus_pdfs/ and 13.txt was extracted from it with pdftotext, which is
+the treatment 48.README.txt records for the idx 48 recovery. The row of Table A-1 loses its
+dagger and carries eleven values in place of nine unc.
+
+THE EVIDENCE SENTENCE OF EACH VALUE, quoted from 13.txt.
+
+  Fam.  tb        unchanged. A stochastic learning rule updating route choice probabilities.
+                  No deep learner appears anywhere in the text.
+
+  Act.  path      "the route-set is K between the same origin and destination, the initial
+                  selection probability of route k in the tau-th trip". The choice is over an
+                  enumerated route set, not over a successor link.
+
+  State local     "the predicted travel time of route k in the tau-th trip"; the standard
+                  deviation of that predicted travel time enters the generalized travel time.
+                  The dynamic variables are evaluated at traversal, not at the current step.
+
+  Enc.  raw       No architecture consumes the state vector. The value is a scalar update.
+
+  Reward ind      Gain and loss stimulation are formed on the traveler's own generalized travel
+                  time. Nothing is summed over a network measure.
+
+  Feas. enf       The choice is over a pre-enumerated route set, so an action without a successor
+                  link does not arise. This is enforcement by construction, which is the term the
+                  manuscript already uses for the same structure, and T-1991 fixes the value at
+                  enf. Table S-9's recording column would also admit unc, since no rule is stated
+                  in the report; the reading is recorded here rather than left silent.
+
+  Bd.   no        The Nguyen-Dupuis network, "13 nodes and 19 sections", four OD pairs. No
+                  sentence treats a vehicle reaching a peripheral link.
+
+  Compl. no       The results are equilibrium flows and convergence of the choice probabilities.
+                  No rate of trips reaching the destination is reported.
+
+  Code  no        "No data, models, or code were generated or used during the study."
+
+  Gen.  no        No means of transfer beyond the simulated network is stated.
+
+  Gamma unc       NOT 0.7, and this is the point of the T-1991 rule change. The text reads
+                  "gamma = 0.7 (Hollander 2006), 0.8 (Li, Hensher, and Rose 2010)" and defines
+                  the symbol as "the weight of standard deviation of the predicted travel time,
+                  which transforms the uncertainty into travel time". The symbol is bound in the
+                  same sentence, which is Table S-9's literal rule, but it names another quantity.
+                  Table S-9 now says a value is recorded only where the sentence gives the symbol
+                  its reinforcement-learning sense.

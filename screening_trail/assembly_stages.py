@@ -21,10 +21,12 @@ ROUTE_13 = 86
 ROUTE_2 = 1084
 BOTH = 15                 # records returned by both, removed once in the merge
 EXCLUDED_TA = 1052        # excluded at title and abstract
-NOT_OBTAINED = 3          # full texts sought and not obtained
+NOT_OBTAINED = 1          # full texts sought and not obtained
 EXCLUDED_FT = 6           # excluded at full-text scope re-confirmation
 VERSIONS_MERGED = 3       # version rows of one study merged into it
-ABSTRACT_ONLY = 3         # recorded from a title and an abstract, no full text
+ABSTRACT_ONLY = 0         # 2026-09-10 (T-1991): none. Two of the three abstract-only records
+                          # were read at full text and the third left the corpus, its full text
+                          # unobtainable at any institution available to this study.
 
 # 2026-09-10 (T-1984, T-1985). The name Fig. 1 and Supplementary Table S-6 must both give
 # route_13. check_flow_stages.py reads it from the record beside the counts rather than out of
@@ -51,7 +53,7 @@ def stages():
     assert s["screened_in"] - s["not_obtained"] == s["obtained"], s
     assert s["obtained"] - s["excluded_full_text"] - s["versions_merged"] == s["full_text_recorded"], s
     assert s["full_text_recorded"] + s["abstract_only"] == s["corpus"], s
-    assert s["corpus"] == 94, s
+    assert s["corpus"] == 93, s
     assert s["arm_13_label"], s
     return s
 

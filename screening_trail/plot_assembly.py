@@ -23,11 +23,13 @@ What replaces it is a two-band drawing, four levels deep and two columns wide:
   3. one reading band, split left and right rather than stacked, so the two readings stay
      distinct without a level of their own. Records leaving are stated inside the band as a
      subtraction, never in a box in the right margin.
-  4. the corpus, split by how each study was read.
+  4. the corpus, one terminal count.
 
-Studies recorded from an abstract alone are drawn dashed from the point they part from the
-full-text path through to the terminal box, which is the distinction the body draws and the old
-figure left to its caption.
+2026-09-10 (T-1995): the abstract-only path is gone with the studies it drew. T-1991 read two of
+the three at full text and removed the third, so every reviewed study is a full text and the
+terminal box states one number. Every count a reader would otherwise have to subtract is printed:
+the pool states 1,155, the screening band states the 1,052 leaving it, the full-text band states
+the 103 reaching it and the 10 leaving it, and the terminal box states the 93.
 
     python3 plot_assembly.py
 """
@@ -64,88 +66,98 @@ matplotlib.rcParams["font.family"] = "serif"
 matplotlib.rcParams["font.serif"] = ["Liberation Serif", "DejaVu Serif"]
 matplotlib.rcParams["font.size"] = 7.0
 
-INK, EDGE, GREY = "#1b2430", "#33415c", "#5b6a7d"
-SOLID = dict(boxstyle="round,pad=0.020", linewidth=0.8, edgecolor=EDGE, facecolor="#f2f5fa")
-OPEN_ = dict(boxstyle="round,pad=0.020", linewidth=0.8, edgecolor=GREY, facecolor="#ffffff")
-DASH = dict(boxstyle="round,pad=0.020", linewidth=0.8, edgecolor=GREY, facecolor="#ffffff",
-            linestyle=(0, (2.6, 1.8)))
+INK, EDGE = "#1b2430", "#33415c"
+# 2026-09-10 (T-1988): every box is white. A tint on some boxes and not others read as a grouping
+# the flow does not have.
+BOX = dict(boxstyle="square,pad=0.0", linewidth=0.8, edgecolor=EDGE, facecolor="#ffffff")
 
-# The export and the collection are 1069 and 71 records of the pool, with 15 in both. Printing the
-# pair beside the pooled total is what shows a reader that one route is two orders larger than the
-# other and that only the smaller one was screened before pooling.
 ONLY_2 = S["route_2"] - S["both"]
 ONLY_13 = S["route_13"] - S["both"]
 
-fig, ax = plt.subplots(figsize=(7.16, 2.07))
-ax.set_xlim(0, 100); ax.set_ylim(0, 29); ax.axis("off")
+# The layout is stated in inches and converted at UPI units to the inch, so a change to the type
+# size or the leading moves the boxes rather than overflowing them. LINE is one line of 7 pt at
+# 1.20 leading; PAD is what a box adds above and below its text; GAP is the run each connector
+# needs to draw a shaft and a head rather than a head alone.
+UPI = 40.0
+LINE, PAD, GAP, MARGIN = 0.1167 * UPI, 0.040 * UPI, 0.130 * UPI, 0.030 * UPI
+H_IN = 2.30
+fig, ax = plt.subplots(figsize=(3.42, H_IN))
+ax.set_xlim(0, 100); ax.set_ylim(0, H_IN * UPI); ax.axis("off")
 
 
-def box(cx, hw, ytop, h, lines, kw, fs=7.0, color=INK, weight="normal"):
-    ax.add_patch(FancyBboxPatch((cx - hw, ytop - h), 2 * hw, h, zorder=2, **kw))
+def box(cx, hw, ytop, lines):
+    h = PAD + LINE * len(lines)
+    ax.add_patch(FancyBboxPatch((cx - hw, ytop - h), 2 * hw, h, zorder=2, **BOX))
     ax.text(cx, ytop - h / 2.0, "\n".join(lines), ha="center", va="center", zorder=3,
-            linespacing=1.34, fontsize=fs, color=color, fontweight=weight)
+            linespacing=1.20, fontsize=7.0, color=INK)
+    return ytop - h
 
 
-def arrow(x0, y0, x1, y1, lw=0.85, color=EDGE, ls="solid"):
-    ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle="-|>", mutation_scale=7,
-                                 linewidth=lw, color=color, zorder=1, linestyle=ls))
+def down(x, y0, y1, ls="solid", color=EDGE, lw=0.85):
+    """A connector with a shaft. FancyArrowPatch over a 3-unit gap drew a head and nothing else."""
+    ax.add_patch(FancyArrowPatch((x, y0), (x, y1), arrowstyle="-|>", mutation_scale=6.0,
+                                 linewidth=lw, color=color, zorder=1, linestyle=ls,
+                                 shrinkA=0, shrinkB=0))
 
 
-# ---- level 1: the two routes, unequal ------------------------------------------------------
-# The vertical budget is 28.5 units over 2.07 in, at 14 units to the inch, which is one
-# 7 pt line at 1.34 leading every 1.83 units. Every level states its own top and height so a
-# later edit cannot push the terminal box below the axis, which the first draft did.
-L_CX, L_HW = 25.0, 23.5
-R_CX, R_HW = 74.0, 22.0
-TOP, H1 = 28.5, 7.0
-box(L_CX, L_HW, TOP, H1,
-    ["April to June 2026 collection and citation searching",
-     "514 queries over three interfaces, five citation rounds",
-     "screened on scope by the routes themselves: %d records" % S["route_13"]], SOLID)
-box(R_CX, R_HW, TOP, H1,
-    ["IEEE Xplore export, 5 July 2026",
-     "%s unique records" % format(S["route_2"], ","),
-     "not screened before pooling"], OPEN_)
+TOP = H_IN * UPI - MARGIN
+LX, RX, HW = 27.0, 73.0, 21.0
+PX, PHW = 50.0, 44.0
 
-# ---- level 2: the pool ---------------------------------------------------------------------
-P_CX, P_HW, P_TOP, H2 = 50.0, 33.0, 19.3, 4.8
-arrow(L_CX, TOP - H1, P_CX - 11, P_TOP)
-arrow(R_CX, TOP - H1, P_CX + 11, P_TOP)
-box(P_CX, P_HW, P_TOP, H2,
-    ["Pooled: %s records" % format(S["pooled"], ","),
-     "%d from the collection, %s from the export, %d in both"
-     % (ONLY_13, format(ONLY_2, ","), S["both"])], SOLID)
+# ---- the two routes, side by side and unequal ----------------------------------------------
+# 2026-09-10 (T-1995): the two lines read "Screened on scope: 86 records" against "Not screened:
+# 1,084 records", which put the verb first and left a reader to work out what each number counts.
+# Both count the records the route sends to the pool. The count leads and the clause after it says
+# what was done to those records, so the asymmetry between the routes is legible from the boxes.
+lb = box(LX, HW, TOP, ["Collection and citation search",
+                       "514 queries, five rounds",
+                       "%d records, screened on scope" % S["route_13"]])
+# T-1996: "none screened" said the records were never screened at all; they were, downstream, at
+# title and abstract like every pooled record. What the route did not do is screen before pooling.
+rb = box(RX, HW, TOP, ["IEEE Xplore export, 5 July 2026",
+                       "%s records" % format(S["route_2"], ","),
+                       "not screened before pooling"])
 
-# ---- level 3: one reading band, split left and right ---------------------------------------
-B_L, B_R, B_TOP, H3 = 4.0, 96.0, 13.2, 6.2
-arrow(P_CX, P_TOP - H2, P_CX, B_TOP)
-ax.add_patch(FancyBboxPatch((B_L, B_TOP - H3), B_R - B_L, H3, boxstyle="round,pad=0.020",
-                            linewidth=0.8, edgecolor=EDGE, facecolor="#ffffff", zorder=2))
-ax.plot([50.0, 50.0], [B_TOP - H3 + 0.6, B_TOP - 0.6], lw=0.6, color=GREY, zorder=3)
-ax.text(27.0, B_TOP - H3 / 2.0, "read at title and abstract\n%s records, less %s"
-        % (format(S["pooled"], ","), format(S["excluded_title_abstract"], ",")),
-        ha="center", va="center", fontsize=7.0, color=INK, linespacing=1.34, zorder=3)
-ax.text(73.0, B_TOP - H3 / 2.0,
-        "read at full text\n%d records, less %d on scope and %d merged versions\n"
-        "%d not obtained and read at an abstract"
-        % (S["screened_in"], S["excluded_full_text"], S["versions_merged"], S["not_obtained"]),
-        ha="center", va="center", fontsize=7.0, color=INK, linespacing=1.34, zorder=3)
+# ---- the pool ------------------------------------------------------------------------------
+# Each connector drops straight from the bottom centre of its own box onto the top edge of the
+# pool, which the pool spans. A slanted pair met the pool off centre and read as leaving the far
+# end of each box.
+p_top = min(lb, rb) - GAP
+down(LX, lb, p_top)
+down(RX, rb, p_top)
+pb = box(PX, PHW, p_top, ["Pooled: %s records" % format(S["pooled"], ","),
+                          "%d from the collection, %s from the export, %d in both"
+                          % (ONLY_13, format(ONLY_2, ","), S["both"])])
 
-# ---- level 4: the corpus --------------------------------------------------------------------
-C_CX, C_HW, C_TOP, H4 = 50.0, 31.0, 5.6, 4.7
-arrow(C_CX, B_TOP - H3, C_CX, C_TOP)
-box(C_CX, C_HW, C_TOP, H4,
-    ["Reviewed corpus: %d studies" % S["corpus"],
-     "%d read at full text, %d read at an abstract"
-     % (S["full_text_recorded"], S["abstract_only"])], SOLID, weight="bold")
+# ---- the two readings, in sequence ---------------------------------------------------------
+# Section II-B screens at title and abstract and assesses at full text. "Read at title and
+# abstract" inverted the object and the place: what is read is the record, at those two fields.
+a_top = pb - GAP
+down(PX, pb, a_top)
+ab = box(PX, PHW, a_top, ["Screened at title and abstract",
+                          "Excluded: %s records" % format(S["excluded_title_abstract"], ",")])
+b_top = ab - GAP
+down(PX, ab, b_top)
+# The two records leaving at this band for want of a full text and on scope are printed as one
+# subtraction. Supplementary Table S-6 keeps them apart and the paragraph beside it gives the
+# reason for the one whose full text was never obtained. The sum is taken from the record so the
+# box cannot drift from it.
+bb = box(PX, PHW, b_top,
+         ["Assessed at full text: %d records" % S["screened_in"],
+          "Excluded on scope: %d records" % (S["excluded_full_text"] + S["not_obtained"]),
+          "Versions merged: %d records" % S["versions_merged"]])
 
-# the abstract-only path parts from the full-text reading and rejoins at the corpus, drawn dashed
-# so a reader sees which of the two terminal counts was never verified at full text
-CH_X, CY = 92.0, C_TOP - H4 / 2.0
-ax.plot([CH_X, CH_X], [B_TOP - H3, CY], lw=0.75, color=GREY, linestyle=(0, (2.6, 1.8)), zorder=1)
-ax.plot([CH_X, C_CX + C_HW], [CY, CY], lw=0.75, color=GREY, linestyle=(0, (2.6, 1.8)), zorder=1)
+# ---- the corpus ----------------------------------------------------------------------------
+c_top = bb - GAP
+down(PX, bb, c_top)
+cb = box(PX, PHW, c_top, ["Reviewed corpus: %d studies" % S["corpus"]])
 
-fig.tight_layout(pad=0.10)
+ax.set_ylim(cb - MARGIN, H_IN * UPI)
+# 2026-09-10 (T-1995): H_IN sizes the canvas before the drawing is laid out, so every line removed
+# left the boxes stretched over the same inches rather than the figure shorter. The height is cut
+# to what the drawing actually occupies, which holds the vertical scale at UPI units to the inch.
+fig.set_size_inches(3.42, (H_IN * UPI - cb + MARGIN) / UPI)
+fig.tight_layout(pad=0.06)
 OUT.parent.mkdir(parents=True, exist_ok=True)
 fig.savefig(OUT, dpi=600, facecolor="white")
 print("wrote %s" % OUT)

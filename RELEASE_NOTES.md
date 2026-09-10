@@ -1,13 +1,65 @@
-# v1.7.0: the figure generators
+# v1.8.0: the 93-study corpus
 
-Supersedes v1.6.0 of the same concept record, DOI 10.5281/zenodo.21523970, which always resolves to
-the newest version. Cited as tag v1.7.0 in Section V and in Supplementary Section S-VI of the
+Supersedes v1.7.0 of the same concept record, DOI 10.5281/zenodo.21523970, which always resolves to
+the newest version. Cited as tag v1.8.0 in Section V and in Supplementary Section S-VI of the
 manuscript.
 
-v1.6.0 was tagged on GitHub and its Zenodo upload was held by an access failure, so no version DOI
-was minted for it. This version supersedes it on the record and carries everything it held.
+Neither v1.6.0 nor v1.7.0 was uploaded to Zenodo: both were tagged on GitHub and both uploads were
+held by an access failure, so no version DOI was minted for either. This version supersedes both on
+the record and carries everything they held.
 
-## What is new in v1.7.0
+## What is new in v1.8.0
+
+**The corpus is 93 studies.** Two of the three studies recorded from an abstract alone, `idx` 13
+([1098]) and `idx` 40 ([1109]), were obtained and read at full text, and every one of their eleven
+fields, their evaluation environment, their destination-in-state value, their reward detail and
+their optimality claim was re-recorded from the text; `corpus_text/13.README.txt` and
+`40.README.txt` quote the sentence behind each value. The third, `idx` 26 ([1088]), could not be
+obtained from any institution available to the author and left the corpus; `26.README.txt` records
+the attempt. No reviewed study is recorded from an abstract, `boundary_condition` has no unclear
+value, and one denominator of 93 applies to every field but the generalization mechanism, which
+remains assessable on 91. `study_record_corpus_v9_coded.csv`, `study_record_claim_charting.csv`
+and `study_record_simulator_audit_v6.csv` carry the changes; the `boundary_status` column now
+partitions the 93 as `addressed` 10, `judged-not-addressed` 9 and `not-addressed` 74.
+
+**The evidence class of the ten addressed boundaries.** `boundary_status_note` now records, for
+each study addressing the boundary condition, whether the report states the treatment of a vehicle
+reaching a peripheral link (7) or names a property of the periphery itself (3); Section IV-B prints
+the split and `gates/countcheck.py` recomputes it from this column.
+
+**The lexical scans re-executed over 93 texts (`eval_substrate/`, `fulltext_scan/`).**
+`substrate.json` and `benchmark_network_adjudication.json` are regenerated over `corpus_text/`,
+now 93 files; `idx` 13 evaluates on the Nguyen-Dupuis network, which raises the benchmark count to
+12. Table S-22 and Section IV-G print the new values. Both scripts resolve the record at the top
+level of this package, as before.
+
+**The figure generators, all six, at the revisions that drew the placed figures.**
+`boundary_open_demo/plot_experiment_design.py`, `boundary_open_demo/plot_reward_condition.py` and
+`benchmark_network/plot_networks.py` are the sources of Figs. 2, 5 and 4; the copies in the
+repository tree up to v1.7.0 were older revisions with other figure sizes. `plot_family_reporting.py`
+joins `plot_family_merged.py` at the top level. Every generator now resolves its output beside the
+manuscript when a manuscript tree is found above it and beside itself otherwise, which is the defect
+T-1984 found in one generator and T-1995 found in four more: each was writing into a directory the
+builder never read, so a moved count left the figure on the page unchanged.
+
+**Two gates (`gates/`).** `check_figure_generators.py` renders every generator in a fresh
+interpreter, asserts that it writes into the manuscript's figure directory, and compares the
+rendered image pixel by pixel with the placed one; `countcheck.py` recomputes every printed corpus
+count from Table A-1 and the record, matching a number in front of any noun the corpus is counted in.
+Both are deposited as they run in the development repository and resolve its paths; they document
+what holds the manuscript to this record rather than run inside the package.
+
+**Fig. 1 redrawn once more.** With no study read from an abstract, the terminal box states one count
+and the dashed path is gone; the record whose full text was never obtained leaves at the full-text
+band together with the scope exclusions, as one subtraction of 7, which Supplementary S-IV.B states.
+`assembly_stages.py` asserts the corpus at 93.
+
+**The two `sioux30` runners name tag v1.8.0** as the source of `benchmark_demo.py`.
+`benchmark_network/plot_networks.py` imports the same module and, through it, the learner module
+`boundary_open_demo/dqn.py` of the repository at this tag; like the `m2c/` scripts it runs against
+that tree and not inside this package alone, and says so when the module is absent.
+
+## What v1.7.0 added
 
 **The generator of Fig. 1 (`screening_trail/`).** Three files: `assembly_stages.py` holds the
 fifteen stage counts as constants and asserts every stage as a difference of the stage above it,
@@ -175,8 +227,10 @@ retained. The rerun reproduces the published means: 46.2, 5.0, 3.0 and 82.8.
 
 ## Reproducing
 
-    python3 eval_substrate/substrate.py
-    python3 eval_substrate/benchmark_network_adjudication.py
+    python3 eval_substrate/substrate.py                     # texts read: 93
+    python3 eval_substrate/benchmark_network_adjudication.py  # ADJUDICATED COUNT: 12
+    python3 screening_trail/assembly_stages.py               # corpus 93
+    python3 plot_family_merged.py                            # asserts the family totals at 93
     python3 repo_v11/bootstrap_travel_time_ci.py
     python3 repo_v11/boundary_open_demo/costly_return.py --seeds 10 --max_steps 120 --out <path>.csv
 

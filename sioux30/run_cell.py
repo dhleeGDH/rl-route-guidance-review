@@ -1,6 +1,6 @@
 # Runs the published Sioux Falls cells at one seed and writes a JSON shard.
 # The benchmark package is imported, never written. Training is benchmark_demo.train_eval unchanged.
-# Set BENCHMARK_DIR to the benchmark_network directory of the repository at tag v1.7.0,
+# Set BENCHMARK_DIR to the benchmark_network directory of the repository at tag v1.8.0,
 # which publishes benchmark_demo.py; this package carries the run outputs alone.
 import argparse, json, os, sys
 BENCH = os.environ.get("BENCHMARK_DIR",
@@ -8,7 +8,7 @@ BENCH = os.environ.get("BENCHMARK_DIR",
 if not os.path.exists(os.path.join(BENCH, "benchmark_demo.py")):
     sys.exit("benchmark_demo.py not found in %s.\n"
              "The environment module is published in benchmark_network/ of the repository "
-             "at tag v1.7.0; set BENCHMARK_DIR to that directory." % BENCH)
+             "at tag v1.8.0; set BENCHMARK_DIR to that directory." % BENCH)
 sys.path.insert(0, BENCH)
 import torch
 torch.set_num_threads(1)

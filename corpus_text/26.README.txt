@@ -1,0 +1,33 @@
+idx 26 = [1088], printed [107]. Z. Fu, L. Li, L. Zhu, F. Tao, "Reinforcement learning-based route
+planning method for connected vehicles considering real-time road traffic information," Proc.
+Inst. Mech. Eng., Part D: J. Automobile Eng.
+
+REMOVED FROM THE REVIEWED CORPUS 2026-09-10 (T-1991). The full text is not obtainable at any
+institution available to this study, so the eleven fields cannot be settled by the evidence
+Table S-9 requires. The study was recorded from an abstract alone and carried two settled values,
+the tabular family and a forecast-conditioned state, with nine fields at unc.
+
+THERE IS NO 26.txt AND THERE NEVER WAS. The scan reads corpus_text/ and this study never had an
+extraction, so its removal takes nothing out of the full-text denominator; it takes one row out
+of Table A-1 and one study out of the corpus.
+
+WHAT ITS DEPARTURE MOVES, alone and before the two full texts are read:
+  corpus                94 -> 93
+  tabular family        13 -> 12
+  forecast-conditioned  17 -> 16   (returns to 17 when idx 13 is read)
+  boundary unclear       3 -> 2
+  reward unclear         3 -> 2
+  action unclear         7 -> 6
+
+THE REFERENCE ENTRY STAYS IN THE LIST, UNMARKED. The asterisk is derived from Table A-1 by the
+builder, so it fell away with the row and nothing marks the entry now. Keeping the entry is the
+decision of T-1991, on three grounds. An unmarked citation is the list's existing category for a
+work cited but not reviewed, which is what this study now is. Removing it would erase the fact
+that a study was excluded for access, and a paper about what a report must disclose should not
+drop that quietly. And the exclusion needs a sentence in the manuscript, which is the work of a
+later ticket in the T-1990 plan.
+
+HANDOFF. The entry is presently cited from one place alone, the per-study row at
+supplementary.md:372. The ticket that removes that row must add the citing sentence in the same
+commit, or build_integrated_docx.py's reference integrity check will report the entry as uncited
+and the build will stop.

@@ -29,7 +29,21 @@ STUB = 0.62          # length of a stub link protruding from a boundary node
 # The Windows tree held the figures under 05_writing; this package holds them under
 # manuscript. The old path did not exist here and mkdir below created it silently, so the
 # script reported success while writing where nothing reads.
-OUT = (Path(__file__).resolve().parents[2] / "manuscript" / "figures"
+# 2026-09-10 (T-1996): the output was Path(__file__).resolve().parents[2]/"manuscript"/"figures",
+# which reaches handoff/manuscript/figures only through the handoff/experiments symlink and only
+# unresolved; .resolve() follows the link into archive/experiments_dup/, where no builder reads.
+# The tree that owns handoff/manuscript/figures is found by walking up instead (T-1984 class).
+def _figures():
+    d = Path(__file__).resolve().parent
+    for _ in range(8):
+        if (d / "handoff" / "manuscript" / "figures").is_dir():
+            return d / "handoff" / "manuscript" / "figures"
+        d = d.parent
+    # In the deposited package no manuscript tree exists beside this file; the figure lands here.
+    return Path(__file__).resolve().parent
+
+
+OUT = (_figures()
        / "fig_experiment_design.png")
 
 
@@ -76,11 +90,10 @@ def draw_panel(ax, open_boundary, title):
             if node == D_NODE and d == D_DIR:
                 continue
             draw_stub(ax, node, d, color="0.45", lw=1.0)
-        ax.text(N / 2 - 0.5, -1.00, "other perimeter links also leave the network",
-                ha="center", va="bottom", fontsize=7, style="italic", color="0.25")
-    else:
-        ax.text(N / 2 - 0.5, -1.00, "the destination link is the only way out",
-                ha="center", va="bottom", fontsize=7, style="italic", color="0.25")
+    # 2026-09-02, minor m8: the two italic notes under the panels read as speech and repeated
+    # Section III-A, which already states that the destination link is the one exit on the
+    # closed variant and that the gray stubs remove a vehicle on the open one. A figure carries
+    # the drawing; the prose carries the sentence.
 
     # A subfigure label belongs below the graphic it names, as in Fig. 8 and Fig. 9. It is
     # drawn in the panel's own coordinates so that it tracks the drawing rather than the slot.
@@ -91,12 +104,15 @@ def draw_panel(ax, open_boundary, title):
     ax.text(O_CELL[0], O_CELL[1] - 0.34, "O", ha="center", va="top",
             fontsize=8, fontweight="bold")
 
-    # Destination: the one outgoing boundary link. A star at the tip labelled D read as a
-    # destination NODE on first sight, which is the opposite of the point the panel makes, so the
-    # label now names the link and sits along the stub rather than beyond its end.
+    # Destination. A label D at the STUB TIP once read as a destination node, so it was replaced
+    # by the words "destination link". 2026-09-01: D returns, at the boundary NODE rather than at
+    # the tip, on the author's instruction that the panel carry O and D. Section III-A now states
+    # that the destination link is the outgoing link of the destination node, so the node bears the
+    # label and the bold stub is the link, which is what Section II-A's destination g in V means.
+    ax.plot(D_NODE[0], D_NODE[1], "s", ms=5.0, mfc="white", mec="black", mew=1.3, zorder=6)
     draw_stub(ax, D_NODE, D_DIR, color="black", lw=2.0, tip=True)
-    ax.text(D_NODE[0] + STUB * 0.5, D_NODE[1] + 0.28, "destination link", ha="center",
-            va="bottom", fontsize=FS - 0.5, fontweight="bold")
+    ax.text(D_NODE[0], D_NODE[1] - 0.34, "D", ha="center", va="top",
+            fontsize=8, fontweight="bold")
 
     ax.set_xlim(-0.95, N + 0.45)
     ax.set_ylim(-2.05, N - 0.05)
@@ -105,10 +121,13 @@ def draw_panel(ax, open_boundary, title):
 
 
 # One column of the two-column page holds the pair, so the panels stack vertically.
-fig, (a, b) = plt.subplots(2, 1, figsize=(2.35, 4.75))
+# The two panels differ only in their peripheral links, so they read as a pair. Stacked, the
+# figure ran to 76% of a column at \columnwidth and drove the surrounding text into stretched
+# vertical glue. Side by side the same panels occupy a fifth of that height.
+fig, (a, b) = plt.subplots(1, 2, figsize=(3.45, 1.95))
 draw_panel(a, False, "(a) Boundary-closed network")
 draw_panel(b, True, "(b) Boundary-open network")
-fig.tight_layout(pad=0.15, h_pad=0.8)
+fig.tight_layout(pad=0.15, w_pad=1.0)
 OUT.parent.mkdir(parents=True, exist_ok=True)
 fig.savefig(OUT, dpi=600, facecolor="white")
 print("wrote", OUT)

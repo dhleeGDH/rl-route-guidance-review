@@ -1,0 +1,48 @@
+idx 40 = [1109], printed [125]. L. Li, Q. He, R. Luo, N. Chen, P. Gao, "Emergency vehicle rescue
+route optimization based on deep reinforcement learning in highway network," Proc. SPIE 13421,
+8th Int. Conf. Traffic Eng. Transp. Syst. (ICTETS 2024).
+
+FULL TEXT ADDED 2026-09-10 (T-1991). The study was recorded from an abstract alone until now,
+with the family entered as Unspecified. The PDF reached handoff/corpus_pdfs/ and 40.txt was
+extracted with pdftotext, as 48.README.txt records for idx 48.
+
+THE EVIDENCE SENTENCE OF EACH VALUE, quoted from 40.txt.
+
+  Fam.  dq        "we utilize the Double-DQN algorithm to train an agent to optimize emergency
+                  rescue routes". The family moves from un to dq.
+
+  Act.  link      "The node connected to the current node is coded as True, otherwise False."
+                  The agent moves to an adjacent node at each step.
+
+  State inst      The state is "(x, y) time weightedges Amask Node priority". No variable is
+                  evaluated at the conditions expected at traversal.
+
+  Enc.  raw       A Q-network over the state vector with a target network. No graph encoder and
+                  no other learned encoder is described.
+
+  Reward ind      Temporal and spatial rewards accrue to the one emergency vehicle. "the temporal
+                  reward for passing through edge", "rewards are given based on node priority
+                  after each action". Nothing is summed over a network measure.
+
+  Feas. mask      unchanged. "The set of action mask is updated each time step and the intelligent
+                  agent only selects actions with a value of True."
+
+  Bd.   no        A simulated highway map of 100 nodes with edge count and length set by random
+                  seeds. The mask enforces graph feasibility alone, which Section VI states does
+                  not satisfy the boundary item, and no sentence treats a vehicle reaching a
+                  peripheral link.
+
+  Compl. no       "the method successfully optimizes the rescue path and finds out the shortest
+                  time-consuming rescue route". No rate is reported.
+
+  Code  no        No repository or archive identifier appears in the report.
+
+  Gen.  no        Random seeds hold the training environment constant. No transfer beyond the
+                  training configuration is claimed.
+
+  Gamma 0.9       "Other parameter settings include a learning rate of 0.001, a discount rate of
+                  0.9, a final task reward of 100, a replay buffer size of 1000".
+
+CONSEQUENCE. The study now carries a link-level action, an instantaneous state, an individual
+reward and an unaddressed boundary, so it joins the modal design: the group of 44 becomes 45 and
+the 39 with the modal state form becomes 40, of which 37 leave the boundary unaddressed.

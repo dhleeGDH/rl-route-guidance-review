@@ -156,7 +156,7 @@ the same four ablation cells at 3000 episodes as bare per-seed lists.
 
 | Float | Carries | Source |
 |---|---|---|
-| Table II, the corpus across the recorded fields | yes | `study_record_corpus_v9_coded.csv`, filtered to `in_reviewed_corpus == yes` |
+| Table II, the corpus across the recorded fields | yes | `study_record_corpus_v9_coded.csv`, filtered to `in_reviewed_corpus == yes`, 93 rows; the three scan rows are `eval_substrate/substrate.json` |
 | Table III, action type against reward alignment | yes | the same file |
 | Table VI, the BOND checklist | no measured value | no run |
 
@@ -165,10 +165,10 @@ the same four ablation cells at 3000 episodes as bare per-seed lists.
 | Figure | Carries | Source |
 |---|---|---|
 | Fig. 1, the assembly of the corpus | every count in the figure | `screening_trail/assembly_stages.json`, written and checked by `screening_trail/assembly_stages.py`, and drawn by `screening_trail/plot_assembly.py`. The record asserts every stage as a difference of the stage above it and Supplementary Table S-6 prints the same fifteen values |
-| Fig. 2, experiment design | schematic | `repo_v11/boundary_open_demo/plot_experiment_design.py` |
-| Fig. 3, the family-by-field grid | every cell | `plot_family_merged.py` at the top level. **The counts are literals inside that script, not a tally computed from the record**; it asserts the three totals the manuscript states and nothing else. Each cell is checkable against `study_record_corpus_v9_coded.csv`, and `scripts/countcheck.py` of the development repository is what holds the two in step |
-| Fig. 4, the six evaluation networks | schematic | `repo_v11/benchmark_network/plot_networks.py`, over `networks/` |
-| Fig. 5, the reward-condition curves | a measured trace | `repo_v11/boundary_open_demo/plot_reward_condition.py` |
+| Fig. 2, experiment design | schematic | `boundary_open_demo/plot_experiment_design.py`, the revision that draws the placed figure; the copy in the repository tree up to v1.7.0 is an older revision with another figure size |
+| Fig. 3, the family-by-field grid | every cell | `plot_family_merged.py` at the top level. **The counts are literals inside that script, not a tally computed from the record**; it asserts the three totals the manuscript states and nothing else. Each cell is checkable against `study_record_corpus_v9_coded.csv`, and `gates/countcheck.py`, the development repository's gate deposited here, is what holds the two in step |
+| Fig. 4, the six evaluation networks | schematic | `benchmark_network/plot_networks.py`, over `networks/`; it imports `benchmark_demo.py` and, through it, `boundary_open_demo/dqn.py` from the repository at this tag, as the `sioux30/` and `m2c/` scripts do |
+| Fig. 5, the reward-condition curves | a measured trace | `boundary_open_demo/plot_reward_condition.py`, over `boundary_open_demo/four_cells_curves.json` beside it |
 
 ## Supplementary tables
 
@@ -185,10 +185,10 @@ the same four ablation cells at 3000 episodes as bare per-seed lists.
 | S-6 to S-10 Corpus assembly and screening | — | `repo_v11/screening_trail/`, `repo_v11/corpus/`. See the snapshot notice below |
 | S-11 Learner sweep, all ten rows | **M2-C** | `m2c/cells3/dqn_sensitivity_C.json`, key `settings.<name>.cells."open aligned".completion_mean`. The published sweep is `boundary_open_demo/dqn_sensitivity_10seed.json`, whose ten values are 98.6, 24.5, 100.0, 99.95, 94.9, 94.65, 96.3, 98.0, 99.9 and 95.15 |
 | S-12, S-13 BOND answered | — | the reports themselves; no run |
-| S-14, S-15, S-18 to S-21 Corpus tables | — | `study_record_corpus_v9_coded.csv`, with `study_record_claim_charting.csv` and `gamma_todo.csv` for the title and reference joins |
+| S-14, S-15, S-18 to S-21 Corpus tables | — | `study_record_corpus_v9_coded.csv`, with `study_record_claim_charting.csv` and `gamma_todo.csv` for the title and reference joins; S-18 carries the 93 studies, S-19 and S-20 the 45 of the group, S-21 the 10 addressing the boundary |
 | **S-22 Evaluation substrate**, 20 rows | — | `eval_substrate/substrate.json`, written by `eval_substrate/substrate.py` over `corpus_text/<idx>.txt`: the substrate partition, the benchmark total, the four node statistics, the seven measures and the five baselines |
-| **S-22**, 5 rows | — | `eval_substrate/benchmark_network_adjudication.json`, key `per_network`: Sioux Falls 6, Braess 4, Anaheim 3, Nguyen-Dupuis 3, more than one 5 |
-| **S-22**, 3 rows | — | `study_record_simulator_audit_v6.csv`, `category == named-platform` and `platform_names`: the evaluation environment named in 53 of 94, SUMO in 47 of 53, another engine in 6 of 53 |
+| **S-22**, 5 rows | — | `eval_substrate/benchmark_network_adjudication.json`, key `per_network`: Sioux Falls 6, Braess 4, Nguyen-Dupuis 4, Anaheim 3, more than one 5, 12 studies in all |
+| **S-22**, 3 rows | — | `study_record_simulator_audit_v6.csv`, `category == named-platform` and `platform_names`: the evaluation environment named in 53 of 93, SUMO in 47 of 53, another engine in 6 of 53 |
 | **S-22**, the random-or-greedy row | — | `eval_substrate/substrate.json`, adjudicated: the lexical count less one, the excluded occurrence being a false positive recorded in `substrate.py` |
 | S-16, S-17 Queries and term families | — | `repo_v11/search_rerun/`, `fulltext_scan/`, `fulltext_scan.py` |
 | S-23 Sioux Falls with the destination on the border | mixed | the two travel-time rows and all four travel-time columns from `sioux30/summary_30seed.json`, keys `('dest_boundary', ...)`, 30 seeds; the two destination-aligned completion cells, 99.9 [99.8-100.0] and 92.2 [88.4-95.6], from **`m2c/train_rest_sioux.json`** |
@@ -264,33 +264,41 @@ named for that row above, under the convention section B assigns to it.
 ## Reading the study record
 
 `study_record_corpus_v9_coded.csv` carries **95 rows**. Every count printed in the manuscript is
-taken over the **94 rows whose `in_reviewed_corpus` is `yes`**. The remaining row is marked
-`no (author own study, post-dates the search window; excluded from every count)` and enters no
-count, no denominator and no table. **Apply the filter before any tally**; a tally over the raw
-file exceeds every printed count by one wherever that study carries a value.
+taken over the **93 rows whose `in_reviewed_corpus` is `yes`**. The two remaining rows enter no
+count, no denominator and no table: `idx` 93 is marked
+`no (author own study, post-dates the search window; excluded from every count)`, and `idx` 26 is
+marked `no (full text unobtainable at any institution available to this study; excluded from every
+count, T-1991)`. **Apply the filter before any tally**; a tally over the raw file exceeds a printed
+count wherever either study carries a value.
 
 Worked example, the boundary condition:
 
     rows = [r for r in csv.DictReader(open("study_record_corpus_v9_coded.csv"))
-            if r["in_reviewed_corpus"].strip() == "yes"]        # 94 rows
+            if r["in_reviewed_corpus"].strip() == "yes"]        # 93 rows
     Counter(r["boundary_condition"] for r in rows)
-    # boundary-open-addressed 10, not-addressed 81, unclear 3
+    # boundary-open-addressed 10, not-addressed 83
 
-which is the 10 / 81 / 3 of Section II-B, Table II and the abstract. Over the unfiltered 95 rows the
-same tally returns 11 / 81 / 3, the eleventh being `idx` 93, which is excluded.
+which is the 10 / 83 of Section II-B, Table II and the abstract. Over the unfiltered 95 rows the
+same tally returns 11 / 84, the eleventh addressed study being `idx` 93 and the 84th unaddressed
+being `idx` 26, both excluded.
 
 Two further columns record how the field reached those values:
 
     Counter(r["boundary_status"] for r in rows)
-    # addressed 10, judged-not-addressed 9, not-addressed 72, unclear 3
+    # addressed 10, judged-not-addressed 9, not-addressed 74
 
-    Counter(r["boundary_status_note"] for r in rows if r["boundary_status"] == "judged-not-addressed")
+    Counter(r["boundary_status_note"].split(" (")[0] for r in rows if r["boundary_status"] == "judged-not-addressed")
     # demand-inflow 6, agent-location 2, demand-pattern 1
 
-`boundary_status` is a partition of the 94 and `boundary_condition` is the field the manuscript
+    Counter(r["boundary_status_note"].split(":")[0].split(" (")[0] for r in rows if r["boundary_status"] == "addressed")
+    # treatment stated 7, periphery named 3
+
+`boundary_status` is a partition of the 93 and `boundary_condition` is the field the manuscript
 prints; `addressed` and `boundary-open-addressed` agree row for row, and `judged-not-addressed` is
 the nine studies re-read at full text for v1.5.0 and moved to not addressed. The 19 rows carrying a
-non-empty `boundary_quote` are 10 + 9, which is the count v1.3.0 and v1.4.0 published.
+non-empty `boundary_quote` are 10 + 9, which is the count v1.3.0 and v1.4.0 published. The third
+tally is the evidence class of the ten, which Section IV-B prints as 7 stating the treatment of a
+vehicle reaching a peripheral link and 3 naming a property of the periphery.
 
 **Snapshot notice.** The corpus record of this package is the current coding. The copy under
 `repo_v11/corpus/corpus_v9_coded.csv`, which `repo_v11/screening_trail/` and the S-6 to S-10 tables
@@ -305,7 +313,7 @@ notes of v1.5.0 and of this version.
 | instantaneous state | `study_record_corpus_v9_coded.csv` | `predictive_representation = none` | the forecast axis; `state_representation` is a different axis, the encoder (raw-vector, graph-encoder) |
 | link-level action | the same file | `action_granularity = next-link` | |
 | system-level reward | the same file | `reward_alignment = system` | |
-| the boundary condition, 10 / 81 / 3 | the same file | `boundary_condition` | `boundary_status` and `boundary_status_note` decompose it; see above |
+| the boundary condition, 10 / 83 | the same file | `boundary_condition` | `boundary_status` and `boundary_status_note` decompose it; see above |
 | policies trained on a boundary-closed network, 17.1% and 41.5% | `m2c/controls/exit_sentinel_control_C.json` | `cells.high_time_min`, `cells.high_aligned`, field `scored_open` | `high` marks the sentinel at its published value; `cells.matched_*` carries the base-cost control, 22.7% and 60.4% |
 | paired difference, 24.4 and 37.7 points | the same file | `paired.high`, `paired.matched` | each with `printed_cells`, `printed_difference` and `printed_ci` |
 | the destination is nearer than the nearest exit, 69.0% | `boundary_open_demo/interior_deep_control_vi.json` | `completion_cheaper_pct` | |

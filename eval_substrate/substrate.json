@@ -273,6 +273,23 @@
    "nodes_stated": [],
    "links_stated": []
   },
+  "13": {
+   "engines": {},
+   "network": {
+    "benchmark road network": "Nguyen Dupuis network is adopted for numerical simulation to study the updating process",
+    "real city or corridor": "A solid-state drive as the system disk and software installation disk, with a capacity of at least 256GB will be recommended"
+   },
+   "metrics": {
+    "travel time": "Simulation results denote that the equilibrium state is much more efficient when preference learning mechanism is considered comparing with the traditional stochastic user equilibrium model,"
+   },
+   "baselines": {
+    "user equilibrium": "Simulation results denote that the equilibrium state is much more efficient when preference learning mechanism is considered comparing with the traditional stochastic user equilibrium model,"
+   },
+   "nodes_stated": [
+    13
+   ],
+   "links_stated": []
+  },
   "14": {
    "engines": {
     "SUMO": "Singapore Reinforcement Learning method with Dynamic Learning Rate for Real-Time Route Guidance based on SUMO 2022 17th International Conference on Control, Automation, Robotics and Vision ("
@@ -777,6 +794,24 @@
    "links_stated": [
     154
    ]
+  },
+  "40": {
+   "engines": {},
+   "network": {
+    "real city or corridor": "EVs are prioritized during emergencies, and the traffic network is also usually set up with emergency lanes, openings and other special access, which Eighth International Conference on Traff"
+   },
+   "metrics": {
+    "travel time": "Assuming that the estimated travel time of a road section is positively correlated with its length, we can derive the set of estimated time  {teE }",
+    "delay": "This reward mechanism encourages the agent to select nodes with higher priority, hastening its approach to the destination while mitigating the issue of reward delay caused by focusing solel",
+    "reward or return": "13421 134215S-4 (8) In summary, the total reward function is: R   Rtime _ transfer  (1   ) Rspace _ transfer (9)  is used to reconcile long-term temporal reward with immediate spatial "
+   },
+   "baselines": {
+    "shortest path or Dijkstra": "Previously, scholars commonly employed classical algorithms in Vehicle Routing Problems (VRP) such as Dijkstra and A* algorithms to address the path problem in the emergency response process"
+   },
+   "nodes_stated": [
+    100
+   ],
+   "links_stated": []
   },
   "41": {
    "engines": {},
@@ -1785,33 +1820,29 @@
   "TransModeler": 1
  },
  "network": {
-  "real city or corridor": 77,
-  "benchmark road network": 11,
+  "real city or corridor": 79,
+  "benchmark road network": 12,
   "synthetic grid or lattice": 19
  },
  "metrics": {
-  "travel time": 85,
-  "delay": 58,
+  "travel time": 87,
+  "delay": 59,
   "distance": 31,
   "fuel or emission": 47,
-  "reward or return": 44,
+  "reward or return": 45,
   "throughput or queue": 18,
   "completion or arrival rate": 18
  },
  "baselines": {
-  "shortest path or Dijkstra": 62,
+  "shortest path or Dijkstra": 63,
   "random or greedy": 14,
-  "user equilibrium": 20,
+  "user equilibrium": 21,
   "another RL method": 9,
   "static or fixed routing": 7
  },
- "n_texts": 91,
+ "n_texts": 93,
  "quarantined": [],
- "no_text": [
-  "13",
-  "26",
-  "40"
- ],
+ "no_text": [],
  "control": {
   "named_engine": 51,
   "sumo": 47

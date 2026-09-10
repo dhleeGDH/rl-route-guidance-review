@@ -1,0 +1,559 @@
+Emergency vehicle rescue route optimization based on deep
+reinforcement learning in highway network
+
+Linwei Li1, Qishu He1, Rui Luo3, Nan Chen2, Peng Gao1*
+1
+School of Electronics and Control Engineering, Chang’an University, Shaanxi, Xi’an 710064,
+China
+2
+School of Information Engineering, Chang'an University, Shaanxi, Xi’an 710064, China
+3
+Guangdong Road & Bridge Construction Development Co., Ltd., Guangzhou China
+*Corresponding author: penggao@chd.edu.cn
+ABSTRACT
+Rescue route planning for emergency vehicles (EVs) is one of the most important tasks for emergency response. However,
+traditional methods face challenges in addressing the complex information in modern traffic environments. To ensure the
+prompt arrival of EVs, this paper proposes a deep reinforcement learning-based method to optimize the rescue routes of
+EVs on the highway. Specifically, to align with the emergency transportation business, an emergency transportation map
+based on the road network node graph is first constructed. To improve the convergence speed of the algorithm, the action
+masking technique is applied to reduce the dimension of the action space during the decision-making of the agent to avoid
+invalid exploration. Additionally, to help the agent learn the spatio-temporal benefits throughout the entire dispatch cycle,
+road network nodes are prioritized based on the spatial transfer scale, and a corresponding reward scheme is designed.
+These improvements, when combined with the agent's learning mechanism, can assist them optimize rescue routes in a
+more efficient action space. Validation is carried out through simulation examples, and the results show that the approach
+presented in this paper can find the shortest time-consuming rescue route. Furthermore, the proposed improvements
+enhance the convergence performance of the algorithm.
+Keyword: emergency vehicle, route optimization, reinforcement learning, emergency transportation support
+
+1. INTRODUCTION
+With the rapid development of the economy and society, the highway, serving as an important transportation link
+connecting various regions, ushered in a boom construction and usage. While greatly enhancing daily life convenience,
+the highway network also faces various potential risks, especially the negative impacts of non-occasional accidents [1].
+According to an analysis of the US fatality dataset, a delayed rescue significantly reduces the likelihood of survival for
+individuals affected by the disaster [2]. Therefore, it is critical to improve the efficiency of emergency rescue.
+Emergency rescue on the highway requires rapid configuration and scheduling of EVs, with the planning of a dependable
+and efficient route being one of its primary objectives [3]. Previously, scholars commonly employed classical algorithms in
+Vehicle Routing Problems (VRP) such as Dijkstra and A* algorithms to address the path problem in the emergency
+response process [4]. However, traditional planning algorithms struggle to handle complex and dynamic traffic
+environments, significantly impacting their efficiency. In recent years, the ongoing evolution of artificial intelligence
+technology has provided more comprehensive solutions for optimizing the rescue routes of EVs. Many novel methods
+have been applied, resulting in improved outcomes. Ding et al. [5] introduced a route optimization framework for EVs
+based on vehicle-road cooperative technology to help EVs reach quickly. Min et al. [6] developed an urban traffic routing
+algorithm for EVs, aiming to find a route with the highest time reliability. Nikoo et al. [7] introduced a mixed-integer linear
+programming model to select the optimal network for determining the routes of EVs. Notably, reinforcement learning (RL)
+algorithms have proven effective in addressing route-planning challenges in recent years due to their unique learning
+mechanism, allowing them to deal with more complicated traffic information [8]. Bdeir et al. [9] proposed an RP-DQN
+algorithm to address the Multiple Depot Vehicle Routing Problem (MDVRP). Elfahim et al. [10] utilized the Q-learning
+algorithm to train an agent to find the shortest rescue path in a grid graph.
+Currently, although RL algorithms have shown effectiveness in addressing route-planning challenges, practical
+implementation still faces several obstacles. Firstly, the training environment lacks accuracy. EVs are prioritized during
+emergencies, and the traffic network is also usually set up with emergency lanes, openings and other special access, which
+
+Eighth International Conference on Traffic Engineering and Transportation System
+(ICTETS 2024), edited by Xiantao Xiao, Jia Yao, Proc. of SPIE Vol. 13421,
+134215S · © 2024 SPIE · 0277-786X · doi: 10.1117/12.3054495
+Proc. of SPIE Vol. 13421 134215S-1
+
+brings a lot of convenience to the rescue route planning for EVs. However, the grid training environment employed by
+most scholars is unable to simulate accurate emergency transportation maps. Secondly, the complex road network
+environment results in increased information inputs that require large-scale computational resources, while RL algorithms
+commonly face challenges related to convergence difficulties and unstable convergence, especially in high-dimensional
+spaces.
+In this paper, we utilize the Double-DQN algorithm to train an agent to optimize emergency rescue routes. The agent learns
+road network information and route planning skills from its environment and rewards, enabling it to discover better route
+options. This learning-driven approach excels at handling complex transportation environment information and can be
+implemented immediately after training. To overcome the convergence difficulties of the algorithms in high-dimensional
+action spaces, we employ an action masking technique to ensure that the agent explores within a valid action space.
+Meanwhile, we use the spatial transfer scale to categorize and prioritize road network nodes, and propose a reward function
+scheme that accounts for spatial and temporal benefits to guide the agent. The implementation of this reward scheme has
+enhanced the convergence performance of the algorithm and scheme benefits. Finally, to simulate a realistic emergency
+traffic environment, we constructed a road network node graph for the experiment. The experimental results verify the
+effectiveness of the method proposed in this paper, which significantly shortens the time-consuming rescue route.
+Furthermore, the improvement measures adopted in this paper also speed up the convergence speed and enhance the
+convergence stability.
+
+2. REINFORCEMENT LEARNING
+2.1 Reinforcement learning process
+Reinforcement learning is a machine learning algorithm based on rewards and trial-and-error, which has been widely used
+in various fields such as transportation and energy in recent years [8]. Specifically, the agent interacts with the environment
+to gather information, determines the current state st , selects an action at based on the action selection strategy, executes
+the action, receives a new state st 1 and an immediate reward rt from the environment, and updates the action selection
+strategy based on that feedback. This iterative learning process is illustrated in Figure 1.
+Agent
+Action
+At
+
+Reward
+Rt
+
+State
+St
+
+Rt 1
+
+Environment
+
+St 1
+
+Figure 1. Reinforcement learning process.
+
+Reinforcement learning can be classified into model-based and model-free approaches based on whether the state transition
+function is known. Model-free approaches can be categorized into two groups based on their learning objectives: valuebased and policy-based. Q-learning is a classical value-based RL algorithm that operates without requiring explicit models
+[11]
+. The Q-learning algorithm constructs a Q-table by computing Q-values for specific states and actions, iteratively
+updating the Q-table using Bellman's equation to maximize future rewards, and ultimately selecting the action with the
+highest Q-value to determine the optimal strategy for solving the RL problem.
+2.2 Deep reinforcement learning
+Deep reinforcement learning (DRL) combines the strengths of deep learning and RL algorithms to perform exceptionally
+well in handling high-dimensional perceptual inputs, large action spaces, and complex environments. The DQN algorithm
+proposed by Google's DeepMind team is a representative achievement in the field of DRL research [12].
+DQN is the result of integrating Q-learning algorithms with deep learning, utilizing neural networks to approximate Qfunctions and freeing the algorithm from the spatial constraints of Q-table. The DQN algorithm possesses two important
+features: the target network and the replay buffer. These components respectively improve the stability and training
+efficiency of the algorithm.
+
+Proc. of SPIE Vol. 13421 134215S-2
+
+3. METHODOLOGY
+3.1 Emergency transportation road network construction
+This paper utilizes a network node graph G   N , E to represent the highway emergency road network, based on the
+concept of constructing an emergency transportation map. N is the set of intersection nodes, and E is the set of roads
+(edges) connecting two intersection nodes. Using random seeds to control the amount and length of edges ensures that the
+agent is trained in a consistent environment. The length of each edge represents the length of the road section. Assuming
+that the estimated travel time of a road section is positively correlated with its length, we can derive the set of estimated
+time
+ {teE } . During training, the agent learns to find the fastest route to the destination based
+travel times for edges weightedges
+on environmental information and reward guidance. The states and actions are defined as follows, and the reward function
+scheme is described in section 3.2.
+(1) State: accurate and effective state parameter descriptions can enhance the agent's understanding of the environment
+and improve learning. In the route planning task within the highway scenario, the location data and the estimated travel
+time are the most essential information for the navigation of EVs. Therefore, in this paper, the state is defined as follows:
+time
+
+S (t step )   x, y , weightedges
+
+(1)
+
+where tstep denotes the current time step, x is the horizontal coordinate of the node where the vehicle is located, and y is
+the vertical coordinate. The dimension of this state is E  2 .
+(2) Action: the action refers to the next node selected by the agent from the current node, and its dimension is determined
+by the number of nodes. We consider all nodes of the graph as the action and apply the action masking technique. Using
+this technique reduces the dimensionality of the action space and guides the agent to search within the range of effective
+nodes:
+
+A  N  {n0 , n1 , n2 ,...nm }
+
+(2)
+
+Amask  {True or False}m1
+
+(3)
+
+where Amask is the set of action mask, which share the same dimensions as the action set A . The node connected to the
+current node is coded as True , otherwise False . The set of action mask is updated each time step and the intelligent agent
+only selects actions with a value of True .
+3.2 Node priority
+The essence of the route planning task is to transfer from the current spatial location to the target spatial location, and there
+are different time-consuming schemes for the transfer process affected by the traffic state and other factors. So, we aim to
+ensure that each movement of EVs brings it closer to the target location while minimizing the total time taken to reach the
+destination.
+Starting from the original point, each node in the road network is mapped onto the standard coordinate system. The spatial
+differences between various nodes are expressed in terms of horizontal spatial transfer scale ( Hsts ) and vertical spatial
+transfer scale ( Vsts ) as follows:
+
+Hstsn, n '  xn'  xn
+
+(4)
+
+Vstsn, n '  yn'  yn
+
+(5)
+
+where Hstsn , n ' is a vector representing the horizontal spatial transfer scale for moving from node n to n ' , obtained by
+subtracting node n ' ’ horizontal coordinate from node n ’s horizontal coordinate, and Vstsn , n ' is the same. As a result, the
+horizontal and vertical spatial perspectives can be utilized to assess whether moving from node n to node n ' decreases
+the spatial distance from the target node, as illustrated in Figure 2 (a).
+
+Proc. of SPIE Vol. 13421 134215S-3
+
+( x* , y* )
+
+n
+
+Vstsn,n*
+
+Optimal search
+range
+
+Suboptimal search range
+
+Vstsn ,n*
+
+n
+
+( x* , y * )
+
+(0, y * )
+
+*
+
+destination
+
+0
+
+original point
+
+n0
+
+( x * , 0)
+
+(0,0)
+
+( x* ,0)
+
+Hstsn ,n*
+
+( x * , 0)
+
+Invalid search range
+
+Hstsn ,n*
+
+Suboptimal search range
+
+0
+
+(0,  y* )
+
+(a)
+Figure 2. Node spatial relationships: (a) spatial transfer scale, (b) node priority range.
+
+(b)
+
+Nodes are categorized into three types based on the spatial benefits of moving to different nodes, corresponding to three
+search priorities as depicted in Table 1. The range of different of nodes is shown in Figure 2 (b).
+Table 1. Explanation of node categorization and prioritization.
+Priority
+1
+
+Node Category
+Optimal search range
+
+Benefits
+
+Restrictive Condition
+
+Horizontal and
+Vertical scales
+
+ Hstsn, n '  Hstsn0 , n*  0 and Vstsn, n '  Vstsn0 , n*  0
+
+
+ Hstsn , n '  Hstsn0 , n* and Vstsn, n '  Vstsn0 , n*
+Hstsn, n '  Hstsn , n*  0 and Hstsn , n '  Hstsn , n*
+
+2
+
+Suboptimal search
+range
+
+0
+
+Horizontal or
+Vertical scales
+
+0
+
+or
+Vstsn, n '  Vstsn , n*  0 and Vstsn , n '  Vstsn , n*
+0
+
+3
+
+Invalid search range
+
+None
+
+0
+
+Else
+
+The reward serves as the central component in RL, directing the function approximation process, which is the primary
+focus of learning of the agent. This paper proposes reward schemes with temporal and spatial benefits by combining node
+prioritization, evaluating spatial benefits at each step, and temporal benefits upon task completion:
+(1) Long-term temporal reward: the time-based long-term reward mechanism can estimate the long-term cumulative
+benefits of a route, thereby preventing agents from solely focusing on short-term gains when making decisions. This reward
+helps avoid vehicles traveling on congested roads. The total time used by the agent in a training round is utilized as a
+negative reward to guide it in finding a route that minimizes time spent. The calculation formula is as follows:
+k
+time
+rtime
+_ transfer   weight s , s '
+
+(6)
+
+k
+Rtime _ transfer   k  0  k  rtime
+_ transfer
+
+(7)
+
+K
+
+k
+'
+where rtime
+_ transfer represents the time step of k , the temporal reward for passing through edge ( s , s ) ; Rtime _ transfer is the
+
+cumulative temporal reward, and  is the discount rate.
+(2) Immediate spatial reward: rewards are given based on node priority after each action. This reward mechanism
+encourages the agent to select nodes with higher priority, hastening its approach to the destination while mitigating the
+issue of reward delay caused by focusing solely on long-term rewards.
+ 2,
+
+Rspace _ transfer  1,
+ 2,
+
+
+Optimal search range
+Suboptimal search range
+Invalid search range
+
+Proc. of SPIE Vol. 13421 134215S-4
+
+(8)
+
+In summary, the total reward function is:
+R   Rtime _ transfer  (1   ) Rspace _ transfer
+
+(9)
+
+ is used to reconcile long-term temporal reward with immediate spatial reward, with values in the range (0,1).
+3.3 Route optimization method based on Double-DQN
+In the route planning task, the pathfinding agent can gain a deeper understanding of the road network and navigating skills
+by interacting with the environment and following the guidance of the reward function. This approach effectively addresses
+the information limitations inherent in traditional methods within modern complex transportation environments. Therefore,
+we employ Double-DQN, a variant of the classic DRL algorithm DQN, to train a pathfinding agent.
+The DQN algorithm utilizes the Temporal Difference (TD) technique to update the network parameters during training,
+with the TD-target defined as follows:
+Y DQN  r    max a Q ( s ' , a ' ; w)
+
+(10)
+
+where Y DQN is the target value and w is the value network parameter. Q ( s ' , a ' ; w) indicates the target Q-value of the next
+state. The loss function is as follows:
+
+1
+L  [Y DQN  Q( s, a; w)]2
+2
+
+(11)
+
+Q(s, a; w) indicates the current Q-value. The gradient is obtained by taking the derivative of the loss function, and the
+parameters of the value network are updated using a gradient descent algorithm. However, DQN algorithms frequently
+face the overestimation problem. To address this issue, Hasselt proposed the Double-DQN algorithm, which effectively
+mitigates overestimation [13]. The Double-DQN algorithm uses a value network to select actions and a target network to
+compute Q-values. Thus, given the target network does the evaluation, even if a more significant overestimation issue
+arises for a specific action chosen by the value network, the final Q-value for that action will not be overestimated. The
+method used to compute the TD target is the only difference between the Double DQN and DQN algorithms:
+Y DoubleDQN  r    Q ( s ' , arg max a ( s ' , a ' , w); w  )
+
+(12)
+
+where w is the target network parameter. To train the DRL agent, we use components such as the replay buffer of the
+DQN to improve the learning efficiency, while at the same time computing the Q-value to alleviate the overestimation
+problem by the mechanism of the Double-DQN algorithm. The optimization framework is shown in Figure 3.
+ENV
+
+Loss Function
+
+Emergency transportation road network
+update w
+
+arg max a ( s ' , a ' , w)
+
+Q-Network
+
+s
+
+Regular
+update w
+
+( s, a )
+
+State
+( x, y )
+
+Action
+time
+weightedges
+
+Amask
+
+max a Q( s ' , a ' ; w )
+
+Q( s, a; w)
+
+Target-Network
+s'
+
+r
+
+Reward
+( s , a, r , s ' )
+
+Node priority...
+
+Replay Buffer
+
+Figure 3. Rescue route optimization framework.
+
+The advantages of a DRL-based optimization framework include: (a) the agent can acquire further knowledge about the
+road network by interacting with the environment, and it can also precisely grasp the essential requirements of the route
+planning task by setting reasonable rewards; (b) the agent can make decisions immediately after training, contrasting with
+traditional methods that face limitations and time delays due to various constraints.
+
+Proc. of SPIE Vol. 13421 134215S-5
+
+4. EXPERIMENTS AND ANALYSIS
+4.1 Sensitivity analysis
+To assess the influence of the suggested hyperparameters  , experiments are conducted using the shortest route time and
+convergence rounds as performance metrics. Nine groups of parameter values were set within the range (0,1),
+corresponding to   0.1, 0.2,..., 0.9 . Each set of experiments' results represents the average of ten training sessions. Figure
+4 displays the sensitivity results of  .
+
+Figure 4. Sensitivity analysis results.
+
+The figure indicates that when   0.5 , equal weight is assigned to the temporal benefit and spatial benefit, resulting in
+the shortest time for the rescue route. When   0.7 , the temporal benefits are given greater weight, leading to faster
+convergence, although this also results in increased route time consumption. Given the time-critical nature of emergencies,
+set   0.5 .
+4.2 Performance of proposed approach
+To validate the effectiveness of the proposed method and highlight the advantages of the reward scheme, the agent is
+trained to identify the shortest time-consuming rescue routes in the node graph. The algorithms' performance is also
+compared between learning only temporal rewards and learning both temporal and spatial rewards. The experiments were
+conducted using Python 3.8 and executed on a computational processing platform equipped with a 13th Gen Intel(R) Core
+(TM) i5-13600KF processor running at 3.50 GHz with 16GB of RAM. Other parameter settings include a learning rate of
+0.001, a discount rate of 0.9, a final task reward of 100, a replay buffer size of 1000, and an exponential decrease in the
+greedy coefficient from 0.99 to 0.01. The agent is trained for 500 epochs to maximize rewards and minimize time
+consumption, and the results are depicted in Figure 5.
+
+Figure 5. Algorithm Performance: (a) convergence performance, (b) route optimization capabilities.
+
+The algorithm's convergence performance is measured regarding reward per epoch, while the route time is utilized to
+assess the agent's ability to find rescue routes. Figure 5 shows the reward and route time converge within 100 epochs,
+
+Proc. of SPIE Vol. 13421 134215S-6
+
+demonstrating the effectiveness of the action masking technique we employ and the reward scheme proposed in this paper.
+Notably, removing immediate spatial reward results in a slight decrease in the algorithm's convergence rate and an increase
+in route time. Conversely, adding it improves the algorithm's convergence stability, obtaining a rescue route scheme that
+consumes less time. That's because when only long-term temporal reward is present, the agent focuses on a single learning
+goal, leading to faster convergence. However, when immediate spatial reward is added, the agent learns additional
+topological features of the road network while balancing spatio-temporal benefit, resulting in a more optimal solution. We
+conducted ten rescue route optimizations using the agent trained with the two reward schemes, respectively. The most
+frequent test results are presented in Table 2. The table shows that the rescue route scheme, which combines temporal and
+spatial reward, outperforms the scheme that relies solely on temporal reward in terms of both route time and reward. This
+result reveals the strength and significant potential of our approach, which allows the agent to learn to optimize routes. As
+the agent acquires more knowledge, the resulting strategy improves accordingly.
+Table 2. Configuration and test results.
+Reward function
+Long-term temporal reward and
+Immediate spatial reward
+
+Number of
+nodes
+
+Number of
+edges
+
+OD
+
+100
+
+1839
+
+0→99
+
+Long-term temporal reward
+
+Route
+
+Route
+time
+
+Reward
+
+0→83→99
+
+2
+
+97.54
+
+0→12→45→99
+
+3.5
+
+91.62
+
+5. CONCLUSION
+We propose a DRL-based approach to optimize rescue routes for EVs on highways. The advantage of this method is that
+it can handle more complex road network information to adapt to the modern transportation environment. As the agent
+acquires more knowledge, its strategies become increasingly optimal, showcasing substantial potential. We developed a
+node-graph-based emergency transportation map and subsequently trained the agent using the Double-DQN algorithm.
+The training process utilizes the action masking technique and our newly devised reward scheme to improve the
+convergence performance of the algorithm and the pathfinding capability of the agent. We tested the agent in a simulated
+emergency transportation node map containing 100 nodes. The results show that the method successfully optimizes the
+rescue path and finds out the shortest time-consuming rescue route. Moreover, the proposed improvements enhance the
+algorithm's performance.
+
+REFERENCES
+[1] Tan, E, Liu, B, Luan, S, Ma, X, & Zhang, Z. (2023). Evaluating Road Network Resilience under Recurring and
+Non-Recurring Incidents. CICTP 2023, 659–669. https://doi.org/10.1061/9780784485040.064.
+[2] Ma, L, Zhang, H, Yan, X, Wang, J, Song, Z, & Xiong, H. (2019). Smooth associations between the emergency
+medical services response time and the risk of death in road traffic crashes. Journal of transport & health. (12-),
+12. https://doi.org/10.1016/j.jth.2018.08.011.
+[3] Li, L, Jin, Y, Gao, P, Wang, L, & Liu, L. (2024). Reliability Analysis of Highway Network Travel Time Based on
+Information Entropy Model and Electronic Toll Collection Data. Transportation Research Record: Journal of the
+Transportation Research Board, https://doi.org/10.1177/03611981241230537
+[4] Chen, Y, Shen, S, Chen, T, & Yang, R. (2014). Path Optimization Study for Vehicles Evacuation based on Dijkstra
+Algorithm. Procedia Engineering, 71, 159–165. https://doi.org/10.1016/j.proeng.2014.04.023.
+[5] Ding, L, Zhao, D, Wang, Z, Wang, G, Tan, C, Fan, L, & Ma, H. (2023). Learning to Help Emergency Vehicles
+Arrive Faster: A Cooperative Vehicle-Road Scheduling Approach. IEEE Transactions on Mobile Computing,
+22(10), 5949–5962. https://doi.org/10.1109/TMC.2022.3188344.
+[6] Min, W, Yu, L, Chen, P, Zhang, M, Liu, Y, & Wang, J. (2020). On-Demand Greenwave for Emergency Vehicles
+in a Time-Varying Road Network With Uncertainties. IEEE Transactions on Intelligent Transportation Systems,
+21(7), 3056–3068. https://doi.org/10.1109/TITS.2019.2923802.
+[7] Nikoo, N, Babaei, M, & Mohaymany, A. S. (2018). Emergency transportation network design problem:
+Identification and evaluation of disaster response routes. International Journal of Disaster Risk Reduction, 27, 7–
+20. https://doi.org/10.1016/j.ijdrr.2017.07.003.
+
+Proc. of SPIE Vol. 13421 134215S-7
+
+[8] Koh, S, Zhou, B, Fang, H, Yang, P, Yang, Z, Yang, Q, Guan, L, & Ji, Z. (2020). Real-time deep reinforcement
+learning
+based
+vehicle
+navigation.
+Applied
+Soft
+Computing,
+96,
+106694.
+https://doi.org/10.1016/j.asoc.2020.106694
+[9] Bdeir, A, Boeder, S, Dernedde, T, Tkachuk, K, Falkner, J. K, & Schmidt-Thieme, L. (2021). RP-DQN: An
+application of Q-Learning to Vehicle Routing Problems. arXiv. http://arxiv.org/abs/2104.12226
+[10] Elfahim, O, Laoula, E. M. B, Youssfi, M, Barakat, O, & Mestari, M. (2021). Reinforcement Learning-based
+Unpredictable Emergency Events. 2021 Fifth International Conference On Intelligent Computing in Data
+Sciences (ICDS), 1–7. https://doi.org/10.1109/ICDS53782.2021.9626720.
+[11] Watkins, C. J. C. H, & Dayan, P. (1992). Q-learning. Machine Learning, 8(3-4), 279-292.
+[12] Mnih, V, Kavukcuoglu, K, Silver, D, Rusu, A. A, Veness, J, Bellemare, M. G, Graves, A, Riedmiller, M, Fidjeland,
+A. K, Ostrovski, G, Petersen, S, Beattie, C, Sadik, A, Antonoglou, I, King, H, Kumaran, D, Wierstra, D, Legg, S,
+& Hassabis, D. (2015). Human-level control through deep reinforcement learning. Nature, 518(7540), 529–533.
+https://doi.org/10.1038/nature14236.
+[13] van Hasselt, H, Guez, A, & Silver, D. (2015). Deep Reinforcement Learning with Double Q-learning. arXiv.
+http://arxiv.org/abs/1509.06461
+
+Proc. of SPIE Vol. 13421 134215S-8
+
+

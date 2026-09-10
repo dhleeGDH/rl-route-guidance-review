@@ -41,19 +41,19 @@ FIELDS = ["Forecast-conditioned", "Graph encoder", "Candidate path",
 
 # Family, total, reward alignment, then forecast-conditioned and the six fields.
 ROWS = [("Multi-agent", 29, [8, 14, 6, 1], [3, 3, 3, 17, 2, 6, 4]),
-        ("Value-based deep", 27, [20, 4, 3, 0], [8, 9, 5, 15, 6, 6, 0]),
-        ("Tabular", 13, [12, 0, 0, 1], [3, 0, 1, 4, 0, 1, 0]),
+        ("Value-based deep", 28, [21, 4, 3, 0], [8, 9, 5, 15, 6, 6, 0]),
+        ("Tabular", 12, [12, 0, 0, 0], [3, 0, 2, 4, 0, 1, 0]),
         ("Policy-gradient", 12, [11, 0, 1, 0], [2, 2, 2, 5, 4, 2, 3]),
         ("Model-based hybrid", 6, [3, 3, 0, 0], [0, 0, 1, 2, 0, 1, 0]),
-        ("Unspecified", 4, [3, 0, 0, 1], [1, 1, 2, 1, 1, 0, 0]),
+        ("Unspecified", 3, [2, 0, 0, 1], [1, 1, 2, 1, 1, 0, 0]),
         ("Distributional", 3, [3, 0, 0, 0], [0, 1, 0, 1, 1, 0, 3])]
 
 # A miscount here is invisible on the page: every cell still prints and every row still shades.
 # The three totals the manuscript states are asserted instead.
-assert sum(t for _, t, _, _ in ROWS) == 94
-assert [sum(r[2][j] for r in ROWS) for j in range(4)] == [60, 21, 10, 3]
+assert sum(t for _, t, _, _ in ROWS) == 93
+assert [sum(r[2][j] for r in ROWS) for j in range(4)] == [60, 21, 10, 2]
 assert sum(r[3][0] for r in ROWS) == 17
-assert [sum(r[3][j] for r in ROWS) for j in range(1, 7)] == [16, 14, 45, 14, 16, 10]
+assert [sum(r[3][j] for r in ROWS) for j in range(1, 7)] == [16, 15, 45, 14, 16, 10]
 
 LABELS = REWARD + FIELDS
 counts = [r[2] + r[3] for r in ROWS]

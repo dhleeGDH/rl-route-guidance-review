@@ -1,9 +1,9 @@
 {
- "adjudicated_count": 11,
+ "adjudicated_count": 12,
  "kept_on_later_occurrence": {
   "51": "first occurrence is \"They show results for small networks such as the one used to illustrate the Braess paradox\"; the study's own evaluation section reads \"B. Sioux Falls Network The SF network ... has 24 vertices and 76 edges\"."
  },
- "lexical_count": 12,
+ "lexical_count": 13,
  "per_network": {
   "Anaheim": [
    "66",
@@ -24,6 +24,7 @@
    "66"
   ],
   "Nguyen-Dupuis": [
+   "13",
    "25",
    "36",
    "53"
@@ -42,6 +43,13 @@
   ]
  },
  "per_study": {
+  "13": {
+   "networks": [
+    "Nguyen-Dupuis"
+   ],
+   "occurrences": 4,
+   "title": "Reinforcement learning of route choice considering traveler's preference"
+  },
   "16": {
    "networks": [
     "Braess"

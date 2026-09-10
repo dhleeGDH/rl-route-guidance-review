@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""What the 94 studies actually evaluate on: engine, network, size, metrics, baselines.
+"""What the 93 studies actually evaluate on: engine, network, size, metrics, baselines.
 
 WHY THIS EXISTS. Two independent survey-track reviews named the same gap as the paper's largest:
 Section IV describes the corpus by five DESIGN fields and by nothing about the EVALUATION. The
@@ -11,12 +11,12 @@ carries the matched sentence so a reader can disagree with any one of them again
 Nothing is pooled and nothing is ranked, which is the constraint Section I sets on this review.
 
 CONTROLS, both printed before any new column is read:
-  1. The manuscript states, from manual reading, that 53 of the 94 name an evaluation environment
+  1. The manuscript states, from manual reading, that 53 of the 93 name an evaluation environment
      and 47 of those name the same simulator. A lexical rule built independently should land near
      both. A wide miss means the rule is measuring something else and its other columns are void.
   2. idx 48's text file was quarantined as the wrong source until T-1945 recovered the 2019
      conference paper from pdfs/pdfs/ and regenerated the extraction; nothing is quarantined now
-     and the scan reads all 91 full texts. corpus_text/48.README.txt records the recovery.
+     and the scan reads all 93 full texts. corpus_text/48.README.txt records the recovery.
 
     python3 substrate.py
 """
@@ -155,7 +155,7 @@ def main():
     named_engine = [i for i, v in per.items() if v['engines']]
     sumo = [i for i in named_engine if 'SUMO' in per[i]['engines']]
     print('\n--- control: against the manuscript\'s manually read figures ---')
-    print('  studies naming a simulation engine   %3d   (manuscript states 53 of 94)' % len(named_engine))
+    print('  studies naming a simulation engine   %3d   (manuscript states 53 of 93)' % len(named_engine))
     print('  of those, naming SUMO                %3d   (manuscript states 47 of those)' % len(sumo))
     ok = abs(len(named_engine) - 53) <= 8 and abs(len(sumo) - 47) <= 8
     print('  %s the lexical rule lands within 8 of both' % ('OK  ' if ok else 'FAIL'))
