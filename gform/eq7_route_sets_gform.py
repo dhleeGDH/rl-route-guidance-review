@@ -28,7 +28,7 @@ WHAT IS COMPUTED, per network and boundary-closed:
    under the travel-time reward, K and k_min the longest and shortest optimal completing route in
    transitions over the evaluation set, Phi_max the largest potential.
 
-The reward follows Eq. (4) as env_boundary_dest.py implements it: a per-step traversal cost, a
+The reward follows Eq. (4) as env_boundary_dest.py implements it: a per-step link cost, a
 potential difference beta*(Phi(u) - Phi(v)) at every step with Phi zero at the destination, and an
 arrival bonus R_g. Phi is the hop distance to the destination, which is what Appendix C states for
 the published Sioux Falls drawing. The action-set identity is invariant to beta and R_g, so the
@@ -49,8 +49,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(HERE)
 NETS = {"Sioux Falls": os.path.join(BASE, "networks", "SiouxFalls_net.tntp"),
         "Anaheim": os.path.join(BASE, "networks", "Anaheim_net.tntp")}
-R_GOAL = 10.0            # in units of the mean traversal cost, as anaheim_vi.py sets it
-BETA = 1.0               # one mean traversal cost per hop of potential
+R_GOAL = 10.0            # in units of the mean link cost, as anaheim_vi.py sets it
+BETA = 1.0               # one mean link cost per hop of potential
 TOL = 1e-9
 
 

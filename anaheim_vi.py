@@ -17,7 +17,7 @@ from collections import deque
 from pathlib import Path
 
 NET = Path(__file__).resolve().parent / "networks" / "Anaheim_net.tntp"
-R_GOAL, R_EXIT = 10.0, 5.0          # aligned reward, in units of the mean traversal cost
+R_GOAL, R_EXIT = 10.0, 5.0          # aligned reward, in units of the mean link cost
 
 def read(p):
     z = n = None
@@ -40,7 +40,7 @@ for u, v, c in LINKS:
     if c <= 0: c = 1e-3
     adj.setdefault(u, []).append(v)
     cost[(u, v)] = c
-scale = sum(cost.values()) / len(cost)          # mean traversal cost, the unit for R_GOAL/R_EXIT
+scale = sum(cost.values()) / len(cost)          # mean link cost, the unit for R_GOAL/R_EXIT
 
 def solve(dest, boundary, reward):
     """Optimal value by backward induction on a deterministic MDP. Returns the optimal action map."""
@@ -94,7 +94,7 @@ def hops(dest):
             if y not in d: d[y] = d[x] + 1; q.append(y)
     return d
 
-print("Anaheim: %d nodes, %d links, %d zones, mean traversal cost %.3f min\n" %
+print("Anaheim: %d nodes, %d links, %d zones, mean link cost %.3f min\n" %
       (NODES, len(LINKS), ZONES, scale))
 DESTS = [1, 10, 20, 30, 38]
 out = {}

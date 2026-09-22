@@ -22,7 +22,7 @@ which tends to 1 - Delta/inf = the undiscounted case as gamma -> 1, recovering E
 import itertools, sys
 
 N = 5                      # env.N_SIDE
-C_MIN, C_MAX = 1.0, 1.6    # traversal cost range at amplitude 0.6
+C_MIN, C_MAX = 1.0, 1.6    # link cost range at amplitude 0.6
 BETA, R_G = 1.0, 10.0      # Section V-A settings
 
 def manhattan(a, b):

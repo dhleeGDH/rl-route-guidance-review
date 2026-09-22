@@ -9,7 +9,7 @@
 #      route under each reward, under both shaping forms;
 #   C. optimal completion by OD graph distance on the boundary-open grid, under both forms.
 #
-# The in-grid traversal cost is the deterministic surrogate the deposited value iteration uses,
+# The in-grid link cost is the deterministic surrogate the deposited value iteration uses,
 # E_COST = 1 + 0.6*0.5*0.5 = 1.15, and the arrival link costs 1.0. Writes grid_gform.json here.
 import io
 import json

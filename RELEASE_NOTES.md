@@ -1,3 +1,15 @@
+# v1.9.3: gate paths and wording
+
+Wording in comments; one screening file added; no change to results. The noun "traversal" leaves
+the comments and printed strings of the package, as it left the manuscript, in favour of "link
+cost".
+
+One name stays: `mean_traversal_cost` is a key inside eleven deposited result files. Renaming it in
+the writers alone would part the code from the files, and rewriting the files is a change to
+results. The key is written and never read, and the field it names is the mean link cost.
+
+---
+
 # v1.9.2: byte-code files removed
 
 The v1.9.1 commit carried 76 compiled `.pyc` files, written by a compile check run over the tree

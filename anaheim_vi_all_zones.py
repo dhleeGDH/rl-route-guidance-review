@@ -12,7 +12,7 @@ It also reports what the five-zone run left implicit:
   - the exit rate per destination zone, so the spread across zones is visible rather than averaged;
   - each zone's hop distance to its nearest other zone, which is the quantity the exit-dominance
     bound depends on, against the mean hop distance from the origins that reach it;
-  - the traversal-cost spread, since the bound's threshold scales with the largest link cost.
+  - the link-cost spread, since the bound's threshold scales with the largest link cost.
 
     python3 anaheim_vi_all_zones.py
 """
@@ -123,7 +123,7 @@ def hops_to(dest):
 ALL = list(range(1, ZONES + 1))
 INTERIOR = list(range(ZONES + 1, NODES + 1))
 print("Anaheim: %d nodes, %d links, %d zones" % (NODES, len(LINKS), ZONES))
-print("traversal cost: mean %.3f, max %.3f, ratio %.1f\n" % (scale, CMAX, CMAX / scale))
+print("link cost: mean %.3f, max %.3f, ratio %.1f\n" % (scale, CMAX, CMAX / scale))
 
 # rho per zone: hops from that zone's reachable interior to the NEAREST other zone
 per_zone = {}

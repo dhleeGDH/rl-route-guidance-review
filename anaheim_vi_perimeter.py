@@ -31,7 +31,7 @@ _A.add_argument("--band", type=float, default=0.10,
                 help="border band as a fraction of the bounding box; 0 is the convex hull alone")
 # Proposition 1 assumes an exit the policy may decline, whereas this network was
 # opened by absorption, where touching a border node ends the trip whatever the policy prefers.
-# Under "optional" a border node offers a leaving action at one ordinary traversal cost and the
+# Under "optional" a border node offers a leaving action at one ordinary link cost and the
 # route may pass through instead, which is the semantics the grids use. "absorbing" is the
 # published default and is unchanged.
 _A.add_argument("--exit-mode", choices=("absorbing", "optional"), default="absorbing")
