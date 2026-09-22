@@ -1,7 +1,8 @@
 {
-  "title": "Reproduction code and screened corpus for a survey of evaluation design in reinforcement learning route guidance",
+  "title": "Study record and reproduction code for a survey of evaluation design and disclosure requirements in reinforcement learning-based route guidance",
   "upload_type": "software",
   "license": "MIT",
+  "version": "1.9.0",
   "creators": [
     {
       "name": "Lee, Donghoun",
@@ -9,5 +10,20 @@
       "orcid": "0000-0002-3349-636X"
     }
   ],
-  "description": "Reproduction material for the survey \"Study-Area Boundaries in Reinforcement Learning-Based Route Guidance: A Survey of Evaluation Design and Reporting Requirements\" by Donghoun Lee. The archive contains the study record of the review, the extracted full texts the lexical scans read, the evaluation-substrate and term-family scans, the grid, benchmark and SUMO environments with the planner and the training code, the run outputs behind every printed table and figure, the discount-consistent shaping variant and its controls, the retraining of a published router under each boundary condition, and the published network data the exact solvers read. RUN_TO_TABLE.md maps every printed cell to the file that produces it, names the key inside that file, and states which of the two reward variants the cell reports. Every value reported in the paper is recomputed from this tree at a linear-algebra thread count pinned to one."
+  "description": "Reproduction material for the survey \"Study-Area Boundaries in Reinforcement Learning-Based Route Guidance: A Survey of Evaluation Design and Disclosure Requirements\" by Donghoun Lee. The package holds the study record of the 93 reviewed studies, one row per study with the sentence of the research article behind each recorded value; the environments, the planner and the training code of the controlled experiment on the three road networks the manuscript reports, namely a 5x5 grid, Sioux Falls and Anaheim; the exact value-iteration and reachability computations behind the optimal policies and the attainable maximum; the retraining of a released implementation on Anaheim; the screening files of the selection, including the database export records and the exclusion-clause re-execution; and the two gates of the development repository that hold the manuscript and this package in step, one comparing every placed figure with the output of its generator and one recomputing every printed count from the record. MANIFEST.md names the place in the manuscript or the Supplementary that each file supports.",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.21523970",
+      "relation": "isSupplementTo",
+      "scheme": "doi"
+    }
+  ],
+  "keywords": [
+    "reinforcement learning",
+    "route guidance",
+    "study area boundary",
+    "evaluation design",
+    "reproducibility",
+    "intelligent transportation systems"
+  ]
 }

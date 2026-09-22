@@ -1,0 +1,49 @@
+== closed time_min  seed 0  final 100.0%
+== closed time_min  seed 1  final 100.0%
+== closed time_min  seed 2  final 100.0%
+== closed time_min  seed 3  final 100.0%
+== closed time_min  seed 4  final 100.0%
+== closed time_min  seed 5  final 100.0%
+== closed time_min  seed 6  final 100.0%
+== closed time_min  seed 7  final 100.0%
+== closed time_min  seed 8  final 100.0%
+== closed time_min  seed 9  final 100.0%
+== open   time_min  seed 0  final   0.0%
+== open   time_min  seed 1  final   0.0%
+== open   time_min  seed 2  final   0.0%
+== open   time_min  seed 3  final   0.0%
+== open   time_min  seed 4  final   0.0%
+== open   time_min  seed 5  final   0.0%
+== open   time_min  seed 6  final   0.0%
+== open   time_min  seed 7  final   0.0%
+== open   time_min  seed 8  final   0.0%
+== open   time_min  seed 9  final   0.0%
+== closed aligned   seed 0  final 100.0%
+== closed aligned   seed 1  final 100.0%
+== closed aligned   seed 2  final 100.0%
+== closed aligned   seed 3  final 100.0%
+== closed aligned   seed 4  final 100.0%
+== closed aligned   seed 5  final 100.0%
+== closed aligned   seed 6  final 100.0%
+== closed aligned   seed 7  final 100.0%
+== closed aligned   seed 8  final 100.0%
+== closed aligned   seed 9  final 100.0%
+== open   aligned   seed 0  final  99.0%
+== open   aligned   seed 1  final 100.0%
+== open   aligned   seed 2  final 100.0%
+== open   aligned   seed 3  final 100.0%
+== open   aligned   seed 4  final 100.0%
+== open   aligned   seed 5  final 100.0%
+== open   aligned   seed 6  final  99.5%
+== open   aligned   seed 7  final 100.0%
+== open   aligned   seed 8  final  87.5%
+== open   aligned   seed 9  final 100.0%
+closed_time_min    mean final 100.0%
+open_time_min      mean final   0.0%
+closed_aligned     mean final 100.0%
+open_aligned       mean final  98.6%
+wrote /home/dhlee/review_paper/handoff/deposit_next/v1.8.0/gform/four_cells_curves_8000_gform.json
+
+real	3m50.133s
+user	28m39.797s
+sys	0m1.716s

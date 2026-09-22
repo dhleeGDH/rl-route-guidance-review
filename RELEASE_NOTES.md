@@ -1,4 +1,86 @@
-# v1.8.0: the 93-study corpus
+# v1.9.0: the package the finished manuscript reads
+
+Tags v1.3.0 to v1.8.0 carry no release notes on GitHub; v1.9.0 is the first tagged deposit
+after the manuscript revision. The v1.8.0 package is archived at
+https://doi.org/10.5281/zenodo.22699103.
+
+Every file of this package is read by a named place in the manuscript or the Supplementary, and
+`MANIFEST.md` states that place for each one. The section-by-section rewrite of the manuscript ended
+at T-2113b, and the material it stopped reading is removed here rather than left deposited without
+a reader.
+
+## Renamed
+
+The word corpus leaves the package with the manuscript, which writes "the reviewed studies".
+
+| v1.8.0 | v1.9.0 |
+|---|---|
+| `corpus/` | `reviewed_studies/` |
+| `corpus_text/` | `reviewed_studies_text/` |
+| (brought in from the v1.1 deposit) | `related_reviews/` |
+| `study_record_corpus_v9_coded.csv` | `study_record_reviewed_studies.csv` |
+| column `in_reviewed_corpus` | column `in_reviewed_studies` |
+| `corpus_overlap/corpus_refs.json` | `related_reviews/reviewed_studies_refs.json` |
+| `search_rerun/arm1_reconstruct.py` | `search_rerun/exclusion_clause_rerun.py` |
+| `search_rerun/arm1_reconstruct.csv` | `search_rerun/exclusion_clause_rerun.csv` |
+| `search_rerun/arm1_miss_diagnosis.csv` | `search_rerun/exclusion_clause_records.csv` |
+
+## Brought in
+
+The Supplementary names four screening files, which stood in the v1.1 deposit alone and are here
+from this version: the IEEE Xplore export records under `reviewed_studies/`, and the
+exclusion-clause re-execution with its two outputs under `search_rerun/`. The four runners behind
+the term-family table of the Supplementary, with their outputs, are under `related_reviews/`.
+
+## Removed, 107 files
+
+Each of the five groups lost its reader when the manuscript was rewritten. The runs themselves
+stand in the v1.8.0 deposit, which is not withdrawn.
+
+| Group | Files | Why |
+|---|---|---|
+| Exit conventions: the residual charge, the non-terminal detour, the two sentinel controls and the truncation control | 25 | Supplementary S-I.B was removed at T-2113. The manuscript states the premise of Proposition 2 and compares no other convention |
+| The SUMO-executed grid, the 8x8 lattice, the 7x7 grid, the interior-destination cells and the depth sweep | 43 | Supplementary S-I.C and S-I.E were removed at T-2112. The manuscript reports three road networks |
+| The band sweep beyond the two borders Table IV prints | 3 | The band enumeration of Supplementary S-II was removed at T-2113 |
+| The three-curve and three-panel drafts of Fig. 5 | 7 | Withdrawn at T-2094 with the figure they drew |
+| Runs no sentence, table or figure reads | 29 | Including the term ablation, whose table left Section IV at the rewrite |
+
+## The study record
+
+30 columns. `reward_category` is new at T-2113 and carries the category of the fourth paragraph of
+Section III-B for each of the 45 studies of the group, which the Supplementary prints as three
+counts and no longer as a table of sentences. Six columns were dropped at T-2112 and T-2113:
+`reward_temporality`, `rt_quote`, `compliance_stated`, `comp_quote` had no reader, and the two
+`boundary_status` columns are retained because `countcheck.py` reads them for the 7 and the 3 of
+Section III-B.
+
+## The record completed on two fields
+
+Two studies were read at full text in T-1991 and their evidence sentences stood in
+`reviewed_studies_text/13.README.txt` and `40.README.txt` without being copied into the record. The
+gate that requires every recorded value to carry the sentence it was read from could not be pointed
+at the record until they were.
+
+| Study | Field | v1.8.0 | v1.9.0 |
+|---|---|---|---|
+| idx 40, [1109] | state encoder | `raw-vector`, no sentence | `raw-vector` with the sentence naming the value network over the state |
+| idx 40, [1109] | action type | `next-link`, no sentence | `next-link` with the sentence defining the action mask |
+| idx 13, [1098] | state encoder | `raw-vector`, no sentence | **`unclear`**, no architecture over the state appears in the full text |
+| idx 13, [1098] | action type | `candidate-path`, no sentence | `candidate-path` with the sentence defining the route set |
+
+The one value that moves is the state encoder of idx 13, from `raw-vector` to `unclear`, and the
+row of Table I moves with it. No printed count moves: the manuscript states no encoder count, and
+the graph-encoder column of Fig. 3 stays at 16.
+
+## Setup assertions
+
+`check_eval_sets.py` asserts the evaluation-set precondition on the three road networks the
+manuscript reports, in place of the six networks of the earlier script. The negative control is
+unchanged: a set built for one geometry must be rejected on another.
+
+---
+
+# v1.8.0: the 93-study record
 
 Supersedes v1.7.0 of the same concept record, DOI 10.5281/zenodo.21523970, which always resolves to
 the newest version. Cited as tag v1.8.0 in Section V and in Supplementary Section S-VI of the
@@ -10,15 +92,15 @@ the record and carries everything they held.
 
 ## What is new in v1.8.0
 
-**The corpus is 93 studies.** Two of the three studies recorded from an abstract alone, `idx` 13
+**The record holds 93 reviewed studies.** Two of the three studies recorded from an abstract alone, `idx` 13
 ([1098]) and `idx` 40 ([1109]), were obtained and read at full text, and every one of their eleven
 fields, their evaluation environment, their destination-in-state value, their reward detail and
-their optimality claim was re-recorded from the text; `corpus_text/13.README.txt` and
+their optimality claim was re-recorded from the text; `reviewed_studies_text/13.README.txt` and
 `40.README.txt` quote the sentence behind each value. The third, `idx` 26 ([1088]), could not be
-obtained from any institution available to the author and left the corpus; `26.README.txt` records
+obtained from any institution available to the author and left the record; `26.README.txt` records
 the attempt. No reviewed study is recorded from an abstract, `boundary_condition` has no unclear
 value, and one denominator of 93 applies to every field but the generalization mechanism, which
-remains assessable on 91. `study_record_corpus_v9_coded.csv`, `study_record_claim_charting.csv`
+remains assessable on 91. `study_record_reviewed_studies.csv`, `study_record_claim_charting.csv`
 and `study_record_simulator_audit_v6.csv` carry the changes; the `boundary_status` column now
 partitions the 93 as `addressed` 10, `judged-not-addressed` 9 and `not-addressed` 74.
 
@@ -28,7 +110,7 @@ reaching a peripheral link (7) or names a property of the periphery itself (3); 
 the split and `gates/countcheck.py` recomputes it from this column.
 
 **The lexical scans re-executed over 93 texts (`eval_substrate/`, `fulltext_scan/`).**
-`substrate.json` and `benchmark_network_adjudication.json` are regenerated over `corpus_text/`,
+`substrate.json` and `benchmark_network_adjudication.json` are regenerated over `reviewed_studies_text/`,
 now 93 files; `idx` 13 evaluates on the Nguyen-Dupuis network, which raises the benchmark count to
 12. Table S-22 and Section IV-G print the new values. Both scripts resolve the record at the top
 level of this package, as before.
@@ -44,15 +126,16 @@ builder never read, so a moved count left the figure on the page unchanged.
 
 **Two gates (`gates/`).** `check_figure_generators.py` renders every generator in a fresh
 interpreter, asserts that it writes into the manuscript's figure directory, and compares the
-rendered image pixel by pixel with the placed one; `countcheck.py` recomputes every printed corpus
-count from Table A-1 and the record, matching a number in front of any noun the corpus is counted in.
+rendered image pixel by pixel with the placed one; `countcheck.py` recomputes every printed
+count from Table A-1 and the record, matching a number in front of any noun the reviewed studies
+are counted in.
 Both are deposited as they run in the development repository and resolve its paths; they document
 what holds the manuscript to this record rather than run inside the package.
 
 **Fig. 1 redrawn once more.** With no study read from an abstract, the terminal box states one count
 and the dashed path is gone; the record whose full text was never obtained leaves at the full-text
 band together with the scope exclusions, as one subtraction of 7, which Supplementary S-IV.B states.
-`assembly_stages.py` asserts the corpus at 93.
+`assembly_stages.py` asserts the reviewed studies at 93.
 
 **The two `sioux30` runners name tag v1.8.0** as the source of `benchmark_demo.py`.
 `benchmark_network/plot_networks.py` imports the same module and, through it, the learner module
@@ -72,14 +155,14 @@ three was published and the figure's counts could be read only off the page.
 grid. Its counts are literals inside it rather than a tally computed from the study record, which
 `RUN_TO_TABLE.md` now states in the Fig. 3 row rather than leaving a reader to infer; the script
 asserts the three totals the manuscript states, and every cell is checkable against
-`study_record_corpus_v9_coded.csv`.
+`study_record_reviewed_studies.csv`.
 
 **Fig. 1 is redrawn.** The figure v1.6.0 described was the PRISMA 2020 flow diagram in everything
 but its three stage bands, box for box and phrase for phrase. This review is neither registered nor
 PRISMA-compliant, so the resemblance claimed a protocol it does not run. The figure is now two
 bands and four levels: the two routes side by side and unequal, the pool decomposed as the record
 decomposes it, one reading band split left and right with the records leaving stated inside it, and
-the corpus split by how each study was read. The counts are unchanged; `assembly_stages.json` is
+the reviewed studies split by how each study was read. The counts are unchanged; `assembly_stages.json` is
 the same record under a new name.
 
 **Both scripts resolve their output inside this package.** `plot_assembly.py` and
@@ -108,9 +191,9 @@ mixin, `m2c/selftest_shaping_c.py` checks it at the transition level, and the ru
 reports which form. Travel-time cells carry no shaping term and are identical under both;
 `m2c/controls/sentinel_control_P.json` records the seed-for-seed reproduction that shows it.
 
-**The evaluation-substrate record (`eval_substrate/`, `corpus_text/`).** `substrate.py` and its
+**The evaluation-substrate record (`eval_substrate/`, `reviewed_studies_text/`).** `substrate.py` and its
 `substrate.json` produce 20 of the 29 rows of Supplementary Table S-22 and the five substrate
-figures of Section IV-A, reading the 91 extracted full texts of `corpus_text/`.
+figures of Section IV-A, reading the 91 extracted full texts of `reviewed_studies_text/`.
 `benchmark_network_adjudication.py` and its JSON produce 5 further rows. Until this version these
 existed only in the working tree, and `RUN_TO_TABLE.md` attributed the whole table to four record
 CSVs that produce three of its rows.
@@ -152,7 +235,7 @@ states both, says which cells use which, and lists the four bounds where a run f
 string differs from the table for that reason. Only the convention functions of this script run
 against the package; its loaders name working-tree filenames.
 
-**Two columns in the study record.** `study_record_corpus_v9_coded.csv` gains `boundary_status` and
+**Two columns in the study record.** `study_record_reviewed_studies.csv` gains `boundary_status` and
 `boundary_status_note` at the end; every other cell of all 95 rows and 31 original columns is
 unchanged. `boundary_status` partitions the reviewed 94 into `addressed` 10, `judged-not-addressed`
 9, `not-addressed` 72 and `unclear` 3. `boundary_status_note` is filled on the nine alone and records
@@ -194,12 +277,12 @@ the manuscript, by author decision.
 at full text against the rule Supplementary Table S-9 states for the field, namely a statement of the
 treatment of a vehicle reaching a peripheral link. Nine did not meet it. The nine move to not
 addressed, so the field reads 10 addressed, 81 not addressed and 3 unclear across the 94 studies, in
-the manuscript, in Supplementary Table S-21 and in study_record_corpus_v9_coded.csv here. Three of
+the manuscript, in Supplementary Table S-21 and in study_record_reviewed_studies.csv here. Three of
 the nine carry a link-level action and an individual reward, so the group of studies at issue moves
 from 41 to 44, and Tables S-19 and S-20 carry 44 rows.
 
 **Scripts resolve their inputs against this package.** `fulltext_scan.py` reads
-`study_record_corpus_v9_coded.csv` at the top level of the package and takes the full texts from
+`study_record_reviewed_studies.csv` at the top level of the package and takes the full texts from
 the directory named by `PDF_DIR`, which are copyrighted and are not redistributed here.
 `survey_axis_coverage.py` takes the review full texts from `SURVEY_PDF_DIR`. The two `sioux30/`
 scripts import the environment module from `benchmark_network/` of the repository at the GitHub
@@ -229,13 +312,13 @@ retained. The rerun reproduces the published means: 46.2, 5.0, 3.0 and 82.8.
 
     python3 eval_substrate/substrate.py                     # texts read: 93
     python3 eval_substrate/benchmark_network_adjudication.py  # ADJUDICATED COUNT: 12
-    python3 screening_trail/assembly_stages.py               # corpus 93
+    python3 screening_trail/assembly_stages.py               # 93 reviewed studies
     python3 plot_family_merged.py                            # asserts the family totals at 93
     python3 repo_v11/bootstrap_travel_time_ci.py
     python3 repo_v11/boundary_open_demo/costly_return.py --seeds 10 --max_steps 120 --out <path>.csv
 
 The two `eval_substrate/` scripts read the study record at the top level of this package and the
-full texts from `corpus_text/` beside them; `CORPUS_CSV` overrides the record. The v1.5.0 copies
+full texts from `reviewed_studies_text/` beside them; `CORPUS_CSV` overrides the record. The v1.5.0 copies
 resolved the record against a working-tree layout instead.
 
 The `m2c/` scripts import the published environment, learner and evaluation draw from

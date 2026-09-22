@@ -1,0 +1,31 @@
+== time_min  seed 0: closed 100.0%  open  35.5%  [255s]
+== time_min  seed 1: closed 100.0%  open  36.5%  [145s]
+== time_min  seed 2: closed 100.0%  open  36.0%  [146s]
+== time_min  seed 3: closed 100.0%  open  26.5%  [206s]
+== time_min  seed 4: closed 100.0%  open  33.5%  [237s]
+== time_min  seed 5: closed 100.0%  open  39.0%  [155s]
+== time_min  seed 6: closed 100.0%  open  37.5%  [162s]
+== time_min  seed 7: closed 100.0%  open  43.0%  [236s]
+== time_min  seed 8: closed 100.0%  open  38.0%  [146s]
+== time_min  seed 9: closed 100.0%  open  29.5%  [197s]
+== aligned   seed 0: closed 100.0%  open  62.5%  [146s]
+== aligned   seed 1: closed 100.0%  open  53.5%  [168s]
+== aligned   seed 2: closed 100.0%  open  37.0%  [156s]
+== aligned   seed 3: closed 100.0%  open  41.0%  [151s]
+== aligned   seed 4: closed 100.0%  open  43.5%  [224s]
+== aligned   seed 5: closed 100.0%  open  45.0%  [262s]
+== aligned   seed 6: closed 100.0%  open  47.5%  [127s]
+== aligned   seed 7: closed 100.0%  open  54.5%  [127s]
+== aligned   seed 8: closed 100.0%  open  55.0%  [126s]
+== aligned   seed 9: closed 100.0%  open  47.5%  [126s]
+time_min  scored_closed  100.0 [100.0-100.0]
+time_min  scored_open    35.5 [32.5-38.0]
+aligned   scored_closed  100.0 [100.0-100.0]
+aligned   scored_open    48.7 [44.3-53.3]
+paired, scored open   13.2 [9.0-17.4]
+paired, scored closed 0.0 [0.0-0.0]
+wrote cross_condition_8000_gform.json in 273 s
+
+real	4m33.285s
+user	58m11.459s
+sys	0m4.118s

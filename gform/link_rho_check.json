@@ -1,0 +1,10 @@
+{
+ "lattice_5": {
+  "rho_nodes": 2,
+  "rho_links": 3
+ },
+ "lattice_8": {
+  "rho_nodes": 3,
+  "rho_links": 4
+ }
+}

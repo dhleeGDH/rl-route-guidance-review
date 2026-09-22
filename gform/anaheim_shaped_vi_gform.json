@@ -1,0 +1,182 @@
+{
+ "hull": {
+  "band": 0.0,
+  "border_nodes": 13,
+  "origins": 403,
+  "destinations": 38,
+  "mean_link_cost": 0.882353374601751,
+  "r_goal": 10.0,
+  "r_exit": 5.0,
+  "gamma": 1.0,
+  "cells": {
+   "closed time_min | beta 0 (deposited reward)": {
+    "pairs": 15289,
+    "arrive": 15289,
+    "exit": 0,
+    "stuck": 0,
+    "arrive_pct": 100.0
+   },
+   "closed aligned | beta 0 (deposited reward)": {
+    "pairs": 15289,
+    "arrive": 15289,
+    "exit": 0,
+    "stuck": 0,
+    "arrive_pct": 100.0
+   },
+   "closed aligned | beta 1, hop potential": {
+    "pairs": 15289,
+    "arrive": 15289,
+    "exit": 0,
+    "stuck": 0,
+    "arrive_pct": 100.0
+   },
+   "closed aligned | beta 1, cost potential": {
+    "pairs": 15289,
+    "arrive": 15289,
+    "exit": 0,
+    "stuck": 0,
+    "arrive_pct": 100.0
+   },
+   "open time_min | beta 0 (deposited reward)": {
+    "pairs": 15289,
+    "arrive": 3226,
+    "exit": 12063,
+    "stuck": 0,
+    "arrive_pct": 21.1
+   },
+   "open aligned | beta 0 (deposited reward)": {
+    "pairs": 15289,
+    "arrive": 14391,
+    "exit": 898,
+    "stuck": 0,
+    "arrive_pct": 94.1
+   },
+   "open aligned | beta 1, hop potential": {
+    "pairs": 15289,
+    "arrive": 14956,
+    "exit": 333,
+    "stuck": 0,
+    "arrive_pct": 97.8
+   },
+   "open aligned | beta 1, cost potential": {
+    "pairs": 15289,
+    "arrive": 14956,
+    "exit": 333,
+    "stuck": 0,
+    "arrive_pct": 97.8
+   }
+  },
+  "regression": {
+   "closed time_min": {
+    "deposited": 100.0,
+    "recomputed": 100.0,
+    "pass": true
+   },
+   "closed aligned": {
+    "deposited": 100.0,
+    "recomputed": 100.0,
+    "pass": true
+   },
+   "open time_min": {
+    "deposited": 21.1,
+    "recomputed": 21.1,
+    "pass": true
+   },
+   "open aligned": {
+    "deposited": 94.1,
+    "recomputed": 94.1,
+    "pass": true
+   }
+  }
+ },
+ "band": {
+  "band": 0.1,
+  "border_nodes": 95,
+  "origins": 321,
+  "destinations": 38,
+  "mean_link_cost": 0.882353374601751,
+  "r_goal": 10.0,
+  "r_exit": 5.0,
+  "gamma": 1.0,
+  "cells": {
+   "closed time_min | beta 0 (deposited reward)": {
+    "pairs": 12183,
+    "arrive": 12183,
+    "exit": 0,
+    "stuck": 0,
+    "arrive_pct": 100.0
+   },
+   "closed aligned | beta 0 (deposited reward)": {
+    "pairs": 12183,
+    "arrive": 12183,
+    "exit": 0,
+    "stuck": 0,
+    "arrive_pct": 100.0
+   },
+   "closed aligned | beta 1, hop potential": {
+    "pairs": 12183,
+    "arrive": 12183,
+    "exit": 0,
+    "stuck": 0,
+    "arrive_pct": 100.0
+   },
+   "closed aligned | beta 1, cost potential": {
+    "pairs": 12183,
+    "arrive": 12183,
+    "exit": 0,
+    "stuck": 0,
+    "arrive_pct": 100.0
+   },
+   "open time_min | beta 0 (deposited reward)": {
+    "pairs": 12183,
+    "arrive": 635,
+    "exit": 11548,
+    "stuck": 0,
+    "arrive_pct": 5.2
+   },
+   "open aligned | beta 0 (deposited reward)": {
+    "pairs": 12183,
+    "arrive": 5553,
+    "exit": 6630,
+    "stuck": 0,
+    "arrive_pct": 45.6
+   },
+   "open aligned | beta 1, hop potential": {
+    "pairs": 12183,
+    "arrive": 5692,
+    "exit": 6491,
+    "stuck": 0,
+    "arrive_pct": 46.7
+   },
+   "open aligned | beta 1, cost potential": {
+    "pairs": 12183,
+    "arrive": 5692,
+    "exit": 6491,
+    "stuck": 0,
+    "arrive_pct": 46.7
+   }
+  },
+  "regression": {
+   "closed time_min": {
+    "deposited": 100.0,
+    "recomputed": 100.0,
+    "pass": true
+   },
+   "closed aligned": {
+    "deposited": 100.0,
+    "recomputed": 100.0,
+    "pass": true
+   },
+   "open time_min": {
+    "deposited": 5.2,
+    "recomputed": 5.2,
+    "pass": true
+   },
+   "open aligned": {
+    "deposited": 45.6,
+    "recomputed": 45.6,
+    "pass": true
+   }
+  }
+ }
+}

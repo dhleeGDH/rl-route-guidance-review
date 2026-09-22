@@ -1,0 +1,49 @@
+== closed time_min  seed 0  completion   0.0%  travel time n/a  (2827 s)
+== closed time_min  seed 1  completion   0.0%  travel time n/a  (2183 s)
+== closed time_min  seed 2  completion   0.0%  travel time n/a  (1581 s)
+== closed time_min  seed 3  completion   0.0%  travel time n/a  (2208 s)
+== closed time_min  seed 4  completion   0.0%  travel time n/a  (2600 s)
+== closed time_min  seed 5  completion   0.0%  travel time n/a  (1628 s)
+== closed time_min  seed 6  completion   1.5%  travel time 5.00  (1940 s)
+== closed time_min  seed 7  completion   0.0%  travel time n/a  (2008 s)
+== closed time_min  seed 8  completion   0.0%  travel time n/a  (1808 s)
+== closed time_min  seed 9  completion   0.0%  travel time n/a  (1801 s)
+== open   time_min  seed 0  completion   4.0%  travel time 5.28  (338 s)
+== open   time_min  seed 1  completion   5.0%  travel time 4.85  (300 s)
+== open   time_min  seed 2  completion   4.5%  travel time 5.98  (275 s)
+== open   time_min  seed 3  completion   4.5%  travel time 4.86  (637 s)
+== open   time_min  seed 4  completion   5.5%  travel time 5.35  (232 s)
+== open   time_min  seed 5  completion   3.5%  travel time 3.71  (212 s)
+== open   time_min  seed 6  completion   3.5%  travel time 5.29  (424 s)
+== open   time_min  seed 7  completion   5.0%  travel time 5.97  (314 s)
+== open   time_min  seed 8  completion   3.5%  travel time 4.38  (231 s)
+== open   time_min  seed 9  completion   4.0%  travel time 4.12  (278 s)
+== closed aligned   seed 0  completion   2.0%  travel time 6.37  (2014 s)
+== closed aligned   seed 1  completion   4.5%  travel time 8.99  (2465 s)
+== closed aligned   seed 2  completion   2.0%  travel time 6.76  (1255 s)
+== closed aligned   seed 3  completion   1.0%  travel time 3.06  (2023 s)
+== closed aligned   seed 4  completion   2.5%  travel time 5.81  (1481 s)
+== closed aligned   seed 5  completion   2.0%  travel time 5.45  (1318 s)
+== closed aligned   seed 6  completion   1.0%  travel time 5.10  (1157 s)
+== closed aligned   seed 7  completion   1.5%  travel time 6.30  (1176 s)
+== closed aligned   seed 8  completion   0.5%  travel time 9.40  (1443 s)
+== closed aligned   seed 9  completion   0.5%  travel time 4.52  (1484 s)
+== open   aligned   seed 0  completion   0.5%  travel time 6.20  (1018 s)
+== open   aligned   seed 1  completion   3.0%  travel time 4.03  (913 s)
+== open   aligned   seed 2  completion   1.5%  travel time 4.81  (868 s)
+== open   aligned   seed 3  completion   2.5%  travel time 4.54  (799 s)
+== open   aligned   seed 4  completion   4.5%  travel time 8.07  (714 s)
+== open   aligned   seed 5  completion   2.5%  travel time 7.99  (760 s)
+== open   aligned   seed 6  completion   3.5%  travel time 7.90  (963 s)
+== open   aligned   seed 7  completion   0.0%  travel time n/a  (860 s)
+== open   aligned   seed 8  completion   0.5%  travel time 12.14  (728 s)
+== open   aligned   seed 9  completion   1.0%  travel time 9.11  (744 s)
+closed_time_min    completion   0.1%  travel time 5.00
+open_time_min      completion   4.3%  travel time 4.98
+closed_aligned     completion   1.8%  travel time 6.17
+open_aligned       completion   1.9%  travel time 7.20
+wrote anaheim_cells_gform.json in 3345 s
+
+real	55m46.139s
+user	799m52.874s
+sys	0m11.376s

@@ -676,7 +676,7 @@ def reward_categories():
 # so the audit join read a record the manuscript had stopped using. They now read the staged
 # package, which is the record the next deposit is built from and the one T-1991 recomposed.
 AUDIT = "handoff/deposit_next/v1.7.0/study_record_simulator_audit_v6.csv"
-RECORD = "handoff/deposit_next/v1.7.0/study_record_corpus_v9_coded.csv"
+RECORD = "handoff/deposit_next/v1.7.0/study_record_reviewed_studies.csv"
 
 
 def boundary_split():
@@ -690,7 +690,7 @@ def boundary_split():
     import csv
     t = p = 0
     for r in csv.DictReader(open(RECORD, encoding="utf-8-sig")):
-        if r["in_reviewed_corpus"].strip().lower() != "yes" or r["boundary_condition"].strip() != "boundary-open-addressed":
+        if r["in_reviewed_studies"].strip().lower() != "yes" or r["boundary_condition"].strip() != "boundary-open-addressed":
             continue
         note = (r.get("boundary_status_note") or "").strip().lower()
         if note.startswith("periphery named"):
@@ -707,7 +707,7 @@ def audit_rows():
     """
     import csv
     rec = [r for r in csv.DictReader(open(RECORD, encoding="utf-8-sig"))
-           if r["in_reviewed_corpus"].strip().lower() == "yes"]
+           if r["in_reviewed_studies"].strip().lower() == "yes"]
     cat = {r["idx"]: r["category"].strip()
            for r in csv.DictReader(open(AUDIT, encoding="utf-8-sig"))}
     return [(r["boundary_condition"].strip(), cat.get(r["idx"], "?")) for r in rec]

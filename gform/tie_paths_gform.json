@@ -1,0 +1,122 @@
+[
+ {
+  "network": "Sioux Falls",
+  "gamma": 0.95,
+  "states": 552,
+  "states_differing": 39,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "Sioux Falls",
+  "gamma": 0.99,
+  "states": 552,
+  "states_differing": 10,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "Sioux Falls",
+  "gamma": 0.999,
+  "states": 552,
+  "states_differing": 10,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "Sioux Falls",
+  "gamma": 0.9999,
+  "states": 552,
+  "states_differing": 10,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "Sioux Falls",
+  "gamma": 1.0,
+  "states": 552,
+  "states_differing": 0,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 9
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 0.95,
+  "states": 15770,
+  "states_differing": 2894,
+  "aligned_proper_subset_with_tied_travel_time": 537,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 0.99,
+  "states": 15770,
+  "states_differing": 477,
+  "aligned_proper_subset_with_tied_travel_time": 13,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 0.999,
+  "states": 15770,
+  "states_differing": 39,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 0.9999,
+  "states": 15770,
+  "states_differing": 15,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 1.0,
+  "states": 15770,
+  "states_differing": 0,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 42
+ },
+ {
+  "network": "bespoke grid",
+  "gamma": 0.95,
+  "states": 600,
+  "states_differing": 0,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "bespoke grid",
+  "gamma": 0.99,
+  "states": 600,
+  "states_differing": 0,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "bespoke grid",
+  "gamma": 0.999,
+  "states": 600,
+  "states_differing": 0,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "bespoke grid",
+  "gamma": 0.9999,
+  "states": 600,
+  "states_differing": 0,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ },
+ {
+  "network": "bespoke grid",
+  "gamma": 1.0,
+  "states": 600,
+  "states_differing": 0,
+  "aligned_proper_subset_with_tied_travel_time": 0,
+  "travel_time_optimal_set_spans_different_hop_counts": 0
+ }
+]

@@ -1,83 +1,93 @@
-# Reinforcement Learning for Vehicle Route Guidance: Code and Data
+# RL route guidance review: data, code and run outputs
 
-Environment, planner, training, and analysis code for the controlled experiments reported in
-*Reinforcement Learning for Vehicle Route Guidance: A Critical Review of Reward Design and
-Evaluation Boundary Conditions*, together with the screened corpus and the per-study extraction
-the review is built on.
+This package holds the study record, the run outputs and the scripts behind every measured value of
+the manuscript *Reinforcement learning for navigation-level route guidance: the study-area boundary
+and the identifiability of the routing objective* (single author, Donghoun Lee).
 
-The experiments answer one question. A route-guidance policy trained on a network whose
-boundary is closed, and scored by travel time, converges to a return that says nothing about
-whether trips arrive. Opening the boundary makes leaving the network the optimum under that
-reward, which exact value iteration confirms, and OD trip completion falls from 99.5% to 0.0%.
-A destination-aligned reward restores arrival as the optimum. The code reproduces both results
-and the robustness checks around them.
+Cited in the manuscript as tag v1.8.0 of
+<https://github.com/dhleeGDH/rl-route-guidance-review>, under the concept DOI
+10.5281/zenodo.21523970, which always resolves to the newest version.
+
+## Where to start
+
+**`RUN_TO_TABLE.md` is the index.** Every printed table, figure and body value has a row there
+naming the file that produces it, the key inside that file, and which of the two reward variants the
+cell reports. Read its sections A and B before comparing any number with any file: the study prints
+two shaping variants and applies one dispersion convention under two seedings, and a reader who
+skips those two pages will find values that look wrong and are not.
+
+**`RELEASE_NOTES.md`** says what each version added and what changed since the last one.
 
 ## Layout
 
-| Directory | Contents |
+| Path | Holds |
 |---|---|
-| `boundary_open_demo/` | The 5x5 lattice environment, the DQN and PPO learners, exact value iteration, the planner comparison of Section V-B with its noisy-forecaster control, and every cell of Section V |
-| `benchmark_network/` | Sioux Falls and Nguyen-Dupuis replications and the figure that reports them |
-| `sumo_corridor/` | The SUMO port of the four cells |
-| `xrouting_mc4/` | Inspection notes on a released system's reward formulation |
+| `study_record_reviewed_studies.csv` | the field record of the review: 95 rows, of which the 93 with `in_reviewed_studies == yes` carry every printed count; the other two are the author's own post-window study and a study whose full text no institution available to the author holds |
+| `study_record_claim_charting.csv`, `study_record_simulator_audit_v6.csv`, `gamma_todo.csv` | the claim charting, the simulator audit and the reference join |
+| `reviewed_studies_text/` | the 93 extracted full texts the lexical scans read, by `idx`, with a `<idx>.README.txt` beside each text acquired, recovered or withdrawn after the first extraction (13, 22, 26, 40, 48) |
+| `eval_substrate/` | the evaluation-substrate scan behind Supplementary Table S-22 and the substrate figures of Section IV-A |
+| `fulltext_scan/`, `fulltext_scan.py` | the term-family scan behind Supplementary Tables S-16 and S-17 |
+| `survey_axis_coverage.json`, `survey_axis_coverage.py` | the scan behind the differentiating column of Table I |
+| `boundary_open_demo/` | the bespoke-grid and lattice runs, the exact solvers and the controls |
+| `sumo_corridor/` | the SUMO-executed grid runs |
+| `sioux30/` | the Sioux Falls runs at 30 seeds |
+| `anaheim/` | the Anaheim value iteration and the Eq. (7) route sets |
+| `benchmark_network/`, `costly_return/` | the outer-face intervals and the non-terminal detour cells |
+| `networks/` | the published link and node data of Anaheim, Sioux Falls and Chicago Sketch |
+| `released_impl/` | the retraining of the published router of [25] under each boundary condition |
+| `m2c/` | the discount-consistent shaping variant: the mixin, its self-test, its run outputs and its controls |
+| `table6_rows.py` | the dispersion convention behind the published-form cells of Tables IV and V |
+| `screening_trail/` | the record behind Fig. 1, the script that writes and checks it, and the script that draws the figure |
+| `plot_family_merged.py`, `plot_family_reporting.py` | the script that draws Fig. 3, and the superseded single-group form of the same grid that the appendix gate reads as its record |
+| `boundary_open_demo/plot_experiment_design.py`, `boundary_open_demo/plot_reward_condition.py`, `benchmark_network/plot_networks.py` | the scripts that draw Figs. 2, 5 and 4, at the revisions that produced the placed figures |
+| `gates/` | two gates of the development repository, deposited as they run there: `check_figure_generators.py`, which renders every generator and compares the result pixel by pixel with the placed figure, and `countcheck.py`, which recomputes every printed count from Table A-1 and the record. Both resolve manuscript paths and do not run inside this package |
 
-## Reproducing the main result
+## Superseded records
 
-```
-cd boundary_open_demo
-python four_cells_boundary_dest.py      # the four cells of Table IV
-python optimal_vi_boundary_dest.py      # exact value iteration, the optimum each cell admits
-python plot_headline.py                 # Fig. 6
-```
+A reader who downloads an older version, or who opens the repository tree rather than this package,
+should know two things.
 
-Each script writes its results to a JSON file beside itself and prints a summary. Seeds are
-fixed in the scripts, so a rerun reproduces the reported numbers rather than a sample near them.
+**The boundary field was corrected in v1.5.0.** Versions v1.3.0 and v1.4.0 record 19 studies as
+addressing the boundary condition of the study area. Every one of those 19 was re-read at full text
+against the rule Supplementary Table S-9 states for the field, which is a statement of the treatment
+of a vehicle reaching a peripheral link. Nine did not meet it and moved to not addressed. In v1.8.0 the field
+reads 10 addressed and 83 not addressed over the 93 reviewed studies, with no unclear value left. The direction
+of the correction is downward: no study moved into the addressed group. The `boundary_status` and
+`boundary_status_note` columns of the study record decompose the old 19 as 10 + 9 and record why
+each of the nine moved.
 
-Other cells follow the same pattern:
+**The record was recomposed at 93 reviewed studies in v1.8.0.** Up to v1.7.0 the record held 94 reviewed
+studies, three of them read from a title and an abstract alone. Two of the three, `idx` 13 and
+`idx` 40, were read at full text and every field re-recorded from the text, with the evidence
+sentence of each value in `reviewed_studies_text/13.README.txt` and `40.README.txt`; the third, `idx` 26,
+could not be obtained from any institution available to the author and left the record. Every
+reviewed study is therefore a full text, one denominator of 93 applies to every field but the
+generalization mechanism (91), and every count the manuscript prints moved with the record. The
+lexical scans of `eval_substrate/` and `fulltext_scan/` were re-executed over the 93 texts.
 
-```
-python exit_density.py                  # completion against exit geometry
-python ablation.py                      # which reward terms recover completion
-python constrained_arrival.py           # arrival as a constraint, with the multiplier adapted
-python replay_composition.py            # what the learner replays, and the lattice gap
-python interior_destination.py          # the four cells with an interior destination
-python costly_return.py --max_steps 120 # a non-terminal wrong exit
-```
+**The screening files travel with this package from v1.9.0.** The export records, the
+exclusion-clause re-execution and its two outputs are under `reviewed_studies/` and `search_rerun/`
+here, so the screening tables of the Supplementary resolve inside the package. The v1.1 deposit
+holds an earlier coding of the record, superseded on the boundary field; the current coding is
+`study_record_reviewed_studies.csv` at the top level of this package, and every count printed in the
+manuscript is taken over it.
 
-The benchmark networks and the SUMO port have their own entry points:
+## Reading the study record
 
-```
-cd ../benchmark_network && python benchmark_demo.py && python plot_benchmark.py
-cd ../sumo_corridor && python sumo_train.py
-```
+Filter to the reviewed studies before any tally:
 
-## Corpus and extraction
+    rows = [r for r in csv.DictReader(open("study_record_reviewed_studies.csv"))
+            if r["in_reviewed_studies"].strip() == "yes"]        # 93 rows
 
-`corpus/` carries the screened corpus and the per-study extraction. Every non-trivial recorded
-value is anchored to a verbatim quotation from the study it describes, so any cell can be
-checked against its source without rerunning anything. The state field is also recorded as a
-decision rule over those quotations, and that rule is released as a script rather than stated
-only in prose:
+The two remaining rows enter no count, no denominator and no table: `idx` 93 is the author's own
+study, which post-dates the search window, and `idx` 26 is the study withdrawn in v1.8.0, whose full
+text no institution available to the author holds. `RUN_TO_TABLE.md`, under "Reading the study record", gives the worked
+tallies of the boundary field and the two status columns.
 
-```
-python recode_state_field.py            # the state field recomputed from the released quotations
-python recode_state_field.py --list     # every study the rule and the record differ on
-```
+## What is not here
 
-It settles 85 of the 88 studies carrying a value and reproduces the recorded reading in 83.
-The 2 it contests and the 3 it leaves unsettled are printed rather than forced, and a reader
-who would draw the definitional boundary elsewhere can edit the two patterns at the top of the
-file and recompute the count.
-
-## Requirements
-
-Python 3.9, with `numpy`, `torch`, `matplotlib`, and `pandas`. The SUMO port additionally needs
-SUMO 1.25 with `traci` on the path. `pip install -r requirements.txt` covers the rest.
-
-## Citation
-
-If you use this code, please cite the paper. A BibTeX entry will be added on publication.
-
-## License
-
-MIT. See `LICENSE`.
+The full texts of the reviewed studies and of the related reviews are copyrighted and are not
+redistributed. `reviewed_studies_text/` holds the extractions the lexical scans read; the scans that need the
+PDFs themselves take their directory from `PDF_DIR` or `SURVEY_PDF_DIR`. The released implementation
+of [25] is likewise not redistributed; `released_impl/` holds this study's retraining of it and
+expects that tree beside it.

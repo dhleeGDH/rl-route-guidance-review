@@ -1,0 +1,29 @@
+{
+ "draws": 200,
+ "distinct_pairs": 198,
+ "destinations": 38,
+ "cells": {
+  "closed_time_min": {
+   "arrive": 200,
+   "draws": 200,
+   "arrive_pct": 100.0
+  },
+  "open_time_min": {
+   "arrive": 32,
+   "draws": 200,
+   "arrive_pct": 16.0
+  },
+  "closed_aligned": {
+   "arrive": 200,
+   "draws": 200,
+   "arrive_pct": 100.0
+  },
+  "open_aligned": {
+   "arrive": 194,
+   "draws": 200,
+   "arrive_pct": 97.0
+  }
+ },
+ "attainable_maximum_pct": 97.0,
+ "attainable_maximum_pairs": 194
+}

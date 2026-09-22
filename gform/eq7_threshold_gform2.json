@@ -1,0 +1,192 @@
+[
+ {
+  "network": "Sioux Falls",
+  "gamma": 0.9,
+  "delta": 0.0006400000000006401,
+  "delta_at": {
+   "destination": 4,
+   "node": 22,
+   "deviating_to": 15,
+   "k_optimal_path": 6,
+   "k_best_non_optimal_path": 4
+  },
+  "K": 9,
+  "k_min": 1,
+  "mean_traversal_cost": 4.131578947368421,
+  "R_d_raw": 41.31578947368421,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.9999980636942675,
+  "condition_gamma_gt_rhs": false
+ },
+ {
+  "network": "Sioux Falls",
+  "gamma": 0.95,
+  "delta": 0.009739609374996405,
+  "delta_at": {
+   "destination": 2,
+   "node": 22,
+   "deviating_to": 20,
+   "k_optimal_path": 7,
+   "k_best_non_optimal_path": 6
+  },
+  "K": 8,
+  "k_min": 1,
+  "mean_traversal_cost": 4.131578947368421,
+  "R_d_raw": 41.31578947368421,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.9999663234616697,
+  "condition_gamma_gt_rhs": false
+ },
+ {
+  "network": "Sioux Falls",
+  "gamma": 0.99,
+  "delta": 0.009801000000001281,
+  "delta_at": {
+   "destination": 11,
+   "node": 20,
+   "deviating_to": 19,
+   "k_optimal_path": 4,
+   "k_best_non_optimal_path": 4
+  },
+  "K": 8,
+  "k_min": 1,
+  "mean_traversal_cost": 4.131578947368421,
+  "R_d_raw": 41.31578947368421,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.9999661111919927,
+  "condition_gamma_gt_rhs": false
+ },
+ {
+  "network": "Sioux Falls",
+  "gamma": 0.999,
+  "delta": 0.0009980010000010253,
+  "delta_at": {
+   "destination": 11,
+   "node": 20,
+   "deviating_to": 19,
+   "k_optimal_path": 4,
+   "k_best_non_optimal_path": 4
+  },
+  "K": 8,
+  "k_min": 1,
+  "mean_traversal_cost": 4.131578947368421,
+  "R_d_raw": 41.31578947368421,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.9999965492231119,
+  "condition_gamma_gt_rhs": false
+ },
+ {
+  "network": "Sioux Falls",
+  "gamma": 0.9999,
+  "delta": 9.998000099997739e-05,
+  "delta_at": {
+   "destination": 11,
+   "node": 20,
+   "deviating_to": 19,
+   "k_optimal_path": 4,
+   "k_best_non_optimal_path": 4
+  },
+  "K": 8,
+  "k_min": 1,
+  "mean_traversal_cost": 4.131578947368421,
+  "R_d_raw": 41.31578947368421,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.9999996543002695,
+  "condition_gamma_gt_rhs": false
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 0.9,
+  "delta": 0.007992424199999792,
+  "delta_at": {
+   "destination": 30,
+   "node": 316,
+   "deviating_to": 328,
+   "k_optimal_path": 4,
+   "k_best_non_optimal_path": 4
+  },
+  "K": 25,
+  "k_min": 1,
+  "mean_traversal_cost": 0.882353374601751,
+  "R_d_raw": 8.82353374601751,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.9999622580153728,
+  "condition_gamma_gt_rhs": false
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 0.95,
+  "delta": 9.809048334874504e-05,
+  "delta_at": {
+   "destination": 30,
+   "node": 31,
+   "deviating_to": 330,
+   "k_optimal_path": 5,
+   "k_best_non_optimal_path": 7
+  },
+  "K": 26,
+  "k_min": 1,
+  "mean_traversal_cost": 0.882353374601751,
+  "R_d_raw": 8.82353374601751,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.9999995553233606,
+  "condition_gamma_gt_rhs": false
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 0.99,
+  "delta": 7.567790423124165e-05,
+  "delta_at": {
+   "destination": 20,
+   "node": 259,
+   "deviating_to": 80,
+   "k_optimal_path": 29,
+   "k_best_non_optimal_path": 31
+  },
+  "K": 42,
+  "k_min": 1,
+  "mean_traversal_cost": 0.882353374601751,
+  "R_d_raw": 8.82353374601751,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.999999790809148,
+  "condition_gamma_gt_rhs": false
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 0.999,
+  "delta": 7.992424199976256e-05,
+  "delta_at": {
+   "destination": 18,
+   "node": 316,
+   "deviating_to": 328,
+   "k_optimal_path": 10,
+   "k_best_non_optimal_path": 10
+  },
+  "K": 42,
+  "k_min": 1,
+  "mean_traversal_cost": 0.882353374601751,
+  "R_d_raw": 8.82353374601751,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.9999997790713095,
+  "condition_gamma_gt_rhs": false
+ },
+ {
+  "network": "Anaheim",
+  "gamma": 0.9999,
+  "delta": 7.992424199354531e-06,
+  "delta_at": {
+   "destination": 30,
+   "node": 316,
+   "deviating_to": 328,
+   "k_optimal_path": 4,
+   "k_best_non_optimal_path": 4
+  },
+  "K": 42,
+  "k_min": 1,
+  "mean_traversal_cost": 0.882353374601751,
+  "R_d_raw": 8.82353374601751,
+  "R_d_units": 10.0,
+  "eq7_rhs": 0.9999999779071309,
+  "condition_gamma_gt_rhs": false
+ }
+]

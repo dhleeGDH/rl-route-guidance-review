@@ -1,0 +1,29 @@
+{
+ "tie_rule": "terminal action preferred at an exact tie",
+ "cells": {
+  "closed time_min": {
+   "move_first_pct": 100.0,
+   "terminal_first_pct": 100.0,
+   "pairs_that_differ": 0,
+   "draws": 200
+  },
+  "closed aligned": {
+   "move_first_pct": 100.0,
+   "terminal_first_pct": 100.0,
+   "pairs_that_differ": 0,
+   "draws": 200
+  },
+  "open time_min": {
+   "move_first_pct": 0.0,
+   "terminal_first_pct": 0.0,
+   "pairs_that_differ": 0,
+   "draws": 200
+  },
+  "open aligned": {
+   "move_first_pct": 100.0,
+   "terminal_first_pct": 100.0,
+   "pairs_that_differ": 0,
+   "draws": 200
+  }
+ }
+}

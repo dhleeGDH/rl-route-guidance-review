@@ -1,0 +1,48 @@
+{
+ "gammas": [
+  1.0,
+  0.99,
+  0.95,
+  0.9
+ ],
+ "rows": {
+  "Travel time alone": {
+   "1.00": 0.0,
+   "0.99": 0.0,
+   "0.95": 0.0,
+   "0.90": 0.0
+  },
+  "Potential shaping alone": {
+   "1.00": 4.0,
+   "0.99": 4.0,
+   "0.95": 4.0,
+   "0.90": 4.0
+  },
+  "Exit penalty alone": {
+   "1.00": 62.5,
+   "0.99": 62.5,
+   "0.95": 81.0,
+   "0.90": 91.0
+  },
+  "Arrival term alone": {
+   "1.00": 100.0,
+   "0.99": 100.0,
+   "0.95": 99.5,
+   "0.90": 91.0
+  },
+  "All three terms": {
+   "1.00": 100.0,
+   "0.99": 100.0,
+   "0.95": 100.0,
+   "0.90": 100.0
+  }
+ },
+ "published": {
+  "Travel time alone": 0.0,
+  "Potential shaping alone": 4.0,
+  "Exit penalty alone": 62.5,
+  "Arrival term alone": 100.0,
+  "All three terms": 100.0
+ },
+ "moved_at_0.99": []
+}

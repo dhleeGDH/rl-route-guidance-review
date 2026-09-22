@@ -1,0 +1,322 @@
+{
+ "study": "[25] DRL-Router, released implementation, unmodified",
+ "network": "its own shipped Anaheim, 416 nodes",
+ "destination": 15,
+ "origins": [
+  32,
+  42,
+  44,
+  57,
+  59,
+  61,
+  89,
+  98,
+  102,
+  103,
+  137,
+  139,
+  151,
+  155,
+  162,
+  177,
+  180,
+  193,
+  203,
+  208,
+  216,
+  245,
+  262,
+  278,
+  290,
+  307,
+  332,
+  360,
+  367,
+  386
+ ],
+ "n_origins": 30,
+ "origin_pool": "nodes outside the 95-node band, drawn once at RandomState(12345)",
+ "pool_size": 321,
+ "iterations": 3000,
+ "seeds": 10,
+ "border_nodes": {
+  "closed": 0,
+  "open_hull": 13,
+  "open_band": 95
+ },
+ "attainable_maximum": {
+  "closed": {
+   "reachable": 30,
+   "pairs": 30,
+   "pct": 100.0,
+   "unreachable_origins": []
+  },
+  "open_hull": {
+   "reachable": 30,
+   "pairs": 30,
+   "pct": 100.0,
+   "unreachable_origins": []
+  },
+  "open_band": {
+   "reachable": 28,
+   "pairs": 30,
+   "pct": 93.3,
+   "unreachable_origins": [
+    61,
+    216
+   ]
+  }
+ },
+ "results": {
+  "closed": {
+   "per_seed": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+   ],
+   "counts_per_seed": [
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    },
+    {
+     "arrive": 30,
+     "exit": 0,
+     "stuck": 0
+    }
+   ],
+   "seconds": [
+    496.14386224746704,
+    555.0365326404572,
+    644.6002535820007,
+    686.7601177692413,
+    672.5117955207825,
+    704.1423535346985,
+    548.7291038036346,
+    573.6618041992188,
+    579.4065623283386,
+    475.0061182975769
+   ],
+   "mean": 100.0,
+   "sd": 0.0,
+   "exit_rate": 0.0,
+   "stuck_rate": 0.0,
+   "trips": 300
+  },
+  "open_hull": {
+   "per_seed": [
+    56.7,
+    60.0,
+    56.7,
+    56.7,
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    60.0
+   ],
+   "counts_per_seed": [
+    {
+     "arrive": 17,
+     "exit": 13,
+     "stuck": 0
+    },
+    {
+     "arrive": 18,
+     "exit": 12,
+     "stuck": 0
+    },
+    {
+     "arrive": 17,
+     "exit": 13,
+     "stuck": 0
+    },
+    {
+     "arrive": 17,
+     "exit": 13,
+     "stuck": 0
+    },
+    {
+     "arrive": 18,
+     "exit": 12,
+     "stuck": 0
+    },
+    {
+     "arrive": 18,
+     "exit": 12,
+     "stuck": 0
+    },
+    {
+     "arrive": 18,
+     "exit": 12,
+     "stuck": 0
+    },
+    {
+     "arrive": 18,
+     "exit": 12,
+     "stuck": 0
+    },
+    {
+     "arrive": 18,
+     "exit": 12,
+     "stuck": 0
+    },
+    {
+     "arrive": 18,
+     "exit": 12,
+     "stuck": 0
+    }
+   ],
+   "seconds": [
+    515.2531898021698,
+    789.91916680336,
+    605.1528377532959,
+    520.8754134178162,
+    740.4479565620422,
+    688.0144772529602,
+    597.023806810379,
+    552.5024909973145,
+    458.5279006958008,
+    536.2160170078278
+   ],
+   "mean": 59.010000000000005,
+   "sd": 1.5122499793354258,
+   "exit_rate": 41.0,
+   "stuck_rate": 0.0,
+   "trips": 300
+  },
+  "open_band": {
+   "per_seed": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "counts_per_seed": [
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    },
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    },
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    },
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    },
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    },
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    },
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    },
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    },
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    },
+    {
+     "arrive": 0,
+     "exit": 30,
+     "stuck": 0
+    }
+   ],
+   "seconds": [
+    1544.239987373352,
+    1631.1332120895386,
+    1513.2125799655914,
+    1559.6944766044617,
+    1385.9147562980652,
+    1414.3334968090057,
+    1356.1327924728394,
+    1306.7599036693573,
+    1411.9541800022125,
+    1434.1357808113098
+   ],
+   "mean": 0.0,
+   "sd": 0.0,
+   "exit_rate": 100.0,
+   "stuck_rate": 0.0,
+   "trips": 300
+  }
+ },
+ "wall_seconds": 2224.080250263214
+}

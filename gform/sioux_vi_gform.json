@@ -1,0 +1,69 @@
+{
+ "network": "sioux_falls",
+ "nodes": 24,
+ "links": 76,
+ "border_nodes": [
+  1,
+  2,
+  3,
+  6,
+  7,
+  8,
+  12,
+  13,
+  18,
+  20,
+  21,
+  24
+ ],
+ "border_size": 12,
+ "exit_convention": "a trip ends by taking the exit action at a border node; a route may pass a border node without ending there",
+ "surrogate_link_cost": 1.15,
+ "gamma": 1.0,
+ "r_goal": 10.0,
+ "r_exit": 5.0,
+ "beta": 1.0,
+ "eval_draws": 200,
+ "eval_distinct_pairs": 127,
+ "max_steps_of_the_trained_cell": 60,
+ "attainable_maximum_draws": 100.0,
+ "attainable_maximum_distinct": 100.0,
+ "cells": {
+  "closed time_min": {
+   "completion_draws_pct": 100.0,
+   "arrived_draws": 200,
+   "draws": 200,
+   "completion_distinct_pct": 100.0,
+   "arrived_distinct": 127,
+   "distinct": 127,
+   "longest_optimal_route_steps": 6
+  },
+  "closed aligned": {
+   "completion_draws_pct": 100.0,
+   "arrived_draws": 200,
+   "draws": 200,
+   "completion_distinct_pct": 100.0,
+   "arrived_distinct": 127,
+   "distinct": 127,
+   "longest_optimal_route_steps": 6
+  },
+  "open time_min": {
+   "completion_draws_pct": 0.0,
+   "arrived_draws": 0,
+   "draws": 200,
+   "completion_distinct_pct": 0.0,
+   "arrived_distinct": 0,
+   "distinct": 127,
+   "longest_optimal_route_steps": 2
+  },
+  "open aligned": {
+   "completion_draws_pct": 100.0,
+   "arrived_draws": 200,
+   "draws": 200,
+   "completion_distinct_pct": 100.0,
+   "arrived_distinct": 127,
+   "distinct": 127,
+   "longest_optimal_route_steps": 6
+  }
+ }
+}

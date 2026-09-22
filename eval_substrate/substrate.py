@@ -16,7 +16,7 @@ CONTROLS, both printed before any new column is read:
      both. A wide miss means the rule is measuring something else and its other columns are void.
   2. idx 48's text file was quarantined as the wrong source until T-1945 recovered the 2019
      conference paper from pdfs/pdfs/ and regenerated the extraction; nothing is quarantined now
-     and the scan reads all 93 full texts. corpus_text/48.README.txt records the recovery.
+     and the scan reads all 93 full texts. reviewed_studies_text/48.README.txt records the recovery.
 
     python3 substrate.py
 """
@@ -24,18 +24,18 @@ import csv, io, json, os, re, sys
 from collections import Counter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TEXTS = os.path.join(HERE, '..', 'corpus_text')
+TEXTS = os.path.join(HERE, '..', 'reviewed_studies_text')
 # Two records can sit beside this directory. _CURRENT is the coding this version publishes, at the
 # top level under its released name. _SNAPSHOT is corpus/corpus_v9_coded.csv, which is the coding as
 # of v1.4.0 and is superseded on the boundary field; it exists in the repository layout and not in
 # the deposited package. The current one wins wherever both are present, since a tally taken over
 # the snapshot returns the withdrawn boundary counts. Set CORPUS_CSV to override either.
-_CURRENT = os.path.join(HERE, '..', 'study_record_corpus_v9_coded.csv')
+_CURRENT = os.path.join(HERE, '..', 'study_record_reviewed_studies.csv')
 _SNAPSHOT = os.path.join(HERE, '..', 'corpus', 'corpus_v9_coded.csv')
 CORPUS = os.environ.get('CORPUS_CSV') or (_CURRENT if os.path.exists(_CURRENT) else _SNAPSHOT)
 OUT = os.path.join(HERE, 'substrate.json')
 
-QUARANTINED = set()           # emptied by T-1945; corpus_text/48.README.txt records why
+QUARANTINED = set()           # emptied by T-1945; reviewed_studies_text/48.README.txt records why
 
 ENGINES = [
     ('SUMO',        r'\bSUMO\b|Simulation of Urban Mobility'),
@@ -116,7 +116,7 @@ def find(text, patterns):
 
 def main():
     rows = [r for r in csv.DictReader(io.open(CORPUS, encoding='utf-8'))
-            if str(r.get('in_reviewed_corpus', '')).strip().lower() in ('1', 'true', 'yes', 'y')]
+            if str(r.get('in_reviewed_studies', '')).strip().lower() in ('1', 'true', 'yes', 'y')]
     print('corpus rows: %d' % len(rows))
 
     per, missing, skipped = {}, [], []

@@ -20,13 +20,13 @@ Run: python3 benchmark_network_adjudication.py
 import csv, io, os, re, json, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TEXTS = os.path.join(HERE, '..', 'corpus_text')
+TEXTS = os.path.join(HERE, '..', 'reviewed_studies_text')
 # Two records can sit beside this directory. _CURRENT is the coding this version publishes, at the
 # top level under its released name. _SNAPSHOT is corpus/corpus_v9_coded.csv, which is the coding as
 # of v1.4.0 and is superseded on the boundary field; it exists in the repository layout and not in
 # the deposited package. The current one wins wherever both are present, since a tally taken over
 # the snapshot returns the withdrawn boundary counts. Set CORPUS_CSV to override either.
-_CURRENT = os.path.join(HERE, '..', 'study_record_corpus_v9_coded.csv')
+_CURRENT = os.path.join(HERE, '..', 'study_record_reviewed_studies.csv')
 _SNAPSHOT = os.path.join(HERE, '..', 'corpus', 'corpus_v9_coded.csv')
 CORPUS = os.environ.get('CORPUS_CSV') or (_CURRENT if os.path.exists(_CURRENT) else _SNAPSHOT)
 
@@ -63,7 +63,7 @@ KEPT_ON_LATER = {
 
 def load_texts():
     rows = [r for r in csv.DictReader(io.open(CORPUS, encoding='utf-8'))
-            if str(r.get('in_reviewed_corpus', '')).strip().lower() in ('1', 'true', 'yes', 'y')]
+            if str(r.get('in_reviewed_studies', '')).strip().lower() in ('1', 'true', 'yes', 'y')]
     out = {}
     for r in rows:
         idx = str(r['idx']).strip()

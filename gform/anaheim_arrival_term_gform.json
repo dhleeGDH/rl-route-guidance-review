@@ -1,0 +1,30 @@
+{
+ "hull_2.5x": {
+  "band": 0.0,
+  "border_rule": "hull",
+  "border_nodes": 13,
+  "r_goal": 25.0,
+  "r_exit": 12.5,
+  "reward_units": "multiples of the mean link cost 0.882353 min",
+  "pairs": 15289,
+  "aligned_arrive": 14956,
+  "aligned_exit": 333,
+  "aligned_arrive_pct": 97.8,
+  "arrival_reachable": 14956,
+  "attainable_maximum_pct": 97.8
+ },
+ "band_2.5x": {
+  "band": 0.1,
+  "border_rule": "band 0.1",
+  "border_nodes": 95,
+  "r_goal": 25.0,
+  "r_exit": 12.5,
+  "reward_units": "multiples of the mean link cost 0.882353 min",
+  "pairs": 12183,
+  "aligned_arrive": 5692,
+  "aligned_exit": 6491,
+  "aligned_arrive_pct": 46.7,
+  "arrival_reachable": 5692,
+  "attainable_maximum_pct": 46.7
+ }
+}

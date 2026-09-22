@@ -1,0 +1,81 @@
+{
+ "rows": [
+  {
+   "gamma": 0.0,
+   "delta": null,
+   "K": null,
+   "k_min": null,
+   "R_d": 10.0,
+   "eq7_rhs": null,
+   "condition_gamma_gt_rhs": null,
+   "studies": 1
+  },
+  {
+   "gamma": 0.1,
+   "delta": 1.264999998085159e-07,
+   "K": 9,
+   "k_min": 1,
+   "R_d": 10.0,
+   "eq7_rhs": 0.99999999841875,
+   "condition_gamma_gt_rhs": false,
+   "studies": 2
+  },
+  {
+   "gamma": 0.5,
+   "delta": 0.013476562500000178,
+   "K": 9,
+   "k_min": 1,
+   "R_d": 10.0,
+   "eq7_rhs": 0.99983154296875,
+   "condition_gamma_gt_rhs": false,
+   "studies": 1
+  },
+  {
+   "gamma": 0.7,
+   "delta": 0.1610026565,
+   "K": 9,
+   "k_min": 1,
+   "R_d": 10.0,
+   "eq7_rhs": 0.99798746679375,
+   "condition_gamma_gt_rhs": false,
+   "studies": 1
+  },
+  {
+   "gamma": 0.9,
+   "delta": 1.0450787264999999,
+   "K": 9,
+   "k_min": 1,
+   "R_d": 10.0,
+   "eq7_rhs": 0.98693651591875,
+   "condition_gamma_gt_rhs": false,
+   "studies": 5
+  },
+  {
+   "gamma": 0.95,
+   "delta": 1.5660213864902346,
+   "K": 9,
+   "k_min": 1,
+   "R_d": 10.0,
+   "eq7_rhs": 0.9804247326688721,
+   "condition_gamma_gt_rhs": false,
+   "studies": 5
+  },
+  {
+   "gamma": 0.99,
+   "delta": 2.133031548685148,
+   "K": 9,
+   "k_min": 1,
+   "R_d": 10.0,
+   "eq7_rhs": 0.9733371056414356,
+   "condition_gamma_gt_rhs": true,
+   "studies": 21
+  },
+  {
+   "gamma": 1.0,
+   "studies": 1,
+   "case": "Proposition 1, undiscounted"
+  }
+ ],
+ "met": 22,
+ "total": 37
+}

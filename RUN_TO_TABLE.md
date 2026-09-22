@@ -2,7 +2,7 @@
 
 Every measured value of the manuscript is listed here with the file that produces it, table by
 table and figure by figure. Float numbers are the manuscript's own: Tables I to VI in the body,
-Figs. 1 to 5 in the body, and Tables S-1 to S-23 in the Supplementary.
+Figs. 1 to 5 in the body, and Tables S-1 to S-12 in the Supplementary.
 
 Paths are relative to this package unless marked `repo_v11/`, which is the code and data archive
 published at the GitHub tag of the same version. Exact computations, meaning value iteration and
@@ -23,9 +23,8 @@ Section V prints two shaping variants of the destination-aligned reward.
 it is `m2c/shaping_m2c.py`. Every exact row is identical under the two variants at `gamma = 1`, so
 the regression is an identity rather than a coincidence.
 
-The manuscript prints M2-C for the destination-aligned cells of the bespoke grid, for Sioux Falls,
-for the interior-destination grid cells, for the depth sweep, for the learner sweep, for the
-non-terminal detour cell and for the two sentinel and truncation controls. It prints the published
+The manuscript prints M2-C for the destination-aligned cells of the 5x5 grid, for Sioux Falls,
+and for the learner sweep. It prints the published
 run everywhere else, including every travel-time cell. A travel-time reward carries no shaping
 term, so M2-C cannot reach it: those cells are identical under both variants by construction, and
 `m2c/controls/sentinel_control_P.json` records the seed-for-seed reproduction that shows it.
@@ -47,7 +46,7 @@ seeded, and they part by 0.1 at a bound.
 | Used by | every published-form cell of Tables IV and V and of Table S-3 | every M2-C cell, and every control under `m2c/` |
 
 Convention B's key carries the path of the file **inside the development repository**, not inside
-this package. The bespoke-grid M2-C cell is keyed
+this package. The 5x5-grid M2-C cell is keyed
 `handoff/m2c/train_m2c_g1.json|open|aligned|{}|3000|completion_per_seed`, and the same values keyed
 on this package's `m2c/train_m2c_g1.json` return a different interval. The four M2-C cells of
 Tables IV and V reproduce to the digit under the repository key and under no other.
@@ -94,140 +93,96 @@ under different names, and it also reaches for benchmark outputs this package do
 
 ---
 
-## Table IV. Optimal and learned OD trip completion rate and travel time, by boundary condition
+## Table I. The record of the 93 reviewed studies
 
-| Row | Printed | Variant | Source |
+| Column | Command | Output | Where the value prints |
 |---|---|---|---|
-| Travel-time, optimal | 100.0 closed / 0.0 open | exact | value iteration on the bespoke grid, `boundary_open_demo/optimal_vi_boundary_dest.py` |
-| Destination-aligned, optimal | 100.0 / 100.0 | exact | the same computation |
-| Travel-time, 3000 | 99.9 [99.7-100.0], 5.37 [5.33-5.42], 0.0 | published | `boundary_open_demo/travel_time_bdest_ingrid.json`, cells `closed_time_min` and `open_time_min` |
-| Destination-aligned, 3000, closed | 100.0, 5.28 [5.27-5.29] | published | the same file, cell `closed_aligned` |
-| **Destination-aligned, 3000, opened** | **38.4 [29.6-47.6]**, 5.09 [4.76-5.33] | **M2-C** | **`m2c/train_m2c_g1.json`, cell `open\|aligned\|{}\|3000`**; the travel time is the published cell `open_aligned` of `travel_time_bdest_ingrid.json` |
-| Travel-time, 8000 | 100.0, 5.25 [5.24-5.26], 0.0 | published | `boundary_open_demo/travel_time_bdest_ingrid_8000.json` |
-| Destination-aligned, 8000, closed | 100.0, 5.23 [5.22-5.24] | published | the same file, cell `closed_aligned` |
-| **Destination-aligned, 8000, opened** | **98.6 [96.5-100.0]**, 5.36 [5.30-5.44] | **M2-C** | **`m2c/train_m2c_g1.json`, cell `open\|aligned\|{}\|8000`**; the travel time is the published cell `open_aligned` of `travel_time_bdest_ingrid_8000.json` |
-| Travel-time (SUMO), 3000 | 98.2 [96.6-99.5], 5.30 [5.28-5.32], 0.0 | published | `sumo_corridor/travel_time_sumo_3000.json` |
-| Destination-aligned (SUMO), 3000 | 100.0, 5.16 [5.14-5.17], 27.2 [18.8-36.6], 4.85 [4.63-5.02] | published | the same file |
-| Travel-time (SUMO), 8000 | 100.0, 5.15 [5.14-5.16], 0.0 | published | `sumo_corridor/travel_time_sumo_8000.json` |
-| Destination-aligned (SUMO), 8000 | 100.0, 5.12 [5.12-5.13], 98.0 [94.9-99.8], 5.21 [5.17-5.24] | published | the same file |
+| every cell | none; the record is the source | `study_record_reviewed_studies.csv`, filtered to `in_reviewed_studies == yes`, 93 rows | Table I, one row per study, and every count of Sections II-B, III-A, III-B and III-C |
+| the simulator column of Supplementary Table S-10 | none | `study_record_simulator_audit_v6.csv` | Section III-C, the platform named in 53 of the 93 |
 
-The four SUMO rows are the published run because the M2-C rerun of those cells, which is
-`m2c/cells/s5_*.json` and `m2c/cells3/sumo_interior_dest_*.json`, moved no cell outside its
-published interval and was not adopted for the table.
+## Table II. The recorded values of the ten fields and the source of each
 
-**`travel_time_bdest_ingrid_8000.json` and `matched_budget_grid.json` are different cells.** The
-first holds the sweep default, `open_aligned` 98.6; the second is a separate run at the matched
-budget of 8000 episodes over ten seeds, `open_aligned` mean 97.65 over
-[100, 100, 100, 100, 100, 99, 100, 92.5, 85, 100]. Earlier versions of the manuscript printed the
-matched-budget 97.7 in this row. It now prints the M2-C 98.6, and `matched_budget_grid.json` backs
-no printed cell of the present text. It is retained because the published-form Table IV of v1.4.0
-and v1.5.0 quotes it.
+No measured value. The ten fields and their recorded values are the columns of the record above;
+`gates/countcheck.py` is what holds the printed list and the record in step.
 
-`repo_v11/bootstrap_travel_time_ci.py` recomputes every travel-time column and interval of Table IV
-from the four `travel_time_*.json` files above, under convention B. It also lists
-`benchmark_network/travel_time_benchmark.json` as an input; that file is deliberately absent, as it
-holds only the superseded ten-seed Sioux Falls run replaced by `sioux30/`.
+## Table III. Reward alignment and boundary condition by action type
 
-## Table V. Optimum and learned completion on the boundary-open grid, by reward term and budget
-
-| Row | Printed | Variant | Source |
+| Row | Command | Output | Where the value prints |
 |---|---|---|---|
-| Optimum column | 0.0 / 4.0 / 100.0 / 62.5 / 100.0 | exact | `boundary_open_demo/term_optima_discounted.json`, key `published`; key `rows` gives the same five terms at discounts 0.99, 0.95 and 0.90. `m2c/table_v_m2c.json` records that variant C reproduces all five at every discount |
-| Travel time alone, both budgets | 0.0 | published | `boundary_open_demo/ablation_10seed.json`, cell `travel time only`, and `table8_budget_intervals.json` |
-| **Potential shaping alone** | **4.5 [4.1-5.2]** and **5.3 [5.1-5.5]** | **M2-C** | **`m2c/train_m2c_g3.json`**, cell `open\|aligned\|{"beta": 1.0, "r_exit": 0.0, "r_goal": 0.0}\|3000` and its 8000 counterpart |
-| Arrival term alone, both budgets | 0.0 | M2-C and published agree | `m2c/train_m2c_g3.json`, cell with `r_goal` 10.0; the published run is `ablation_10seed.json`, cell `arrival bonus only` |
-| Exit penalty alone, both budgets | 0.0 | M2-C and published agree | `m2c/train_m2c_g4.json`, cell with `r_exit` 5.0; the published run is `ablation_10seed.json`, cell `exit penalty only` |
-| **All three terms** | **38.4 [29.6-47.6]** and **98.6 [96.5-100.0]** | **M2-C** | **`m2c/train_m2c_g1.json`**, the two cells of Table IV above |
+| every cell | none; each cell is a tally of two columns of the record | `study_record_reviewed_studies.csv` | Table III, and the 83 of Section III-C |
 
-The published-form counterparts of the last row are `ablation_10seed.json` cell `full aligned`
-(35.15) and `table8_budget_intervals.json` (97.7 [94.5-100.0]). `ablation_bdest_matched.json` holds
-the same four ablation cells at 3000 episodes as bare per-seed lists.
-`repo_v11/boundary_open_demo/ablation_bdest.json` holds a five-seed version of the ablation
-(shaping only 4.3, full aligned 30.2) and backs no printed value.
+## Table IV. OD trip completion rate of the optimal policy
 
-## Table I. The present review against three related reviews
+| Row | Command | Output | Where the value prints |
+|---|---|---|---|
+| 5x5 grid | `python3 boundary_open_demo/optimal_vi_boundary_dest.py` | printed; the deposited copy of the same computation is `gform/grid_gform.json` | Table IV, the grid row, 100.0 / 100.0 / 0.0 / 100.0 |
+| Sioux Falls | `python3 gform/sioux_vi_gform.py` | `gform/sioux_vi_gform.json` | Table IV, the Sioux Falls row |
+| Anaheim, convex hull and wider border | `python3 gform/anaheim_shaped_vi_gform.py` | `gform/anaheim_shaped_vi_gform.json`, keys `hull` and `band` | Table IV, the two Anaheim rows, 21.1 / 97.8 and 5.2 / 46.7 |
+| Attainable maximum, last column | `python3 anaheim_vi_perimeter.py` | `anaheim/anaheim_vi_perimeter.json`, `anaheim/anaheim_vi_perimeter_bandhull.json` | Table IV, the attainable maximum, and Supplementary Table S-3 |
 
-| Column | Source |
-|---|---|
-| The differentiating column | `survey_axis_coverage.json`, generated by `survey_axis_coverage.py`, one entry per related review, keys `boundary`, `boundary_lexical`, `boundary_detail` and the trip-completion counterparts. The review full texts are copyrighted and are not redistributed; the script takes them from `SURVEY_PDF_DIR` |
-| Scope and decision object | the reviews themselves; no run |
+## Table V. OD trip completion rate and travel time of the trained policy
 
-## Tables II, III and VI, and the counts of Section IV
+| Row | Command | Output | Where the value prints |
+|---|---|---|---|
+| 5x5 grid, 3000 episodes | `python3 boundary_open_demo/travel_time_bdest.py` | `boundary_open_demo/travel_time_bdest_ingrid.json` | Table V, the four 3000-episode grid cells |
+| 5x5 grid, 8000 episodes | the same runner at the longer budget | `boundary_open_demo/travel_time_bdest_ingrid_8000.json` | Table V, the four 8000-episode grid cells |
+| 5x5 grid, destination-aligned, boundary-open | `python3 m2c/train_m2c.py` | `m2c/train_m2c_g1.json` | Table V, 35.1 at 3000 and 98.6 at 8000; the M2-C variant, see section A |
+| Sioux Falls, 3000 episodes | `python3 gform/sioux_cells_3000_gform.py` | `gform/sioux_cells_3000_gform.json` | Table V, the Sioux Falls column at 3000 |
+| Sioux Falls, 8000 episodes | `python3 sioux30/run_cell.py` once per seed | `sioux30/dest_boundary_seed00.json` to `seed29.json`, summarised in `sioux30/summary_30seed.json` | Table V, the Sioux Falls column at 8000, 95.7 / 99.8 / 0.0 / 85.9 |
+| the cross condition | `python3 gform/cross_condition_8000_gform.py` | `gform/cross_condition_8000_gform.json` | Section IV-C, the 48.7% of a policy trained closed and evaluated open |
 
-| Float | Carries | Source |
-|---|---|---|
-| Table II, the corpus across the recorded fields | yes | `study_record_corpus_v9_coded.csv`, filtered to `in_reviewed_corpus == yes`, 93 rows; the three scan rows are `eval_substrate/substrate.json` |
-| Table III, action type against reward alignment | yes | the same file |
-| Table VI, the BOND checklist | no measured value | no run |
+## Table VI. The released implementation retrained on Anaheim
+
+| Row | Command | Output | Where the value prints |
+|---|---|---|---|
+| the three conditions | `python3 gform/retrain_released_common_gform.py` | `gform/retrain_released_common_gform.json` | Table VI, 100.0 / 59.0 / 0.0 against 100.0 / 100.0 / 93.3, and Supplementary S-I.D |
+| the reachable set of the 30 origins | `python3 released_impl/arrival_reachable_eval_set.py` | `released_impl/arrival_reachable_eval_set.json`, `..._bandhull.json` | Supplementary S-I.D, the two origins that cannot reach the destination |
+
+## Tables VII and VIII. The BOND checklist and the studies with released code
+
+No measured value. Both are read from the record and from the full texts; `gates/countcheck.py`
+recomputes every count of Table VII and every mark of Table VIII.
+
+## Eq. (7), the exit-dominance threshold
+
+| Item | Command | Output | Where the value prints |
+|---|---|---|---|
+| the threshold and the route sets | `python3 gform/eq7_threshold_gform.py`, `python3 gform/eq7_route_sets_gform.py` | `gform/eq7_threshold_gform.json`, `gform/eq7_route_sets_gform_gamma*.json` | Section V-C, the third problem, and Supplementary S-I |
 
 ## Figures
 
-| Figure | Carries | Source |
-|---|---|---|
-| Fig. 1, the assembly of the corpus | every count in the figure | `screening_trail/assembly_stages.json`, written and checked by `screening_trail/assembly_stages.py`, and drawn by `screening_trail/plot_assembly.py`. The record asserts every stage as a difference of the stage above it and Supplementary Table S-6 prints the same fifteen values |
-| Fig. 2, experiment design | schematic | `boundary_open_demo/plot_experiment_design.py`, the revision that draws the placed figure; the copy in the repository tree up to v1.7.0 is an older revision with another figure size |
-| Fig. 3, the family-by-field grid | every cell | `plot_family_merged.py` at the top level. **The counts are literals inside that script, not a tally computed from the record**; it asserts the three totals the manuscript states and nothing else. Each cell is checkable against `study_record_corpus_v9_coded.csv`, and `gates/countcheck.py`, the development repository's gate deposited here, is what holds the two in step |
-| Fig. 4, the six evaluation networks | schematic | `benchmark_network/plot_networks.py`, over `networks/`; it imports `benchmark_demo.py` and, through it, `boundary_open_demo/dqn.py` from the repository at this tag, as the `sioux30/` and `m2c/` scripts do |
-| Fig. 5, the reward-condition curves | a measured trace | `boundary_open_demo/plot_reward_condition.py`, over `boundary_open_demo/four_cells_curves.json` beside it |
+| Figure | Command | Output | Where it prints |
+|---|---|---|---|
+| Fig. 2, the selection flow | `python3 screening_trail/plot_assembly.py` | `fig_flow.png`; the counts are `screening_trail/assembly_stages.json`, asserted by `assembly_stages.py` | Fig. 2 and Supplementary Table S-7 |
+| Fig. 3, the family-by-field grid | `python3 plot_family_merged.py` | `fig_family_grid.png` | Fig. 3; every cell is a tally of the record, held in step by `gates/countcheck.py` |
+| Fig. 4, the three road networks | `python3 gform/plot_networks_gform.py` | `fig_networks.png`, over `networks/` | Fig. 4 |
+| Fig. 5, the training curves | `python3 gform/plot_reward_condition_8000_gform.py` | `fig_reward_condition.png`, over `gform/four_cells_curves_8000_gform.json` | Fig. 5 |
+
+`gates/check_figure_generators.py` renders each generator and compares the result with the placed
+figure pixel by pixel, so a figure and its generator cannot part.
 
 ## Supplementary tables
 
-| Table | Variant | Source |
-|---|---|---|
-| S-1 Learner, seeds and budget of each cell | — | the protocol of each run file listed here; no measured value |
-| S-2 Optimal action sets and travel times by discount | exact | `anaheim/eq7_route_sets_gamma0.99.json` and `anaheim/eq7_route_sets_gamma0.95.json`, key `share_identical`, for the 0.99 and 0.95 rows of both networks. `m2c/eq7_c.json` carries the same statistic at 1.0, 0.9999, 0.999, 0.99 and 0.95 under both variants, and `m2c/eq7_pairs_c.json` carries the pair-level statistic Section V-B prints |
-| S-3 Interior-destination control, bespoke grid rows | published | `boundary_open_demo/interior_destination_3000_10seed.json` (88.1 [74.3-97.2] closed travel-time at 3000) and `interior_destination_10seed.json` (99.8 [99.4-100.0] at 8000), under convention A |
-| S-3, bespoke grid, destination-aligned open | **M2-C** | `m2c/train_rest_interior.json`, cells `interior_grid\|open\|aligned\|3000` (95.0 [84.8-100.0]) and `\|8000` (100.0) |
-| S-3, SUMO-executed grid rows | published | `sumo_corridor/sumo_interior_closed_time_min.json`, `sumo_interior_open_aligned.json` and the four `sumo_interior8k_*.json`, under convention A |
-| S-3, Sioux Falls rows | published | `sioux30/summary_30seed.json`, keys `('dest_interior', ...)`, 30 seeds |
-| S-4 Pairs drawn, valid and distinct | — | the `eval_pairs` field of each run file named here, and `sweep_extra.make_eval_od` for the lattice row; exact |
-| S-5 Attainable maximum of each border set | exact | reachability over the published link lists of `networks/`; no seed |
-| S-6 to S-10 Corpus assembly and screening | — | `repo_v11/screening_trail/`, `repo_v11/corpus/`. See the snapshot notice below |
-| S-11 Learner sweep, all ten rows | **M2-C** | `m2c/cells3/dqn_sensitivity_C.json`, key `settings.<name>.cells."open aligned".completion_mean`. The published sweep is `boundary_open_demo/dqn_sensitivity_10seed.json`, whose ten values are 98.6, 24.5, 100.0, 99.95, 94.9, 94.65, 96.3, 98.0, 99.9 and 95.15 |
-| S-12, S-13 BOND answered | — | the reports themselves; no run |
-| S-14, S-15, S-18 to S-21 Corpus tables | — | `study_record_corpus_v9_coded.csv`, with `study_record_claim_charting.csv` and `gamma_todo.csv` for the title and reference joins; S-18 carries the 93 studies, S-19 and S-20 the 45 of the group, S-21 the 10 addressing the boundary |
-| **S-22 Evaluation substrate**, 20 rows | — | `eval_substrate/substrate.json`, written by `eval_substrate/substrate.py` over `corpus_text/<idx>.txt`: the substrate partition, the benchmark total, the four node statistics, the seven measures and the five baselines |
-| **S-22**, 5 rows | — | `eval_substrate/benchmark_network_adjudication.json`, key `per_network`: Sioux Falls 6, Braess 4, Nguyen-Dupuis 4, Anaheim 3, more than one 5, 12 studies in all |
-| **S-22**, 3 rows | — | `study_record_simulator_audit_v6.csv`, `category == named-platform` and `platform_names`: the evaluation environment named in 53 of 93, SUMO in 47 of 53, another engine in 6 of 53 |
-| **S-22**, the random-or-greedy row | — | `eval_substrate/substrate.json`, adjudicated: the lexical count less one, the excluded occurrence being a false positive recorded in `substrate.py` |
-| S-16, S-17 Queries and term families | — | `repo_v11/search_rerun/`, `fulltext_scan/`, `fulltext_scan.py` |
-| S-23 Sioux Falls with the destination on the border | mixed | the two travel-time rows and all four travel-time columns from `sioux30/summary_30seed.json`, keys `('dest_boundary', ...)`, 30 seeds; the two destination-aligned completion cells, 99.9 [99.8-100.0] and 92.2 [88.4-95.6], from **`m2c/train_rest_sioux.json`** |
-| S-I.B exit conventions, the travel-time detour cells | published | `boundary_open_demo/costly_return_intervals.json`, ten seeds at 3000 episodes on a 120-step budget: 46.25, 5.0 and 3.05 with the printed intervals; the per-seed values are in `costly_return/` |
-| S-I.B, the destination-aligned detour cell, 89.2 | **M2-C** | `m2c/train_exitconv_c.json`, cell `costly_return, detour 1.0, aligned`. The published counterpart is the 82.85 of `costly_return_intervals.json` |
-| S-I.B residual charge, 2.6 | published | `boundary_open_demo/residual_exit_control.py`; the M2-C rerun is `m2c/cells3/residual_exit_control_C.json` |
-| S-I.C the 8x8 lattice, 19.9 (14.3 to 25.3) | published | `boundary_open_demo/grid8_10seed.json`, cell `open_aligned` |
-| S-I.E interior destination on the deep lattice | exact | `boundary_open_demo/interior_deep_control_vi.json`: `completion_cheaper_pct` 69.0 and `optimum.open_time_min` 81.0, at n_side 13, margin 4, 200 draws. `m2c/interior_m2c.json` records the same bracket under both variants at three discounts |
-| S-I.E the depth sweep, learned | **M2-C** | `m2c/train_rest_depth.json`, ten cells at 8000 episodes, every one 100.0. The published sweep is `boundary_open_demo/interior_depth_sweep.json` with `interior_depth_intervals.json` |
-| S-I.E the 7x7 SUMO cell, 97.2 (92.8 to 99.7) | published | re-run from `repo_v11/sumo_corridor/sumo_recon.py`; no output file is deposited, and the driver reproduces both bounds |
-| S-II Study-area geometry | exact | reachability over `networks/`; no seed |
-| S-V Learner sensitivity | **M2-C** | `m2c/cells3/dqn_sensitivity_C.json`, as Table S-11 |
+Every file is listed with its anchor in `MANIFEST.md`; the commands are here.
 
-## Section V-D and Section V-C, the values not in a table
-
-| Printed | Variant | Source |
+| Table | Command | Output |
 |---|---|---|
-| Anaheim, 21.1% and 94.1% at the 13-node hull, attainable maximum 97.8% | exact | `anaheim/anaheim_vi_perimeter_bandhull.json`, `results.open_time_min.arrive_rate`, `results.open_aligned.arrive_rate` and `results.open_aligned_2.5x.arrive_rate` |
-| Anaheim, 5.2% and 45.6% at the 95-node band, attainable maximum 46.7% | exact | `anaheim/anaheim_vi_perimeter.json`, the same three keys |
-| Anaheim per-zone geometry and cost model | exact | `anaheim/anaheim_vi_all_zones.json` |
-| The 15,289 pairs and the 12,183 pairs | exact | the `pairs` field of the two files above |
-| Cross-condition evaluation, 17.1% (12.9 to 21.1) and 41.5% (35.6 to 48.1), paired 24.4 | **M2-C** | `m2c/controls/exit_sentinel_control_C.json`, cells `high_time_min` and `high_aligned`, field `scored_open`; the paired row is `paired.high`. The published counterpart is `boundary_open_demo/exit_sentinel_control.json` at 17.1 / 40.4 / 23.3, identical to `m2c/controls/exit_sentinel_control_P.json` |
-| Sentinel-encoding control, 22.7% (18.2 to 28.9) and 60.4% (57.0 to 64.2), paired 37.7 | **M2-C** | the same file, cells `matched_time_min` and `matched_aligned`, and `paired.matched`. The travel-time cell is identical under both variants |
-| Arrival-sentinel replacement, 38.4% to 44.1%, paired -5.7 (-21.4 to 9.9) | **M2-C** | `m2c/controls/sentinel_control_C.json`, cells `high_open_aligned` and `matched_open_aligned`, and `paired_open_aligned` |
-| Bootstrap-at-cap check, no cell moving by more than 0.8 points | **M2-C** | `m2c/controls/truncation_control_C.json`, the `delta` of each of the four cells. The published counterpart is `boundary_open_demo/truncation_control.json`, identical to `m2c/controls/truncation_control_P.json` |
-| The premise of the sentinel control: 16 of 25 nodes, 55.2% of steps | published | `boundary_open_demo/exit_sentinel_control.json`, key `premise` |
-| Eq. (7) threshold 0.9859 and the 396 ordered OD pairs | exact | `boundary_open_demo/discount_condition.json`, keys `gamma_star` and `grid_check.pairs`, with the inputs `phi_max`, `k_min`, `K`, `beta`, `R_g`, `delta` and `denominator`. Under M2-C the threshold is 0.9714; `m2c/eq7_c.py` derives it |
-| Zero-shot transfer, closed to open | published | `boundary_open_demo/zero_shot_transfer.json`, which duplicates the `high_*` cells of `exit_sentinel_control.json` and adds the paired rows |
-| The 12-node outer face of Sioux Falls | published | `benchmark_network/outerface12_intervals.json`, with the border set in key `border` |
-| The constrained formulation at a fixed multiplier | published | `boundary_open_demo/constrained_fixed25_10seed.json` |
-| The published router retrained on Anaheim, 94.0% and 0.0% at the 95-node band | published | `released_impl/retrain_released_10seed.json`, `results.closed.mean` and `results.open.mean`, ten seeds at 3000 iterations over 30 origins and the one destination of the published configuration |
-| The same retraining at the 13-node hull, 96.0% and 40.0% | published | `released_impl/retrain_released_hull_10seed.json`, the same two keys |
-| The published router against its own baseline, 96.0% and 100.0% closed, 42.9% and 100.0% at the hull | published | `released_impl/baseline_arm_hull.json`, key `relative_to_attainable`, which also carries the 4.0-point and 57.1-point gaps |
-| The attainable maximum of the retraining draw, 93.3% | exact | `released_impl/arrival_reachable_eval_set_bandhull.json`, and `arrival_reachable_eval_set.json` for the 95-node band |
-| Arrival episodes, 14.4 against 397.0 in 3000 episodes | published | `boundary_open_demo/arrival_visits.json`, keys `arms."arrival term alone".arrived_mean` and `arms."all three terms".arrived_mean`, written by `arrival_visits.py` |
+| S-1 Learner, seeds, budget and steps per episode | none; the protocol of each run file above | — |
+| S-2 Pairs drawn, valid and distinct | `python3 check_eval_sets.py` | printed |
+| S-3 Attainable maximum of each border set | `python3 anaheim_vi_perimeter.py`, `python3 benchmark_network/outerface12_intervals.py` | `anaheim/*.json`, `benchmark_network/outerface12_intervals.json` |
+| S-4 The seven records removed by the exclusion clause | `python3 search_rerun/exclusion_clause_rerun.py` | `search_rerun/exclusion_clause_rerun.csv`, `exclusion_clause_records.csv` |
+| S-5 Search query and record count of each source | the queries of the Appendix | `reviewed_studies/ieee_xplore_export_records.csv` |
+| S-6 Term families over the related reviews | `python3 survey_axis_coverage.py` | `survey_axis_coverage.json`; the reviews themselves are copyrighted and are not redistributed |
+| S-7 Selection of the reviewed studies | `python3 screening_trail/assembly_stages.py` | `screening_trail/assembly_stages.json` |
+| S-8 Evidence and recording rule of each field | none; the rule, not a run | — |
+| S-9 The three reward categories | none; the `reward_category` column of the record | `study_record_reviewed_studies.csv` |
+| S-10 Evaluation practice across the reviewed studies | `python3 eval_substrate/substrate.py`, `python3 eval_substrate/benchmark_network_adjudication.py`, `python3 fulltext_scan.py` | `eval_substrate/substrate.json`, `benchmark_network_adjudication.json`, `fulltext_scan/fulltext_scan_per_study.csv` |
+| S-11 Learner sweep | `python3 boundary_open_demo/dqn_sensitivity.py` | `boundary_open_demo/dqn_sensitivity_10seed.json`; the printed rows are the M2-C arm, `m2c/cells3/dqn_sensitivity_C.json` |
+| S-12 BOND answered for the controlled experiment | none; the experiment itself | — |
 
 ## Not included, and why
 
-`repo_v11/screening_trail/_residual.json` and `repo_v11/corpus_overlap/overlap.json` back no printed
+`repo_v11/screening_trail/_residual.json` and `repo_v11/related_reviews/overlap.json` back no printed
 value; the manuscript sources contain no occurrence of the word overlap, and no count traces to the
 screening residual.
 
@@ -263,8 +218,8 @@ named for that row above, under the convention section B assigns to it.
 
 ## Reading the study record
 
-`study_record_corpus_v9_coded.csv` carries **95 rows**. Every count printed in the manuscript is
-taken over the **93 rows whose `in_reviewed_corpus` is `yes`**. The two remaining rows enter no
+`study_record_reviewed_studies.csv` carries **95 rows**. Every count printed in the manuscript is
+taken over the **93 rows whose `in_reviewed_studies` is `yes`**. The two remaining rows enter no
 count, no denominator and no table: `idx` 93 is marked
 `no (author own study, post-dates the search window; excluded from every count)`, and `idx` 26 is
 marked `no (full text unobtainable at any institution available to this study; excluded from every
@@ -273,8 +228,8 @@ count wherever either study carries a value.
 
 Worked example, the boundary condition:
 
-    rows = [r for r in csv.DictReader(open("study_record_corpus_v9_coded.csv"))
-            if r["in_reviewed_corpus"].strip() == "yes"]        # 93 rows
+    rows = [r for r in csv.DictReader(open("study_record_reviewed_studies.csv"))
+            if r["in_reviewed_studies"].strip() == "yes"]        # 93 rows
     Counter(r["boundary_condition"] for r in rows)
     # boundary-open-addressed 10, not-addressed 83
 
@@ -300,17 +255,17 @@ non-empty `boundary_quote` are 10 + 9, which is the count v1.3.0 and v1.4.0 publ
 tally is the evidence class of the ten, which Section IV-B prints as 7 stating the treatment of a
 vehicle reaching a peripheral link and 3 naming a property of the periphery.
 
-**Snapshot notice.** The corpus record of this package is the current coding. The copy under
-`repo_v11/corpus/corpus_v9_coded.csv`, which `repo_v11/screening_trail/` and the S-6 to S-10 tables
-resolve against, is the coding as of v1.4.0 and is superseded on the boundary field. See the release
-notes of v1.5.0 and of this version.
+**Snapshot notice.** The study record of this package is the current coding. The v1.1 deposit holds
+an earlier coding, superseded on the boundary field. From v1.9.0 the screening files travel with this
+package, so every table of the Supplementary resolves inside it. See the release notes of this
+version.
 
 ## Key names that differ from the printed term
 
 | Printed term | File | Key | Note |
 |---|---|---|---|
 | attainable maximum, 97.8% and 46.7% | `anaheim/anaheim_vi_perimeter_bandhull.json`, `anaheim/anaheim_vi_perimeter.json` | `results.open_aligned_2.5x.arrive_rate` | the arrival rate of the aligned optimum at a 2.5x arrival term, which is the reachable share; no key is named attainable |
-| instantaneous state | `study_record_corpus_v9_coded.csv` | `predictive_representation = none` | the forecast axis; `state_representation` is a different axis, the encoder (raw-vector, graph-encoder) |
+| instantaneous state | `study_record_reviewed_studies.csv` | `predictive_representation = none` | the forecast axis; `state_representation` is a different axis, the encoder (raw-vector, graph-encoder) |
 | link-level action | the same file | `action_granularity = next-link` | |
 | system-level reward | the same file | `reward_alignment = system` | |
 | the boundary condition, 10 / 83 | the same file | `boundary_condition` | `boundary_status` and `boundary_status_note` decompose it; see above |
@@ -319,6 +274,7 @@ notes of v1.5.0 and of this version.
 | the destination is nearer than the nearest exit, 69.0% | `boundary_open_demo/interior_deep_control_vi.json` | `completion_cheaper_pct` | |
 | travel-time optimum on the deep lattice, 81.0% | the same file | `optimum.open_time_min` | |
 | the 396 ordered OD pairs | `boundary_open_demo/discount_condition.json` | `grid_check.pairs` | the Eq. (7) threshold is `gamma_star`, its inputs `phi_max`, `k_min`, `K`, `delta`, `denominator` |
-| the M2-C bespoke-grid cells | `m2c/train_m2c_g1.json` | `open\|aligned\|{}\|3000` and `\|8000` | the cell name is the run's own parameter string; the empty braces are the default reward weights |
+| the M2-C 5x5-grid cells | `m2c/train_m2c_g1.json` | `open\|aligned\|{}\|3000` and `\|8000` | the cell name is the run's own parameter string; the empty braces are the default reward weights |
 | the M2-C reward-term cells | `m2c/train_m2c_g3.json`, `m2c/train_m2c_g4.json` | `open\|aligned\|{"beta": ..., "r_exit": ..., "r_goal": ...}\|<budget>` | shaping alone is `beta` 1.0 with both bonuses zero |
 | the non-terminal detour cells | `boundary_open_demo/costly_return_intervals.json` | `cells."costly_return_time_min@1.0"` and siblings | the detour cost is the part after the at sign |
+
