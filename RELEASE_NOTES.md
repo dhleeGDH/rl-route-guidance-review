@@ -1,3 +1,11 @@
+# v1.9.2: byte-code files removed
+
+The v1.9.1 commit carried 76 compiled `.pyc` files, written by a compile check run over the tree
+before the commit and added with it. They are removed here and a `.gitignore` keeps them out. No
+source file, data file or result changes between v1.9.1 and v1.9.2.
+
+---
+
 # v1.9.1: comments and notes cleaned for publication
 
 Comments and notes cleaned; no change to code paths, data or results. The working vocabulary of the
