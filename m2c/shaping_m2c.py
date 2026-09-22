@@ -5,15 +5,15 @@ The published reward adds an UNDISCOUNTED difference of potentials on an in-grid
 
     r_t = -c(a_t, t) + beta * (Phi(n_t) - Phi(n_{t+1}))  [+ R_g on arrival, -R_x on an exit]
 
-which telescopes to a constant only at gamma = 1. T-1901 replaces it with
+which telescopes to a constant only at gamma = 1. The M2-C form replaces it with
 
     r_t = -c(a_t, t) + beta * (Phi(n_t) - gamma * Phi(n_{t+1}))
 
-and takes Phi = 0 at arrival alone. T-1901 also took Phi = 0 at an exit, which made the shaping
+and takes Phi = 0 at arrival alone. An earlier form took Phi = 0 at an exit, which made the shaping
 policy-invariant, moved no optimum and left the learner without a signal; that variant is kept as a
 control. Here the exit terminal keeps the published convention, Phi(exit terminal) = Phi(n_t), so the
 exit transition carries beta * (1 - gamma) * Phi(n_t) and the potential of the node left behind is
-still forfeited. A step-budget truncation keeps the ordinary increment, as in T-1901.
+still forfeited. A step-budget truncation keeps the ordinary increment, as in the revision.
 
 Nothing in repo_v11/ is modified. Each class here subclasses the published environment and adds
 the difference between the new increment and the published one, so the published transition logic,
@@ -24,7 +24,7 @@ costs, geometry and terminal bookkeeping are used unchanged:
     exit                                            : + beta * (1 - gamma) * Phi(n_t)
 
 At gamma = 1 every correction vanishes, so the wrapper reproduces the published environment at its
-default exactly. That identity is the regression baseline of this ticket.
+default exactly. That identity is the regression baseline of this run.
 """
 import os
 import sys

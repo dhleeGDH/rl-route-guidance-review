@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# T-2068 (2026-09-16). The bespoke grid under the discount-carrying shaping of Eq. (4).
+# 2026-09-16. The bespoke grid under the discount-carrying shaping of Eq. (4).
 #
 # Three things, all on the 5x5 grid of Fig. 1 and all at a discount:
 #   A. the right-hand side of Eq. (7) as the body writes it, 1 - Delta/[(K - k_min) R_d], with

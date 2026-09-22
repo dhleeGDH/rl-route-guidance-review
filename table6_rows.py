@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Derive the Table VI rows, and the body figures that quote them, from the run outputs.
 
-WHY THIS EXISTS. Table VI reported its bespoke-grid rows over ten seeds with a bootstrap interval,
+Table VI reported its bespoke-grid rows over ten seeds with a bootstrap interval,
 its extended-budget row over five seeds with a standard deviation, and its SUMO rows over five seeds
 with a standard deviation. A reviewer objected that rows differing in seed count, budget and
 dispersion statistic cannot carry a within-table comparison, since any difference between two rows is

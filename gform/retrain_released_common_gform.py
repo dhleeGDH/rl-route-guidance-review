@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The published router retrained on three boundary conditions over ONE evaluation set.
 
-WHY THIS EXISTS. retrain_released_10seed.json and retrain_released_hull_10seed.json each draw
+retrain_released_10seed.json and retrain_released_hull_10seed.json each draw
 their thirty origins from a pool that excludes their own border, so the two runs differ in the
 border AND in the evaluation set, and the boundary-closed arm carries two values, 94.0 and 96.0.
 A completion rate read across the three conditions then cannot be attributed to the border alone.
@@ -37,7 +37,7 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
-IMPL = Path("/home/dhlee/review_paper/handoff/experiments/released_impl_boundary_open")
+IMPL = Path(os.path.join(os.environ.get("REPO_DIR", "."), "released_impl_boundary_open"))
 sys.path.insert(0, str(IMPL))
 sys.argv_backup, sys.argv = sys.argv, [sys.argv[0]]
 import retrain_released as R          # noqa: E402  the harness of the deposited runs

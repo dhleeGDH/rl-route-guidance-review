@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Anaheim optima of Eq. (3) and Eq. (4) with the potential term of Eq. (4) included.
 
-WHY THIS EXISTS. anaheim_vi_perimeter.py solves the destination-aligned reward with the arrival
+anaheim_vi_perimeter.py solves the destination-aligned reward with the arrival
 bonus and the exit penalty alone: its `solve()` adds `R_GOAL * SCALE` at the destination and
 subtracts `R_EXIT * SCALE` at an exit, and carries no shaping term. Eq. (4) of the manuscript
 carries three terms, the third being the potential on the links. The grid solver
@@ -40,7 +40,7 @@ import os
 import sys
 from collections import deque
 
-SRC = "/home/dhlee/review_paper/handoff/deposit_next/v1.8.0/anaheim_vi_perimeter.py"
+SRC = os.path.join(os.environ.get("DEPOSIT_DIR", os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "anaheim_vi_perimeter.py")
 HERE = os.path.dirname(os.path.abspath(__file__))
 NEG = -1e18
 

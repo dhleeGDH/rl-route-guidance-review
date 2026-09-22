@@ -32,15 +32,15 @@ from benchmark_demo import SF_LINKS, SF_COORD, ND_LINKS, NETWORKS  # noqa: E402
 
 # The original wrote to 05_writing, a directory of the previous tree that does not exist here,
 # so the generator produced nothing and the shipped figure came from somewhere else.
-# 2026-09-10 (T-1996): the output was Path(__file__).resolve().parents[2]/"manuscript"/"figures",
-# which reaches handoff/manuscript/figures only through the handoff/experiments symlink and only
+# 2026-09-10: the output was Path(__file__).resolve().parents[2]/"manuscript"/"figures",
+# which reaches the manuscript's figures directory only through the experiment-tree symlink and only
 # unresolved; .resolve() follows the link into archive/experiments_dup/, where no builder reads.
-# The tree that owns handoff/manuscript/figures is found by walking up instead (T-1984 class).
+# The tree that owns the manuscript's figures directory is found by walking up instead (the same class).
 def _figures():
     d = Path(__file__).resolve().parent
     for _ in range(8):
-        if (d / "handoff" / "manuscript" / "figures").is_dir():
-            return d / "handoff" / "manuscript" / "figures"
+        if (d / "manuscript" / "figures").is_dir():
+            return d / "manuscript" / "figures"
         d = d.parent
     # In the deposited package no manuscript tree exists beside this file; the figure lands here.
     return Path(__file__).resolve().parent
@@ -111,7 +111,7 @@ def nd_layout():
 def draw(ax, pos, links, boundary, labels=False, inner=None):
     """inner is a subset of boundary drawn as a filled marker against an open one.
 
-    Cold review of v809 asked for the two Anaheim borders to be separable on the page: the paper
+    A read-through of the draft asked for the two Anaheim borders to be separable on the page: the paper
     compares a 13-node convex hull with a 95-node band of a tenth and the figure drew their union
     as one set, so a reader could not see which nodes belong to which. The two are distinguished
     by MARKER FILL rather than by colour, since the author's 2026-08-28 correction on this figure
@@ -137,7 +137,7 @@ def draw(ax, pos, links, boundary, labels=False, inner=None):
                     color=BND if on else NODE,
                     alpha=1.0 if on else (0.55 if _dense else 1.0),
                     zorder=3 if on else 2)
-    # Round 266: only the Sioux Falls panel carried node numbers, which read as a difference
+    # only the Sioux Falls panel carried node numbers, which read as a difference
     # between the three networks rather than as a property of one drawing. Anaheim has 416 nodes
     # and cannot carry them, so none of the three does. The `labels` argument is kept for a
     # single-panel use and defaults off.

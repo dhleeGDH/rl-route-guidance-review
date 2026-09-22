@@ -42,7 +42,7 @@ closed_time_min    mean final 100.0%
 open_time_min      mean final   0.0%
 closed_aligned     mean final 100.0%
 open_aligned       mean final  98.6%
-wrote /home/dhlee/review_paper/handoff/deposit_next/v1.8.0/gform/four_cells_curves_8000_gform.json
+wrote gform/four_cells_curves_8000_gform.json
 
 real	3m50.133s
 user	28m39.797s

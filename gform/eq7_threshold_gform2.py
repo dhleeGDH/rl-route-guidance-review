@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# T-2068 (2026-09-16). The right-hand side of Eq. (7) as the manuscript writes it.
+# 2026-09-16. The right-hand side of Eq. (7) as the manuscript writes it.
 #
 # The body prints  gamma > 1 - Delta / [(K - k_min) R_d].  Two things separate this from the
 # deposited eq7_route_sets.py: that file carries the Phi_max denominator of Supplementary S-I.A,
@@ -21,10 +21,10 @@ BASE = os.path.dirname(HERE)
 NETS = [("Sioux Falls", os.path.join(BASE, "networks", "SiouxFalls_net.tntp")),
         ("Anaheim", os.path.join(BASE, "networks", "Anaheim_net.tntp"))]
 GAMMAS = [0.90, 0.95, 0.99, 0.999, 0.9999]
-# T-2069. Delta is measured in the raw cost units of the network, so R_d must be in the same
+# Delta is measured in the raw cost units of the network, so R_d must be in the same
 # units. The deposited comparison (eq7_pairs_c.py, and eq7_route_sets.py before it) sets the
 # arrival bonus at R_GOAL = 10 IN UNITS OF THE MEAN TRAVERSAL COST and multiplies by that mean, so
-# the arrival bonus in raw units is 10 * mean(cost). T-2068 put the literal 10 against a raw-unit
+# the arrival bonus in raw units is 10 * mean(cost). An earlier form put the literal 10 against a raw-unit
 # Delta and mixed the two scales; the threshold below is in one scale throughout.
 R_D_UNITS = 10.0         # Section IV-B: an arrival bonus of 10 in units of one step's cost
 TOL = 1e-9

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Recall of the overlap rule, measured on real reference entries rather than on written ones.
 
-WHY THIS EXISTS. The zero-overlap claim of Section I rests on a rule requiring 85% of a title's
+The zero-overlap claim of Section I rests on a rule requiring 85% of a title's
 distinctive tokens inside one reference entry. Its sensitivity control writes thirty corpus titles
 into an entry of the form the ten reviews use and recovers 30 of 30. That control is self-confirming: the entries were written to the specification the matcher
 expects, so the control cannot measure what an abbreviated author list, a shortened venue name or a

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The Anaheim arrival term at 2.5x, and the attainable maximum of the same border, recomputed.
 
-WHY THIS EXISTS. Section IV-B quotes 97.8% at the hull and 46.7% at the band for an arrival term
+Section IV-B quotes 97.8% at the hull and 46.7% at the band for an arrival term
 of 25 with an exit penalty of 12.5, and quotes the same two numbers as the attainable maximum of
 those borders. The first pair is stored in the deposited value-iteration files and the second in
 arrival_ceiling_networks.json, written by two different programs. This recomputes both in one
@@ -16,7 +16,7 @@ import os
 import sys
 from collections import deque
 
-SRC = "/home/dhlee/review_paper/handoff/deposit_next/v1.8.0/anaheim_vi_perimeter.py"
+SRC = os.path.join(os.environ.get("DEPOSIT_DIR", os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "anaheim_vi_perimeter.py")
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 

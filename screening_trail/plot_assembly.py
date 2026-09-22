@@ -6,7 +6,7 @@ Every count is read from the stage record; none is written here.
 WHY THIS SHAPE. The figure this replaces was PRISMA 2020's flow diagram in everything but its
 three stage bands: one vertical column of five boxes, exclusions in boxes down the right margin,
 and box wording taken from the standard ("Records identified from", "Reports sought for
-retrieval", "Reports assessed for eligibility", "Studies included in review"). T-1980 checked it
+retrieval", "Reports assessed for eligibility", "Studies included in review"). A read-through checked it
 box by box and found the correspondence one to one. This review is neither registered nor
 PRISMA-compliant, so the resemblance claimed a protocol the review does not run, and three cold
 rounds read the labels and asked for the checklist.
@@ -25,7 +25,7 @@ What replaces it is a two-band drawing, four levels deep and two columns wide:
      subtraction, never in a box in the right margin.
   4. the corpus, one terminal count.
 
-2026-09-10 (T-1995): the abstract-only path is gone with the studies it drew. T-1991 read two of
+2026-09-10: the abstract-only path is gone with the studies it drew. A later revision read two of
 the three at full text and removed the third, so every reviewed study is a full text and the
 terminal box states one number. Every count a reader would otherwise have to subtract is printed:
 the pool states 1,155, the screening band states the 1,052 leaving it, the full-text band states
@@ -43,17 +43,17 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
 HERE = Path(__file__).resolve().parent
-# 2026-09-10 (T-1984): the output path was HERE.parents[1]/"manuscript"/"figures", which holds
-# only when this file is reached through the handoff/experiments symlink AND the path is not
+# 2026-09-10: the output path was HERE.parents[1]/"manuscript"/"figures", which holds
+# only when this file is reached through the experiment-tree symlink AND the path is not
 # resolved. Path.resolve() follows the link, so the old form wrote into archive/experiments_dup/
 # and the figure the builder places was never the one this script produced. The tree that owns
-# handoff/manuscript/figures is found by walking up instead.
+# the manuscript's figures directory is found by walking up instead.
 def _figures():
     for d in [HERE] + list(HERE.parents):
-        cand = d / "handoff" / "manuscript" / "figures"
+        cand = d / "manuscript" / "figures"
         if cand.is_dir():
             return cand
-    # 2026-09-10 (T-1986): in the deposited package there is no manuscript tree beside this
+    # 2026-09-10: in the deposited package there is no manuscript tree beside this
     # file, and a reader running it wants the figure, not an exit. It lands here instead.
     return HERE
 
@@ -67,7 +67,7 @@ matplotlib.rcParams["font.serif"] = ["Liberation Serif", "DejaVu Serif"]
 matplotlib.rcParams["font.size"] = 7.0
 
 INK, EDGE = "#1b2430", "#33415c"
-# 2026-09-10 (T-1988): every box is white. A tint on some boxes and not others read as a grouping
+# 2026-09-10: every box is white. A tint on some boxes and not others read as a grouping
 # the flow does not have.
 BOX = dict(boxstyle="square,pad=0.0", linewidth=0.8, edgecolor=EDGE, facecolor="#ffffff")
 
@@ -105,14 +105,14 @@ LX, RX, HW = 27.0, 73.0, 21.0
 PX, PHW = 50.0, 44.0
 
 # ---- the two routes, side by side and unequal ----------------------------------------------
-# 2026-09-10 (T-1995): the two lines read "Screened on scope: 86 records" against "Not screened:
+# 2026-09-10: the two lines read "Screened on scope: 86 records" against "Not screened:
 # 1,084 records", which put the verb first and left a reader to work out what each number counts.
 # Both count the records the route sends to the pool. The count leads and the clause after it says
 # what was done to those records, so the asymmetry between the routes is legible from the boxes.
 lb = box(LX, HW, TOP, ["Collection and citation search",
                        "514 queries, five rounds",
                        "%d records, screened on scope" % S["route_13"]])
-# T-1996: "none screened" said the records were never screened at all; they were, downstream, at
+# "none screened" said the records were never screened at all; they were, downstream, at
 # title and abstract like every pooled record. What the route did not do is screen before pooling.
 rb = box(RX, HW, TOP, ["IEEE Xplore export, 5 July 2026",
                        "%s records" % format(S["route_2"], ","),
@@ -153,7 +153,7 @@ down(PX, bb, c_top)
 cb = box(PX, PHW, c_top, ["Reviewed corpus: %d studies" % S["corpus"]])
 
 ax.set_ylim(cb - MARGIN, H_IN * UPI)
-# 2026-09-10 (T-1995): H_IN sizes the canvas before the drawing is laid out, so every line removed
+# 2026-09-10: H_IN sizes the canvas before the drawing is laid out, so every line removed
 # left the boxes stretched over the same inches rather than the figure shorter. The height is cut
 # to what the drawing actually occupies, which holds the vertical scale at UPI units to the inch.
 fig.set_size_inches(3.42, (H_IN * UPI - cb + MARGIN) / UPI)

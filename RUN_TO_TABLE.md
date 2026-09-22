@@ -1,7 +1,7 @@
 # RUN_TO_TABLE: which run output backs which printed cell
 
 Every measured value of the manuscript is listed here with the file that produces it, table by
-table and figure by figure. Float numbers are the manuscript's own: Tables I to VI in the body,
+table and figure by figure. Float numbers are the manuscript's own: Tables I to VIII in the body,
 Figs. 1 to 5 in the body, and Tables S-1 to S-12 in the Supplementary.
 
 Paths are relative to this package unless marked `repo_v11/`, which is the code and data archive
@@ -47,7 +47,7 @@ seeded, and they part by 0.1 at a bound.
 
 Convention B's key carries the path of the file **inside the development repository**, not inside
 this package. The 5x5-grid M2-C cell is keyed
-`handoff/m2c/train_m2c_g1.json|open|aligned|{}|3000|completion_per_seed`, and the same values keyed
+`m2c/train_m2c_g1.json|open|aligned|{}|3000|completion_per_seed`, and the same values keyed
 on this package's `m2c/train_m2c_g1.json` return a different interval. The four M2-C cells of
 Tables IV and V reproduce to the digit under the repository key and under no other.
 
@@ -57,7 +57,7 @@ them, `boundary_open_demo/exit_sentinel_control.py`, draws its own interval from
 `boundary_open_demo/exit_sentinel_control.json`, `zero_shot_transfer.json` and
 `m2c/controls/*_P.json` keep those bounds, since they are the record of the published run as it was
 deposited. The M2-C arms that the manuscript prints, `m2c/controls/exit_sentinel_control_C.json` and
-`sentinel_control_C.json`, were redrawn under convention B by T-1969 and now carry the printed
+`sentinel_control_C.json`, were redrawn under convention B in the revision and now carry the printed
 strings in `printed_open`, `printed_difference` and `printed_ci`. Their per-seed values and means
 are the run and were not touched. `m2c/controls/summarize.py` prints every cell of both controls in
 its printed form under both variants.
@@ -223,7 +223,7 @@ taken over the **93 rows whose `in_reviewed_studies` is `yes`**. The two remaini
 count, no denominator and no table: `idx` 93 is marked
 `no (author own study, post-dates the search window; excluded from every count)`, and `idx` 26 is
 marked `no (full text unobtainable at any institution available to this study; excluded from every
-count, T-1991)`. **Apply the filter before any tally**; a tally over the raw file exceeds a printed
+count, )`. **Apply the filter before any tally**; a tally over the raw file exceeds a printed
 count wherever either study carries a value.
 
 Worked example, the boundary condition:

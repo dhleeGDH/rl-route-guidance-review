@@ -25,10 +25,20 @@ plt.rcParams.update({"font.family": "serif", "font.serif": ["Liberation Serif", 
                      "font.size": 11, "axes.linewidth": 0.8})
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-# The figures directory of the working tree when this file sits in scripts/, and the directory
-# of the script itself in the deposited package, where no manuscript tree exists beside it.
-_WT = os.path.join(HERE, "..", "handoff", "manuscript", "figures")
-OUT = os.path.join(_WT if os.path.isdir(_WT) else HERE, "fig_family_grid.png")
+# The figures directory of the working tree when this file sits beside the manuscript, found by
+# walking up, and the directory of the script itself in the deposited package, where no manuscript
+# tree exists beside it.
+def _figures():
+    d = HERE
+    for _ in range(8):
+        cand = os.path.join(d, "manuscript", "figures")
+        if os.path.isdir(cand):
+            return cand
+        d = os.path.dirname(d)
+    return HERE
+
+
+OUT = os.path.join(_figures(), "fig_family_grid.png")
 
 # The first four columns are the reward alignment of Fig. 3 and sum to the family total. The fifth
 # is the forecast-conditioned count that figure carried at its right edge. The last six are the

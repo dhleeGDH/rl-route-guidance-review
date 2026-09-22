@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""T-1919: run the three archived drivers T-1905 could not reach, published and M2-C.
+"""run the three archived drivers the archived drivers could not reach, published and M2-C.
 
-The drivers live in the archived experiment tree and are reachable at handoff/experiments/ since
-T-1921. Each is imported and its main() called, so the published code path runs unchanged; for the
+The drivers live in the archived experiment tree and are reachable at the experiment tree,  since
+Each is imported and its main() called, so the published code path runs unchanged; for the
 M2-C form only the environment class the driver instantiates is replaced by a subclass carrying the
 discount-consistent increment, exactly as train_rest.py and train_rest2.py do.
 
-No archived file is written. Every driver's output is redirected into handoff/m2c/cells3/:
+No archived file is written. Every driver's output is redirected into m2c/cells3/:
 two take --out, and residual_exit_control.py writes to its own HERE, which is rebound here.
 
     python3 run_archived.py <driver> <P|C> [extra argv]
@@ -17,7 +17,7 @@ os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-EXP = os.path.join(ROOT, "handoff", "experiments")
+EXP = os.path.join(ROOT, "experiments")
 for p in ("boundary_open_demo", "benchmark_network", "sumo_corridor"):
     sys.path.insert(0, os.path.join(EXP, p))
 sys.path.insert(0, HERE)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# T-2069 (2026-09-16). The discount-carrying shaping of Eq. (4) on EVERY transition, the exit
+# 2026-09-16. The discount-carrying shaping of Eq. (4) on EVERY transition, the exit
 # included.
 #
 # _gform kept the exit transition exactly as the published solver leaves it, which charges no
@@ -71,7 +71,7 @@ def solve(dst_link, boundary, reward, iters=4000, tol=1e-10,
     R_GOAL_ = R_GOAL if r_goal is None else r_goal
     R_EXIT_ = R_EXIT if r_exit is None else r_exit
     BETA_ = BETA if beta is None else beta
-    # Round 352: the lattice side was a module global read by solve(), arrives() and in_grid(),
+    # the lattice side was a module global read by solve(), arrives() and in_grid(),
     # so a caller sweeping the interior depth would have solved one lattice and acted on another.
     # It is a parameter of both functions now, the module value remaining the default.
     N = N_SIDE if n is None else n
@@ -118,7 +118,7 @@ def arrives(o, dst_link, V, phi, open_links, reward,
             r_goal=None, r_exit=None, beta=None, gamma=1.0, n=None):
     """The greedy policy of V, read under the same weights V was solved with.
 
-    Round 61: the three weights were module constants here while solve() took them as
+    the three weights were module constants here while solve() took them as
     arguments, and gamma is threaded through both for the same reason, so a caller asking for a single-term reward got a value function under its own
     weights and a greedy policy under the published ones. Every default caller is unaffected,
     since the defaults are the module constants.

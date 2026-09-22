@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """What the 93 studies actually evaluate on: engine, network, size, metrics, baselines.
 
-WHY THIS EXISTS. Two independent survey-track reviews named the same gap as the paper's largest:
+Two independent survey-track reviews named the same gap as the paper's largest:
 Section IV describes the corpus by five DESIGN fields and by nothing about the EVALUATION. The
 paper's own premise is that the reported travel times share no scale, and the direct evidence for
 that premise is an inventory of what each study measured on. That inventory was missing.
@@ -14,7 +14,7 @@ CONTROLS, both printed before any new column is read:
   1. The manuscript states, from manual reading, that 53 of the 93 name an evaluation environment
      and 47 of those name the same simulator. A lexical rule built independently should land near
      both. A wide miss means the rule is measuring something else and its other columns are void.
-  2. idx 48's text file was quarantined as the wrong source until T-1945 recovered the 2019
+  2. idx 48's text file was quarantined as the wrong source until recovered the 2019
      conference paper from pdfs/pdfs/ and regenerated the extraction; nothing is quarantined now
      and the scan reads all 93 full texts. reviewed_studies_text/48.README.txt records the recovery.
 
@@ -35,7 +35,7 @@ _SNAPSHOT = os.path.join(HERE, '..', 'corpus', 'corpus_v9_coded.csv')
 CORPUS = os.environ.get('CORPUS_CSV') or (_CURRENT if os.path.exists(_CURRENT) else _SNAPSHOT)
 OUT = os.path.join(HERE, 'substrate.json')
 
-QUARANTINED = set()           # emptied by T-1945; reviewed_studies_text/48.README.txt records why
+QUARANTINED = set()           # emptied in the revision; reviewed_studies_text/48.README.txt records why
 
 ENGINES = [
     ('SUMO',        r'\bSUMO\b|Simulation of Urban Mobility'),

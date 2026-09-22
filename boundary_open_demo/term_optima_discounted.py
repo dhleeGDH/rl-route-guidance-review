@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Table IX's optimum column at the learner's discount.
 
-WHY THIS EXISTS. Section V-C justifies reporting undiscounted optima by an argument that holds
+Section V-C justifies reporting undiscounted optima by an argument that holds
 for the pure travel-time reward alone: every step reward there is negative, so discounting works
 against exit dominance. Eq. (4) is not of that form. It carries an arrival term of 10 at the
 terminal, an exit charge of 5, and a signed shaping term, so the argument does not transfer to

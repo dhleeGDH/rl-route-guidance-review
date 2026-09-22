@@ -4,7 +4,7 @@
 `study_record_reviewed_studies.csv` and records, per study, the reported measures, the
 benchmark network, the baseline comparison, the substrate and the stated node count.
 The script prints its rules at the top of every run; `fulltext_scan_per_study.csv` holds one
-row per study (93 rows, 0 unresolved PDFs). Re-executed at T-1994 over the 93-study record; the
+row per study (93 rows, 0 unresolved PDFs). Re-executed in the revision over the 93-study record; the
 91-study run it replaces reproduced exactly beforehand, row for row.
 
 The scan is archived as a **partial verification**. It did not replace any count in the

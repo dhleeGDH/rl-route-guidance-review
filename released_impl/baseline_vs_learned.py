@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Does the boundary condition change the comparison the study itself reports?
 
-WHY THIS EXISTS. The 2026-09-02 cold review, M3, objects that no reviewed study is shown to have a
+A read-through of the draft objected that no reviewed study is shown to have a
 conclusion that the boundary condition actually undermines. The retraining already in the paper
 opens the boundary of a published implementation and reports that the learned policy leaves. A
 reviewer reads that as Proposition 2 restated on a larger network, and the objection stands: the

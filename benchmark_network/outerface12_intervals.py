@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Bootstrap intervals for the Sioux Falls cells at the drawn outer face of 12 nodes.
 
-WHY THIS EXISTS. benchmark_demo.py prints a standard deviation, and Section V-A reports a
+benchmark_demo.py prints a standard deviation, and Section V-A reports a
 bootstrap interval for every learned cell. The published Sioux Falls cells were run at 11 of the
 12 nodes on the outer face of the drawing, a border outer_face_sioux.py derives from the rotation
 system of the published coordinates. This reports the cells at the full face through the same

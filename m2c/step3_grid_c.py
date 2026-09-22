@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""T-1903 step 3 on the bespoke grid: regression, Table V, the discount sweep, and the pair audit."""
+"""step 3 on the bespoke grid: regression, Table V, the discount sweep, and the pair audit."""
 import io, json, os, sys
 import numpy as np
 import vi_m2c as V
@@ -83,7 +83,7 @@ def main():
         print("  %-24s C at gamma=1.0 %5.1f   printed %5.1f   %s" % (name, v, PUB[name], "OK" if ok else "FAIL"))
     print("  regression: %s\n" % ("passed" if not bad else "FAILED " + ", ".join(bad)))
 
-    print("=== Table V, five rows: published / T-1901 (m2) / T-1903 (C) ===")
+    print("=== Table V, five rows: published / (m2) / (C) ===")
     print("%-24s %-10s %s" % ("Reward", "variant", "  ".join("g=%-7s" % g for g in GAMMAS)))
     table = {}
     for name, terms in ROWS:

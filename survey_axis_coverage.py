@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Which of the ten prior reviews names the boundary condition of a study area at all.
 
-WHY THIS EXISTS. Table I carried three columns, and three reviewers over three rounds asked for a
+Table I carried three columns, and three reviewers over three rounds asked for a
 column showing what separates this review from the ten. A corpus-size column is unavailable: nine
 of the ten state no count anywhere in their text. The axis this review is built on is available,
 and it is measured here from each review's own full text rather than asserted.
@@ -39,7 +39,7 @@ AXIS = {
     # is removed from the INSTRUMENT and not merely from the printed table, so that the family
     # Appendix B prints is the family that was searched. Removing a term cannot raise a count,
     # and the boundary count was 0 of 10 with it present; the re-run below confirms 0 without it.
-    # 2026-08-29: the cold review objected that four stems are too narrow and named network
+    # 2026-08-29: a read-through objected that four stems are too narrow and named network
     # truncation, sub-network extraction and the zone or centroid connector. The family is
     # widened here and the count re-measured. The manuscript prints the family, not the list,
     # since one member of it is a word the author bars.

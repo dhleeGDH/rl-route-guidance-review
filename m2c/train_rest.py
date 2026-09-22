@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""T-1904: the remaining destination-aligned learned cells under the M2-C reward.
+"""the remaining destination-aligned learned cells under the M2-C reward.
 
 Each published driver is used unchanged; only the environment class it instantiates is replaced by
 a subclass carrying the M2-C increment. Travel-time cells are not retrained: their reward has no

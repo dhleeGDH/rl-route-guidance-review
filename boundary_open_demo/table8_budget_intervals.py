@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Table VIII at both training budgets, derived from the per-seed series of each arm.
 
-WHY THIS EXISTS. Table VIII printed the learned column at 3000 episodes alone. Two reviewers of
+Table VIII printed the learned column at 3000 episodes alone. Two reviewers of
 round 82 read the gap between the optimum column and that one column as the evidence behind
 Recommendation 2, and both observed that the supplement moves the three-term arm from 35.1% to
 97.7% over the same budgets. A single-budget column cannot separate an arm whose shortfall is a

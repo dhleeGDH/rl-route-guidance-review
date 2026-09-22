@@ -5,8 +5,8 @@ The solver is the one that produced the printed values, archive/.../optimal_vi_b
 with one switch added:
 
     shaping="published" : beta*(Phi(n_t) - Phi(n_{t+1})), no increment on an exit
-    shaping="m2"        : beta*(Phi(n_t) - gamma*Phi(n_{t+1})), Phi = 0 at both terminals (T-1901)
-    shaping="c"         : beta*(Phi(n_t) - gamma*Phi(n_{t+1})), Phi(exit) = Phi(n_t)     (T-1903)
+    shaping="m2"        : beta*(Phi(n_t) - gamma*Phi(n_{t+1})), Phi = 0 at both terminals ()
+    shaping="c"         : beta*(Phi(n_t) - gamma*Phi(n_{t+1})), Phi(exit) = Phi(n_t)     ()
 
 Nothing in archive/ or repo_v11/ is modified; both are read only.
 """
@@ -14,7 +14,7 @@ import os, sys
 import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ARC = os.path.join(ROOT, "archive/experiments_dup/handoff_experiments/boundary_open_demo")
+ARC = os.path.join(ROOT, "archive/experiments_dup/experiments/boundary_open_demo")
 sys.path.insert(0, ARC)
 
 from optimal_vi_boundary_dest import (ACTIONS, E_COST, NEG, N_SIDE, R_GOAL, R_EXIT, BETA,

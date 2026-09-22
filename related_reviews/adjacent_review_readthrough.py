@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The coverage zero, read by hand on the three prior reviews closest in topic.
 
-WHY THIS EXISTS. crossreview_recall.py measures the matching rule's recall on real entries and
+crossreview_recall.py measures the matching rule's recall on real entries and
 returns 81 of 81. The recall figure does not supply the following: a
 reading of the reference lists of the prior reviews whose SCOPE most nearly overlaps this corpus,
 against the 94 titles, at a threshold loose enough to surface anything the published rule would

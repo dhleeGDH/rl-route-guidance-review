@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Exact value iteration on Anaheim with the boundary Section IV-A defines.
 
-WHY THIS EXISTS. `anaheim_vi_all_zones.py` opened the network by treating every zone other than the
+`anaheim_vi_all_zones.py` opened the network by treating every zone other than the
 destination as an exit. Section IV-A defines the boundary as the peripheral links at the edge of a
 study area, and `exposure_ratio_real_networks.py` withdrew the zone list as a border on exactly that
 ground: zones are trip ends distributed through a network rather than its outside. The two
@@ -29,7 +29,7 @@ import argparse as _ap
 _A = _ap.ArgumentParser()
 _A.add_argument("--band", type=float, default=0.10,
                 help="border band as a fraction of the bounding box; 0 is the convex hull alone")
-# Round 64 M5: Proposition 1 assumes an exit the policy may decline, whereas this network was
+# Proposition 1 assumes an exit the policy may decline, whereas this network was
 # opened by absorption, where touching a border node ends the trip whatever the policy prefers.
 # Under "optional" a border node offers a leaving action at one ordinary traversal cost and the
 # route may pass through instead, which is the semantics the grids use. "absorbing" is the

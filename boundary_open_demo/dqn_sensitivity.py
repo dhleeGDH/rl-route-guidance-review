@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """Is the value-based recovery on the boundary-open aligned cell a tuning artifact?
 
-WHY THIS EXISTS. Cold review of v809, M9: "하이퍼파라미터 민감도 분석은 PPO에 대해서만 존재하고,
-논문의 헤드라인을 만드는 DQN에 대해서는 없습니다 ... 97.7%라는 회복 수치가 학습자 아티팩트가
-아님을 배제할 수 없습니다." The observation is correct. ppo_sensitivity.py sweeps the on-policy
-learner because its 1.8% was the value under attack; the value-based learner, which produces the
-headline 0.0% against 97.7%, was run at one setting.
+This file sweeps the value-based learner on the two boundary-open cells. The sensitivity of the
+on-policy learner was measured first, because its 1.8% was the value in question; the value-based
+learner, which produces the headline 0.0% against 97.7%, had been run at one setting alone.
 
 Two cells are swept, not one. The 97.7% recovery is the number the comment names. The 0.0%
 collapse is swept as well, at no extra argument, because a collapse that moved under any knob

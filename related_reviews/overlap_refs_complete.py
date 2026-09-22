@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The overlap measurement re-run on complete reference lists.
 
-WHY THIS EXISTS. The entry counts of overlap_refs.py were checked against each review's own
+The entry counts of overlap_refs.py were checked against each review's own
 bibliography and three came up short: 40 entries against a highest label of [69], 51 against [73],
 32 against [46]. An under-recovered reference list produces a false zero silently, and the zero is
 the manuscript's strongest separation claim. This re-runs the same matching rule on lists rebuilt

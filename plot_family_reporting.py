@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Fig. 4: the six reporting fields by algorithm family, replacing Table IV.
 
-WHY THIS EXISTS. Table IV printed a 7x7 grid of counts and Section IV-D argued one claim from it,
+Table IV printed a 7x7 grid of counts and Section IV-D argued one claim from it,
 that no family label predicts any of the six fields. A grid of counts states that claim only to a
 reader who computes seven ratios. The same counts are drawn here against the family total, so the
 shortfall is read directly, and every count is printed in its cell, so no value is lost.
 
-2026-09-01. Redrawn as a matrix on the third cold review, which found 42 bars in one panel
+2026-09-01. Redrawn as a matrix on a read-through, which found 42 bars in one panel
 unreadable in print. Three defects the bars carried: six shades of one hue, which a grayscale print
 collapses exactly as the author said of Fig. 5; value labels printed on top of each other wherever
 two fields of a family were equal; and an absolute axis, on which a family of 3 and a family of 29
@@ -29,14 +29,14 @@ import numpy as np
 plt.rcParams.update({"font.family": "serif", "font.serif": ["Liberation Serif", "DejaVu Serif"],
                      "font.size": 11, "axes.linewidth": 0.8})
 
-# 2026-09-10 (T-1996): the path was HERE/../../manuscript/figures, which resolves outside the
+# 2026-09-10: the path was HERE/../../manuscript/figures, which resolves outside the
 # repository from scripts/ and into archive/experiments_dup/ from the archive copy, so no run of
-# either could refresh the figure the builder reads. T-1993 moved ROWS and the PNG stayed at the
-# corpus of 94 for that reason. The tree owning handoff/manuscript/figures is found by walking up.
+# either could refresh the figure the builder reads. a later revision moved ROWS and the PNG stayed at the
+# corpus of 94 for that reason. The tree owning the manuscript's figures directory is found by walking up.
 def _figures():
     d = os.path.dirname(os.path.abspath(__file__))
     for _ in range(8):
-        cand = os.path.join(d, "handoff", "manuscript", "figures")
+        cand = os.path.join(d, "manuscript", "figures")
         if os.path.isdir(cand):
             return cand
         d = os.path.dirname(d)

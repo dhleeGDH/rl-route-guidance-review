@@ -4,13 +4,13 @@ with the counts the manuscript and the Supplementary print. Prints one line per 
 any FAIL.
 
 Two kinds of check run. The first tallies a column of Table A-1 and compares the tally with a fixed
-expected value, which is the v925 census. The second reads the printed text: every "N of M", every
+expected value, which is the census of the reviewed studies. The second reads the printed text: every "N of M", every
 "N studies" and every cell of Table II, Table S-14 and Table S-15 is extracted from the sources, is
 looked up in CLAIMS, and is recomputed from Table A-1. A figure extracted from the text and absent
 from CLAIMS and from NOT_DERIVABLE fails the check, so a new or altered count cannot pass unnoticed.
 NOT_DERIVABLE records the figures no tally over Table A-1 can produce, with the reason for each.
 
-If a ticket legitimately changes a count, edit the entry here in the same ticket and say so in the
+If a revision legitimately changes a count, the entry here is edited in the same revision and the
 report.
 """
 import os
@@ -18,9 +18,9 @@ import re
 import sys
 from collections import namedtuple
 
-TABLE = "handoff/manuscript/source_md/10_appendix_corpus_list.md"
-SUPP = "handoff/manuscript/source_md/supplementary.md"
-BUILDER = "handoff/manuscript/builders/build_integrated_docx.py"
+TABLE = "the manuscript's source directory, 10_appendix_corpus_list.md"
+SUPP = "the manuscript's source directory, supplementary.md"
+BUILDER = "the manuscript's builder directory, build_integrated_docx.py"
 SRC = ["draft_abstract_intro.md", "draft_section2.md", "draft_section3.md", "draft_section4.md",
        "draft_section5.md", "draft_section6.md", "draft_section7_8.md", "supplementary.md",
        "11_appendix_search_protocol.md"]
@@ -34,7 +34,7 @@ ROW_RX = re.compile(
     r"\s*(yes|no|unc)\s*\|\s*(raw|graph|other|unc)\s*\|\s*(enf|mask|no|unc)\s*\|\s*(yes|no|unc)\s*\|"
     r"\s*([^|]+?)\s*\|")
 
-# 2026-09-10 (T-1992): the census moves to the 93-study record of T-1991, which read [1098] and
+# 2026-09-10: the census moves to the 93-study record of , which read [1098] and
 # [1109] at full text and removed [1088], whose full text no institution available to this study
 # can reach. Every predicate below was re-read against what it counts rather than only its value:
 # the three that did not move, the forecast tally and the completion, code and generalization
@@ -83,8 +83,8 @@ class ROWS(object):
         self.fn = fn
 
 ALL = lambda r: True
-# 2026-09-10 (T-1992): FULL and ALL now select the same 93 rows. Table A-1 carries no dagger
-# since T-1991, so every reviewed study is recorded at full text and the two denominators the
+# 2026-09-10: FULL and ALL now select the same 93 rows. Table A-1 carries no dagger
+# since , so every reviewed study is recorded at full text and the two denominators the
 # manuscript distinguished have become one. The predicate is kept rather than replaced by ALL:
 # it still means "recorded at full text", it returns to selecting a subset the moment a study is
 # admitted on an abstract again, and the CLAIMS keys that name it say which denominator they
@@ -131,7 +131,7 @@ CLAIMS = {
     "draft_abstract_intro.md|93 studies|2": (ALL, None, "the corpus"),
     "draft_abstract_intro.md|93 studies|3": (ALL, None, "the corpus"),
     "draft_abstract_intro.md|40 studies|0": (P(act="link", st="inst", rw="ind"), None, "modal design"),
-    # T-1933: the contribution paragraph now names the census denominator, and the opening of
+    # the contribution paragraph now names the census denominator, and the opening of
     # Section V names the group the census leaves undetermined. Both are tallies of Table A-1.
     "draft_abstract_intro.md|94 studies|4": (ALL, None, "the corpus"),
     "draft_section5.md|45 studies|0": (GRP, None, "the group of Section IV"),
@@ -147,17 +147,17 @@ CLAIMS = {
     "draft_section2.md|68 studies|1": (P(act="link"), None, "link-level action"),
     "draft_section2.md|93 studies|0": (ALL, None, "the corpus"),
     "draft_section2.md|93 full texts|0": (FULL, None, "the full texts"),
-    # T-1993: II-B named the full-text denominator here until every reviewed study became a full
+    # II-B named the full-text denominator here until every reviewed study became a full
     # text. The surviving variation is the transfer axis, whose denominator the sentence now gives.
     "draft_section2.md|91 studies|0": (GEN_ASSESS, None, "assessable on transfer"),
     # ---- Section IV
     "draft_section4.md|12 of the 93|0": (P(fam="tb"), ALL, "tabular family"),
-    # T-1937: the family profiles added to IV-E and the Table S-22 rows recovered into IV-G.
+    # the family profiles added to IV-E and the Table S-22 rows recovered into IV-G.
     # The IV-E figures are tallies of two Appendix A columns; the IV-G figures are the full-text
     # scan, which no column of Appendix A produces, and are excused with the standing S-22 reason.
     "draft_section4.md|11 of the 12|1": (P(fam="pg", rw="ind"), P(fam="pg"), "policy-gradient, individual reward"),
     "draft_section4.md|93 studies|5": (ALL, None, "the corpus"),
-    # T-1945: the node-count sentence of IV-G names the denominator a third time, since the
+    # the node-count sentence of IV-G names the denominator a third time, since the
     # statistics beside it are over the 63 values those texts state and not over the texts.
     "draft_section4.md|52 of the 64|0": (lambda r: r.fam != "ma" and r.rw == "ind",
                                          lambda r: r.fam != "ma", "single-agent with an individual reward"),
@@ -165,7 +165,7 @@ CLAIMS = {
     "draft_section4.md|93 studies|0": (ALL, None, "the corpus"),
     "draft_section4.md|93 studies|1": (ALL, None, "the corpus"),
     "draft_section4.md|93 full texts|0": (FULL, None, "the full texts"),
-    # T-1994: IV-G names the scan population. The scan reads every reviewed study since the
+    # IV-G names the scan population. The scan reads every reviewed study since the
     # rescan, so the phrase is the corpus denominator and no longer a subset of it.
     "draft_section4.md|93 full texts|1": (FULL, None, "the full texts"),
     "draft_section4.md|93 full texts|2": (FULL, None, "the full texts"),
@@ -175,7 +175,7 @@ CLAIMS = {
     "draft_section4.md|15 studies|0": (P(act="link", st="inst", rw="mix"), None, "second combination"),
     "draft_section4.md|86 studies|0": (THREE, None, "assessable on the three fields"),
     "draft_section4.md|7 studies|0": (lambda r: not THREE(r), None, "unclear on one of the three fields"),
-    # T-2001: IV-B splits the ten addressed boundaries by evidence class; the split is recorded in
+    # IV-B splits the ten addressed boundaries by evidence class; the split is recorded in
     # the study record (boundary_split) since Table A-1 holds one value for both.
     "draft_section4.md|7 studies|1": (ROWS(lambda rows: boundary_split()[0]), None, "boundary: treatment stated"),
     "draft_section4.md|3 studies|0": (ROWS(lambda rows: boundary_split()[1]), None, "boundary: periphery named"),
@@ -207,7 +207,7 @@ CLAIMS = {
     "draft_section4.md|2 studies|0": (lambda r: r.bd == "yes" and r.act != "link", None,
                                       "addressed boundary at another action"),
     "draft_section4.md|8 studies|0": (AND(OUTSIDE, P(bd="yes")), None, "addressed boundaries outside the group"),
-    # T-1954: the paragraph on the boundary field against the state form moved behind the two
+    # the paragraph on the boundary field against the state form moved behind the two
     # paragraphs below it, so every phrase they share renumbers. The order here follows the source.
     "draft_section4.md|15 studies|1": (AND(OUTSIDE, lambda r: r.bd != "yes", P(rw=("mix", "sys"))),
                                        None, "outside the group, unaddressed with an aggregate reward"),
@@ -238,8 +238,7 @@ CLAIMS = {
     "draft_section4.md|9 of the 16|0": (P(fam="dq", enc="graph"), P(enc="graph"), "value-based deep graph encoders"),
     "draft_section4.md|22 of the 29|0": (P(fam="ma", enc="raw"), P(fam="ma"), "multi-agent raw vectors"),
     "draft_section4.md|29 studies|0": (P(fam="ma"), None, "multi-agent family"),
-    # T-1954: the sentence carrying this occurrence is the model-based split, since T-1945
-    # deleted IV-D's encoder-by-family paragraph and the multi-agent graph-encoder figure with it.
+    # the sentence carrying this occurrence is the model-based split, since # deleted IV-D's encoder-by-family paragraph and the multi-agent graph-encoder figure with it.
     "draft_section4.md|3 studies|6": (P(fam="mb", rw="ind"), None, "model-based hybrid, individual reward"),
     "draft_section4.md|7 of the 16|0": (P(enc="graph", gn="yes"), P(enc="graph"), "graph encoders with transfer"),
     "draft_section4.md|6 of the 62|0": (P(enc="raw", gn="yes"), AND(P(enc="raw"), GEN_ASSESS),
@@ -291,9 +290,8 @@ CLAIMS = {
     "draft_section4.md|68 studies|0": (P(act="link"), None, "link-level action"),
     "draft_section4.md|6 studies|4": (P(act="oth"), None, "guidance-parameter action"),
     "draft_section4.md|15 studies|5": (P(act="path"), None, "candidate-path action"),
-    # T-1996: the widened noun list reaches these four; each is the same tally Section IV-F prints
-    # as "16 of the 27" and "3 of the 11", registered there since T-1801.
-    "draft_section4.md|16 combinations|0": (ROWS(lambda rows: len(triples(rows))), None, "IV-F combinations present"),
+    # the widened noun list reaches these four; each is the same tally Section IV-F prints
+    # as "16 of the 27" and "3 of the 11", registered there since "draft_section4.md|16 combinations|0": (ROWS(lambda rows: len(triples(rows))), None, "IV-F combinations present"),
     "draft_section4.md|16 combinations|1": (ROWS(lambda rows: len(triples(rows))), None, "IV-F combinations present"),
     "draft_section4.md|11 combinations|0": (ROWS(lambda rows: len(absent_triples(rows))), None, "IV-F combinations absent"),
     "draft_section4.md|27 combinations|0": (ROWS(lambda rows: len(triples(rows)) + len(absent_triples(rows))), None,
@@ -385,9 +383,9 @@ ADDRESSED = "boundary-open-addressed"
 
 AUDIT_CLAIMS = {
     "draft_section4.md|53 studies|0": (lambda b, c: c == NAMED, "a named platform"),
-    # T-1937: IV-G now prints the same count as "53 of the 94", from the simulator record.
+    # IV-G now prints the same count as "53 of the 94", from the simulator record.
     "draft_section4.md|53 of the 93|0": (lambda b, c: c == NAMED, "a named platform"),
-    # T-1999: idx 13 and 40 were re-read at full text; both are described custom environments and
+    # idx 13 and 40 were re-read at full text; both are described custom environments and
     # no unclear record remains, so the sentence prints 53 / 21 / 19 and no unclear clause.
     "draft_section4.md|21 studies|1": (lambda b, c: c == CUSTOM, "a described custom environment"),
     "draft_section4.md|19 studies|0": (lambda b, c: c == NONE_, "neither"),
@@ -448,8 +446,8 @@ NOT_DERIVABLE = {
     "draft_section7_8.md|7 of the 45|0": GEOM,
     "draft_section4.md|79 of the 93|0": S22,
     "draft_section4.md|79 of the 93|1": S22,
-    # T-1937: the Table S-22 rows now printed in IV-G. Each is a reading of the full texts.
-    # T-1994: the scan was re-executed over the 93 full texts and the denominator is the corpus.
+    # the Table S-22 rows now printed in IV-G. Each is a reading of the full texts.
+    # the scan was re-executed over the 93 full texts and the denominator is the corpus.
     # The tabular-family claim of IV-B prints the same form and holds occurrence 0.
     "draft_section4.md|12 of the 93|1": S22,
     "draft_section4.md|5 of the 12|0": S22,
@@ -469,7 +467,7 @@ NOT_DERIVABLE = {
     "supplementary.md|95 studies|0": SCREEN,
     "supplementary.md|95 studies|1": SCREEN,
     "supplementary.md|101 studies|0": SCREEN,
-    # T-1996: reached by the widened noun list (records, candidates, exclusions, queries, the venue
+    # reached by the widened noun list (records, candidates, exclusions, queries, the venue
     # nouns). Every one is a count of the search or screening record, or of a venue class no
     # column of Table A-1 holds; each is named here so the gate cannot pass it in silence.
     "supplementary.md|46 journal articles|0": VENUE,
@@ -513,7 +511,7 @@ NOT_DERIVABLE = {
     "supplementary.md|26 records|0": SCREEN,
     "draft_section2.md|86 records|0": SCREEN,
     "11_appendix_search_protocol.md|514 queries|0": SCREEN,
-    # T-2003: the one Scopus pass of the collection, 39 records of which 8 came from Scopus alone.
+    # the one Scopus pass of the collection, 39 records of which 8 came from Scopus alone.
     "11_appendix_search_protocol.md|39 records|0": SCREEN,
     "11_appendix_search_protocol.md|8 records|0": SCREEN,
     "11_appendix_search_protocol.md|405 records|0": SCREEN,
@@ -539,7 +537,7 @@ NOT_DERIVABLE = {
     "supplementary.md|102 of the 103|0": SCREEN,
     "supplementary.md|966 of the 1052|0": SCREEN,
     "supplementary.md|13 of 108|0": POOL,
-    # T-1938: the three sensitivity checks brought into II-B. Each is a count over the borderline
+    # the three sensitivity checks brought into II-B. Each is a count over the borderline
     # set or the re-screened pool, so no tally of Table A-1 produces it.
     "draft_section2.md|101 studies|0": POOL,
     "draft_section2.md|12 of 95|0": POOL,
@@ -557,8 +555,8 @@ NOT_DERIVABLE = {
 # Table II of the body, printed by the builder, one row per recorded field.
 TABLE_II = {
     "State form": [("forecast", FORECAST), ("instantaneous", P(st="inst")), ("unclear", P(st="unc"))],
-    # 2026-09-10 (T-1993): the boundary row prints two values. No reviewed study is recorded from
-    # an abstract since T-1991 and the unclear count the row carried is 0, so the value left the
+    # 2026-09-10: the boundary row prints two values. No reviewed study is recorded from
+    # an abstract since and the unclear count the row carried is 0, so the value left the
     # printed row. The predicate is not deleted: an unclear boundary returns the moment a report
     # states something the rule cannot resolve, and the row prints the count again.
     "Boundary condition": [("addressed", P(bd="yes")), ("not addressed", P(bd="no"))],
@@ -593,12 +591,12 @@ FAMILY = {"Multi-agent": "ma", "Value-based deep": "dq", "Tabular": "tb", "Polic
 def substrate_artefact():
     """The Table S-22 rows their own run produces, or None where the run output is absent.
 
-    handoff/experiments is a symlink into archive/, so the path is given directly rather than
+    the experiment tree is a symlink into archive/, so the path is given directly rather than
     walked: pathlib.rglob and os.walk do not descend into a symlinked directory on Python 3.8.
     """
     import json, statistics
     path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                        "handoff", "experiments", "eval_substrate", "substrate.json")
+                        "experiments", "eval_substrate", "substrate.json")
     if not os.path.exists(path):
         return None
     d = json.load(open(path, encoding="utf-8"))
@@ -672,17 +670,17 @@ def reward_categories():
     return out
 
 
-# 2026-09-10 (T-1992): these pointed at runs/zenodo_v1.5.0/, a frozen snapshot two deposits old,
+# 2026-09-10: these pointed at runs/zenodo_v1.5.0/, a frozen snapshot two deposits old,
 # so the audit join read a record the manuscript had stopped using. They now read the staged
-# package, which is the record the next deposit is built from and the one T-1991 recomposed.
-AUDIT = "handoff/deposit_next/v1.7.0/study_record_simulator_audit_v6.csv"
-RECORD = "handoff/deposit_next/v1.7.0/study_record_reviewed_studies.csv"
+# package, which is the record the next deposit is built from and the one recomposed.
+AUDIT = "study_record_simulator_audit_v6.csv"
+RECORD = "study_record_reviewed_studies.csv"
 
 
 def boundary_split():
     """(treatment stated, periphery named) among the addressed boundaries, from the study record.
 
-    2026-09-10 (T-2001). The boundary field counts a report addressing the condition, and the ten
+    2026-09-10. The boundary field counts a report addressing the condition, and the ten
     it counts divide by the evidence: seven fix what happens to a vehicle reaching a peripheral
     link, three state a property of the periphery itself (III-A). Table A-1 holds one value for
     both, so the split is recorded in boundary_status_note of the record and read from there.
@@ -728,7 +726,7 @@ def tally(rows, field):
 
 # ---------------------------------------------------------------- the printed figures
 P1 = re.compile(r"\b(\d+) of (?:the |these )?(\d+)\b")
-# 2026-09-10 (T-1996). The second pattern matched three nouns, and the T-1995 audit found eleven
+# 2026-09-10. The second pattern matched three nouns, and the audit found eleven
 # stale corpus figures printed beside nouns it did not match ("40 studies and 54 studies" was
 # caught only as "54 studies"; "the two strata", "8 candidates", "1052 exclusions" were not).
 # CORPUS_NOUNS names every unit the corpus or its assembly is counted in. A number in front of one
@@ -748,7 +746,7 @@ def figures():
     """
     out = []
     for f in SRC:
-        text = open("handoff/manuscript/source_md/" + f, encoding="utf-8").read()
+        text = open("the manuscript's source directory, " + f, encoding="utf-8").read()
         seen = {}
         for line in text.split("\n"):
             if line.startswith(("|", ">", "#")):
@@ -881,9 +879,9 @@ def main():
             if cnt > d:
                 check("S-22 count within its denominator: %s" % item, cnt, d)
 
-    # --- Table S-22 against the run that produces it (T-1945) -----------------
+    # --- Table S-22 against the run that produces it () -----------------
     # Every row above is print-versus-print. These rows have one artefact behind them,
-    # eval_substrate/substrate.json, and T-1907 found the printed denominator had drifted from it
+    # eval_substrate/substrate.json, and a read-through found the printed denominator had drifted from it
     # without any gate seeing the drift. The comparison is made here so the same drift cannot
     # recur. One row carries a judgement rather than the lexical count and is named with its
     # reason: the 'random or greedy' pattern matches an epsilon-greedy exploration rule as well as

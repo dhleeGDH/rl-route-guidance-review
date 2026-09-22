@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# T-2073 stage 1. The exit-dominance quantities read on links rather than on nodes.
+# stage 1. The exit-dominance quantities read on links rather than on nodes.
 #
 # rho is the largest number of steps from any link to the nearest link in L_x, and k is the
 # number of steps of the OD travel path with the fewest links. Both count link entries, so each

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""T-1903 step 2: the three checks the ticket names, on the M2-C increment.
+"""step 2: the three checks named for it, on the M2-C increment.
 
 (a) a completing trajectory carries beta*Phi(o), path-independent at every discount;
 (b) an exiting trajectory carries beta*Phi(o) - beta*gamma^h*Phi(n_exit), the forfeited potential of

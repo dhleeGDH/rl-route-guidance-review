@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The study's own Dijkstra baseline under the two boundary conditions.
 
-WHY THIS EXISTS. The 2026-09-02 cold review, M3, objects that no reviewed study is shown to have a
+A read-through of the draft objected that no reviewed study is shown to have a
 conclusion the boundary condition actually undermines, and reads the published retraining as
 Proposition 2 restated on a larger network. What the retraining left out is the study's own
 reference. [25] ships a Dijkstra baseline inside the released code, uses it to warm start the

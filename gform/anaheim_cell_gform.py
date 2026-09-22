@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The four cells of Section IV-C on Anaheim, at the construction Table IV is solved on.
 
-WHY THIS EXISTS. Table V carries a trained cell on the bespoke grid and on Sioux Falls and none
+Table V carries a trained cell on the bespoke grid and on Sioux Falls and none
 on Anaheim, while Table IV carries the optimum of both rewards on all three networks. This trains
 the same four cells on Anaheim, so the two tables have the same three rows.
 
@@ -33,7 +33,7 @@ WHAT DIFFERS FROM THE GRID AND SIOUX FALLS CELLS, BY THE NETWORK.
                  gives the policy no leaving action to take. The other two networks carry a
                  leaving action as the last slot, so their action count is maxdeg + 1.
   state          the coord form of benchmark_demo, 4 + maxdeg = 10.
-  step cap       300, the author's setting of T-2081: ten times the longest shortest route of
+  step cap       300, the author's setting of ten times the longest shortest route of
                  the network (29 hops), which is the ratio the grid (120 / 9) and Sioux Falls
                  (60 / 6) carry.
   travel time    the cost of the move entering the destination is excluded, which is the
@@ -56,7 +56,7 @@ import torch.nn.functional as F
 torch.set_num_threads(1)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-BENCH = "/home/dhlee/review_paper/handoff/experiments/benchmark_network"
+BENCH = os.path.join(os.environ.get("REPO_DIR", "."), "benchmark_network")
 sys.path.insert(0, BENCH)
 sys.path.insert(0, HERE)
 

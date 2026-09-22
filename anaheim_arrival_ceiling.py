@@ -5,11 +5,11 @@ Opening the perimeter turns every border node other than the destination into an
 A pair can therefore arrive only where a route to the destination avoids every other border node.
 This computes that share over the same 12,183 pairs the value iteration scores.
 """
-import sys, io, heapq
-sys.path.insert(0, "/home/dhlee/review_paper/handoff/experiments")
+import os, sys, io, heapq
+sys.path.insert(0, os.environ.get("REPO_DIR", "."))
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-src = open("/home/dhlee/review_paper/handoff/experiments/anaheim_vi_perimeter.py", encoding="utf-8").read()
-ns = {"__file__": "/home/dhlee/review_paper/handoff/experiments/anaheim_vi_perimeter.py"}
+src = open(os.path.join(os.environ.get("REPO_DIR", "."), "anaheim_vi_perimeter.py"), encoding="utf-8").read()
+ns = {"__file__": os.path.join(os.environ.get("REPO_DIR", "."), "anaheim_vi_perimeter.py")}
 exec(compile(src[:src.index("def solve(")], "h", "exec"), ns)
 BORDER, ORIGINS, DESTS, RADJ, COST = ns["BORDER"], ns["ORIGINS"], ns["DESTS"], ns["RADJ"], ns["COST"]
 

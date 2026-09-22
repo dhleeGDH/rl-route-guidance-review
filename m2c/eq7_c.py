@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-"""T-1903 step 3: Table S-2 under the discount-consistent shaping.
+"""step 3: Table S-2 under the discount-consistent shaping.
 
 The solver is the one behind Table S-2, archive/.../eq7_route_sets.py, re-expressed here with a
 shaping switch. The comparison is boundary-closed, so no exit terminal enters and variant C and the
-T-1901 variant coincide for this table. archive/ is read and never written.
+The published and the M2-C variant coincide for this table. archive/ is read and never written.
 """
 import json, os, sys
 from collections import deque
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-ARC = ROOT / "archive/experiments_dup/handoff_experiments"
+ARC = ROOT / "archive/experiments_dup/experiments"
 sys.path.insert(0, str(ARC))
 from eq7_route_sets import read, hop_potential, BETA, R_GOAL   # noqa: E402
 

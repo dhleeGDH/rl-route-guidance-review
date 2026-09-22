@@ -5,7 +5,7 @@ Two curves, as the present figure draws, over the longer budget. The legend name
 the present figure are not drawn. The panel arrangement, the axis names, the panel labels, the band, the figure width
 and the font size are those of boundary_open_demo/plot_reward_condition.py.
 
-Data: four_cells_curves_8000_gform.json (T-2080), cells closed_time_min and open_time_min, ten
+Data: four_cells_curves_8000_gform.json, cells closed_time_min and open_time_min, ten
 seeds, a checkpoint every 150 episodes.
 
     python3 plot_reward_condition_8000_gform.py
@@ -18,7 +18,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt   # noqa: E402
 import numpy as np                # noqa: E402
 
-# 2026-09-21 (T-2108): one column wide, the two panels stacked. Drawn at 3.42 in and placed at
+# 2026-09-21: one column wide, the two panels stacked. Drawn at 3.42 in and placed at
 # the column width, so 7.0 pt prints at 7.2 pt, the size of the text inside Fig. 2.
 FS = 7.0
 plt.rcParams.update({
@@ -29,7 +29,7 @@ plt.rcParams.update({
 })
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-# 2026-09-19 (T-2094): this generator draws the placed Fig. 5, so it writes into the manuscript's
+# 2026-09-19: this generator draws the placed Fig. 5, so it writes into the manuscript's
 # figures directory under the name the builder places. check_figure_generators reads the same path.
 OUT = os.path.abspath(os.path.join(HERE, "..", "..", "..", "manuscript", "figures",
                                    "fig_reward_condition.png"))
@@ -66,7 +66,7 @@ axA.set_ylabel("Episode return", fontsize=FS)
 axA.grid(True, alpha=0.3, lw=0.5)
 axA.legend(loc="lower right", bbox_to_anchor=(1.0, 0.09), frameon=False,
            fontsize=FS - 1.0, handlelength=1.6)
-# 2026-09-19 (T-2090): the rule of plot_reward_condition.py, the minimum times 1.12 against a
+# 2026-09-19: the rule of plot_reward_condition.py, the minimum times 1.12 against a
 # fixed top of 34, left the top quarter of the panel empty at this budget, since no return of the
 # travel-time reward is positive. Panel (b) sets its range five units outside the 0 to 100 its
 # data covers, and panel (a) follows it: five units outside 0 to -100, with the ticks stopping at
@@ -80,7 +80,7 @@ axB.set_xlabel("Training episodes", fontsize=FS)
 axB.set_ylabel("OD trip completion (%)", fontsize=FS)
 axB.set_ylim(-6, 108)
 axB.grid(True, alpha=0.3, lw=0.5)
-# 2026-09-19 (T-2090): panel (b) carried no key, since the end-of-curve values it used to print
+# 2026-09-19: panel (b) carried no key, since the end-of-curve values it used to print
 # named its two curves. Those labels are gone, so the key is drawn here as well. Both panels put
 # it in the same corner at the same height, lifted clear of the boundary-open curve lying on zero.
 axB.legend(loc="lower right", bbox_to_anchor=(1.0, 0.09), frameon=False,

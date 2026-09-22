@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""T-1941: the sentinel-encoding control and the truncation control, published and M2-C.
+"""the sentinel-encoding control and the truncation control, published and M2-C.
 
-Both drivers live in the archived experiment tree and are reachable at handoff/experiments/ since
-T-1921. Neither archived file is read for anything but import, and neither is written: every output
-of this runner goes to handoff/m2c/controls/.
+Both drivers live in the archived experiment tree and are reachable at the experiment tree,  since
+Neither archived file is read for anything but import, and neither is written: every output
+of this runner goes to m2c/controls/.
 
 The archived copies of env.py, env_boundary_dest.py and four_cells_boundary_dest.py are supersets
 of the released ones (state_sentinel, residual_on_exit, eval_boundary, reward_kw), identical at
@@ -26,7 +26,7 @@ os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-ARCH = os.path.join(ROOT, "handoff", "experiments", "boundary_open_demo")
+ARCH = os.path.join(ROOT, "experiments", "boundary_open_demo")
 sys.path.insert(0, HERE)
 
 import numpy as np                                              # noqa: E402

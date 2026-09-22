@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# T-2068 (2026-09-16). The discount-carrying form of the shaping term.
+# 2026-09-16. The discount-carrying form of the shaping term.
 #
 # The manuscript writes Eq. (4) with the DISCOUNTED difference of potentials,
 # beta*[Phi(l_t) - gamma*Phi(l_{t+1})]. The deposited solver adds beta*(Phi(u) - Phi(v)), the
@@ -10,11 +10,10 @@
 # transition and the step cap are exactly as the original leaves them.
 """Eq. (6) at the route-set level, and Eq. (7) numerically, on the two real networks.
 
-WHY THIS EXISTS. Cold review of v809, M7: "완성률 동일성은 Eq. (6)의 Πtt = Πda를 함의하지
-않습니다." Correct. Section III-B verifies the route sets only on the 5x5 demonstration grid
-("returning the same route on the 396 ordered origin-destination pairs"); on Sioux Falls and
-Anaheim the manuscript checks identical optimal COMPLETION, which is a weaker statement. The same
-comment asks for the Eq. (7) right-hand side on those networks, where Phi_max and K are far larger
+This file verifies the route sets themselves on the two real networks. Identical completion is a
+weaker statement than an identical set of optimal routes, and the manuscript verifies the sets on
+the 5x5 grid alone ("returning the same route on the 396 ordered origin-destination pairs"). The
+right-hand side of Eq. (7) is computed on the same networks, where Phi_max and K are far larger
 than the grid's 8 and Delta can be far smaller.
 
 WHAT IS COMPUTED, per network and boundary-closed:

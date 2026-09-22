@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """How often a peripheral exit is closer than the destination, on published road networks.
 
-WHY THIS EXISTS. Section IV-A states the condition under which a study area is exposed: the failure
+Section IV-A states the condition under which a study area is exposed: the failure
 needs "a peripheral exit reachable in fewer steps than the destination". A reviewer observed that the
 manuscript defines that condition and then computes it on no real network, so its practical reach is
 asserted rather than measured. This measures it.

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# T-2068 (2026-09-16). The discount-carrying form of the shaping term.
+# 2026-09-16. The discount-carrying form of the shaping term.
 #
 # The manuscript writes Eq. (4) with the DISCOUNTED difference of potentials,
 # beta*[Phi(l_t) - gamma*Phi(l_{t+1})]. The deposited solver adds beta*(Phi(u) - Phi(v)), the
@@ -10,7 +10,7 @@
 # transition and the step cap are exactly as the original leaves them.
 """Table IX's optimum column at the learner's discount.
 
-WHY THIS EXISTS. Section V-C justifies reporting undiscounted optima by an argument that holds
+Section V-C justifies reporting undiscounted optima by an argument that holds
 for the pure travel-time reward alone: every step reward there is negative, so discounting works
 against exit dominance. Eq. (4) is not of that form. It carries an arrival term of 10 at the
 terminal, an exit charge of 5, and a signed shaping term, so the argument does not transfer to

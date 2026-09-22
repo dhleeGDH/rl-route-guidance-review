@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""T-1905: the second batch of destination-aligned learned cells under the M2-C reward.
+"""the second batch of destination-aligned learned cells under the M2-C reward.
 
-Same discipline as train_rest.py of T-1904. Each published driver is used unchanged and only the
+Same discipline as train_rest.py. Each published driver is used unchanged and only the
 environment class it instantiates is replaced by an M2-C subclass. Travel-time cells carry no
 shaping term, so the mixin is inert on them; where one is run here it is the driver-swap control
-of the ticket's stop condition (a).
+of the stop condition (a).
 
 One cell per process, so that the cells run four at a time and the 5x5 and 7x7 SUMO drivers, which
 rebind sumo_env.N and sumo_env.NET at import, never share an interpreter.

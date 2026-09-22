@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Every learned cell of Table VI at one budget and one seed count.
 
-WHY THIS EXISTS. Table VI mixed three protocols in one comparison: the two headline rows at 3000
+Table VI mixed three protocols in one comparison: the two headline rows at 3000
 episodes over ten seeds with a min-max range, a recovery row at 8000 episodes over five seeds with a
 standard deviation, and the SUMO rows at five seeds. A reviewer objected that a table whose rows
 differ in budget, in seed count and in dispersion convention cannot carry a within-table comparison,

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The four Sioux Falls cells at the 3000-episode budget, published form.
 
-WHY THIS EXISTS. Table V carries the bespoke grid at 3000 and at 8000 and Sioux Falls at 8000
+Table V carries the bespoke grid at 3000 and at 8000 and Sioux Falls at 8000
 alone, so the two networks do not hold the same pair of budgets. This runs the Sioux Falls cells
 at 3000 through the path sioux30/run_cell.py uses.
 
@@ -15,7 +15,7 @@ evaluation set is make_eval_od(net), the same 200 draws at seed 999. Thirty seed
 Travel time comes back from train_eval, which excludes the arriving move: its accumulator adds a
 cost only where the action is not the exit slot, and arrival is that slot at the destination.
 
-The one value that differs from the deposited run is the budget, which is what this ticket moves:
+The one value that differs from the deposited run is the budget, which is what this run moves:
 net["episodes"] is set to 3000 on the copy, never on benchmark_demo's own dictionary.
 
     python3 sioux_cells_3000_gform.py --episodes 3000 --seeds 30 --workers 16
@@ -39,7 +39,7 @@ import torch
 torch.set_num_threads(1)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-BENCH = "/home/dhlee/review_paper/handoff/experiments/benchmark_network"
+BENCH = os.path.join(os.environ.get("REPO_DIR", "."), "benchmark_network")
 sys.path.insert(0, BENCH)
 
 import benchmark_demo as B          # noqa: E402  (imported, never written)
@@ -63,7 +63,7 @@ def one_seed(args):
     torch.set_num_threads(1)
     net = dict(B.NETWORKS["sioux_falls"])      # a copy; benchmark_demo's own entry is untouched
     net["od_mode"] = "dest_boundary"
-    net["episodes"] = episodes                 # the one value this ticket moves
+    net["episodes"] = episodes                 # the one value this run moves
     od = B.make_eval_od(net)
     t0 = time.time()
     out = {}

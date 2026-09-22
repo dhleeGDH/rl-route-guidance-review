@@ -2,7 +2,7 @@
 """Where the 38 Anaheim destination zones sit relative to each border, and what the travel-time
 optimum does on the pairs whose destination is an interior zone.
 
-WHY THIS EXISTS. anaheim_vi_perimeter.json and anaheim_vi_perimeter_bandhull.json report the
+anaheim_vi_perimeter.json and anaheim_vi_perimeter_bandhull.json report the
 optimum of each reward over all pairs and the spread of the exit rate across destinations, but
 neither records which of the 38 published zones lies on the border it was solved with. A
 destination on the border and a destination inside the network are different geometries, and the
@@ -19,7 +19,7 @@ import json
 import os
 import sys
 
-SRC = "/home/dhlee/review_paper/handoff/deposit_next/v1.8.0/anaheim_vi_perimeter.py"
+SRC = os.path.join(os.environ.get("DEPOSIT_DIR", os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "anaheim_vi_perimeter.py")
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 

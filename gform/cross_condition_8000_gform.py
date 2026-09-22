@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The cross-condition evaluation at the 8000-episode budget, published form.
 
-WHY THIS EXISTS. exit_sentinel_control.json and zero_shot_transfer.json carry the cross-condition
+exit_sentinel_control.json and zero_shot_transfer.json carry the cross-condition
 cell at 3000 episodes, and the four cells of the rewritten Table V and the curves of Fig. 5 are at
 8000. A paragraph quoting both would mix two budgets. This repeats the same computation at 8000.
 
@@ -34,7 +34,7 @@ from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEMO = "/home/dhlee/review_paper/handoff/experiments/boundary_open_demo"
+DEMO = os.path.join(os.environ.get("REPO_DIR", "."), "boundary_open_demo")
 sys.path.insert(0, DEMO)
 
 from env_boundary_dest import make_eval_od          # noqa: E402

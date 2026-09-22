@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""T-1903 step 7: the pair-level statistic the manuscript prints, under the three variants.
+"""step 7: the pair-level statistic the manuscript prints, under the three variants.
 
 Section V-B prints "22.6% of the completing pairs of Anaheim differ in travel time by 14.8% at
 most" at gamma = 0.99. That is a share of OD pairs, not the node-level share of identical action
@@ -9,7 +9,7 @@ import json, os, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-ARC = ROOT / "archive/experiments_dup/handoff_experiments"
+ARC = ROOT / "archive/experiments_dup/experiments"
 sys.path.insert(0, str(ARC))
 from eq7_route_sets import read, hop_potential, BETA, R_GOAL     # noqa: E402
 import eq7_c                                                      # noqa: E402

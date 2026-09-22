@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The screening stage counts, held once and checked against their own arithmetic.
 
-WHY THIS EXISTS. Three cold-review rounds asked for a flow figure in the body, and the counts
+Three cold-review rounds asked for a flow figure in the body, and the counts
 existed only as a literal table in build_supplementary.py. A figure drawn from a second copy of
 those numbers is the drift this project has already paid for twice. Both the supplement's table
 and the body's figure now read this file, and the arithmetic linking the stages is asserted here
@@ -24,11 +24,11 @@ EXCLUDED_TA = 1052        # excluded at title and abstract
 NOT_OBTAINED = 1          # full texts sought and not obtained
 EXCLUDED_FT = 6           # excluded at full-text scope re-confirmation
 VERSIONS_MERGED = 3       # version rows of one study merged into it
-ABSTRACT_ONLY = 0         # 2026-09-10 (T-1991): none. Two of the three abstract-only records
+ABSTRACT_ONLY = 0         # 2026-09-10: none. Two of the three abstract-only records
                           # were read at full text and the third left the corpus, its full text
                           # unobtainable at any institution available to this study.
 
-# 2026-09-10 (T-1984, T-1985). The name Fig. 1 and Supplementary Table S-6 must both give
+# 2026-09-10. The name Fig. 1 and Supplementary Table S-6 must both give
 # route_13. check_flow_stages.py reads it from the record beside the counts rather than out of
 # the plotting script, where it was one English phrase this file could silently drop.
 ARM_13_LABEL = "Database and citation searching"

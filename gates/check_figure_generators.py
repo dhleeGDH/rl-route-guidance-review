@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""Gate: every placed figure is written by its generator into handoff/manuscript/figures/, and the
+"""Gate: every placed figure is written by its generator into the manuscript's figures directory/, and the
 PNG on disk is the PNG its generator produces.
 
-WHY THIS EXISTS. T-1984 found plot_assembly.py writing Fig. 1 into archive/experiments_dup/,
-because Path(__file__).resolve() follows the handoff/experiments symlink and parents[2] then lands
-beside the archive rather than beside the manuscript. T-1995's audit found the same defect in four
+a read-through found plot_assembly.py writing Fig. 1 into archive/experiments_dup/,
+because Path(__file__).resolve() follows the experiment-tree symlink and parents[2] then lands
+beside the archive rather than beside the manuscript. 's audit found the same defect in four
 more generators: plot_family_reporting.py resolved to a directory outside the repository, and the
 three experiment generators resolved to directories that do not exist in this tree. The visible
-symptom was fig_family_reporting.png still drawing the corpus of 94 six weeks after T-1993 moved
+symptom was fig_family_reporting.png still drawing the corpus of 94 six weeks after a later revision moved
 its ROWS to 93: the generator changed and the PNG could not follow.
 
 Two checks, each per figure, from one rendering of the generator:
 
   (a) PATH. The generator is executed with Figure.savefig redirected, so the path it would write
       is captured and the image lands in a temporary file instead. The captured path must lie
-      inside handoff/manuscript/figures and carry the file name the builder places.
+      inside the manuscript's figures directory and carry the file name the builder places.
   (b) FRESHNESS. The temporary image is compared pixel by pixel with the PNG on disk. They must
       agree in size and differ in at most FRESH_TOL of their pixels by more than 16/255, which
       absorbs rasteriser noise and catches a stale figure outright: the stale
@@ -26,7 +26,7 @@ Two checks, each per figure, from one rendering of the generator:
       generator" means for a figure is that regenerating it changes nothing, which is what is
       tested here.
 
-The generators are the files that actually produced the placed PNGs, established at T-1996 by
+The generators are the files that actually produced the placed PNGs, established in the revision by
 regenerating each and finding it pixel-identical. The repo_v11 copies of the three experiment
 generators are older revisions with other figure sizes and are not the sources.
 
@@ -41,7 +41,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MS = os.path.dirname(HERE)
 ROOT = os.path.dirname(os.path.dirname(MS))
 FIG = os.path.realpath(os.path.join(MS, "figures"))
-EXP = os.path.join(ROOT, "archive", "experiments_dup", "handoff_experiments")
+EXP = os.path.join(ROOT, "archive", "experiments_dup", "experiments")
 FRESH_TOL = 0.0001          # share of pixels allowed to differ by more than 16/255
 
 # placed PNG -> the generator that draws it

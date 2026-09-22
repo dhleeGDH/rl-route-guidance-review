@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# T-2068 (2026-09-16). The right-hand side of Eq. (7) as the manuscript writes it.
+# 2026-09-16. The right-hand side of Eq. (7) as the manuscript writes it.
 #
 # The body prints  gamma > 1 - Delta / [(K - k_min) R_d].  Two things separate this from the
 # deposited eq7_route_sets.py: that file carries the Phi_max denominator of Supplementary S-I.A,

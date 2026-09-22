@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Mean travel time of the completing trips, for the four published cells.
 
-Round 42 M3: every outcome table in Section V reports OD trip completion, while the metric this
+every outcome table in Section V reports OD trip completion, while the metric this
 literature actually reports is travel time. The claim that a closed cordon "returns one verdict
 for two opposed objectives" was demonstrated on completion alone, so a reader could ask whether
 the destination-aligned reward buys completion with longer routes.

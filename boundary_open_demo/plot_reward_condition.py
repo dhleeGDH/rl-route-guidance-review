@@ -30,15 +30,15 @@ plt.rcParams.update({
 })
 
 HERE = Path(__file__).parent
-# 2026-09-10 (T-1996): the output was Path(__file__).resolve().parents[2]/"manuscript"/"figures",
-# which reaches handoff/manuscript/figures only through the handoff/experiments symlink and only
+# 2026-09-10: the output was Path(__file__).resolve().parents[2]/"manuscript"/"figures",
+# which reaches the manuscript's figures directory only through the experiment-tree symlink and only
 # unresolved; .resolve() follows the link into archive/experiments_dup/, where no builder reads.
-# The tree that owns handoff/manuscript/figures is found by walking up instead (T-1984 class).
+# The tree that owns the manuscript's figures directory is found by walking up instead (the same class).
 def _figures():
     d = Path(__file__).resolve().parent
     for _ in range(8):
-        if (d / "handoff" / "manuscript" / "figures").is_dir():
-            return d / "handoff" / "manuscript" / "figures"
+        if (d / "manuscript" / "figures").is_dir():
+            return d / "manuscript" / "figures"
         d = d.parent
     # In the deposited package no manuscript tree exists beside this file; the figure lands here.
     return Path(__file__).resolve().parent

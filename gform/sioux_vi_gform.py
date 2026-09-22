@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Exact optimum of each reward on Sioux Falls, under the convention of the trained cells.
 
-WHY THIS EXISTS. Table IV of the rewrite states the optimum of each reward on every network of
+Table IV of the rewrite states the optimum of each reward on every network of
 the experiment. The grid optima come from boundary_open_demo/optimal_vi_boundary_dest.py and the
 Anaheim optima from anaheim_vi_perimeter.py, and no exact computation was deposited for Sioux
 Falls: the network carries trained cells alone. This computes it under the convention the Sioux
@@ -25,7 +25,7 @@ import json
 import os
 import sys
 
-BENCH = "/home/dhlee/review_paper/handoff/experiments/benchmark_network"
+BENCH = os.path.join(os.environ.get("REPO_DIR", "."), "benchmark_network")
 sys.path.insert(0, BENCH)
 
 import benchmark_demo as B   # noqa: E402

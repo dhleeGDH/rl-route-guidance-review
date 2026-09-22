@@ -1,3 +1,22 @@
+# v1.9.1: comments and notes cleaned for publication
+
+Comments and notes cleaned; no change to code paths, data or results. The working vocabulary of the
+development repository leaves the package: the internal revision numbers, the name of the
+development tree, the review-round markers and three quotations left in Korean. Two kinds of change
+go beyond wording and are listed because they touch code:
+
+- Absolute paths of the author's machine in nine runners are replaced by a path relative to the
+  package, with `DEPOSIT_DIR` and `REPO_DIR` as the environment overrides. The files each runner
+  opens are unchanged.
+- The two family figures located their output directory by a literal that named the development
+  tree. Both now walk up to `manuscript/figures` and fall back to the script's own directory, which
+  is the behaviour each already had in the package.
+
+No result file, no data file and no printed value changes. `check_eval_sets.py` passes on the three
+road networks as before.
+
+---
+
 # v1.9.0: the package the finished manuscript reads
 
 Tags v1.3.0 to v1.8.0 carry no release notes on GitHub; v1.9.0 is the first tagged deposit
@@ -5,8 +24,8 @@ after the manuscript revision. The v1.8.0 package is archived at
 https://doi.org/10.5281/zenodo.22699103.
 
 Every file of this package is read by a named place in the manuscript or the Supplementary, and
-`MANIFEST.md` states that place for each one. The section-by-section rewrite of the manuscript ended
-at T-2113b, and the material it stopped reading is removed here rather than left deposited without
+`MANIFEST.md` states that place for each one. The section-by-section rewrite of the manuscript is
+finished, and the material it stopped reading is removed here rather than left deposited without
 a reader.
 
 ## Renamed
@@ -39,24 +58,23 @@ stand in the v1.8.0 deposit, which is not withdrawn.
 
 | Group | Files | Why |
 |---|---|---|
-| Exit conventions: the residual charge, the non-terminal detour, the two sentinel controls and the truncation control | 25 | Supplementary S-I.B was removed at T-2113. The manuscript states the premise of Proposition 2 and compares no other convention |
-| The SUMO-executed grid, the 8x8 lattice, the 7x7 grid, the interior-destination cells and the depth sweep | 43 | Supplementary S-I.C and S-I.E were removed at T-2112. The manuscript reports three road networks |
-| The band sweep beyond the two borders Table IV prints | 3 | The band enumeration of Supplementary S-II was removed at T-2113 |
-| The three-curve and three-panel drafts of Fig. 5 | 7 | Withdrawn at T-2094 with the figure they drew |
+| Exit conventions: the residual charge, the non-terminal detour, the two sentinel controls and the truncation control | 25 | Supplementary S-I.B was removed in the revision. The manuscript states the premise of Proposition 2 and compares no other convention |
+| The SUMO-executed grid, the 8x8 lattice, the 7x7 grid, the interior-destination cells and the depth sweep | 43 | Supplementary S-I.C and S-I.E were removed in the revision. The manuscript reports three road networks |
+| The band sweep beyond the two borders Table IV prints | 3 | The band enumeration of Supplementary S-II was removed in the revision |
+| The three-curve and three-panel drafts of Fig. 5 | 7 | Withdrawn in the revision with the figure they drew |
 | Runs no sentence, table or figure reads | 29 | Including the term ablation, whose table left Section IV at the rewrite |
 
 ## The study record
 
-30 columns. `reward_category` is new at T-2113 and carries the category of the fourth paragraph of
+30 columns. `reward_category` is new in the revision and carries the category of the fourth paragraph of
 Section III-B for each of the 45 studies of the group, which the Supplementary prints as three
-counts and no longer as a table of sentences. Six columns were dropped at T-2112 and T-2113:
-`reward_temporality`, `rt_quote`, `compliance_stated`, `comp_quote` had no reader, and the two
+counts and no longer as a table of sentences. Six columns were dropped in the revision and `reward_temporality`, `rt_quote`, `compliance_stated`, `comp_quote` had no reader, and the two
 `boundary_status` columns are retained because `countcheck.py` reads them for the 7 and the 3 of
 Section III-B.
 
 ## The record completed on two fields
 
-Two studies were read at full text in T-1991 and their evidence sentences stood in
+Two studies were read at full text in the revision and their evidence sentences stood in
 `reviewed_studies_text/13.README.txt` and `40.README.txt` without being copied into the record. The
 gate that requires every recorded value to carry the sentence it was read from could not be pointed
 at the record until they were.
@@ -121,7 +139,7 @@ level of this package, as before.
 repository tree up to v1.7.0 were older revisions with other figure sizes. `plot_family_reporting.py`
 joins `plot_family_merged.py` at the top level. Every generator now resolves its output beside the
 manuscript when a manuscript tree is found above it and beside itself otherwise, which is the defect
-T-1984 found in one generator and T-1995 found in four more: each was writing into a directory the
+a read-through found in one generator and a read-through found in four more: each was writing into a directory the
 builder never read, so a moved count left the figure on the page unchanged.
 
 **Two gates (`gates/`).** `check_figure_generators.py` renders every generator in a fresh

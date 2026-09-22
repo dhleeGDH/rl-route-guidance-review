@@ -2,7 +2,7 @@
 """Arrival-reachable share of the retrained cell's own evaluation set.
 
 Table XI's trip-completion item asks a study reporting a boundary-open completion rate to give
-"the share of evaluation pairs able to arrive at all under that condition". Round 58 observed
+"the share of evaluation pairs able to arrive at all under that condition". A read-through observed
 that the retrained released implementation reported 0.0% arrival on the opened perimeter without
 that share, which is the manuscript failing its own checklist on its own cell.
 

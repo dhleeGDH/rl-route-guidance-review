@@ -28,29 +28,29 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "archive" / "experiments_dup"
-                            / "handoff_experiments" / "benchmark_network"))
+                            / "experiments" / "benchmark_network"))
 from benchmark_demo import SF_LINKS, SF_COORD, ND_LINKS, NETWORKS  # noqa: E402
 
 # The original wrote to 05_writing, a directory of the previous tree that does not exist here,
 # so the generator produced nothing and the shipped figure came from somewhere else.
-# 2026-09-10 (T-1996): the output was Path(__file__).resolve().parents[2]/"manuscript"/"figures",
-# which reaches handoff/manuscript/figures only through the handoff/experiments symlink and only
+# 2026-09-10: the output was Path(__file__).resolve().parents[2]/"manuscript"/"figures",
+# which reaches the manuscript's figures directory only through the experiment-tree symlink and only
 # unresolved; .resolve() follows the link into archive/experiments_dup/, where no builder reads.
-# The tree that owns handoff/manuscript/figures is found by walking up instead (T-1984 class).
+# The tree that owns the manuscript's figures directory is found by walking up instead (the same class).
 def _figures():
-    # 2026-09-21 (T-2107): the generator moved out of archive/, which is read-only, so the
+    # 2026-09-21: the generator moved out of archive/, which is read-only, so the
     # manuscript tree is reached by walking up from this file's own directory.
     d = Path(__file__).resolve().parent
     for _ in range(8):
-        if (d / "handoff" / "manuscript" / "figures").is_dir():
-            return d / "handoff" / "manuscript" / "figures"
+        if (d / "manuscript" / "figures").is_dir():
+            return d / "manuscript" / "figures"
         d = d.parent
-    raise SystemExit("handoff/manuscript/figures not found above %s" % __file__)
+    raise SystemExit("the manuscript's figures directory not found above %s" % __file__)
 
 
 OUT = _figures() / "fig_networks.png"
 FS = 8.0
-# The panel names and the key print at the size of the text inside Fig. 2 (T-2107).
+# The panel names and the key print at the size of the text inside Fig. 2 ().
 LABEL_FS = 7.4
 INK = "#222222"
 EDGE = "#8a8a8a"
@@ -115,7 +115,7 @@ def nd_layout():
 def draw(ax, pos, links, boundary, labels=False, inner=None):
     """inner is a subset of boundary drawn as a filled marker against an open one.
 
-    Cold review of v809 asked for the two Anaheim borders to be separable on the page: the paper
+    A read-through of the draft asked for the two Anaheim borders to be separable on the page: the paper
     compares a 13-node convex hull with a 95-node band of a tenth and the figure drew their union
     as one set, so a reader could not see which nodes belong to which. The two are distinguished
     by MARKER FILL rather than by colour, since the author's 2026-08-28 correction on this figure
@@ -141,7 +141,7 @@ def draw(ax, pos, links, boundary, labels=False, inner=None):
                     color=BND if on else NODE,
                     alpha=1.0 if on else (0.55 if _dense else 1.0),
                     zorder=3 if on else 2)
-    # Round 266: only the Sioux Falls panel carried node numbers, which read as a difference
+    # only the Sioux Falls panel carried node numbers, which read as a difference
     # between the three networks rather than as a property of one drawing. Anaheim has 416 nodes
     # and cannot carry them, so none of the three does. The `labels` argument is kept for a
     # single-panel use and defaults off.
@@ -166,7 +166,7 @@ def anaheim():
     """
     import json as _json
     exp = (Path(__file__).resolve().parents[4] / "archive" / "experiments_dup"
-           / "handoff_experiments")
+           / "experiments")
     sys.path.insert(0, str(exp))
     from exposure_ratio_real_networks import _hull, load_coords, read_tntp
     coords = load_coords(exp / "networks" / "anaheim_nodes.geojson")
@@ -197,10 +197,10 @@ draw(axes[2], _ap, _al, _ab, inner=_ah)
 
 # Equal aspect leaves each panel a different height, so a label anchored to its own axes sits
 # at its own baseline. Figure coordinates put all three subcaptions on one line.
-# 2026-09-18 (T-2077): the panel labels carry the names Section IV-B uses and nothing else. The
+# 2026-09-18: the panel labels carry the names Section IV-B uses and nothing else. The
 # node counts and the two border sizes are stated in the prose beside the figure, and "bespoke",
 # "hull" and "band" are not terms of the rewritten section.
-# 2026-09-21 (T-2107): the key sits directly under the panels and the panel names under the key,
+# 2026-09-21: the key sits directly under the panels and the panel names under the key,
 # which is the order a reader meets them. Both are set at LABEL_FS so that the reduction to the
 # placement width prints them at the size of the text inside Fig. 2.
 for ax, label in zip(axes, ("(a) 5\u00d75 grid",
