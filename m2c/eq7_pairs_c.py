@@ -9,7 +9,7 @@ import json, os, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-ARC = ROOT / "archive/experiments_dup/experiments"
+ARC = ROOT / "archive/experiments_dup/handoff_experiments"
 sys.path.insert(0, str(ARC))
 from eq7_route_sets import read, hop_potential, BETA, R_GOAL     # noqa: E402
 import eq7_c                                                      # noqa: E402

@@ -41,7 +41,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MS = os.path.dirname(HERE)
 ROOT = os.path.dirname(os.path.dirname(MS))
 FIG = os.path.realpath(os.path.join(MS, "figures"))
-EXP = os.path.join(ROOT, "archive", "experiments_dup", "experiments")
+EXP = os.path.join(ROOT, "archive", "experiments_dup", "handoff_experiments")
 FRESH_TOL = 0.0001          # share of pixels allowed to differ by more than 16/255
 
 # placed PNG -> the generator that draws it

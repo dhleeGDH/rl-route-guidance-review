@@ -1,3 +1,15 @@
+# v1.9.4: archive path restored
+
+The v1.9.1 cleanup replaced the directory name `handoff_experiments` wherever it appeared, and that
+name is the real name of a directory outside this package, which four runners and the two gates
+open to import the benchmark networks and the archived drivers. Nine path literals are restored
+here. Fig. 4 regenerates again; the figure gate of the development repository passes.
+
+No other change. The name stays in these nine paths because it is the name of a directory this
+package does not own.
+
+---
+
 # v1.9.3: gate paths and wording
 
 Wording in comments; one screening file added; no change to results. The noun "traversal" leaves

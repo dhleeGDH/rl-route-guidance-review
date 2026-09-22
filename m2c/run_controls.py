@@ -26,7 +26,7 @@ os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-ARCH = os.path.join(ROOT, "experiments", "boundary_open_demo")
+ARCH = os.path.join(ROOT, "handoff_experiments", "boundary_open_demo")
 sys.path.insert(0, HERE)
 
 import numpy as np                                              # noqa: E402

@@ -14,7 +14,7 @@ import os, sys
 import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ARC = os.path.join(ROOT, "archive/experiments_dup/experiments/boundary_open_demo")
+ARC = os.path.join(ROOT, "archive/experiments_dup/handoff_experiments/boundary_open_demo")
 sys.path.insert(0, ARC)
 
 from optimal_vi_boundary_dest import (ACTIONS, E_COST, NEG, N_SIDE, R_GOAL, R_EXIT, BETA,

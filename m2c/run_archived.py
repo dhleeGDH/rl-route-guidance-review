@@ -17,7 +17,7 @@ os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-EXP = os.path.join(ROOT, "experiments")
+EXP = os.path.join(ROOT, "handoff_experiments")
 for p in ("boundary_open_demo", "benchmark_network", "sumo_corridor"):
     sys.path.insert(0, os.path.join(EXP, p))
 sys.path.insert(0, HERE)

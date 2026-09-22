@@ -596,7 +596,7 @@ def substrate_artefact():
     """
     import json, statistics
     path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                        "experiments", "eval_substrate", "substrate.json")
+                        "handoff_experiments", "eval_substrate", "substrate.json")
     if not os.path.exists(path):
         return None
     d = json.load(open(path, encoding="utf-8"))

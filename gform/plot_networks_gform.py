@@ -28,7 +28,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "archive" / "experiments_dup"
-                            / "experiments" / "benchmark_network"))
+                            / "handoff_experiments" / "benchmark_network"))
 from benchmark_demo import SF_LINKS, SF_COORD, ND_LINKS, NETWORKS  # noqa: E402
 
 # The original wrote to 05_writing, a directory of the previous tree that does not exist here,
@@ -166,7 +166,7 @@ def anaheim():
     """
     import json as _json
     exp = (Path(__file__).resolve().parents[4] / "archive" / "experiments_dup"
-           / "experiments")
+           / "handoff_experiments")
     sys.path.insert(0, str(exp))
     from exposure_ratio_real_networks import _hull, load_coords, read_tntp
     coords = load_coords(exp / "networks" / "anaheim_nodes.geojson")
