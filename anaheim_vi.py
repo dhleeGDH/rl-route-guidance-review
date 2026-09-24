@@ -8,7 +8,7 @@ nodes and 914 links, to answer whether the sharpening still finds leaving optima
 Construction mirrors the grid exactly. Zone nodes are the trip ends. The destination is one zone.
 Under the boundary-closed condition it is the only terminal. Under the boundary-open condition every
 other zone also terminates the trip, which is the counterpart of a peripheral link removing a
-vehicle. Traversal cost is the link's free-flow time.
+vehicle. The link cost is the link's free-flow time.
 
     python3 anaheim_vi.py
 """

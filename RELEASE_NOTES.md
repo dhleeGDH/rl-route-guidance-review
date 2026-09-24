@@ -1,3 +1,11 @@
+# v1.10.0: thirty-seed cells and a corrected seeding order
+
+Trained cells recomputed across 30 seeds. Seeding order of the retraining harness corrected: the
+network is built under the released trainer's own seed before each run. Table VI reports the exit
+rate. RUN_TO_TABLE row for the grid destination-aligned cell corrected.
+
+---
+
 # v1.9.4: archive path restored
 
 The v1.9.1 cleanup replaced the directory name `handoff_experiments` wherever it appeared, and that
@@ -273,7 +281,7 @@ them and say so when it is absent.
 **Outputs that backed a printed value and were not deposited.**
 `boundary_open_demo/arrival_visits.json` (14.4 arrivals against 397.0 in 3000 episodes),
 `interior_destination_3000_10seed.json` and `interior_destination_10seed.json` (the bespoke-grid
-rows of Table S-3), `dqn_sensitivity_10seed.json` (the learner sweep), `discount_condition.json`
+rows of Table S-3), `dqn_sensitivity_30seed.json` (the learner sweep), `discount_condition.json`
 (the Eq. (7) threshold and its inputs), `interior_deep_control_vi.json`, `ablation_10seed.json`,
 `exit_sentinel_control.json`, `truncation_control.json`, `zero_shot_transfer.json` and
 `term_optima_discounted.json`.

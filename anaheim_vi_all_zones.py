@@ -2,9 +2,9 @@
 """Exact value iteration on Anaheim over EVERY zone, not a sample of five.
 
 anaheim_vi.py ran five destinations, "1, 10, 20, 30 and 38", chosen by spacing
-across the zone numbering. A reviewer objected that the exit rate is a function of where the
-destination sits relative to the perimeter, so a numbering-spaced sample of 5 of 38 can move the
-headline figure, and that value iteration has no cost barrier to running all of them. Both points
+across the zone numbering. The exit rate is a function of where the destination sits relative to
+the perimeter, so a numbering-spaced sample of 5 of 38 can move the headline figure, and value
+iteration has no cost barrier to running all of them. Both points
 are correct: the full sweep below is 38 destinations against 378 interior origins, 14,364 pairs,
 and it completes in under a second.
 

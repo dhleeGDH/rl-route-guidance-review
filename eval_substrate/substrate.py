@@ -60,8 +60,8 @@ NETWORK = [
      r'grid network|grid[- ]like|\d\s*[x×]\s*\d\s*grid|lattice|Manhattan[- ]style grid|'
      r'synthetic network|artificial network|toy network'),
 ]
-# nodes and links are different objects and a median pooling them is not interpretable, which a
-# reviewer identified in the first version of this script. They are counted separately.
+# nodes and links are different objects and a median pooling them is not interpretable, so they
+# are counted separately.
 NODES = re.compile(r'(\d[\d,]{0,6})\s+(?:nodes|intersections|junctions)', re.I)
 LINKS = re.compile(r'(\d[\d,]{0,6})\s+(?:links|edges|road segments)', re.I)
 METRICS = [

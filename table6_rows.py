@@ -3,8 +3,8 @@
 
 Table VI reported its bespoke-grid rows over ten seeds with a bootstrap interval,
 its extended-budget row over five seeds with a standard deviation, and its SUMO rows over five seeds
-with a standard deviation. A reviewer objected that rows differing in seed count, budget and
-dispersion statistic cannot carry a within-table comparison, since any difference between two rows is
+with a standard deviation. Rows differing in seed count, budget and dispersion statistic cannot
+carry a within-table comparison, since any difference between two rows is
 confounded with the protocol behind them. Every learned cell was therefore rerun at ten seeds, and
 the budget moved from the caption into a column of its own.
 
@@ -169,9 +169,9 @@ def load_json(rel):
 def convention(label, boundary):
     """Per-seed values for the two alternative scoring conventions of the boundary-open cell.
 
-    Table VI's other rows score a trip that leaves the network as unarrived. A reviewer asked
-    for the same cell under the other two conventions in the same table, so that the reader
-    sees the dependence directly rather than inferring it from the supplement. Both cells are
+    Table VI's other rows score a trip that leaves the network as unarrived. The same cell is
+    given under the other two conventions in the same table, so that the reader sees the
+    dependence directly rather than inferring it from the supplement. Both cells are
     read from their own run outputs, never restated.
     """
     if label == "residual horizon":

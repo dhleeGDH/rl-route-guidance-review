@@ -23,7 +23,7 @@ NETS = [("Sioux Falls", os.path.join(BASE, "networks", "SiouxFalls_net.tntp")),
 GAMMAS = [0.90, 0.95, 0.99, 0.999, 0.9999]
 # Delta is measured in the raw cost units of the network, so R_d must be in the same
 # units. The deposited comparison (eq7_pairs_c.py, and eq7_route_sets.py before it) sets the
-# arrival bonus at R_GOAL = 10 IN UNITS OF THE MEAN TRAVERSAL COST and multiplies by that mean, so
+# arrival bonus at R_GOAL = 10 IN UNITS OF THE MEAN LINK COST and multiplies by that mean, so
 # the arrival bonus in raw units is 10 * mean(cost). An earlier form put the literal 10 against a raw-unit
 # Delta and mixed the two scales; the threshold below is in one scale throughout.
 R_D_UNITS = 10.0         # Section IV-B: an arrival bonus of 10 in units of one step's cost

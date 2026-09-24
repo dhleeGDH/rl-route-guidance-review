@@ -3,8 +3,8 @@
 
 Table VI mixed three protocols in one comparison: the two headline rows at 3000
 episodes over ten seeds with a min-max range, a recovery row at 8000 episodes over five seeds with a
-standard deviation, and the SUMO rows at five seeds. A reviewer objected that a table whose rows
-differ in budget, in seed count and in dispersion convention cannot carry a within-table comparison,
+standard deviation, and the SUMO rows at five seeds. A table whose rows differ in budget, in seed
+count and in dispersion convention cannot carry a within-table comparison,
 since any difference between two rows is confounded with the protocol that produced them. The
 objection is correct and no wording repairs it.
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Which of the ten prior reviews names the boundary condition of a study area at all.
 
-Table I carried three columns, and three reviewers over three rounds asked for a
-column showing what separates this review from the ten. A corpus-size column is unavailable: nine
+Table I carried three columns, and a column showing what separates this review from the ten was
+added. A corpus-size column is unavailable: nine
 of the ten state no count anywhere in their text. The axis this review is built on is available,
 and it is measured here from each review's own full text rather than asserted.
 
@@ -44,8 +44,8 @@ AXIS = {
     # widened here and the count re-measured. The manuscript prints the family, not the list,
     # since one member of it is a word the author bars.
     # 2026-08-31 (M3): the term was "boundary" and missed "boundaries", which is how the one
-    # real occurrence in the ten reviews is written. A reviewer inferred an extraction failure
-    # from the zero; the extraction is sound (5k-19k words each) and the SEARCH was narrow.
+    # real occurrence in the ten reviews is written. The zero is not an extraction failure: the
+    # extraction is sound (5k-19k words each) and the SEARCH was narrow.
     # Stemmed here, so the count is honest before the sense of each hit is adjudicated.
     "boundary": [r"boundar", r"study area", r"peripheral", r"edge effect",
                  # the bare stems "truncat" and "clipped" are reinforcement-learning

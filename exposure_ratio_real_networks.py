@@ -2,8 +2,8 @@
 """How often a peripheral exit is closer than the destination, on published road networks.
 
 Section IV-A states the condition under which a study area is exposed: the failure
-needs "a peripheral exit reachable in fewer steps than the destination". A reviewer observed that the
-manuscript defines that condition and then computes it on no real network, so its practical reach is
+needs "a peripheral exit reachable in fewer steps than the destination". The manuscript defines
+that condition without computing it on a real network, so its practical reach would otherwise be
 asserted rather than measured. This measures it.
 
 The quantity is geometric and needs no learner and no reward. For every origin-destination pair of a

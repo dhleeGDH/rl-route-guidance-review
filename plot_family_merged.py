@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Fig. 3: reward alignment and the six reporting fields by algorithm family, in one grid.
+"""Fig. 3: the studies at each recorded value, by algorithm family.
 
 T-00 queue, T-12. Fig. 3 drew the reward alignment of each family as stacked bars and Fig. 4 drew
 the six reporting fields of the same seven families as a shaded grid. Two figures over one row
@@ -14,6 +14,7 @@ to the totals scripts/countcheck.py checks against Table A-1.
 
     python3 scripts/plot_family_merged.py
 """
+import io
 import os
 
 import matplotlib
@@ -40,67 +41,131 @@ def _figures():
 
 OUT = os.path.join(_figures(), "fig_family_grid.png")
 
-# The first four columns are the reward alignment of Fig. 3 and sum to the family total. The fifth
-# is the forecast-conditioned count that figure carried at its right edge. The last six are the
-# fields of Fig. 4.
-# Set on one line and rotated. Two-line labels collided from "Destination in state" rightward at
-# eleven columns, which no reduction in type size separated.
-REWARD = ["Individual", "Mixed", "System-level", "Unclear"]
-FIELDS = ["Forecast-conditioned", "Graph encoder", "Candidate path",
-          "Destination in state", "Generalization", "Completion", "Code"]
+# 2026-09-13: the columns follow the field order of Table I in five groups, the state,
+# the action, the reward, the evaluation environment and the reporting practice, which is the
+# order of the second paragraph of Section II-B. The boundary-condition column is new and sits
+# between the reward and the reporting groups. Every count is computed from the study record
+# below rather than written in by hand.
+# 2026-09-13: the groups are separated by a gap between their columns rather than by a
+# rule, which crossed the headings and the cells; each heading sits over the middle of its own
+# group and is wrapped where the group is narrower than the name.
+GROUPS = [("State", ["Forecast-conditioned", "Graph encoder", "Destination in the state"]),
+          ("Action", ["Candidate-path action"]),
+          ("Reward alignment", ["Individual", "Mixed", "System-level", "Unclear"]),
+          ("Evaluation environment", ["Boundary condition"]),
+          ("Reporting practice", ["Generalization", "Completion", "Code"])]
 
-# Family, total, reward alignment, then forecast-conditioned and the six fields.
-ROWS = [("Multi-agent", 29, [8, 14, 6, 1], [3, 3, 3, 17, 2, 6, 4]),
-        ("Value-based deep", 28, [21, 4, 3, 0], [8, 9, 5, 15, 6, 6, 0]),
-        ("Tabular", 12, [12, 0, 0, 0], [3, 0, 2, 4, 0, 1, 0]),
-        ("Policy-gradient", 12, [11, 0, 1, 0], [2, 2, 2, 5, 4, 2, 3]),
-        ("Model-based hybrid", 6, [3, 3, 0, 0], [0, 0, 1, 2, 0, 1, 0]),
-        ("Unspecified", 3, [2, 0, 0, 1], [1, 1, 2, 1, 1, 0, 0]),
-        ("Distributional", 3, [3, 0, 0, 0], [0, 1, 0, 1, 1, 0, 3])]
+FAMILY = {"MARL": "Multi-agent", "DQN-family": "Value-based deep RL", "Tabular-Q-Sarsa": "Tabular",
+          "Policy-gradient-AC": "Policy-gradient", "Model-based-Hybrid": "Model-based hybrid",
+          "Unspecified": "Unspecified", "Distributional-RL": "Distributional"}
+ORDER = ["Multi-agent", "Value-based deep RL", "Tabular", "Policy-gradient", "Model-based hybrid",
+         "Unspecified", "Distributional"]
+# The record sits beside this file in the package.
+RECORD = os.path.join(HERE, "study_record_reviewed_studies.csv")
+VALUE = [
+    ("Forecast-conditioned", lambda r: r["predictive_representation"] in ("local-prediction", "rollout-capable")),
+    ("Graph encoder", lambda r: r["state_representation"] == "graph-encoder"),
+    ("Destination in the state", lambda r: r["OD_conditioned"] == "yes"),
+    ("Candidate-path action", lambda r: r["action_granularity"] == "candidate-path"),
+    ("Individual", lambda r: r["reward_alignment"] == "individual"),
+    ("Mixed", lambda r: r["reward_alignment"] == "mixed"),
+    ("System-level", lambda r: r["reward_alignment"] == "system"),
+    ("Unclear", lambda r: r["reward_alignment"] == "unclear"),
+    ("Boundary condition", lambda r: r["boundary_condition"] != "not-addressed"),
+    ("Generalization", lambda r: r["generalization_mechanism"] not in ("none", "unclear")),
+    ("Completion", lambda r: r["trip_completion_reported"] == "reported"),
+    ("Code", lambda r: r["code_release"] == "released"),
+]
+
+
+def rows_from_record():
+    import csv
+    with io.open(RECORD, encoding="utf-8-sig") as f:
+        rec = [r for r in csv.DictReader(f) if r["in_reviewed_studies"] == "yes"]
+    out = []
+    for fam in ORDER:
+        sub = [r for r in rec if FAMILY[r["algorithm_family_coarse"]] == fam]
+        out.append((fam, len(sub), [sum(1 for r in sub if pred(r)) for _, pred in VALUE]))
+    return out
+
+
+ROWS = rows_from_record()
 
 # A miscount here is invisible on the page: every cell still prints and every row still shades.
-# The three totals the manuscript states are asserted instead.
-assert sum(t for _, t, _, _ in ROWS) == 93
-assert [sum(r[2][j] for r in ROWS) for j in range(4)] == [60, 21, 10, 2]
-assert sum(r[3][0] for r in ROWS) == 17
-assert [sum(r[3][j] for r in ROWS) for j in range(1, 7)] == [16, 15, 45, 14, 16, 10]
+# The totals the manuscript states are asserted instead.
+assert sum(t for _, t, _ in ROWS) == 93
+_col = lambda j: sum(r[2][j] for r in ROWS)
+assert [_col(j) for j in range(4)] == [17, 16, 45, 15], [_col(j) for j in range(4)]
+assert [_col(j) for j in range(4, 8)] == [60, 21, 10, 2], [_col(j) for j in range(4, 8)]
+assert _col(8) == 10, _col(8)
+assert [_col(j) for j in range(9, 12)] == [14, 16, 10], [_col(j) for j in range(9, 12)]
 
-LABELS = REWARD + FIELDS
-counts = [r[2] + r[3] for r in ROWS]
+def _wrap(name, ncol):
+    """A heading folded so that it stays inside the columns of its own group.
 
+    One column carries about eleven characters at this type size, and a heading wider than its
+    group ran over the rule beside it. The name is folded at spaces to that width.
+    """
+    width = max(11 * ncol, len(max(name.split(), key=len)))
+    out, line = [], ""
+    for word in name.split():
+        trial = (line + " " + word).strip()
+        if len(trial) > width and line:
+            out.append(line); line = word
+        else:
+            line = trial
+    out.append(line)
+    return "\n".join(out)
+
+
+LABELS = [lab for _, labs in GROUPS for lab in labs]
+counts = [r[2] for r in ROWS]
+
+# One empty slot between two groups, so the eye separates them without a rule over the cells.
+GAP = 0.6
+XS, _x = [], 0.0
+for _gi, (_g, _labs) in enumerate(GROUPS):
+    if _gi:
+        _x += GAP
+    for _ in _labs:
+        XS.append(_x); _x += 1.0
+SPAN = [(XS[sum(len(l) for _, l in GROUPS[:i])],
+         XS[sum(len(l) for _, l in GROUPS[:i + 1]) - 1]) for i in range(len(GROUPS))]
+
+# 2026-09-21: the type is reduced by a fifth. The figure is placed at 0.85 of the text
+# width, and at that reduction the cells and the axis names print at 7.4 and 7.0 pt,
+# which is the size of the text inside Fig. 2. At the earlier size they printed at 10.3 pt, larger
+# than every other figure of the manuscript.
 fig, ax = plt.subplots(figsize=(7.1, 3.6))
-M = np.array([[c / float(tot) for c in row]
-              for row, (_, tot, _, _) in zip(counts, ROWS)])
-ax.imshow(M, cmap="Blues", vmin=0.0, vmax=1.0, aspect="auto")
-
-for i, ((name, tot, _, _), row) in enumerate(zip(ROWS, counts)):
+for i, ((name, tot, _), row) in enumerate(zip(ROWS, counts)):
     for j, c in enumerate(row):
-        ax.text(j, i, "%d" % c, ha="center", va="center", fontsize=10.5,
-                color="white" if c / float(tot) > 0.55 else "#1a1a1a")
+        share = c / float(tot)
+        ax.add_patch(plt.Rectangle((XS[j] - 0.5, i - 0.5), 1.0, 1.0,
+                                   facecolor=plt.get_cmap("Blues")(share), edgecolor="none"))
+        ax.text(XS[j], i, "%d" % c, ha="center", va="center", fontsize=8.5,
+                color="white" if share > 0.55 else "#1a1a1a")
 
-ax.set_xticks(np.arange(len(LABELS)))
-ax.set_xticklabels(LABELS, fontsize=9.5, rotation=35, ha="right",
+ax.set_xticks(XS)
+ax.set_xticklabels(LABELS, fontsize=8.0, rotation=35, ha="right",
                    rotation_mode="anchor")
 ax.set_yticks(np.arange(len(ROWS)))
-ax.set_yticklabels(["%s (%d)" % (r[0], r[1]) for r in ROWS], fontsize=10)
-ax.set_xticks(np.arange(-0.5, len(LABELS), 1), minor=True)
+ax.set_yticklabels(["%s (%d)" % (r[0], r[1]) for r in ROWS], fontsize=8.5)
 ax.set_yticks(np.arange(-0.5, len(ROWS), 1), minor=True)
-ax.grid(which="minor", color="white", linewidth=1.4)
+ax.grid(which="minor", axis="y", color="white", linewidth=1.4)
 ax.tick_params(which="minor", length=0)
 ax.tick_params(which="major", length=0)
+ax.set_xlim(XS[0] - 0.5, XS[-1] + 0.5)
 for s in ax.spines.values():
     s.set_visible(False)
 
-# The reward alignment columns partition the family; the rest do not. The rule says so without a
-# legend, which a two-group grid otherwise needs.
-ax.axvline(len(REWARD) - 0.5, color="#1a1a1a", linewidth=1.1)
-ax.text((len(REWARD) - 1) / 2.0, -0.85, "Reward alignment", ha="center", va="center", fontsize=9.5)
-ax.text(len(REWARD) + (len(FIELDS) - 1) / 2.0, -0.85, "Design choice and disclosure",
-        ha="center", va="center", fontsize=9.5)
-ax.set_ylim(len(ROWS) - 0.5, -1.2)
+# A rule between the groups and the group name above each, so a reader reads the row across the
+# five parts of the evaluation design in the order Section II-B states them.
+for (gname, labs), (x0, x1) in zip(GROUPS, SPAN):
+    ax.text((x0 + x1) / 2.0, -1.05, _wrap(gname, len(labs)), ha="center", va="center",
+            fontsize=7.5, linespacing=1.15)
+ax.set_ylim(len(ROWS) - 0.5, -1.75)
 
-ax.set_xlabel("Studies of the family at each value, shaded against the family total "
-              "in the row label", fontsize=9.5)
+# 2026-09-13: the footer is dropped; the body states what the cells are.
 fig.tight_layout()
 fig.savefig(OUT, dpi=400, bbox_inches="tight")
 print("wrote %s" % os.path.normpath(OUT))

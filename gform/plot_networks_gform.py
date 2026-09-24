@@ -129,9 +129,8 @@ def draw(ax, pos, links, boundary, labels=False, inner=None):
                     lw=0.25 if _dense else 0.6, alpha=0.45 if _dense else 1.0, zorder=1)
     for n, (x, y) in pos.items():
         on = n in boundary
-        # 2026-09-02, minor m8: the hull and the band were drawn at one marker size, so on the
-        # 416-node panel a filled square and an open one of equal size read as one class. The
-        # hull is now the larger of the two.
+        # 2026-09-02: on the 416-node panel a filled square and an open one of equal size read
+        # as one class, so the hull is drawn the larger of the two.
         band_only = on and inner is not None and n not in inner
         ms = ((2.4 if band_only else 3.8) if on else 1.3) if _dense else (3.2 if on else 2.6)
         if band_only:

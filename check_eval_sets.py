@@ -33,8 +33,8 @@ g3 = jload("gform/grid_gform.json") if os.path.exists(os.path.join(HERE, "gform/
 gcell = jload("boundary_open_demo/travel_time_bdest_ingrid.json")
 n_seeds = len(gcell["closed_time_min"]["completion_per_seed"])
 rows.append(("5x5 grid", 200, 150, n_seeds))
-if n_seeds != 10:
-    fails.append("5x5 grid: %d seeds, not the 10 Table S-1 states" % n_seeds)
+if n_seeds != 30:
+    fails.append("5x5 grid: %d seeds, not the 30 Table S-1 states" % n_seeds)
 for cell, v in gcell.items():
     if cell.startswith("_"):
         continue

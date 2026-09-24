@@ -3,9 +3,9 @@
 
 A read-through of the draft objected that no reviewed study is shown to have a
 conclusion that the boundary condition actually undermines. The retraining already in the paper
-opens the boundary of a published implementation and reports that the learned policy leaves. A
-reviewer reads that as Proposition 2 restated on a larger network, and the objection stands: the
-study's own claim is a comparison against a baseline, and that comparison was never re-measured.
+opens the boundary of a published implementation and reports that the learned policy leaves. That
+reads as Proposition 2 restated on a larger network: the study's own claim is a comparison against
+a baseline, and that comparison was never re-measured.
 
 WHAT THIS ADDS. [25] ships a Dijkstra baseline inside the released code and uses it both to warm
 start the learner and as the reference its own text compares against. This script walks BOTH under

@@ -4,7 +4,7 @@ This package holds the study record, the run outputs and the scripts behind ever
 the manuscript *Reinforcement learning for navigation-level route guidance: the study-area boundary
 and the identifiability of the routing objective* (single author, Donghoun Lee).
 
-Cited in the manuscript as tag v1.8.0 of
+Cited in the manuscript as tag v1.10.0 of
 <https://github.com/dhleeGDH/rl-route-guidance-review>, under the concept DOI
 10.5281/zenodo.21523970, which always resolves to the newest version.
 
@@ -17,6 +17,17 @@ two shaping variants and applies one dispersion convention under two seedings, a
 skips those two pages will find values that look wrong and are not.
 
 **`RELEASE_NOTES.md`** says what each version added and what changed since the last one.
+
+## One external dependency
+
+Every runner of this package imports only what the package carries, with one exception. The
+retraining of Section IV-C calls the released implementation of the reviewed study [25], published
+at <https://github.com/YoZo-X/DRL-Router>. That repository is not redistributed here, since it
+carries no licence of its own. The runs of this study used its commit
+`e204293ffaa401f4eb86bd4527a61d01b85171d1` of 11 October 2021, the head of its default branch,
+which carries no tag. `released_impl/` holds this study's wrappers around it; to run them,
+clone that repository and give its path, either as `--repo <path>` or by setting `REPO_DIR` to the
+directory holding it. Nothing else in the package needs it.
 
 ## Layout
 

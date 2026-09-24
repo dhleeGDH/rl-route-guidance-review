@@ -8,6 +8,26 @@
 == closed time_min  seed 7  final 100.0%
 == closed time_min  seed 8  final 100.0%
 == closed time_min  seed 9  final 100.0%
+== closed time_min  seed 10  final 100.0%
+== closed time_min  seed 11  final 100.0%
+== closed time_min  seed 12  final 100.0%
+== closed time_min  seed 13  final 100.0%
+== closed time_min  seed 14  final 100.0%
+== closed time_min  seed 15  final 100.0%
+== closed time_min  seed 16  final 100.0%
+== closed time_min  seed 17  final 100.0%
+== closed time_min  seed 18  final 100.0%
+== closed time_min  seed 19  final 100.0%
+== closed time_min  seed 20  final 100.0%
+== closed time_min  seed 21  final 100.0%
+== closed time_min  seed 22  final 100.0%
+== closed time_min  seed 23  final 100.0%
+== closed time_min  seed 24  final 100.0%
+== closed time_min  seed 25  final 100.0%
+== closed time_min  seed 26  final 100.0%
+== closed time_min  seed 27  final 100.0%
+== closed time_min  seed 28  final 100.0%
+== closed time_min  seed 29  final 100.0%
 == open   time_min  seed 0  final   0.0%
 == open   time_min  seed 1  final   0.0%
 == open   time_min  seed 2  final   0.0%
@@ -18,6 +38,26 @@
 == open   time_min  seed 7  final   0.0%
 == open   time_min  seed 8  final   0.0%
 == open   time_min  seed 9  final   0.0%
+== open   time_min  seed 10  final   0.0%
+== open   time_min  seed 11  final   0.0%
+== open   time_min  seed 12  final   0.0%
+== open   time_min  seed 13  final   0.0%
+== open   time_min  seed 14  final   0.0%
+== open   time_min  seed 15  final   0.0%
+== open   time_min  seed 16  final   0.0%
+== open   time_min  seed 17  final   0.0%
+== open   time_min  seed 18  final   0.0%
+== open   time_min  seed 19  final   0.0%
+== open   time_min  seed 20  final   0.0%
+== open   time_min  seed 21  final   0.0%
+== open   time_min  seed 22  final   0.0%
+== open   time_min  seed 23  final   0.0%
+== open   time_min  seed 24  final   0.0%
+== open   time_min  seed 25  final   0.0%
+== open   time_min  seed 26  final   0.0%
+== open   time_min  seed 27  final   0.0%
+== open   time_min  seed 28  final   0.0%
+== open   time_min  seed 29  final   0.0%
 == closed aligned   seed 0  final 100.0%
 == closed aligned   seed 1  final 100.0%
 == closed aligned   seed 2  final 100.0%
@@ -28,6 +68,26 @@
 == closed aligned   seed 7  final 100.0%
 == closed aligned   seed 8  final 100.0%
 == closed aligned   seed 9  final 100.0%
+== closed aligned   seed 10  final 100.0%
+== closed aligned   seed 11  final 100.0%
+== closed aligned   seed 12  final 100.0%
+== closed aligned   seed 13  final 100.0%
+== closed aligned   seed 14  final 100.0%
+== closed aligned   seed 15  final 100.0%
+== closed aligned   seed 16  final 100.0%
+== closed aligned   seed 17  final 100.0%
+== closed aligned   seed 18  final 100.0%
+== closed aligned   seed 19  final 100.0%
+== closed aligned   seed 20  final 100.0%
+== closed aligned   seed 21  final 100.0%
+== closed aligned   seed 22  final 100.0%
+== closed aligned   seed 23  final 100.0%
+== closed aligned   seed 24  final 100.0%
+== closed aligned   seed 25  final 100.0%
+== closed aligned   seed 26  final 100.0%
+== closed aligned   seed 27  final 100.0%
+== closed aligned   seed 28  final 100.0%
+== closed aligned   seed 29  final 100.0%
 == open   aligned   seed 0  final  99.0%
 == open   aligned   seed 1  final 100.0%
 == open   aligned   seed 2  final 100.0%
@@ -38,12 +98,28 @@
 == open   aligned   seed 7  final 100.0%
 == open   aligned   seed 8  final  87.5%
 == open   aligned   seed 9  final 100.0%
+== open   aligned   seed 10  final  99.5%
+== open   aligned   seed 11  final 100.0%
+== open   aligned   seed 12  final 100.0%
+== open   aligned   seed 13  final 100.0%
+== open   aligned   seed 14  final 100.0%
+== open   aligned   seed 15  final 100.0%
+== open   aligned   seed 16  final  93.5%
+== open   aligned   seed 17  final  99.0%
+== open   aligned   seed 18  final 100.0%
+== open   aligned   seed 19  final 100.0%
+== open   aligned   seed 20  final  92.5%
+== open   aligned   seed 21  final 100.0%
+== open   aligned   seed 22  final  98.0%
+== open   aligned   seed 23  final 100.0%
+== open   aligned   seed 24  final 100.0%
+== open   aligned   seed 25  final  99.5%
+== open   aligned   seed 26  final 100.0%
+== open   aligned   seed 27  final 100.0%
+== open   aligned   seed 28  final  99.5%
+== open   aligned   seed 29  final  92.5%
 closed_time_min    mean final 100.0%
 open_time_min      mean final   0.0%
 closed_aligned     mean final 100.0%
-open_aligned       mean final  98.6%
-wrote gform/four_cells_curves_8000_gform.json
-
-real	3m50.133s
-user	28m39.797s
-sys	0m1.716s
+open_aligned       mean final  98.7%
+wrote ../gform/four_cells_curves_8000_gform.json

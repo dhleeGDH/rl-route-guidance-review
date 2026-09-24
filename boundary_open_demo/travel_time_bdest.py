@@ -55,7 +55,7 @@ def travel_eval(agent, boundary, reward, eval_od, max_steps=120, seed=777):
             s = env._obs()
             a = agent.act(s, env.available_actions(), eps=0.0)
             r, c = env.pos
-            # Round 49b: Section V-B accumulates the environment's in-grid link costs and nothing
+            # Section V-B accumulates the environment's in-grid link costs and nothing
             # else, since _edge_cost returns None off the grid. Charging 1.0 for the arrival link
             # here put two travel-time figures of one paper on two accounting bases. This follows
             # the established convention: in-grid edge costs only.

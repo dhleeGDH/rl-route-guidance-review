@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# T-2069a supplement [H]. Two censuses behind the Table S-2 divergences, under the Eq. (4) form.
+# Two censuses behind the Table S-2 divergences, under the Eq. (4) form.
 #
 #  (i) states where the Eq. (4) optimal action set is a PROPER SUBSET of the Eq. (3) one and every
 #      action of the Eq. (3) set carries the same travel-time return: the aligned reward has only

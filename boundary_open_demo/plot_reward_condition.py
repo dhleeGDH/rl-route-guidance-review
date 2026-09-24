@@ -93,8 +93,8 @@ axA.grid(True, alpha=0.3, lw=0.5)
 axA.legend(loc="lower right", frameon=False, fontsize=FS - 1.0, handlelength=1.6)
 # The note sits in the clear band above both curves rather than across them.
 axA.set_ylim(min(mc.min(), mo.min()) * 1.12, 34)
-# 2026-09-02, minor m8: the in-panel note repeated the Section V-C sentence stating that the
-# boundary-open agent converges to the higher return of the two. Removed from the drawing.
+# 2026-09-02: the in-panel note is not drawn. Section V-C states that the boundary-open agent
+# converges to the higher return of the two.
 
 # ---------------- (b) OD trip completion ----------------
 cc = band(axB, "closed_time_min", "curves", CLOSED, "boundary-closed")

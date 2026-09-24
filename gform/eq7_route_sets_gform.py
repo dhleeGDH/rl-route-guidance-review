@@ -131,7 +131,7 @@ def argmax_set(u, V, adj, cost, dest, gamma, phi, beta, r_goal):
 
 
 def rollout_cost(o, dest, V, adj, cost, gamma, phi, beta, r_goal, nodes):
-    """Traversal cost actually paid along the greedy optimal route, or None where it does not
+    """Link cost actually paid along the greedy optimal route, or None where it does not
     complete. Ties are broken on the lowest node index, identically under both rewards, so a
     difference in cost is a difference the rewards produce rather than a difference in tie-breaking."""
     cur, paid, seen = o, 0.0, set()

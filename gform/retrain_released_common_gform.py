@@ -44,6 +44,7 @@ import retrain_released as R          # noqa: E402  the harness of the deposited
 sys.argv = sys.argv_backup
 
 DEST, N_ORIGINS, SEED, MAP = 15, 30, 12345, 2
+BUILD_SEED = 808                  # the released trainer's import-time seed
 COORD = Path(R.REPO) / "Maps" / "Anaheim" / "anaheim_nodes.geojson"
 CONDITIONS = ("closed", "open_hull", "open_band")
 
@@ -91,6 +92,10 @@ def one_job(args):
     condition, seed, iters, origins = args
     t0 = time.time()
     hull, band = borders()
+    # extract_map draws the link-cost variances from the global generator, so the generator is
+    # seeded with 808, the released trainer's own seed, before each build to give every seed and
+    # every condition the same network. R.run reseeds, so the seed varies the training stream only.
+    np.random.seed(BUILD_SEED)
     m = R.build(MAP, DEST)
     kind = "closed" if condition == "closed" else "open"
     exits = {"closed": set(), "open_hull": hull, "open_band": band}[condition]

@@ -90,10 +90,9 @@ def draw_panel(ax, open_boundary, title):
             if node == D_NODE and d == D_DIR:
                 continue
             draw_stub(ax, node, d, color="0.45", lw=1.0)
-    # 2026-09-02, minor m8: the two italic notes under the panels read as speech and repeated
-    # Section III-A, which already states that the destination link is the one exit on the
-    # closed variant and that the gray stubs remove a vehicle on the open one. A figure carries
-    # the drawing; the prose carries the sentence.
+    # 2026-09-02: the two italic notes under the panels are not drawn. Section III-A states that
+    # the destination link is the one exit on the closed variant and that the gray stubs remove a
+    # vehicle on the open one.
 
     # A subfigure label belongs below the graphic it names, as in Fig. 8 and Fig. 9. It is
     # drawn in the panel's own coordinates so that it tracks the drawing rather than the slot.

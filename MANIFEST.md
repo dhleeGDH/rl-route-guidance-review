@@ -26,10 +26,24 @@ VIII and Figs. 1 to 5 in the body, Tables S-1 to S-12 in the Supplementary.
 | `benchmark_network/outerface12_intervals.json` | group | Fig. 4 |
 | `benchmark_network/outerface12_intervals.py` | group | Fig. 4 |
 | `benchmark_network/plot_networks.py` | soft | Fig. 4 |
+| `boundary_open_demo/arrival_sentinel_control.py` | group | the arrival-term sentinel control of Supplementary S-I |
+| `boundary_open_demo/dqn.py` | group | the value-based learner every 5x5-grid and lattice cell trains |
+| `boundary_open_demo/env.py` | group | the 5x5-grid environment of Fig. 1, Tables IV-V and Fig. 5 |
+| `boundary_open_demo/env_boundary_dest.py` | group | the destination-on-a-peripheral-link variant of the grid environment, Tables IV-VI |
+| `boundary_open_demo/exit_sentinel_control.py` | group | the exit-sentinel control of Supplementary S-I |
+| `boundary_open_demo/four_cells_boundary_dest.py` | group | run_cell, the entry point of every 5x5-grid cell of Tables IV-V and Fig. 5 |
+| `boundary_open_demo/four_cells_curves.py` | group | the generator of gform/four_cells_curves_8000_gform.json, Fig. 5 |
+| `boundary_open_demo/interior_deep_control.py` | group | the interior-destination depth control of Supplementary S-I |
+| `boundary_open_demo/interior_destination.py` | group | the interior-destination control of Supplementary S-I |
+| `boundary_open_demo/sentinel_control.py` | group | the state-sentinel control of Supplementary S-I |
+| `boundary_open_demo/sweep_extra.py` | group | the additional learner settings of Supplementary S-V |
+| `boundary_open_demo/train.py` | group | the training loop the 5x5-grid solvers import |
+| `boundary_open_demo/truncation_control.py` | group | the step-cap control of Supplementary S-I |
+| `benchmark_network/benchmark_demo.py` | group | the Sioux Falls and Anaheim environment and learner, Tables IV-V |
 | `boundary_open_demo/discount_condition.json` | group | Tables IV-V on the 5x5 grid; the generators of Figs. 4-5 |
 | `boundary_open_demo/discount_condition.py` | group | Tables IV-V on the 5x5 grid; the generators of Figs. 4-5 |
 | `boundary_open_demo/dqn_sensitivity.py` | group | Tables IV-V on the 5x5 grid; the generators of Figs. 4-5 |
-| `boundary_open_demo/dqn_sensitivity_10seed.json` | group | Tables IV-V on the 5x5 grid; the generators of Figs. 4-5 |
+| `boundary_open_demo/dqn_sensitivity_30seed.json` | group | Tables IV-V on the 5x5 grid; the generators of Figs. 4-5 |
 | `boundary_open_demo/four_cells_curves.json` | soft | Tables IV-V on the 5x5 grid; the generators of Figs. 4-5 |
 | `boundary_open_demo/matched_budget_grid.json` | group | Tables IV-V on the 5x5 grid; the generators of Figs. 4-5 |
 | `boundary_open_demo/matched_budget_grid.py` | group | Tables IV-V on the 5x5 grid; the generators of Figs. 4-5 |
@@ -58,8 +72,6 @@ VIII and Figs. 1 to 5 in the body, Tables S-1 to S-12 in the Supplementary.
 | `gform/anaheim_arrival_term_gform.json` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
 | `gform/anaheim_arrival_term_gform.py` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
 | `gform/anaheim_cell_gform.py` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
-| `gform/anaheim_cells_gform.json` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
-| `gform/anaheim_cells_gform.log` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
 | `gform/anaheim_cells_summary_gform.py` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
 | `gform/anaheim_eval200_optimum_gform.json` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
 | `gform/anaheim_eval200_optimum_gform.py` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |

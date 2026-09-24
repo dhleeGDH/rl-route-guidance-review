@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# T-2069a supplement. The Eq. (7) right-hand side of the bespoke grid at every discount the
+# The Eq. (7) right-hand side of the bespoke grid at every discount the
 # corpus states, under the A-2 definition: Delta is the smallest positive gap in the DISCOUNTED
 # travel-time return, K and k_min are the extreme transition counts of the two paths, and the
 # denominator carries no Phi_max term. Table I records 38 stated values; their multiplicities are

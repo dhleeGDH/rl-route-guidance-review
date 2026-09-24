@@ -126,16 +126,16 @@ No measured value. The ten fields and their recorded values are the columns of t
 |---|---|---|---|
 | 5x5 grid, 3000 episodes | `python3 boundary_open_demo/travel_time_bdest.py` | `boundary_open_demo/travel_time_bdest_ingrid.json` | Table V, the four 3000-episode grid cells |
 | 5x5 grid, 8000 episodes | the same runner at the longer budget | `boundary_open_demo/travel_time_bdest_ingrid_8000.json` | Table V, the four 8000-episode grid cells |
-| 5x5 grid, destination-aligned, boundary-open | `python3 m2c/train_m2c.py` | `m2c/train_m2c_g1.json` | Table V, 35.1 at 3000 and 98.6 at 8000; the M2-C variant, see section A |
+| 5x5 grid, destination-aligned, boundary-open | `python3 boundary_open_demo/travel_time_bdest.py` | `boundary_open_demo/travel_time_bdest_ingrid.json` and `boundary_open_demo/travel_time_bdest_ingrid_8000.json` | Table V, 34.2 at 3000 and 98.7 at 8000 across 30 seeds; the published run, as `check_table6_against_runs.py` reads it |
 | Sioux Falls, 3000 episodes | `python3 gform/sioux_cells_3000_gform.py` | `gform/sioux_cells_3000_gform.json` | Table V, the Sioux Falls column at 3000 |
 | Sioux Falls, 8000 episodes | `python3 sioux30/run_cell.py` once per seed | `sioux30/dest_boundary_seed00.json` to `seed29.json`, summarised in `sioux30/summary_30seed.json` | Table V, the Sioux Falls column at 8000, 95.7 / 99.8 / 0.0 / 85.9 |
-| the cross condition | `python3 gform/cross_condition_8000_gform.py` | `gform/cross_condition_8000_gform.json` | Section IV-C, the 48.7% of a policy trained closed and evaluated open |
+| the cross condition | `python3 gform/cross_condition_8000_gform.py` | `gform/cross_condition_8000_gform.json` | Section IV-C, the 48.6% of a policy trained closed and evaluated open across 30 seeds |
 
 ## Table VI. The released implementation retrained on Anaheim
 
 | Row | Command | Output | Where the value prints |
 |---|---|---|---|
-| the three conditions | `python3 gform/retrain_released_common_gform.py` | `gform/retrain_released_common_gform.json` | Table VI, 100.0 / 59.0 / 0.0 against 100.0 / 100.0 / 93.3, and Supplementary S-I.D |
+| the three conditions | `python3 gform/retrain_released_common_gform.py --seeds 30`, with `REPO_DIR` set as the README describes | `gform/retrain_released_common_gform.json` | Table VI, completion 98.0 / 58.7 / 0.0 and exit 0.0 / 41.2 / 100.0 against an attainable maximum of 100.0 / 100.0 / 93.3 across 30 seeds, and Supplementary S-I.D |
 | the reachable set of the 30 origins | `python3 released_impl/arrival_reachable_eval_set.py` | `released_impl/arrival_reachable_eval_set.json`, `..._bandhull.json` | Supplementary S-I.D, the two origins that cannot reach the destination |
 
 ## Tables VII and VIII. The BOND checklist and the studies with released code
@@ -177,7 +177,7 @@ Every file is listed with its anchor in `MANIFEST.md`; the commands are here.
 | S-8 Evidence and recording rule of each field | none; the rule, not a run | — |
 | S-9 The three reward categories | none; the `reward_category` column of the record | `study_record_reviewed_studies.csv` |
 | S-10 Evaluation practice across the reviewed studies | `python3 eval_substrate/substrate.py`, `python3 eval_substrate/benchmark_network_adjudication.py`, `python3 fulltext_scan.py` | `eval_substrate/substrate.json`, `benchmark_network_adjudication.json`, `fulltext_scan/fulltext_scan_per_study.csv` |
-| S-11 Learner sweep | `python3 boundary_open_demo/dqn_sensitivity.py` | `boundary_open_demo/dqn_sensitivity_10seed.json`; the printed rows are the M2-C arm, `m2c/cells3/dqn_sensitivity_C.json` |
+| S-11 Learner sweep | `python3 boundary_open_demo/dqn_sensitivity.py` | `boundary_open_demo/dqn_sensitivity_30seed.json`; the printed rows are the M2-C arm, `m2c/cells3/dqn_sensitivity_C.json` |
 | S-12 BOND answered for the controlled experiment | none; the experiment itself | — |
 
 ## Not included, and why
