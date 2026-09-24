@@ -71,8 +71,7 @@ VIII and Figs. 1 to 5 in the body, Tables S-1 to S-12 in the Supplementary.
 | `gates/countcheck.py` | hard | check_ceiling_table, countcheck, make_build, plot_family_merged |
 | `gform/anaheim_arrival_term_gform.json` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
 | `gform/anaheim_arrival_term_gform.py` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
-| `gform/anaheim_cell_gform.py` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
-| `gform/anaheim_cells_summary_gform.py` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
+| `gform/anaheim_cell_gform.py` | group | module of `gform/anaheim_eval200_optimum_gform.py` |
 | `gform/anaheim_eval200_optimum_gform.json` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
 | `gform/anaheim_eval200_optimum_gform.py` | group | Tables IV-VI, Figs. 4-5, Eq. (7) |
 | `gform/anaheim_shaped_vi_gform.json` | hard | build_integrated_docx, check_internal_contradiction |

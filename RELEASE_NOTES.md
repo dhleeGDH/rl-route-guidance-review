@@ -1,3 +1,9 @@
+# v1.10.1: one script removed
+
+One script without a printed result removed.
+
+---
+
 # v1.10.0: thirty-seed cells and a corrected seeding order
 
 Trained cells recomputed across 30 seeds. Seeding order of the retraining harness corrected: the
