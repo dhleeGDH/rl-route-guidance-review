@@ -1,0 +1,15 @@
+{
+ "n_side": 13,
+ "margin": 4,
+ "draws": 200,
+ "completion_cheaper_pct": 69.0,
+ "episodes": 8000,
+ "seeds": 10,
+ "optimum": {
+  "closed_time_min": 100.0,
+  "closed_aligned": 100.0,
+  "open_time_min": 81.0,
+  "open_aligned": 100.0
+ },
+ "learned": {}
+}

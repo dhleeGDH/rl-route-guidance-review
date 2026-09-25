@@ -37,6 +37,7 @@ VIII and Figs. 1 to 5 in the body, Tables S-1 to S-9 in the Supplementary.
 | `boundary_open_demo/four_cells_boundary_dest.py` | group | run_cell, the entry point of every 5x5-grid cell of Tables IV-V and Fig. 5 |
 | `boundary_open_demo/four_cells_curves.py` | group | the generator of gform/four_cells_curves_8000_gform.json, Fig. 5 |
 | `boundary_open_demo/interior_deep_control.py` | group | the interior-destination depth control of Supplementary S-I |
+| `boundary_open_demo/interior_deep_control_vi.json` | group | the 13x13 lattice of Supplementary S-I.A, its 69.0% and its 81.0% |
 | `boundary_open_demo/interior_destination.py` | group | the interior-destination control of Supplementary S-I |
 | `boundary_open_demo/sentinel_control.py` | group | the state-sentinel control of Supplementary S-I |
 | `boundary_open_demo/sweep_extra.py` | group | the additional learner settings of Supplementary S-IV |

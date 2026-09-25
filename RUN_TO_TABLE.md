@@ -31,8 +31,7 @@ and `boundary_open_demo/travel_time_bdest_ingrid_8000.json`, and the Sioux Falls
 Table S-8 is `boundary_open_demo/dqn_sensitivity_30seed.json`, also the published form. No
 printed value of the manuscript or of the supplement comes from an M2-C file; the M2-C
 outputs under `m2c/` are the second arm of the same runs and are deposited as a record of it. A travel-time reward carries no shaping
-term, so M2-C cannot reach it: those cells are identical under both variants by construction, and
-`m2c/controls/sentinel_control_P.json` records the seed-for-seed reproduction that shows it.
+term, so M2-C cannot reach it: those cells are identical under both variants by construction.
 
 Each row below names the variant where the distinction bears on which file to open.
 
@@ -56,45 +55,16 @@ this package. The 5x5-grid M2-C cell is keyed
 on this package's `m2c/train_m2c_g1.json` return a different interval. The four M2-C cells of
 Tables IV and V reproduce to the digit under the repository key and under no other.
 
-**A third convention exists in the run files of the two sentinel controls.** The driver that wrote
-them, `boundary_open_demo/exit_sentinel_control.py`, draws its own interval from
-`numpy.random.default_rng(7)`, which is neither A nor B. The published-arm files
-`boundary_open_demo/exit_sentinel_control.json`, `zero_shot_transfer.json` and
-`m2c/controls/*_P.json` keep those bounds, since they are the record of the published run as it was
-deposited. The M2-C arms that the manuscript prints, `m2c/controls/exit_sentinel_control_C.json` and
-`sentinel_control_C.json`, were redrawn under convention B in the revision and now carry the printed
-strings in `printed_open`, `printed_difference` and `printed_ci`. Their per-seed values and means
-are the run and were not touched. `m2c/controls/summarize.py` prints every cell of both controls in
-its printed form under both variants.
-
-**A paired difference prints as the difference of the two printed cells**, which is the rule
-`check_table_arithmetic.py` enforces, so a reader can take it from the cells beside it. Where the
-two roundings part the printed difference is the smaller: the mean 24.45 rounds to 24.5 while the
-printed cells 41.5 and 17.1 differ by 24.4, and 37.75 against 60.4 and 22.7 gives 37.7. The interval
-beside it is the interval of the paired sample, drawn under convention B.
-
-**The `printed` strings stored inside the run files are convention B.** `travel_time_bdest_ingrid.json`,
-`travel_time_bdest_ingrid_8000.json`, `travel_time_sumo_3000.json` and `travel_time_sumo_8000.json`
-each carry a `completion_ci95.printed` and a `travel_time_ci95.printed` written by
-`bootstrap_travel_time_ci.py`. Table IV prints those same cells under convention A. Four completion
-bounds therefore differ by 0.1 between the file and the table:
-
-| Cell | Table IV | the file's own `printed` |
-|---|---|---|
-| SUMO, travel-time, closed, 3000 | 98.2 [96.6-99.5] | 98.2 (96.7 to 99.5) |
-| SUMO, aligned, open, 3000 | 27.2 [18.8-36.6] | 27.2 (18.8 to 36.4) |
-| SUMO, aligned, open, 8000 | 98.0 [94.9-99.8] | 98.0 (95.0 to 99.8) |
-| grid, aligned, open, 3000, published form | 35.1 [26.1-43.0] | 35.1 (26.3 to 43.1) |
-
-Neither is wrong. They are two draws of the same ten numbers under two seedings, and the table is
-internally consistent because every one of its published-form cells uses convention A.
+**The `printed` strings stored inside the run files are convention B.**
+`travel_time_bdest_ingrid.json` and `travel_time_bdest_ingrid_8000.json` each carry a
+`completion_ci95.printed` and a `travel_time_ci95.printed`. Table V prints the same cells under
+convention A, so a bound can differ by 0.1 between the file and the table. Neither is wrong: they
+are two draws of the same numbers under two seedings, and the table is internally consistent
+because every one of its published-form cells uses convention A.
 
 `table6_rows.py` is deposited here for its convention alone. Its `ci()`, `cell_key()` and `fmt()`
 reproduce every published-form cell of Tables IV and V from the per-seed lists of the files named
-below. Its `main()` does not run against this package: its loaders name the working-tree filenames
-of the runs (`four_cells_boundary_dest.json`, `sumo_bdest_*.json`) rather than the deposited ones
-(`travel_time_bdest_ingrid.json`, `travel_time_sumo_*.json`), which hold the same per-seed values
-under different names, and it also reaches for benchmark outputs this package does not carry.
+below.
 
 ---
 
@@ -278,7 +248,7 @@ version.
 | system-level reward | the same file | `reward_alignment = system` | |
 | the boundary condition, 10 / 83 | the same file | `boundary_condition` | `boundary_status` and `boundary_status_note` decompose it; see above |
 | a policy trained on a boundary-closed network and evaluated on a boundary-open network, 48.6% | `gform/cross_condition_8000_gform.json` | `cells.aligned.scored_open` | the 98.7% it is stated against is the boundary-open cell of Table V, `boundary_open_demo/travel_time_bdest_ingrid_8000.json`, key `open_aligned` |
-| the destination is nearer than the nearest exit, 69.0% | `boundary_open_demo/interior_deep_control_vi.json` | `completion_cheaper_pct` | |
+| the destination is nearer than the nearest exit, 69.0% | `boundary_open_demo/interior_deep_control_vi.json` | `completion_cheaper_pct` | `python3 boundary_open_demo/interior_deep_control.py --vi-only --out interior_deep_control_vi.json` writes it |
 | travel-time optimum on the deep lattice, 81.0% | the same file | `optimum.open_time_min` | |
 | the 396 ordered OD pairs | `boundary_open_demo/discount_condition.json` | `grid_check.pairs` | the Eq. (7) threshold is `gamma_star`, its inputs `phi_max`, `k_min`, `K`, `delta`, `denominator` |
 | the M2-C 5x5-grid cells | `m2c/train_m2c_g1.json` | `open\|aligned\|{}\|3000` and `\|8000` | the cell name is the run's own parameter string; the empty braces are the default reward weights |
