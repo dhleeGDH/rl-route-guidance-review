@@ -5,7 +5,7 @@ its grade. **hard** means a gate of the development repository, a figure generat
 builder names the file itself; **soft** means an anchored script of this package reads it; **group**
 means the file belongs to a directory named as a whole by the anchor in its row. `RUN_TO_TABLE.md`
 gives the command behind each printed cell. Float numbers are the manuscript's own: Tables I to
-VIII and Figs. 1 to 5 in the body, Tables S-1 to S-12 in the Supplementary.
+VIII and Figs. 1 to 5 in the body, Tables S-1 to S-9 in the Supplementary.
 
 | File | Grade | Supports |
 |---|---|---|
@@ -25,6 +25,9 @@ VIII and Figs. 1 to 5 in the body, Tables S-1 to S-12 in the Supplementary.
 | `anaheim_vi_perimeter.py` | group | the package itself |
 | `benchmark_network/outerface12_intervals.json` | group | Fig. 4 |
 | `benchmark_network/outerface12_intervals.py` | group | Fig. 4 |
+| `benchmark_network/attainable_maximum_networks.py` | group | the arrival ceiling of a border set; imported by `outer_face_sioux.py` |
+| `benchmark_network/outer_face_sioux.json` | group | the twelve nodes of the Sioux Falls border, Fig. 4(b) |
+| `benchmark_network/outer_face_sioux.py` | group | derives the twelve nodes of the Sioux Falls border from the rotation system of the published coordinates and is the file that fixes the set; imports `attainable_maximum_networks.py` beside it |
 | `benchmark_network/plot_networks.py` | soft | Fig. 4 |
 | `boundary_open_demo/arrival_sentinel_control.py` | group | the arrival-term sentinel control of Supplementary S-I |
 | `boundary_open_demo/dqn.py` | group | the value-based learner every 5x5-grid and lattice cell trains |
@@ -36,7 +39,7 @@ VIII and Figs. 1 to 5 in the body, Tables S-1 to S-12 in the Supplementary.
 | `boundary_open_demo/interior_deep_control.py` | group | the interior-destination depth control of Supplementary S-I |
 | `boundary_open_demo/interior_destination.py` | group | the interior-destination control of Supplementary S-I |
 | `boundary_open_demo/sentinel_control.py` | group | the state-sentinel control of Supplementary S-I |
-| `boundary_open_demo/sweep_extra.py` | group | the additional learner settings of Supplementary S-V |
+| `boundary_open_demo/sweep_extra.py` | group | the additional learner settings of Supplementary S-IV |
 | `boundary_open_demo/train.py` | group | the training loop the 5x5-grid solvers import |
 | `boundary_open_demo/truncation_control.py` | group | the step-cap control of Supplementary S-I |
 | `benchmark_network/benchmark_demo.py` | group | the Sioux Falls and Anaheim environment and learner, Tables IV-V |
@@ -59,10 +62,10 @@ VIII and Figs. 1 to 5 in the body, Tables S-1 to S-12 in the Supplementary.
 | `boundary_open_demo/travel_time_bdest_ingrid_8000.json` | hard | build_integrated_docx, check_table6_against_runs, check_travel_time_cells |
 | `check_eval_sets.py` | group | the package itself |
 | `eq7_route_sets.py` | group | the package itself |
-| `eval_substrate/benchmark_network_adjudication.json` | group | Supplementary Table S-10 |
-| `eval_substrate/benchmark_network_adjudication.py` | group | Supplementary Table S-10 |
+| `eval_substrate/benchmark_network_adjudication.json` | group | Supplementary Table S-7 |
+| `eval_substrate/benchmark_network_adjudication.py` | group | Supplementary Table S-7 |
 | `eval_substrate/substrate.json` | hard | countcheck |
-| `eval_substrate/substrate.py` | group | Supplementary Table S-10 |
+| `eval_substrate/substrate.py` | group | Supplementary Table S-7 |
 | `exposure_ratio_real_networks.py` | group | the package itself |
 | `fulltext_scan.py` | hard | fulltext_scan |
 | `fulltext_scan/README.md` | group | Section III-C |
@@ -178,16 +181,16 @@ VIII and Figs. 1 to 5 in the body, Tables S-1 to S-12 in the Supplementary.
 | `networks/anaheim_nodes.geojson` | soft | Fig. 4 and Table IV |
 | `plot_family_merged.py` | hard | build_integrated_docx, check_appendix_consistency, check_figure_generators, plot_family_merged |
 | `plot_family_reporting.py` | hard | check_figure_generators, check_internal_contradiction, plot_family_merged, plot_family_reporting |
-| `related_reviews/README.md` | group | Supplementary Table S-6 and Section II-A |
-| `related_reviews/adjacent_review_readthrough.json` | group | Supplementary Table S-6 and Section II-A |
-| `related_reviews/adjacent_review_readthrough.py` | group | Supplementary Table S-6 and Section II-A |
-| `related_reviews/crossreview_recall.json` | group | Supplementary Table S-6 and Section II-A |
-| `related_reviews/crossreview_recall.py` | group | Supplementary Table S-6 and Section II-A |
-| `related_reviews/overlap_refs.json` | group | Supplementary Table S-6 and Section II-A |
-| `related_reviews/overlap_refs.py` | group | Supplementary Table S-6 and Section II-A |
-| `related_reviews/overlap_refs_complete.json` | group | Supplementary Table S-6 and Section II-A |
-| `related_reviews/overlap_refs_complete.py` | group | Supplementary Table S-6 and Section II-A |
-| `related_reviews/reviewed_studies_refs.json` | group | Supplementary Table S-6 and Section II-A |
+| `related_reviews/README.md` | group | Supplementary Table S-5 and Section II-A |
+| `related_reviews/adjacent_review_readthrough.json` | group | Supplementary Table S-5 and Section II-A |
+| `related_reviews/adjacent_review_readthrough.py` | group | Supplementary Table S-5 and Section II-A |
+| `related_reviews/crossreview_recall.json` | group | Supplementary Table S-5 and Section II-A |
+| `related_reviews/crossreview_recall.py` | group | Supplementary Table S-5 and Section II-A |
+| `related_reviews/overlap_refs.json` | group | Supplementary Table S-5 and Section II-A |
+| `related_reviews/overlap_refs.py` | group | Supplementary Table S-5 and Section II-A |
+| `related_reviews/overlap_refs_complete.json` | group | Supplementary Table S-5 and Section II-A |
+| `related_reviews/overlap_refs_complete.py` | group | Supplementary Table S-5 and Section II-A |
+| `related_reviews/reviewed_studies_refs.json` | group | Supplementary Table S-5 and Section II-A |
 | `released_impl/arrival_reachable_eval_set.json` | hard | check_internal_contradiction |
 | `released_impl/arrival_reachable_eval_set.py` | hard | check_internal_contradiction |
 | `released_impl/arrival_reachable_eval_set_bandhull.json` | hard | check_internal_contradiction |
@@ -200,111 +203,111 @@ VIII and Figs. 1 to 5 in the body, Tables S-1 to S-12 in the Supplementary.
 | `released_impl/retrain_released_full.json` | group | Table VI and Supplementary S-I.D |
 | `released_impl/retrain_released_hull_10seed.json` | hard | check_internal_contradiction |
 | `reviewed_studies/ieee_xplore_export_records.csv` | hard | supplementary.md |
-| `reviewed_studies_text/0.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/1.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/10.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/101.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/11.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/12.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/13.README.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/13.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/14.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/15.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/16.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/17.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/18.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/19.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/2.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/20.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/21.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/22.README.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/22.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/23.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/24.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/25.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/26.README.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/27.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/28.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/29.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/3.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/30.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/31.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/32.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/33.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/34.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/36.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/37.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/38.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/39.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/4.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/40.README.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/40.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/41.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/42.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/43.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/46.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/47.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/48.README.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/48.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/49.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/5.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/50.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/51.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/52.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/53.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/54.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/55.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/56.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/57.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/58.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/59.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/6.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/60.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/61.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/62.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/63.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/64.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/65.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/66.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/67.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/68.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/69.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/7.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/70.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/71.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/72.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/74.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/75.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/76.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/77.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/78.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/79.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/8.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/81.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/82.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/83.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/84.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/85.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/86.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/87.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/88.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/89.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/9.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/90.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/91.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/92.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/94.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/95.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/97.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/98.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
-| `reviewed_studies_text/99.txt` | group | Table I and Supplementary Tables S-9, S-10; the input of the lexical scans |
+| `reviewed_studies_text/0.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/1.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/10.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/101.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/11.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/12.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/13.README.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/13.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/14.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/15.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/16.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/17.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/18.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/19.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/2.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/20.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/21.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/22.README.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/22.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/23.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/24.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/25.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/26.README.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/27.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/28.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/29.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/3.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/30.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/31.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/32.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/33.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/34.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/36.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/37.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/38.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/39.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/4.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/40.README.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/40.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/41.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/42.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/43.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/46.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/47.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/48.README.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/48.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/49.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/5.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/50.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/51.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/52.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/53.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/54.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/55.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/56.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/57.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/58.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/59.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/6.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/60.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/61.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/62.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/63.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/64.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/65.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/66.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/67.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/68.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/69.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/7.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/70.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/71.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/72.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/74.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/75.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/76.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/77.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/78.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/79.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/8.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/81.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/82.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/83.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/84.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/85.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/86.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/87.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/88.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/89.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/9.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/90.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/91.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/92.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/94.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/95.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/97.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/98.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
+| `reviewed_studies_text/99.txt` | group | Table I and Supplementary Tables S-6, S-7; the input of the lexical scans |
 | `screening_trail/assembly_stages.json` | hard | check_flow_stages |
 | `screening_trail/assembly_stages.py` | hard | check_flow_stages |
 | `screening_trail/plot_assembly.py` | hard | check_figure_generators, check_flow_stages |
 | `search_rerun/exclusion_clause_records.csv` | hard | check_evidence_artifacts |
 | `search_rerun/exclusion_clause_rerun.csv` | hard | check_evidence_artifacts |
 | `search_rerun/exclusion_clause_rerun.json` | hard | check_evidence_artifacts |
-| `search_rerun/exclusion_clause_rerun.py` | group | Supplementary S-IV.A and Table S-4 |
+| `search_rerun/exclusion_clause_rerun.py` | group | Supplementary S-III.A and Table S-4 |
 | `sioux30/boundary_set_diag.py` | group | Table V, the Sioux Falls rows at 8000 episodes |
 | `sioux30/dest_boundary_seed00.json` | group | Table V, the Sioux Falls rows at 8000 episodes |
 | `sioux30/dest_boundary_seed01.json` | group | Table V, the Sioux Falls rows at 8000 episodes |

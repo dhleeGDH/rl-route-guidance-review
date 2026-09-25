@@ -115,9 +115,9 @@ def nd_layout():
 def draw(ax, pos, links, boundary, labels=False, inner=None):
     """inner is a subset of boundary drawn as a filled marker against an open one.
 
-    A read-through of the draft asked for the two Anaheim borders to be separable on the page: the paper
-    compares a 13-node convex hull with a 95-node band of a tenth and the figure drew their union
-    as one set, so a reader could not see which nodes belong to which. The two are distinguished
+    The two Anaheim borders must be separable on the page: the paper compares a 13-node convex
+    hull with a 95-node band of a tenth and the figure drew their union as one set, so a reader
+    could not see which nodes belong to which. The two are distinguished
     by MARKER FILL rather than by colour, since the author's 2026-08-28 correction on this figure
     was that a grayscale print collapses a colour distinction.
     """
@@ -144,10 +144,14 @@ def draw(ax, pos, links, boundary, labels=False, inner=None):
     # between the three networks rather than as a property of one drawing. Anaheim has 416 nodes
     # and cannot carry them, so none of the three does. The `labels` argument is kept for a
     # single-panel use and defaults off.
+    # 2026-09-25: panel (b) carries them again, at 8 pt. Section IV-B names the 12 nodes of the
+    # outer face as the border of the Sioux Falls network and refers the reader to this panel
+    # for them, which an unnumbered drawing cannot answer. Anaheim still cannot carry numbers
+    # at 416 nodes and the grid needs none, so the argument stays off for those two.
     if labels:
         for n, (x, y) in pos.items():
-            ax.annotate(str(n), (x, y), textcoords="offset points", xytext=(3.2, 2.6),
-                        fontsize=FS - 2.0, color=INK, zorder=3)
+            ax.annotate(str(n), (x, y), textcoords="offset points", xytext=(3.6, 2.4),
+                        fontsize=8.0, color=INK, zorder=3)
     ax.set_aspect("equal")
     ax.axis("off")
     ax.margins(0.10)
@@ -190,7 +194,7 @@ fig.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.24, wspace=0.14)
 
 p, l, b = bespoke()
 draw(axes[0], p, l, b)
-draw(axes[1], SF_LAYOUT, SF_LINKS, SF_BOUNDARY)
+draw(axes[1], SF_LAYOUT, SF_LINKS, SF_BOUNDARY, labels=True)
 _ap, _al, _ab, _ah = anaheim()
 draw(axes[2], _ap, _al, _ab, inner=_ah)
 

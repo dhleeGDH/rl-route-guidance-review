@@ -2,7 +2,7 @@ idx 40 = [1109], printed [125]. L. Li, Q. He, R. Luo, N. Chen, P. Gao, "Emergenc
 route optimization based on deep reinforcement learning in highway network," Proc. SPIE 13421,
 8th Int. Conf. Traffic Eng. Transp. Syst. (ICTETS 2024).
 
-FULL TEXT ADDED 2026-09-10 (T-1991). The study was recorded from an abstract alone until now,
+FULL TEXT ADDED 2026-09-10. The study was recorded from an abstract alone until now,
 with the family entered as Unspecified. The PDF reached handoff/corpus_pdfs/ and 40.txt was
 extracted with pdftotext, as 48.README.txt records for idx 48.
 

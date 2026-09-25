@@ -881,8 +881,8 @@ def main():
 
     # --- Table S-22 against the run that produces it () -----------------
     # Every row above is print-versus-print. These rows have one artefact behind them,
-    # eval_substrate/substrate.json, and a read-through found the printed denominator had drifted from it
-    # without any gate seeing the drift. The comparison is made here so the same drift cannot
+    # eval_substrate/substrate.json, and the printed denominator had drifted from it without any
+    # gate seeing the drift. The comparison is made here so the same drift cannot
     # recur. One row carries a judgement rather than the lexical count and is named with its
     # reason: the 'random or greedy' pattern matches an epsilon-greedy exploration rule as well as
     # a greedy comparison, and the manuscript prints the count with that one text withheld.

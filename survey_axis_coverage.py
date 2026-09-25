@@ -39,7 +39,7 @@ AXIS = {
     # is removed from the INSTRUMENT and not merely from the printed table, so that the family
     # Appendix B prints is the family that was searched. Removing a term cannot raise a count,
     # and the boundary count was 0 of 10 with it present; the re-run below confirms 0 without it.
-    # 2026-08-29: a read-through objected that four stems are too narrow and named network
+    # 2026-08-29: four stems are too narrow for the family, which also covers network
     # truncation, sub-network extraction and the zone or centroid connector. The family is
     # widened here and the count re-measured. The manuscript prints the family, not the list,
     # since one member of it is a word the author bars.

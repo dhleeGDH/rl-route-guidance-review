@@ -111,9 +111,9 @@ def nd_layout():
 def draw(ax, pos, links, boundary, labels=False, inner=None):
     """inner is a subset of boundary drawn as a filled marker against an open one.
 
-    A read-through of the draft asked for the two Anaheim borders to be separable on the page: the paper
-    compares a 13-node convex hull with a 95-node band of a tenth and the figure drew their union
-    as one set, so a reader could not see which nodes belong to which. The two are distinguished
+    The two Anaheim borders must be separable on the page: the paper compares a 13-node convex
+    hull with a 95-node band of a tenth and the figure drew their union as one set, so a reader
+    could not see which nodes belong to which. The two are distinguished
     by MARKER FILL rather than by colour, since the author's 2026-08-28 correction on this figure
     was that a grayscale print collapses a colour distinction.
     """

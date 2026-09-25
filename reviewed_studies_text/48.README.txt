@@ -25,7 +25,7 @@ The 2019 source PDF is not present in any local store, so the text cannot be reg
 Found 2026-08-22 by a blind second coder who was given both files and reported them identical.
 
 ---
-CORRECTION, 2026-09-09 (T-1945). The sentence above, "The 2019 source PDF is not present in any
+CORRECTION, 2026-09-09. The sentence above, "The 2019 source PDF is not present in any
 local store", is not true. The paper is at pdfs/pdfs/Meta-deep q-learning for eco-routing.pdf and
 has been there since 2026-06-06. 48.txt was regenerated from it with pdftotext and is the 2019
 conference paper; the wrong extraction is kept beside it as 48.txt.WRONG_SOURCE for the record.

@@ -2,7 +2,7 @@
 
 Every measured value of the manuscript is listed here with the file that produces it, table by
 table and figure by figure. Float numbers are the manuscript's own: Tables I to VIII in the body,
-Figs. 1 to 5 in the body, and Tables S-1 to S-12 in the Supplementary.
+Figs. 1 to 5 in the body, and Tables S-1 to S-9 in the Supplementary.
 
 Paths are relative to this package unless marked `repo_v11/`, which is the code and data archive
 published at the GitHub tag of the same version. Exact computations, meaning value iteration and
@@ -23,9 +23,14 @@ Section V prints two shaping variants of the destination-aligned reward.
 it is `m2c/shaping_m2c.py`. Every exact row is identical under the two variants at `gamma = 1`, so
 the regression is an identity rather than a coincidence.
 
-The manuscript prints M2-C for the destination-aligned cells of the 5x5 grid, for Sioux Falls,
-and for the learner sweep. It prints the published
-run everywhere else, including every travel-time cell. A travel-time reward carries no shaping
+The manuscript prints the published run throughout. Every one of the eight cells of Table V is
+the published form: the 5x5-grid rows are `boundary_open_demo/travel_time_bdest_ingrid.json`
+and `boundary_open_demo/travel_time_bdest_ingrid_8000.json`, and the Sioux Falls rows are
+`gform/sioux_cells_3000_gform.json` and the thirty shards
+`sioux30/dest_boundary_seed00.json` to `seed29.json`. The learner sweep of Supplementary
+Table S-8 is `boundary_open_demo/dqn_sensitivity_30seed.json`, also the published form. No
+printed value of the manuscript or of the supplement comes from an M2-C file; the M2-C
+outputs under `m2c/` are the second arm of the same runs and are deposited as a record of it. A travel-time reward carries no shaping
 term, so M2-C cannot reach it: those cells are identical under both variants by construction, and
 `m2c/controls/sentinel_control_P.json` records the seed-for-seed reproduction that shows it.
 
@@ -98,7 +103,7 @@ under different names, and it also reaches for benchmark outputs this package do
 | Column | Command | Output | Where the value prints |
 |---|---|---|---|
 | every cell | none; the record is the source | `study_record_reviewed_studies.csv`, filtered to `in_reviewed_studies == yes`, 93 rows | Table I, one row per study, and every count of Sections II-B, III-A, III-B and III-C |
-| the simulator column of Supplementary Table S-10 | none | `study_record_simulator_audit_v6.csv` | Section III-C, the platform named in 53 of the 93 |
+| the simulator column of Supplementary Table S-7 | none | `study_record_simulator_audit_v6.csv` | Section III-C, the platform named in 53 of the 93 |
 
 ## Table II. The recorded values of the ten fields and the source of each
 
@@ -156,6 +161,7 @@ recomputes every count of Table VII and every mark of Table VIII.
 | Fig. 2, the selection flow | `python3 screening_trail/plot_assembly.py` | `fig_flow.png`; the counts are `screening_trail/assembly_stages.json`, asserted by `assembly_stages.py` | Fig. 2 and Supplementary Table S-7 |
 | Fig. 3, the family-by-field grid | `python3 plot_family_merged.py` | `fig_family_grid.png` | Fig. 3; every cell is a tally of the record, held in step by `gates/countcheck.py` |
 | Fig. 4, the three road networks | `python3 gform/plot_networks_gform.py` | `fig_networks.png`, over `networks/` | Fig. 4 |
+| Fig. 4(b), the twelve nodes of the Sioux Falls border | `python3 benchmark_network/outer_face_sioux.py` | `benchmark_network/outer_face_sioux.json`; the trace of the outer face of the drawing, and the attainable maximum at that border and at the coordinate hull | Fig. 4(b) and Section IV-B |
 | Fig. 5, the training curves | `python3 gform/plot_reward_condition_8000_gform.py` | `fig_reward_condition.png`, over `gform/four_cells_curves_8000_gform.json` | Fig. 5 |
 
 `gates/check_figure_generators.py` renders each generator and compares the result with the placed
@@ -171,14 +177,24 @@ Every file is listed with its anchor in `MANIFEST.md`; the commands are here.
 | S-2 Pairs drawn, valid and distinct | `python3 check_eval_sets.py` | printed |
 | S-3 Attainable maximum of each border set | `python3 anaheim_vi_perimeter.py`, `python3 benchmark_network/outerface12_intervals.py` | `anaheim/*.json`, `benchmark_network/outerface12_intervals.json` |
 | S-4 The seven records removed by the exclusion clause | `python3 search_rerun/exclusion_clause_rerun.py` | `search_rerun/exclusion_clause_rerun.csv`, `exclusion_clause_records.csv` |
-| S-5 Search query and record count of each source | the queries of the Appendix | `reviewed_studies/ieee_xplore_export_records.csv` |
-| S-6 Term families over the related reviews | `python3 survey_axis_coverage.py` | `survey_axis_coverage.json`; the reviews themselves are copyrighted and are not redistributed |
-| S-7 Selection of the reviewed studies | `python3 screening_trail/assembly_stages.py` | `screening_trail/assembly_stages.json` |
-| S-8 Evidence and recording rule of each field | none; the rule, not a run | — |
-| S-9 The three reward categories | none; the `reward_category` column of the record | `study_record_reviewed_studies.csv` |
-| S-10 Evaluation practice across the reviewed studies | `python3 eval_substrate/substrate.py`, `python3 eval_substrate/benchmark_network_adjudication.py`, `python3 fulltext_scan.py` | `eval_substrate/substrate.json`, `benchmark_network_adjudication.json`, `fulltext_scan/fulltext_scan_per_study.csv` |
-| S-11 Learner sweep | `python3 boundary_open_demo/dqn_sensitivity.py` | `boundary_open_demo/dqn_sensitivity_30seed.json`; the printed rows are the M2-C arm, `m2c/cells3/dqn_sensitivity_C.json` |
-| S-12 BOND answered for the controlled experiment | none; the experiment itself | — |
+| S-5 Term families over the related reviews | `python3 survey_axis_coverage.py` | `survey_axis_coverage.json`; the reviews themselves are copyrighted and are not redistributed |
+| S-6 The three reward categories | none; the `reward_category` column of the record | `study_record_reviewed_studies.csv` |
+| S-7 Evaluation practice across the reviewed studies | `python3 eval_substrate/substrate.py`, `python3 eval_substrate/benchmark_network_adjudication.py`, `python3 fulltext_scan.py` | `eval_substrate/substrate.json`, `benchmark_network_adjudication.json`, `fulltext_scan/fulltext_scan_per_study.csv` |
+| S-8 Learner sweep | `python3 boundary_open_demo/dqn_sensitivity.py` | `boundary_open_demo/dqn_sensitivity_30seed.json`, the published form the manuscript prints; `m2c/cells3/dqn_sensitivity_C.json` is the M2-C arm of the same sweep and is not printed |
+| S-9 BOND answered for the controlled experiment | none; the experiment itself | — |
+
+Three tables that stood here are now in the appendices of the manuscript itself: the search query
+and record count of each source is Table IX, the selection of the reviewed studies is Table X, and
+the evidence and recording rule of each field is Table XI. Their commands are
+`python3 screening_trail/assembly_stages.py` for the selection, which writes
+`screening_trail/assembly_stages.json`; the query counts are the queries of the appendix over
+`reviewed_studies/ieee_xplore_export_records.csv`; and the recording rule is a rule, not a run.
+
+| Table | Command | Output |
+|---|---|---|
+| IX Query, interface and record count | the queries of the appendix | `reviewed_studies/ieee_xplore_export_records.csv` |
+| X Selection of the reviewed studies | `python3 screening_trail/assembly_stages.py` | `screening_trail/assembly_stages.json` |
+| XI Evidence and recording rule of each field | none; the rule, not a run | — |
 
 ## Not included, and why
 
@@ -188,7 +204,7 @@ screening residual.
 
 `benchmark_network/benchmark_results_dest_interior.npz` holds the superseded Sioux Falls
 interior-destination run at the border omitting one node of the outer face, which gives 56.1% where
-Table S-3 prints 29.1%. Supplementary Section S-I.E states the supersession. The printed row comes
+Table S-3 prints 29.1%. The printed row comes
 from `sioux30/summary_30seed.json` and the superseded file is not deposited.
 
 `boundary_open_demo/matched_budget_grid.json` backs no cell of the present text; see Table IV above.
@@ -269,7 +285,7 @@ version.
 | link-level action | the same file | `action_granularity = next-link` | |
 | system-level reward | the same file | `reward_alignment = system` | |
 | the boundary condition, 10 / 83 | the same file | `boundary_condition` | `boundary_status` and `boundary_status_note` decompose it; see above |
-| policies trained on a boundary-closed network, 17.1% and 41.5% | `m2c/controls/exit_sentinel_control_C.json` | `cells.high_time_min`, `cells.high_aligned`, field `scored_open` | `high` marks the sentinel at its published value; `cells.matched_*` carries the base-cost control, 22.7% and 60.4% |
+| a policy trained on a boundary-closed network and evaluated on a boundary-open network, 48.6% | `gform/cross_condition_8000_gform.json` | `cells.aligned.scored_open` | the 98.7% it is stated against is the boundary-open cell of Table V, `boundary_open_demo/travel_time_bdest_ingrid_8000.json`, key `open_aligned` |
 | paired difference, 24.4 and 37.7 points | the same file | `paired.high`, `paired.matched` | each with `printed_cells`, `printed_difference` and `printed_ci` |
 | the destination is nearer than the nearest exit, 69.0% | `boundary_open_demo/interior_deep_control_vi.json` | `completion_cheaper_pct` | |
 | travel-time optimum on the deep lattice, 81.0% | the same file | `optimum.open_time_min` | |

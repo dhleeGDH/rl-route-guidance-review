@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """Retrain a published implementation on a boundary-open variant of its own network.
 
-A read-through objected that the failure this study demonstrates is not observed in
-any reviewed study, and asks for one of the seven code-released studies among the 41 to be retrained
-under a boundary-open condition. The adjudication in `code_boundary_adjudication.md` records six of
+The failure this study demonstrates is not observed in any reviewed study as released, so one of
+the seven code-released studies among the 41 is retrained under a boundary-open condition. The adjudication in `code_boundary_adjudication.md` records six of
 the seven as boundary-closed in their shipped environment: nothing in them offers a move that leaves
 the modeled network, so the failure cannot arise as released. That is a statement about what the
 released code does, not about what would happen if the boundary were opened.

@@ -73,8 +73,8 @@ NETWORKS = {
     # published, which is the set drawn in red in Fig. 8. Interior nodes offer no exit.
     "sioux_falls": dict(
         links=SF_LINKS, n_nodes=24, coords=SF_COORD, state_mode="coord",
-                # The outer face of the published drawing, derived by experiments/outer_face_sioux.py
-        # from the rotation system of the coordinates under an Euler check. An earlier default
+        # The outer face of the published drawing, derived by outer_face_sioux.py beside this
+        # file from the rotation system of the coordinates under an Euler check. An earlier default
         # omitted node 8, which lies on the face: the graph carries no 6-7 link, so a border
         # without 8 does not close. The cells reported by Section V-D run on this set.
         od_mode="dest_boundary", boundary={1, 2, 3, 6, 7, 8, 12, 13, 18, 20, 21, 24},

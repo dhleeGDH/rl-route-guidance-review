@@ -6,8 +6,7 @@ that no family label predicts any of the six fields. A grid of counts states tha
 reader who computes seven ratios. The same counts are drawn here against the family total, so the
 shortfall is read directly, and every count is printed in its cell, so no value is lost.
 
-2026-09-01. Redrawn as a matrix on a read-through, which found 42 bars in one panel
-unreadable in print. Three defects the bars carried: six shades of one hue, which a grayscale print
+2026-09-01. Redrawn as a matrix, since 42 bars in one panel are unreadable in print. Three defects the bars carried: six shades of one hue, which a grayscale print
 collapses exactly as the author said of Fig. 5; value labels printed on top of each other wherever
 two fields of a family were equal; and an absolute axis, on which a family of 3 and a family of 29
 cannot be compared, which is the claim the panel exists to make.

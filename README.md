@@ -4,7 +4,7 @@ This package holds the study record, the run outputs and the scripts behind ever
 the manuscript *Reinforcement learning for navigation-level route guidance: the study-area boundary
 and the identifiability of the routing objective* (single author, Donghoun Lee).
 
-Cited in the manuscript as tag v1.10.0 of
+Cited in the manuscript as tag v1.10.2 of
 <https://github.com/dhleeGDH/rl-route-guidance-review>, under the concept DOI
 10.5281/zenodo.21523970, which always resolves to the newest version.
 
@@ -36,8 +36,8 @@ directory holding it. Nothing else in the package needs it.
 | `study_record_reviewed_studies.csv` | the field record of the review: 95 rows, of which the 93 with `in_reviewed_studies == yes` carry every printed count; the other two are the author's own post-window study and a study whose full text no institution available to the author holds |
 | `study_record_claim_charting.csv`, `study_record_simulator_audit_v6.csv`, `gamma_todo.csv` | the claim charting, the simulator audit and the reference join |
 | `reviewed_studies_text/` | the 93 extracted full texts the lexical scans read, by `idx`, with a `<idx>.README.txt` beside each text acquired, recovered or withdrawn after the first extraction (13, 22, 26, 40, 48) |
-| `eval_substrate/` | the evaluation-substrate scan behind Supplementary Table S-22 and the substrate figures of Section IV-A |
-| `fulltext_scan/`, `fulltext_scan.py` | the term-family scan behind Supplementary Tables S-16 and S-17 |
+| `eval_substrate/` | the evaluation-substrate scan behind Supplementary Table S-7 and the substrate figures of Section III-C |
+| `fulltext_scan/`, `fulltext_scan.py` | the term-family scan behind Supplementary Table S-5 |
 | `survey_axis_coverage.json`, `survey_axis_coverage.py` | the scan behind the differentiating column of Table I |
 | `boundary_open_demo/` | the bespoke-grid and lattice runs, the exact solvers and the controls |
 | `sumo_corridor/` | the SUMO-executed grid runs |
@@ -60,7 +60,7 @@ should know two things.
 
 **The boundary field was corrected in v1.5.0.** Versions v1.3.0 and v1.4.0 record 19 studies as
 addressing the boundary condition of the study area. Every one of those 19 was re-read at full text
-against the rule Supplementary Table S-9 states for the field, which is a statement of the treatment
+against the rule Table XI of the manuscript states for the field, which is a statement of the treatment
 of a vehicle reaching a peripheral link. Nine did not meet it and moved to not addressed. In v1.8.0 the field
 reads 10 addressed and 83 not addressed over the 93 reviewed studies, with no unclear value left. The direction
 of the correction is downward: no study moved into the addressed group. The `boundary_status` and

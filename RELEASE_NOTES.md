@@ -1,3 +1,15 @@
+# v1.10.2: documentation corrected to the manuscript
+
+Documentation release. `RUN_TO_TABLE.md` and `MANIFEST.md` are corrected to the files and to the
+supplement sections of the manuscript: the table of every printed cell now names the run file each
+value comes from, and the supplementary-table rows follow the current numbering, with the three
+tables that moved into the appendices of the manuscript named there. `outer_face_sioux.py`, which
+derives the twelve nodes of the Sioux Falls border, is restored beside the environment that uses
+the set, together with the module it imports. Node numbers are drawn in panel (b) of Fig. 4. No
+measured value changed.
+
+---
+
 # v1.10.1: one script removed
 
 One script without a printed result removed.
@@ -184,9 +196,9 @@ level of this package, as before.
 `benchmark_network/plot_networks.py` are the sources of Figs. 2, 5 and 4; the copies in the
 repository tree up to v1.7.0 were older revisions with other figure sizes. `plot_family_reporting.py`
 joins `plot_family_merged.py` at the top level. Every generator now resolves its output beside the
-manuscript when a manuscript tree is found above it and beside itself otherwise, which is the defect
-a read-through found in one generator and a read-through found in four more: each was writing into a directory the
-builder never read, so a moved count left the figure on the page unchanged.
+manuscript when a manuscript tree is found above it and beside itself otherwise. Five generators
+carried the defect: each was writing into a directory the builder never read, so a moved count
+left the figure on the page unchanged.
 
 **Two gates (`gates/`).** `check_figure_generators.py` renders every generator in a fresh
 interpreter, asserts that it writes into the manuscript's figure directory, and compares the

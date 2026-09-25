@@ -1,7 +1,7 @@
 idx 13 = [1098], printed [64]. X. Long, J. Mao, Z. Qiao, P. Li, W. He, "Reinforcement learning of
 route choice considering traveler's preference," Transp. Lett., vol. 16, no. 7, pp. 658-671, 2023.
 
-FULL TEXT ADDED 2026-09-10 (T-1991). The study was recorded from an abstract alone until now.
+FULL TEXT ADDED 2026-09-10. The study was recorded from an abstract alone until now.
 The PDF reached handoff/corpus_pdfs/ and 13.txt was extracted from it with pdftotext, which is
 the treatment 48.README.txt records for the idx 48 recovery. The row of Table A-1 loses its
 dagger and carries eleven values in place of nine unc.
@@ -26,7 +26,7 @@ THE EVIDENCE SENTENCE OF EACH VALUE, quoted from 13.txt.
 
   Feas. enf       The choice is over a pre-enumerated route set, so an action without a successor
                   link does not arise. This is enforcement by construction, which is the term the
-                  manuscript already uses for the same structure, and T-1991 fixes the value at
+                  manuscript already uses for the same structure, and the value is fixed at
                   enf. Table S-9's recording column would also admit unc, since no rule is stated
                   in the report; the reading is recorded here rather than left silent.
 
@@ -40,7 +40,7 @@ THE EVIDENCE SENTENCE OF EACH VALUE, quoted from 13.txt.
 
   Gen.  no        No means of transfer beyond the simulated network is stated.
 
-  Gamma unc       NOT 0.7, and this is the point of the T-1991 rule change. The text reads
+  Gamma unc       NOT 0.7, and this is the point of the rule change. The text reads
                   "gamma = 0.7 (Hollander 2006), 0.8 (Li, Hensher, and Rose 2010)" and defines
                   the symbol as "the weight of standard deviation of the predicted travel time,
                   which transforms the uncertainty into travel time". The symbol is bound in the

@@ -2,10 +2,9 @@
 """Gate: every placed figure is written by its generator into the manuscript's figures directory/, and the
 PNG on disk is the PNG its generator produces.
 
-a read-through found plot_assembly.py writing Fig. 1 into archive/experiments_dup/,
-because Path(__file__).resolve() follows the experiment-tree symlink and parents[2] then lands
-beside the archive rather than beside the manuscript. 's audit found the same defect in four
-more generators: plot_family_reporting.py resolved to a directory outside the repository, and the
+plot_assembly.py was writing Fig. 1 into archive/experiments_dup/, because
+Path(__file__).resolve() follows the experiment-tree symlink and parents[2] then lands beside
+the archive rather than beside the manuscript. Four more generators carried the same defect: plot_family_reporting.py resolved to a directory outside the repository, and the
 three experiment generators resolved to directories that do not exist in this tree. The visible
 symptom was fig_family_reporting.png still drawing the corpus of 94 six weeks after a later revision moved
 its ROWS to 93: the generator changed and the PNG could not follow.

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """The study's own Dijkstra baseline under the two boundary conditions.
 
-A read-through of the draft objected that no reviewed study is shown to have a
-conclusion the boundary condition actually undermines, and reads the published retraining as
-Proposition 2 restated on a larger network. What the retraining left out is the study's own
+No reviewed study is otherwise shown to have a conclusion the boundary condition actually
+undermines, and the published retraining alone reads as Proposition 2 restated on a larger network. What the retraining left out is the study's own
 reference. [25] ships a Dijkstra baseline inside the released code, uses it to warm start the
 learner, and compares against it. This walks that baseline on the same destination, the same 30
 origins and the same border as the published learned arm, with the released files unmodified and
@@ -85,8 +84,8 @@ def main():
     att = {"closed": 100.0, "open": res["open"]["mean"]}
     # 2026-09-02: gap_points took the difference of the RAW rates while sitting inside the
     # relative_to_attainable block, so the file reported 53.3 (93.3 - 40.0) beside a baseline of
-    # 100.0 and a learned value of 42.9, whose difference is 57.1. A read-through caught the
-    # mismatch. Both differences are kept, each named for the scale it belongs to.
+    # 100.0 and a learned value of 42.9, whose difference is 57.1. Both differences are kept,
+    # each named for the scale it belongs to.
     rel = {}
     for c in ("closed", "open"):
         b = round(100.0 * res[c]["mean"] / att[c], 1)

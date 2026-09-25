@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Does the boundary condition change the comparison the study itself reports?
 
-A read-through of the draft objected that no reviewed study is shown to have a
-conclusion that the boundary condition actually undermines. The retraining already in the paper
+No reviewed study is otherwise shown to have a conclusion that the boundary condition actually
+undermines. The retraining already in the paper
 opens the boundary of a published implementation and reports that the learned policy leaves. That
 reads as Proposition 2 restated on a larger network: the study's own claim is a comparison against
 a baseline, and that comparison was never re-measured.

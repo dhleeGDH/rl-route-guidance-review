@@ -6,10 +6,9 @@ Every count is read from the stage record; none is written here.
 WHY THIS SHAPE. The figure this replaces was PRISMA 2020's flow diagram in everything but its
 three stage bands: one vertical column of five boxes, exclusions in boxes down the right margin,
 and box wording taken from the standard ("Records identified from", "Reports sought for
-retrieval", "Reports assessed for eligibility", "Studies included in review"). A read-through checked it
-box by box and found the correspondence one to one. This review is neither registered nor
-PRISMA-compliant, so the resemblance claimed a protocol the review does not run, and three cold
-rounds read the labels and asked for the checklist.
+retrieval", "Reports assessed for eligibility", "Studies included in review"), which corresponded
+to the standard box by box. This review is neither registered nor PRISMA-compliant, so the
+resemblance claimed a protocol the review does not run.
 
 What replaces it is a two-band drawing, four levels deep and two columns wide:
 
