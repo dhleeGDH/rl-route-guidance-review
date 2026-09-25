@@ -16,7 +16,7 @@ values that look wrong and are not.
 Section V prints two shaping variants of the destination-aligned reward.
 
 **Published.** The shaping term as first run. Its outputs are the `boundary_open_demo/`,
-`sumo_corridor/`, `sioux30/`, `anaheim/` and `benchmark_network/` files of this package.
+`sioux30/`, `anaheim/` and `benchmark_network/` files of this package.
 
 **M2-C.** The discount-consistent form of the same term, which multiplies the shaping increment by
 `(1 - gamma)` and is inert at `gamma = 1`. Its outputs are under `m2c/`, and the mixin that defines
@@ -278,11 +278,9 @@ version.
 | system-level reward | the same file | `reward_alignment = system` | |
 | the boundary condition, 10 / 83 | the same file | `boundary_condition` | `boundary_status` and `boundary_status_note` decompose it; see above |
 | a policy trained on a boundary-closed network and evaluated on a boundary-open network, 48.6% | `gform/cross_condition_8000_gform.json` | `cells.aligned.scored_open` | the 98.7% it is stated against is the boundary-open cell of Table V, `boundary_open_demo/travel_time_bdest_ingrid_8000.json`, key `open_aligned` |
-| paired difference, 24.4 and 37.7 points | the same file | `paired.high`, `paired.matched` | each with `printed_cells`, `printed_difference` and `printed_ci` |
 | the destination is nearer than the nearest exit, 69.0% | `boundary_open_demo/interior_deep_control_vi.json` | `completion_cheaper_pct` | |
 | travel-time optimum on the deep lattice, 81.0% | the same file | `optimum.open_time_min` | |
 | the 396 ordered OD pairs | `boundary_open_demo/discount_condition.json` | `grid_check.pairs` | the Eq. (7) threshold is `gamma_star`, its inputs `phi_max`, `k_min`, `K`, `delta`, `denominator` |
 | the M2-C 5x5-grid cells | `m2c/train_m2c_g1.json` | `open\|aligned\|{}\|3000` and `\|8000` | the cell name is the run's own parameter string; the empty braces are the default reward weights |
 | the M2-C reward-term cells | `m2c/train_m2c_g3.json`, `m2c/train_m2c_g4.json` | `open\|aligned\|{"beta": ..., "r_exit": ..., "r_goal": ...}\|<budget>` | shaping alone is `beta` 1.0 with both bonuses zero |
-| the non-terminal detour cells | `boundary_open_demo/costly_return_intervals.json` | `cells."costly_return_time_min@1.0"` and siblings | the detour cost is the part after the at sign |
 

@@ -34,16 +34,15 @@ directory holding it. Nothing else in the package needs it.
 | Path | Holds |
 |---|---|
 | `study_record_reviewed_studies.csv` | the field record of the review: 95 rows, of which the 93 with `in_reviewed_studies == yes` carry every printed count; the other two are the author's own post-window study and a study whose full text no institution available to the author holds |
-| `study_record_claim_charting.csv`, `study_record_simulator_audit_v6.csv`, `gamma_todo.csv` | the claim charting, the simulator audit and the reference join |
+| `study_record_claim_charting.csv`, `study_record_simulator_audit_v6.csv` | the claim charting and the simulator audit |
 | `reviewed_studies_text/` | the 93 extracted full texts the lexical scans read, by `idx`, with a `<idx>.README.txt` beside each text acquired, recovered or withdrawn after the first extraction (13, 22, 26, 40, 48) |
 | `eval_substrate/` | the evaluation-substrate scan behind Supplementary Table S-7 and the substrate figures of Section III-C |
 | `fulltext_scan/`, `fulltext_scan.py` | the term-family scan behind Supplementary Table S-5 |
 | `survey_axis_coverage.json`, `survey_axis_coverage.py` | the scan behind the differentiating column of Table I |
 | `boundary_open_demo/` | the bespoke-grid and lattice runs, the exact solvers and the controls |
-| `sumo_corridor/` | the SUMO-executed grid runs |
 | `sioux30/` | the Sioux Falls runs at 30 seeds |
 | `anaheim/` | the Anaheim value iteration and the Eq. (7) route sets |
-| `benchmark_network/`, `costly_return/` | the outer-face intervals and the non-terminal detour cells |
+| `benchmark_network/` | the Sioux Falls and Anaheim environment, the outer-face border and its intervals |
 | `networks/` | the published link and node data of Anaheim, Sioux Falls and Chicago Sketch |
 | `released_impl/` | the retraining of the published router of [25] under each boundary condition |
 | `m2c/` | the discount-consistent shaping variant: the mixin, its self-test, its run outputs and its controls |
