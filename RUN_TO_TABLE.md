@@ -203,9 +203,9 @@ value; the manuscript sources contain no occurrence of the word overlap, and no 
 screening residual.
 
 `benchmark_network/benchmark_results_dest_interior.npz` holds the superseded Sioux Falls
-interior-destination run at the border omitting one node of the outer face, which gives 56.1% where
-Table S-3 prints 29.1%. The printed row comes
-from `sioux30/summary_30seed.json` and the superseded file is not deposited.
+interior-destination run at a border omitting one node of the outer face. It is the source of no
+printed value of the manuscript or of the supplement and is kept as a record of the superseded
+border alone, so it is not deposited; the Sioux Falls rows come from `sioux30/summary_30seed.json`.
 
 `boundary_open_demo/matched_budget_grid.json` backs no cell of the present text; see Table IV above.
 
@@ -216,21 +216,13 @@ retrained cells against it.
 
 ## Values no run file stores literally
 
-Two printed values are computed rather than recorded. A reader recomputes each from the sample named
-beside it rather than searching the package for the number.
+None. Every value printed in the manuscript and in the supplement is held by a run file named in the
+tables above. Earlier versions of this package listed four figures here as computed rather than
+stored, and each has since been either reproduced from a deposited file or withdrawn with the text
+that printed it.
 
-| Printed | Where | Why it is not stored | Recompute from |
-|---|---|---|---|
-| 60.8% | Table S-5, the band of a fifth | arithmetic in the table: 253 border nodes of 416 | the border column of the same row |
-| 25.3 | S-I.C, upper bound of `19.9% (14.3 to 25.3)` | a percentile bootstrap bound | `boundary_open_demo/grid8_10seed.json`, cell `open_aligned`, per-seed values, convention A at key `grid8\|aligned\|3000\|open` |
-
-Two further bounds were listed here in v1.4.0 and v1.5.0 as unstored, namely the 76.2 of Table S-3's
-`85.5 [76.2-93.3]` and the 8.6 of its `6.2 [4.0-8.6]`. Both are reproduced exactly by convention A
-over `sumo_corridor/sumo_interior_closed_time_min.json` and `sumo_interior_open_aligned.json`, and
-the entries are withdrawn.
-
-Every other bootstrap bound in the manuscript is recomputable from the per-seed list of the file
-named for that row above, under the convention section B assigns to it.
+Every bootstrap bound in the manuscript is recomputable from the per-seed list of the file named for
+its row above, under the convention section B assigns to it.
 
 ## Reading the study record
 
